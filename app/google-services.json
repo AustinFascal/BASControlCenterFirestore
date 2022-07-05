@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "975896526682",
+    "project_id": "bas-delivery-report",
+    "storage_bucket": "bas-delivery-report.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:975896526682:android:37df5329eb002229e2bd63",
+        "android_client_info": {
+          "package_name": "com.wingscorp.basreport"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "975896526682-aq96r2r00mkvtavjp8obllgqeobfkmrg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBl5zeX0zrnqrOs7YlGVoG-MehzDAe-tTo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "975896526682-aq96r2r00mkvtavjp8obllgqeobfkmrg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
