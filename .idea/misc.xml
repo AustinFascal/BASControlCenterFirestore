@@ -3,7 +3,12 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/AUSTINFASCALISKANDAR/Projects/TravelPermitBAS/app/src/main/res/layout/activity_main.xml" value="0.1" />
+        <entry key="..\:/AUSTINFASCALISKANDAR/Projects/TravelPermitBAS/app/src/main/res/drawable-v21/border.xml" value="0.187" />
+        <entry key="..\:/AUSTINFASCALISKANDAR/Projects/TravelPermitBAS/app/src/main/res/drawable/border.xml" value="0.187" />
+        <entry key="..\:/AUSTINFASCALISKANDAR/Projects/TravelPermitBAS/app/src/main/res/layout/activity_login.xml" value="0.22" />
+        <entry key="..\:/AUSTINFASCALISKANDAR/Projects/TravelPermitBAS/app/src/main/res/layout/activity_main.xml" value="0.22" />
+        <entry key="..\:/AUSTINFASCALISKANDAR/Projects/TravelPermitBAS/app/src/main/res/layout/activity_register.xml" value="0.22" />
+        <entry key="..\:/AUSTINFASCALISKANDAR/Projects/TravelPermitBAS/app/src/main/res/layout/activity_user_profile.xml" value="0.1" />
       </map>
     </option>
   </component>

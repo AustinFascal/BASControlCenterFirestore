@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "975896526682",
+    "firebase_url": "https://bas-delivery-report-default-rtdb.asia-southeast1.firebasedatabase.app",
     "project_id": "bas-delivery-report",
     "storage_bucket": "bas-delivery-report.appspot.com"
   },
