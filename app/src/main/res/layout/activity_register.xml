@@ -168,8 +168,8 @@
                         android:layout_marginBottom="10dp"
                         android:layout_toEndOf="@id/imageViewDoB"
                         android:background="@android:color/transparent"
-                        android:hint="select your dob"
                         android:focusable="false"
+                        android:hint="select your dob"
                         android:inputType="date"
                         android:padding="6dp"
                         android:textSize="16sp" />
@@ -215,7 +215,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:buttonTint="@color/purple_500"
-                            android:text="Female"
+                            android:text="Perempuan"
                             android:textColor="#555555"
                             android:textSize="16sp" />
 
@@ -225,7 +225,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="20dp"
                             android:buttonTint="@color/purple_500"
-                            android:text="Male"
+                            android:text="Laki-Laki"
                             android:textColor="#555555"
                             android:textSize="16sp" />
 
@@ -267,7 +267,7 @@
                         android:layout_marginBottom="10dp"
                         android:layout_toEndOf="@id/imageViewMobile"
                         android:background="@android:color/transparent"
-                        android:hint="enter your mobile no. (without +91)"
+                        android:hint="enter your mobile no. (without +62 or 0)"
                         android:inputType="phone"
                         android:padding="6dp"
                         android:textSize="16sp" />

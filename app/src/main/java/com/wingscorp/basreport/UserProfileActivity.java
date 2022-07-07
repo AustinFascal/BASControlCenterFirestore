@@ -1,9 +1,16 @@
 package com.wingscorp.basreport;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.LinearLayoutCompat;
 
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -17,16 +24,20 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
 
 import java.util.Objects;
 
 public class UserProfileActivity extends AppCompatActivity {
 
-    private TextView textViewWelcome, textViewFullName, textViewEmail, textViewDoB, textViewGender, textViewPhone;
+    private TextView textViewWelcome, textViewFullName, textViewEmail, textViewDoB, textViewGender, textViewPhone, textViewAccessCode;
+    private LinearLayoutCompat llAdminBAS, llAdminWings, llAdminSuper;
     private ProgressBar progressBar;
     private String fullName, doB, email, gender, phone, accessCode;
-    private ImageView imageView;
-    private FirebaseAuth authProfile;
+    private ImageView imageViewProfilePic;
+    public FirebaseAuth authProfile;
+
+    private int intResume = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +50,24 @@ public class UserProfileActivity extends AppCompatActivity {
         textViewDoB = findViewById(R.id.textView_show_dob);
         textViewGender = findViewById(R.id.textView_show_gender);
         textViewPhone = findViewById(R.id.textView_show_mobile);
+        textViewAccessCode = findViewById(R.id.textView_show_access_code);
+
+        llAdminBAS = findViewById(R.id.ll_admin_bas);
+        llAdminWings = findViewById(R.id.ll_admin_wings);
+        llAdminSuper = findViewById(R.id.ll_admin_super);
+
         progressBar = findViewById(R.id.progressBar);
+
+        imageViewProfilePic = findViewById(R.id.imageView_profile_dp);
+
+        imageViewProfilePic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(UserProfileActivity.this, UploadProfilePicActivity.class);
+                startActivity(intent);
+            }
+        });
+
 
         authProfile = FirebaseAuth.getInstance();
         FirebaseUser firebaseUser = authProfile.getCurrentUser();
@@ -48,12 +76,40 @@ public class UserProfileActivity extends AppCompatActivity {
             Toast.makeText(this, "Terjadi kesalahan. Detail pengguna tidak tersedia saat ini.", Toast.LENGTH_SHORT).show();
         } else {
             //Toast.makeText(this, firebaseUser.getUid(), Toast.LENGTH_SHORT).show();
+           //checkIfEmailVerified(firebaseUser);
             progressBar.setVisibility(View.VISIBLE);
             showUserProfile(firebaseUser);
         }
+
+
     }
 
-    private void showUserProfile(FirebaseUser firebaseUser) {
+    private void checkIfEmailVerified(FirebaseUser firebaseUser) {
+        if (!firebaseUser.isEmailVerified()){
+            showAlertEmailVerification();
+        }
+    }
+
+    private void showAlertEmailVerification() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(UserProfileActivity.this);
+        builder.setTitle("Email Belum Diverifikasi");
+        builder.setMessage("Mohon verifikasi email Anda sekarang. Anda tidak dapat masuk apabila email belum diverifikasi");
+
+        builder.setPositiveButton("Lanjutkan", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                Intent intent = new Intent(Intent.ACTION_MAIN);
+                intent.addCategory(Intent.CATEGORY_APP_EMAIL);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            }
+        });
+
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+
+    public void showUserProfile(FirebaseUser firebaseUser) {
         String userID = firebaseUser.getUid();
         DatabaseReference referenceProfile = FirebaseDatabase.getInstance("https://bas-delivery-report-default-rtdb.asia-southeast1.firebasedatabase.app").getReference("RegisteredUser");
         referenceProfile.child(userID).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -63,7 +119,8 @@ public class UserProfileActivity extends AppCompatActivity {
                     //Toast.makeText(UserProfileActivity.this, userDetails.phone, Toast.LENGTH_SHORT).show();
                 if (userDetails != null){
                     fullName = firebaseUser.getDisplayName();
-                    email = userDetails.doB;
+                    doB = userDetails.doB;
+                    email = firebaseUser.getEmail();
                     gender = userDetails.gender;
                     phone = userDetails.phone;
                     accessCode = userDetails.accessCode;
@@ -74,6 +131,34 @@ public class UserProfileActivity extends AppCompatActivity {
                     textViewGender.setText(gender);
                     textViewDoB.setText(doB);
                     textViewPhone.setText(phone);
+
+                    switch (accessCode) {
+                        case "000111":
+                            textViewAccessCode.setText("Admin BAS");
+                            llAdminBAS.setVisibility(View.VISIBLE);
+                            llAdminWings.setVisibility(View.GONE);
+                            llAdminSuper.setVisibility(View.GONE);
+                            break;
+                        case "111000":
+                            textViewAccessCode.setText("Admin Wings");
+                            llAdminBAS.setVisibility(View.GONE);
+                            llAdminWings.setVisibility(View.VISIBLE);
+                            llAdminSuper.setVisibility(View.GONE);
+                            break;
+                        case "111111":
+                            textViewAccessCode.setText("Super Admin");
+                            llAdminBAS.setVisibility(View.GONE);
+                            llAdminWings.setVisibility(View.GONE);
+                            llAdminSuper.setVisibility(View.VISIBLE);
+                            break;
+                        default:
+                            textViewAccessCode.setText("Unknown");
+                            break;
+                    }
+
+                    Uri uri = firebaseUser.getPhotoUrl();
+
+                    Picasso.with(UserProfileActivity.this).load(uri).into(imageViewProfilePic);
 
                 } else {
                     Toast.makeText(UserProfileActivity.this, "NULL", Toast.LENGTH_SHORT).show();
@@ -86,5 +171,54 @@ public class UserProfileActivity extends AppCompatActivity {
                 Toast.makeText(UserProfileActivity.this, "Terjadi kesalahan.", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        authProfile = FirebaseAuth.getInstance();
+        FirebaseUser firebaseUser = authProfile.getCurrentUser();
+        showUserProfile(firebaseUser);
+
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.common_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.menu_refresh){
+            startActivity(getIntent());
+            finish();
+            overridePendingTransition(0, 0);
+        } else if (id == R.id.menu_update_profile){
+            Intent intent = new Intent(UserProfileActivity.this, UpdateProfileActivity.class);
+            startActivity(intent);
+        } else if (id == R.id.menu_update_email){
+            Intent intent = new Intent(UserProfileActivity.this, UpdateEmailActivity.class);
+            startActivity(intent);
+        }else if (id == R.id.menu_update_password){
+            Intent intent = new Intent(UserProfileActivity.this, ChangePasswordActivity.class);
+            startActivity(intent);
+        } /* else if (id == R.id.menu_settings){
+            Intent intent = new Intent(UserProfileActivity.this, SettingsActivity.class);
+            startActivity(intent);
+        } */else if (id == R.id.menu_logout){
+            authProfile.signOut();
+            Toast.makeText(this, "Berhasil keluar dari akun", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(UserProfileActivity.this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish();
+        } else {
+            Toast.makeText(this, "Terjadi kesalahan", Toast.LENGTH_SHORT).show();
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }

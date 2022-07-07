@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:title="Refresh"
+        android:icon="@drawable/ic_outline_refresh"
+        android:alphabeticShortcut="r"
+        android:orderInCategory="1"
+        android:id="@+id/menu_refresh"
+        app:showAsAction="always"/>
+    <item android:title="Ubah Profil"
+        android:id="@+id/menu_update_profile" />
+    <item android:title="Ubah Email"
+        android:id="@+id/menu_update_email" />
+    <item android:title="Ubah Kata Sandi"
+        android:id="@+id/menu_update_password" />
+    <item android:title="Pengaturan"
+        android:id="@+id/menu_settings" />
+    <item android:title="Keluar Akun"
+        android:id="@+id/menu_logout" />
+
+</menu>

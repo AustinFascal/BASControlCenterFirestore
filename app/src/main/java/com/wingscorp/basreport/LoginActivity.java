@@ -19,6 +19,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -34,6 +35,7 @@ import java.util.Objects;
 public class LoginActivity extends AppCompatActivity {
 
     private EditText editTextLoginEmail, editTextLoginPass;
+    private TextView textViewForgotPass;
     private ProgressBar progressBar;
     private FirebaseAuth authProfile;
     private static final String TAG = "LoginActivity";
@@ -52,6 +54,7 @@ public class LoginActivity extends AppCompatActivity {
         editTextLoginEmail = findViewById(R.id.editText_login_email);
         editTextLoginPass = findViewById(R.id.editText_login_pass);
         progressBar = findViewById(R.id.progressBar);
+        textViewForgotPass = findViewById(R.id.textView_forgot_password_link);
 
         authProfile = FirebaseAuth.getInstance();
 
@@ -93,6 +96,14 @@ public class LoginActivity extends AppCompatActivity {
                     progressBar.setVisibility(View.VISIBLE);
                     loginUser(txtEmail, txtPass);
                 }
+            }
+        });
+
+        textViewForgotPass.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(LoginActivity.this, ForgotPasswordActivity.class);
+                startActivity(intent);
             }
         });
     }
@@ -154,11 +165,17 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        FirebaseUser firebaseUser = authProfile.getCurrentUser();
         if (authProfile.getCurrentUser()!=null){
-            Toast.makeText(this, "Anda sudah masuk", Toast.LENGTH_SHORT).show();
-
-            startActivity(new Intent(LoginActivity.this, UserProfileActivity.class));
-            finish();
+            if (firebaseUser.isEmailVerified()){
+                startActivity(new Intent(LoginActivity.this, UserProfileActivity.class));
+                finish();
+                Toast.makeText(LoginActivity.this, "Berhasil masuk", Toast.LENGTH_SHORT).show();
+            } else {
+                firebaseUser.sendEmailVerification();
+                authProfile.signOut();
+                showAlertEmailVerification();
+            }
         } /*else {
             Toast.makeText(this, "Anda bisa masuk sekarang", Toast.LENGTH_SHORT).show();
         }*/
