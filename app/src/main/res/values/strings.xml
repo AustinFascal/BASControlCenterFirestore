@@ -1,6 +1,37 @@
 <resources>
-    <string name="app_name">BAS Report</string>
+    <string name="app_name">BAS Control Center</string>
     <string name="register">Daftar Sekarang</string>
     <string name="click_here_to_reset">Atur Ulang Kata Sandi</string>
     <string name="loading">Sedang memuat</string>
+    <string name="inputRegistNumber">Nomor Polisi (TNKB)<font color="#cc0029">*</font></string>
+    <string name="inputVhlLength">Panjang<font color="#cc0029">*</font></string>
+    <string name="inputVhlWidth">Lebar<font color="#cc0029">*</font></string>
+    <string name="inputVhlHeight">Tinggi<font color="#cc0029">*</font></string>
+    <string name="inputVhlBrand">Merk Kendaraan</string>
+    <string name="inputVhlIdentityNumber">Nomor Rangka/NIK/VIN</string>
+    <string name="inputVhlEngineNumber">Nomor Mesin</string>
+    <string name="inputVhlManufactureYear">Tahun Pembuatan</string>
+    <string name="inputVhlDimension">Dimensi Kendaraan<font color="#cc0029">*</font></string>
+    <string name="inputVhlStatus">Status Kendaraan<font color="#cc0029">*</font></string>
+
+    <string name="inputPoNumberPtBas">Nomor PO PT BAS<font color="#cc0029">*</font></string>
+    <string name="inputPoNumberPtBas2">Nomor PO PT BAS (auto)<font color="#cc0029">*</font></string>
+    <string name="inputPoNumberCustomer">Nomor PO Customer (auto)<font color="#cc0029">*</font></string>
+    <string name="inputPoNumberCustomer2">Nomor PO Customer<font color="#cc0029">*</font></string>
+    <string name="inputPoProductName">Material<font color="#cc0029">*</font></string>
+    <string name="inputPoProductType">Jenis<font color="#cc0029">*</font></string>
+    <string name="inputCustomerName">Pilih Customer<font color="#cc0029">*</font></string>
+
+
+    <string name="inputDateRequired">Tanggal<font color="#cc0029">*</font></string>
+    <string name="inputTimeRequired">Waktu<font color="#cc0029">*</font></string>
+    <string name="title_activity_main2">MainActivity2</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
 </resources>

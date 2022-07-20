@@ -8,9 +8,38 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:975896526682:android:37df5329eb002229e2bd63",
+        "mobilesdk_app_id": "1:975896526682:android:2920f13e5c63fe26e2bd63",
         "android_client_info": {
-          "package_name": "com.wingscorp.basreport"
+          "package_name": "com.ptbas.controlcenter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "975896526682-aq96r2r00mkvtavjp8obllgqeobfkmrg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBl5zeX0zrnqrOs7YlGVoG-MehzDAe-tTo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "975896526682-aq96r2r00mkvtavjp8obllgqeobfkmrg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:975896526682:android:a0348ba73a063cdee2bd63",
+        "android_client_info": {
+          "package_name": "com.ptbas.mybas"
         }
       },
       "oauth_client": [

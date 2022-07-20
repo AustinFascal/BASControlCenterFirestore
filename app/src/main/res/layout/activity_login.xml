@@ -9,7 +9,7 @@
     <ScrollView android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/light_grey"
-        tools:context=".LoginActivity">
+        tools:context=".auth.LoginActivity">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -60,15 +60,6 @@
                     android:layout_marginTop="24dp"
                     android:background="@drawable/border">
 
-                    <ImageView
-                        android:id="@+id/imageViewEmail"
-                        android:layout_width="35dp"
-                        android:layout_height="35dp"
-                        android:layout_centerVertical="true"
-                        android:layout_marginLeft="10dp"
-                        android:layout_marginRight="10dp"
-                        android:src="@drawable/ic_outline_email" />
-
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/editText_login_email"
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -76,7 +67,6 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:layout_marginBottom="10dp"
-                        android:layout_toEndOf="@id/imageViewEmail"
                         android:background="@android:color/transparent"
                         android:hint="Masukkan alamat email"
                         android:inputType="textEmailAddress"
@@ -92,14 +82,6 @@
                     android:layout_marginTop="10dp"
                     android:background="@drawable/border">
 
-                    <ImageView
-                        android:id="@+id/imageViewPwd"
-                        android:layout_width="35dp"
-                        android:layout_height="35dp"
-                        android:layout_centerVertical="true"
-                        android:layout_marginLeft="10dp"
-                        android:layout_marginRight="10dp"
-                        android:src="@drawable/ic_outline_lock" />
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/editText_login_pass"
@@ -108,7 +90,6 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:layout_marginBottom="10dp"
-                        android:layout_toEndOf="@id/imageViewPwd"
                         android:background="@android:color/transparent"
                         android:hint="Masukkan kata sandi"
                         android:inputType="textPassword"

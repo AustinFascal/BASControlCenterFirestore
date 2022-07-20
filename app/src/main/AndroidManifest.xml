@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.wingscorp.basreport">
+    package="com.ptbas.controlcenter">
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
@@ -14,31 +16,44 @@
         android:theme="@style/Theme.TravelPermitBAS"
         tools:targetApi="31">
         <activity
-            android:name=".ChangePasswordActivity"
+            android:theme="@style/Theme.TravelPermitBAS.NoActionBar"
+            android:name="com.ptbas.controlcenter.DashboardActivity"
             android:exported="false" />
         <activity
-            android:name=".UpdateEmailActivity"
+            android:name="com.ptbas.controlcenter.AddPurchaseOrderActivity"
             android:exported="false" />
         <activity
-            android:name=".UpdateProfileActivity"
+            android:name="com.ptbas.controlcenter.AddGoodIssueActivity"
             android:exported="false" />
         <activity
-            android:name=".UploadProfilePicActivity"
+            android:name="com.ptbas.controlcenter.AddVehicleActivity"
             android:exported="false" />
         <activity
-            android:name=".ForgotPasswordActivity"
+            android:name="com.ptbas.controlcenter.userprofile.ChangePasswordActivity"
             android:exported="false" />
         <activity
-            android:name=".UserProfileActivity"
+            android:name="com.ptbas.controlcenter.userprofile.UpdateEmailActivity"
             android:exported="false" />
         <activity
-            android:name=".RegisterActivity"
+            android:name="com.ptbas.controlcenter.userprofile.UpdateProfileActivity"
             android:exported="false" />
         <activity
-            android:name=".LoginActivity"
+            android:name="com.ptbas.controlcenter.userprofile.UploadProfilePicActivity"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name="com.ptbas.controlcenter.userprofile.ForgotPasswordActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.ptbas.controlcenter.userprofile.UserProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.ptbas.controlcenter.auth.RegisterActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.ptbas.controlcenter.auth.LoginActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.ptbas.controlcenter.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
