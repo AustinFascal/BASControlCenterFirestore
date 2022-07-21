@@ -78,6 +78,36 @@
                 android:inputType="number" />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="150dp"
+            android:layout_height="match_parent"
+            app:prefixText="Rp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edt_po_total_sell_price"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="Total Harga Jual"
+                android:focusable="false"
+                android:inputType="none" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="150dp"
+            android:layout_height="match_parent"
+            app:prefixText="Rp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edt_po_total_buy_price"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="Total Harga Beli"
+                android:focusable="false"
+                android:inputType="none" />
+        </com.google.android.material.textfield.TextInputLayout>
+
     </LinearLayout>
 
 </LinearLayout>

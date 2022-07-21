@@ -8,6 +8,8 @@ import android.app.DatePickerDialog;
 import android.graphics.drawable.ColorDrawable;
 import android.media.Image;
 import android.os.Bundle;
+import android.os.Handler;
+import android.text.Html;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,30 +20,40 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.ptbas.controlcenter.model.ProductModel;
+import com.ptbas.controlcenter.model.VehicleModel;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
 public class AddPurchaseOrderActivity extends AppCompatActivity {
 
-    LinearLayout llList;
-    Button btnAddRow, btnGeneratePoNumber;
-    TextInputEditText edtPoDate, edtPoNumberPtbas;
-
+    LinearLayout llList,llAddItem;
+    Button btnAddRow;
+    TextInputEditText edtPoDate, edtPoTOP, edtPoNumberCustomer, edtPoNumberPtbas;
+    TextInputLayout wrapEdtPoNumberPtBas;
+    AutoCompleteTextView spinnerPoTransportType, spinnerPoCustName;
     List<String> productName, transportTypeName, customerName;
-
-    String vhlData = "", materialData = "", transportData = "", customerData = "", customerAlias="";
+    String transportData = "", customerData = "", customerAlias="", randomString="NULL";
     Integer poYear = 0, poMonth = 0, poDay = 0;
+
+    TextView tvSumTotal;
+
+    float totalSellPrice = 0, totalBuyPrice = 0, sumTotalSellPrice = 0;
 
     private DatePickerDialog datePicker;
 
@@ -57,8 +69,24 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
         transportTypeName  = new ArrayList<>();
         customerName  = new ArrayList<>();
 
-        AutoCompleteTextView spinnerTransportType = findViewById(R.id.spinner_po_transport_type);
-        AutoCompleteTextView spinnerCustomerName = findViewById(R.id.spinner_po_cust_name);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setTitle("Buat Purchase Order");
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setBackgroundDrawable(new ColorDrawable(getResources()
+                .getColor(R.color.white)));
+
+        llList = findViewById(R.id.layout_list);
+        llAddItem = findViewById(R.id.ll_add_item);
+        btnAddRow = findViewById(R.id.btn_add_list);
+        edtPoNumberPtbas = findViewById(R.id.edt_po_number_ptbas);
+        wrapEdtPoNumberPtBas = findViewById(R.id.wrap_edt_po_number_ptbas);
+        edtPoDate = findViewById(R.id.edt_po_date);
+        edtPoTOP = findViewById(R.id.edt_po_TOP);
+        edtPoNumberCustomer = findViewById(R.id.edt_po_number_customer);
+        spinnerPoTransportType = findViewById(R.id.spinner_po_transport_type);
+        spinnerPoCustName = findViewById(R.id.spinner_po_cust_name);
+
+        tvSumTotal = findViewById(R.id.tv_sum_total);
 
         databaseReference.child("TransportTypeData").addValueEventListener(new ValueEventListener() {
             @Override
@@ -70,7 +98,7 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
                     }
                     ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddPurchaseOrderActivity.this, R.layout.style_spinner, transportTypeName);
                     arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
-                    spinnerTransportType.setAdapter(arrayAdapter);
+                    spinnerPoTransportType.setAdapter(arrayAdapter);
                 } else {
                     Toast.makeText(AddPurchaseOrderActivity.this, "Not exists", Toast.LENGTH_SHORT).show();
                 }
@@ -92,7 +120,7 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
                     }
                     ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddPurchaseOrderActivity.this, R.layout.style_spinner, customerName);
                     arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
-                    spinnerCustomerName.setAdapter(arrayAdapter);
+                    spinnerPoCustName.setAdapter(arrayAdapter);
                 } else {
                     Toast.makeText(AddPurchaseOrderActivity.this, "Not exists", Toast.LENGTH_SHORT).show();
                 }
@@ -104,17 +132,6 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
             }
         });
 
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setTitle("Buat Purchase Order");
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setBackgroundDrawable(new ColorDrawable(getResources()
-                .getColor(R.color.white)));
-
-        llList = findViewById(R.id.layout_list);
-        btnAddRow = findViewById(R.id.btn_add_list);
-        btnGeneratePoNumber = findViewById(R.id.btn_generate_po_number);
-        edtPoNumberPtbas = findViewById(R.id.edt_po_number_ptbas);
-        edtPoDate = findViewById(R.id.edt_po_date);
 
         edtPoDate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -145,64 +162,72 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
             }
         });
 
-        spinnerTransportType.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        spinnerPoTransportType.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 String selectedSpinnerTransportType = (String) adapterView.getItemAtPosition(position);
                 transportData = selectedSpinnerTransportType;
-                spinnerTransportType.setError(null);
+                spinnerPoTransportType.setError(null);
             }
         });
 
-        spinnerTransportType.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+        spinnerPoTransportType.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean b) {
-                spinnerTransportType.setText(transportData);
+                spinnerPoTransportType.setText(transportData);
             }
         });
 
-        spinnerCustomerName.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        spinnerPoCustName.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                String selectedSpinnerTransportType = (String) adapterView.getItemAtPosition(position);
-                customerData = selectedSpinnerTransportType;
-                spinnerCustomerName.setError(null);
+                String selectedSpinnerCustomerName = (String) adapterView.getItemAtPosition(position);
+                customerData = selectedSpinnerCustomerName;
+                spinnerPoCustName.setError(null);
+
+                DatabaseReference databaseReference2 = FirebaseDatabase.getInstance().getReference("CustomerData/"+selectedSpinnerCustomerName.replaceAll(" ", "").toLowerCase());
+                databaseReference2.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        String alias = snapshot.child("alias").getValue(String.class);
+                        customerAlias = alias;
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+
+                randomString = getRandomString(5);
             }
         });
 
-        spinnerCustomerName.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+        spinnerPoCustName.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean b) {
-                spinnerCustomerName.setText(customerData);
+                spinnerPoCustName.setText(customerData);
             }
         });
 
-        databaseReference.child("CustomerData").child(customerData).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()){
-                    for (DataSnapshot dataSnapshot: snapshot.getChildren()){
-                        String alias = dataSnapshot.child("alias").getValue(String.class);
-                        customerAlias = alias;
-                    }
+
+        final Handler handler = new Handler();
+        Runnable runnable = new Runnable() {
+            public void run() {
+                if (transportData.isEmpty()){
+                    edtPoNumberPtbas.setText(transportData+"-"+poYear+"-"+poMonth+"-"+customerAlias+"-");
                 } else {
-                    Toast.makeText(AddPurchaseOrderActivity.this, "Not exists", Toast.LENGTH_SHORT).show();
+                    edtPoNumberPtbas.setText(transportData.substring(0, 3) + "-" + poYear + "-" + poMonth + "-" + customerAlias + "-");
+                    if (!Objects.requireNonNull(edtPoNumberCustomer.getText()).toString().equals("")
+                            &&!customerData.isEmpty() &&!Objects.requireNonNull(edtPoDate.getText()).toString().equals("")){
+                        edtPoNumberPtbas.setText(transportData.substring(0, 3)+"-"+poYear+"-"+poMonth+"-"+customerAlias+"-"+randomString);
+                    }
                 }
+                handler.postDelayed(this, 1000);
             }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-
-        btnGeneratePoNumber.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                edtPoNumberPtbas.setText(transportData.substring(0,3)+"-"+customerAlias+"-"+poYear+"-"+poMonth+"-"+getRandomString(5));
-            }
-        });
-
+        };
+        runnable.run();
         addView();
     }
 
@@ -217,6 +242,7 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
     }
 
     private void addView() {
+        DecimalFormat df = new DecimalFormat("0.00");
         View materialView = getLayoutInflater().inflate(R.layout.row_add_material, null, false);
 
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
@@ -226,6 +252,9 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
         AutoCompleteTextView spinnerMaterialName = materialView.findViewById(R.id.spinner_po_material_name);
         TextInputEditText edtSalePrice = materialView.findViewById(R.id.edt_po_sale_price);
         TextInputEditText edtBuyPrice = materialView.findViewById(R.id.edt_po_buy_price);
+        TextInputEditText edtPoQuantity = materialView.findViewById(R.id.edt_po_quantity);
+        TextInputEditText edtPoTotalSellPrice = materialView.findViewById(R.id.edt_po_total_sell_price);
+        TextInputEditText edtPoTotalBuyPrice = materialView.findViewById(R.id.edt_po_total_buy_price);
         ImageView imgDeleteRow = materialView.findViewById(R.id.img_remove_row);
 
         databaseReference.child("ProductData").addValueEventListener(new ValueEventListener() {
@@ -247,6 +276,57 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 
+            }
+        });
+
+        spinnerMaterialName.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("ProductData/"+spinnerMaterialName.getText().toString().replaceAll(" ", "").toLowerCase());
+                databaseReference.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        ProductModel productModel = snapshot.getValue(ProductModel.class);
+
+                        if (productModel!=null){
+                            edtPoQuantity.setText(String.valueOf(0));
+                            edtBuyPrice.setText(df.format(Float.parseFloat(String.valueOf(productModel.getPriceBuy()))));
+                            edtSalePrice.setText(df.format(Float.parseFloat(String.valueOf(productModel.getPriceSell()))));
+
+                            final Handler handler = new Handler();
+                            Runnable runnable = new Runnable() {
+                                public void run() {
+                                    if(!Objects.requireNonNull(edtPoQuantity.getText()).toString().equals("")){
+                                        totalSellPrice = Float.parseFloat(Objects.requireNonNull(edtPoQuantity.getText()).toString())*Float.parseFloat(Objects.requireNonNull(edtSalePrice.getText()).toString());
+                                        totalBuyPrice = Float.parseFloat(Objects.requireNonNull(edtPoQuantity.getText()).toString())*Float.parseFloat(Objects.requireNonNull(edtBuyPrice.getText()).toString());
+
+                                    } else {
+                                        totalSellPrice = 0;
+                                        totalBuyPrice = 0;
+                                    }
+                                    edtPoTotalBuyPrice.setText(df.format(totalBuyPrice));
+                                    edtPoTotalSellPrice.setText(df.format(totalSellPrice));
+                                    handler.postDelayed(this, 1000);
+
+                                }
+                            };
+                            runnable.run();
+                            /*sumTotalSellPrice = sumTotalSellPrice+totalSellPrice;
+
+                            tvSumTotal.setText(String.valueOf(sumTotalSellPrice));*/
+
+                            // TODO: 21/07/2022 MAKE SUM TOTAL
+
+                        } else {
+                            Toast.makeText(AddPurchaseOrderActivity.this, "Null", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
             }
         });
 

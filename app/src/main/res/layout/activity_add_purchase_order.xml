@@ -52,7 +52,7 @@
                     app:startIconDrawable="@drawable/ic_outline_today">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/edt_gi_TOP"
+                        android:id="@+id/edt_po_TOP"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:focusable="false"
@@ -111,6 +111,7 @@
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:id="@+id/wrap_edt_po_number_ptbas"
                 app:prefixText="PO-"
                 app:startIconDrawable="@drawable/ic_outline_receipt">
 
@@ -124,42 +125,51 @@
                     android:inputType="none" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <Button
-                android:id="@+id/btn_generate_po_number"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="TAMBAHKAH ITEM"
-                android:textColor="@color/white"
-                android:textAllCaps="true" />
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/light_grey" />
-
-            <TextView
+                android:id="@+id/ll_add_item"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Daftar Item" />
-
-            <HorizontalScrollView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
+                android:orientation="vertical">
                 <LinearLayout
-                    android:id="@+id/layout_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/light_grey" />
+
+                <TextView
+                    android:layout_marginTop="8dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical" />
-            </HorizontalScrollView>
+                    android:text="Daftar Item" />
 
-            <Button
-                android:id="@+id/btn_add_list"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:backgroundTint="@color/white"
-                android:drawableLeft="@drawable/ic_outline_add_road"
-                android:text="TAMBAH ITEM"
-                android:textAllCaps="true" />
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <LinearLayout
+                        android:id="@+id/layout_list"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical" />
+                </HorizontalScrollView>
+
+                <Button
+                    android:id="@+id/btn_add_list"
+                    android:layout_marginTop="8dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/white"
+                    android:drawableLeft="@drawable/ic_outline_add_circle"
+                    android:text="TAMBAH ITEM"
+                    android:textAllCaps="true" />
+
+                <TextView
+                    android:id="@+id/tv_sum_total"
+                    android:layout_marginTop="8dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="SUM TOTAL" />
+
+            </LinearLayout>
 
         </LinearLayout>
     </ScrollView>
