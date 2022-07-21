@@ -1,18 +1,23 @@
 package com.ptbas.controlcenter;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -22,8 +27,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -50,11 +57,13 @@ import java.util.TimerTask;
 
 public class DashboardActivity extends AppCompatActivity {
 
-    private LinearLayout llAddGi, llAddVehicle, llAddPo, llAddInvoice;
+    private LinearLayout llAddGi, llAddVehicle, llAddPo, llAddInvoice, llTopView;
     private ImageView imageViewProfilePic;
     public FirebaseAuth authProfile;
     private String finalCountVehicle, finalCountUser, finalCountActiveGoodIssueData;
 
+    private NestedScrollView nestedscrollview;
+    private RelativeLayout linearLayout2;
     RecyclerView rvMainFeatures, rvStatistics;
     MainFeaturesMenuAdapter mainFeaturesMenuAdapter;
     StatisticsAdapter statisticsAdapter;
@@ -63,8 +72,13 @@ public class DashboardActivity extends AppCompatActivity {
     private CardView crdviewWrapInternetError, crdviewWrapShortcuts;
     private LinearLayout llWrapShortcuts, llWrapNoInternet;
 
+    private TextView title;
+    private ImageButton imgbtnMenu;
+
+    private Window window;
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,6 +94,18 @@ public class DashboardActivity extends AppCompatActivity {
             getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
             getWindow().setStatusBarColor(Color.TRANSPARENT);
         }
+        Window window = this.getWindow();
+
+// clear FLAG_TRANSLUCENT_STATUS flag:
+
+
+        nestedscrollview = findViewById(R.id.nestedscrollview);
+        llTopView = findViewById(R.id.ll_top_view);
+
+        title = findViewById(R.id.title);
+        imgbtnMenu = findViewById(R.id.imgbtn_menu);
+
+        title.setText(R.string.app_name);
 
         imageViewProfilePic = findViewById(R.id.imgbtn_profile);
         imageViewProfilePic.setOnClickListener(new View.OnClickListener() {
@@ -90,7 +116,7 @@ public class DashboardActivity extends AppCompatActivity {
             }
         });
 
-        swipeContainer = findViewById(R.id.scroll_container_dashboard);
+        //swipeContainer = findViewById(R.id.scroll_container_dashboard);
         crdviewWrapShortcuts = findViewById(R.id.crdview_wrap_shortcuts);
         llWrapShortcuts = findViewById(R.id.ll_wrap_shortcuts);
         llWrapNoInternet = findViewById(R.id.ll_wrap_no_internet);
@@ -379,46 +405,83 @@ public class DashboardActivity extends AppCompatActivity {
 
         int paddingDp = 80;
         float density = this.getResources().getDisplayMetrics().density;
-        int paddingPixel = (int)(paddingDp * density);
+        int paddingPixel = (int) (paddingDp * density);
 
         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo[] netInfo = cm.getAllNetworkInfo();
         for (NetworkInfo ni : netInfo) {
-            if (ni.getTypeName().equalsIgnoreCase("WIFI")){
+            /*if (ni.getTypeName().equalsIgnoreCase("WIFI")){
                 if (ni.isConnected()){
                     haveConnectedWifi = true;
-                    //Toast.makeText(this, "Anda telah terhubung dengan koneksi internet melalui WiFi", Toast.LENGTH_SHORT).show();
-
-                    //swipeContainer.setPadding(0, paddingPixel,0,0);
-                    //crdviewWrapShortcuts.setVisibility(View.VISIBLE);
                     llWrapShortcuts.setVisibility(View.VISIBLE);
                     llWrapNoInternet.setVisibility(View.GONE);
-                    //crdviewWrapInternetError.setVisibility(View.INVISIBLE);
                 } else {
-                    //swipeContainer.setPadding(0, 0,0,0);
-                    //crdviewWrapShortcuts.setVisibility(View.VISIBLE);
                     llWrapShortcuts.setVisibility(View.GONE);
                     llWrapNoInternet.setVisibility(View.VISIBLE);
-                    //crdviewWrapInternetError.setVisibility(View.VISIBLE);
                 }
             }
 
 
-            /*if (ni.getTypeName().equalsIgnoreCase("MOBILE"))
-                if (ni.isConnected()){
+            if (ni.getTypeName().equalsIgnoreCase("MOBILE")) {
+                if (ni.isConnected()) {
                     haveConnectedMobile = true;
-                    //Toast.makeText(this, "Anda telah terhubung dengan koneksi internet melalui data sim", Toast.LENGTH_SHORT).show();
-                    swipeContainer.setPadding(0, paddingPixel,0,0);
-                    crdviewWrapShortcuts.setVisibility(View.VISIBLE);
-                    //crdviewWrapInternetError.setVisibility(View.INVISIBLE);
+                    llWrapShortcuts.setVisibility(View.VISIBLE);
+                    llWrapNoInternet.setVisibility(View.GONE);
                 } else {
-                    swipeContainer.setPadding(0, 0,0,0);
-                    crdviewWrapShortcuts.setVisibility(View.INVISIBLE);
-                    //crdviewWrapInternetError.setVisibility(View.VISIBLE);
-                }*/
+                    llWrapShortcuts.setVisibility(View.GONE);
+                    llWrapNoInternet.setVisibility(View.VISIBLE);
+                }
+            }*/
+            llWrapShortcuts.setVisibility(View.VISIBLE);
+            llWrapNoInternet.setVisibility(View.GONE);
 
         }
+
+        nestedscrollview.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
+            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+            @SuppressLint("ResourceAsColor")
+            @Override
+            public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+
+                if (scrollY > 50) {
+                    llTopView.setBackgroundColor(ContextCompat.getColor(DashboardActivity.this, android.R.color.white));
+                    llTopView.setElevation(20);
+                    title.setTextColor(ContextCompat.getColor(DashboardActivity.this, R.color.black));
+                    imgbtnMenu.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(DashboardActivity.this, R.color.black)));
+
+                    if (Build.VERSION.SDK_INT >= 21) {
+                        //Window window = getWindow();
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);//  set status text dark
+                        }
+                        getWindow().setStatusBarColor(ContextCompat.getColor(DashboardActivity.this, R.color.white));// set status background white
+                    }
+
+                }
+                if (scrollY < 50) {
+                    llTopView.setBackgroundColor(ContextCompat.getColor(DashboardActivity.this, android.R.color.transparent));
+                    llTopView.setElevation(0);
+                    title.setTextColor(ContextCompat.getColor(DashboardActivity.this, R.color.white));
+                    imgbtnMenu.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(DashboardActivity.this, R.color.white)));
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR);//  set status text dark
+                    }
+                    getWindow().setStatusBarColor(ContextCompat.getColor(DashboardActivity.this, android.R.color.transparent));// set status background white
+
+                }
+
+                if (scrollY == 0) {
+                    Toast.makeText(DashboardActivity.this, "reached top", Toast.LENGTH_SHORT).show();
+                }
+
+                if (scrollY == ( v.getMeasuredHeight() - v.getChildAt(0).getMeasuredHeight() )) {
+                    Toast.makeText(DashboardActivity.this, "Bottom Scroll", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
+
 
     @Override
     protected void onResume() {

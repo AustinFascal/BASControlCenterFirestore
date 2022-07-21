@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.Editable;
@@ -82,8 +83,23 @@ public class AddGoodIssueActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setTitle("Buat Good Issue");
         actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setBackgroundDrawable(new ColorDrawable(getResources()
-                .getColor(R.color.white)));
+        int nightModeFlags =
+                this.getResources().getConfiguration().uiMode &
+                        Configuration.UI_MODE_NIGHT_MASK;
+        switch (nightModeFlags) {
+            case Configuration.UI_MODE_NIGHT_YES:
+                actionBar.setBackgroundDrawable(new ColorDrawable(getResources()
+                        .getColor(R.color.black)));
+                break;
+
+            case Configuration.UI_MODE_NIGHT_NO:
+
+            case Configuration.UI_MODE_NIGHT_UNDEFINED:
+                actionBar.setBackgroundDrawable(new ColorDrawable(getResources()
+                        .getColor(R.color.white)));
+                break;
+        }
+
 
         edtGiDate = findViewById(R.id.edt_gi_date);
         edtGiTime = findViewById(R.id.edt_gi_time);
@@ -239,7 +255,7 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                 spinnerGiVhlRegistNumber.setError(null);
                 llHeightCorrectionFeature.setVisibility(View.VISIBLE);
                 edtGiHeightCorrection.setText("");
-                radioGroupOperation.check(R.id.radio_plus_operation);
+                radioGroupOperation.check(R.id.radio_minus_operation);
 
                 DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("VehicleData/"+vhlData);
                 databaseReference.addValueEventListener(new ValueEventListener() {

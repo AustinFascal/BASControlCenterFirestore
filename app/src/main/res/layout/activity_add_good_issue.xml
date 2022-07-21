@@ -202,25 +202,25 @@
 
 
                             <RadioButton
-                                android:id="@+id/radio_plus_operation"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:layout_gravity="center_vertical"
-                                android:buttonTint="@color/purple_500"
-                                android:checked="true"
-                                android:text="+"
-                                android:textStyle="bold"
-                                android:textColor="#555555"
-                                android:textSize="16sp" />
-                            <RadioButton
                                 android:id="@+id/radio_minus_operation"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:layout_gravity="center_vertical"
                                 android:buttonTint="@color/purple_500"
+                                android:checked="true"
                                 android:text="-"
+                                android:textStyle="bold"
+                                android:textColor="#555555"
+                                android:textSize="16sp" />
+                            <RadioButton
+                                android:id="@+id/radio_plus_operation"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_gravity="center_vertical"
+                                android:buttonTint="@color/purple_500"
+                                android:text="+"
                                 android:textStyle="bold"
                                 android:textColor="#555555"
                                 android:textSize="16sp" />
