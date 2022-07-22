@@ -10,6 +10,7 @@ import android.media.Image;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Html;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,6 +24,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.database.DataSnapshot;
@@ -30,12 +34,14 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.ptbas.controlcenter.model.ProductItems;
 import com.ptbas.controlcenter.model.ProductModel;
 import com.ptbas.controlcenter.model.VehicleModel;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
@@ -57,7 +63,11 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
 
     private DatePickerDialog datePicker;
 
+    FloatingActionButton fabProceed;
+
     private static final String ALLOWED_CHARACTERS ="0123456789QWERTYUIOPASDFGHJKLZXCVBNM";
+
+    ArrayList<ProductItems> productItemsArrayList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,6 +95,7 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
         edtPoNumberCustomer = findViewById(R.id.edt_po_number_customer);
         spinnerPoTransportType = findViewById(R.id.spinner_po_transport_type);
         spinnerPoCustName = findViewById(R.id.spinner_po_cust_name);
+        fabProceed = findViewById(R.id.fab_save_po_data);
 
         tvSumTotal = findViewById(R.id.tv_sum_total);
 
@@ -216,12 +227,12 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
         Runnable runnable = new Runnable() {
             public void run() {
                 if (transportData.isEmpty()){
-                    edtPoNumberPtbas.setText(transportData+"-"+poYear+"-"+poMonth+"-"+customerAlias+"-");
+                    edtPoNumberPtbas.setText(transportData+"-"+customerAlias+"-"+poYear+"-"+poMonth);
                 } else {
-                    edtPoNumberPtbas.setText(transportData.substring(0, 3) + "-" + poYear + "-" + poMonth + "-" + customerAlias + "-");
+                    edtPoNumberPtbas.setText(transportData.substring(0, 3) + "-" +customerAlias+"-"+ poYear + "-" + poMonth);
                     if (!Objects.requireNonNull(edtPoNumberCustomer.getText()).toString().equals("")
                             &&!customerData.isEmpty() &&!Objects.requireNonNull(edtPoDate.getText()).toString().equals("")){
-                        edtPoNumberPtbas.setText(transportData.substring(0, 3)+"-"+poYear+"-"+poMonth+"-"+customerAlias+"-"+randomString);
+                        edtPoNumberPtbas.setText(randomString+"-"+transportData.substring(0, 3)+"-"+customerAlias+"-"+poYear+"-"+poMonth);
                     }
                 }
                 handler.postDelayed(this, 1000);
@@ -229,6 +240,126 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
         };
         runnable.run();
         addView();
+
+
+        fabProceed.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (checkIfValidAndProceed()){
+                    DatabaseReference ref2 = FirebaseDatabase.getInstance().getReference("PurchaseOrders" + "/" +
+                            Objects.requireNonNull(edtPoNumberPtbas.getText()).toString() + "/" + "OrderedItems");
+
+                    ref2.setValue(productItemsArrayList).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task)
+                        {
+                            if(task.isSuccessful())
+                            {
+                                Toast.makeText(AddPurchaseOrderActivity.this, "Success", Toast.LENGTH_SHORT).show();
+                                finish();
+
+                                try{
+                                    float sum = 0;
+                                    for(ProductItems productItems : productItemsArrayList) {
+                                        sum += Float.parseFloat(String.valueOf(productItems.productTotalBuyPrice));
+                                    }
+                                    Toast.makeText(AddPurchaseOrderActivity.this, String.valueOf(Float.parseFloat(String.valueOf(sum))), Toast.LENGTH_SHORT).show();
+
+                                } catch (Exception e) {
+                                }
+
+                            }
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    private boolean checkIfValidAndProceed() {
+
+        productItemsArrayList.clear();
+        boolean result = true;
+
+
+
+        for (int i=0; i<llList.getChildCount();i++){
+            View productItemView = llList.getChildAt(i);
+
+            AutoCompleteTextView spinnerMaterialName = productItemView.findViewById(R.id.spinner_po_material_name);
+            TextInputEditText edtSalePrice = productItemView.findViewById(R.id.edt_po_sale_price);
+            TextInputEditText edtBuyPrice = productItemView.findViewById(R.id.edt_po_buy_price);
+            TextInputEditText edtPoQuantity = productItemView.findViewById(R.id.edt_po_quantity);
+            TextInputEditText edtPoTotalSellPrice = productItemView.findViewById(R.id.edt_po_total_sell_price);
+            TextInputEditText edtPoTotalBuyPrice = productItemView.findViewById(R.id.edt_po_total_buy_price);
+
+            ProductItems productItems = new ProductItems();
+
+            if (!spinnerMaterialName.getText().toString().equals("")){
+                productItems.setProductName(spinnerMaterialName.getText().toString());
+            } else{
+                result = false;
+                break;
+            }
+
+            if (!edtPoQuantity.getText().toString().equals("")){
+                productItems.setProductQuantity(Integer.parseInt(edtPoQuantity.getText().toString()));
+            }else{
+                result = false;
+                break;
+            }
+
+            if (!edtPoQuantity.getText().toString().equals("0")){
+                productItems.setProductQuantity(Integer.parseInt(edtPoQuantity.getText().toString()));
+            }else{
+                result = false;
+                break;
+            }
+
+            if (!edtSalePrice.getText().toString().equals("")){
+                productItems.setProductSellPrice(Float.parseFloat(edtSalePrice.getText().toString()));
+            } else{
+                result = false;
+                break;
+            }
+
+            if (!edtBuyPrice.getText().toString().equals("")){
+                productItems.setProductBuyPrice(Float.parseFloat(edtBuyPrice.getText().toString()));
+            } else{
+                result = false;
+                break;
+            }
+
+            if (!edtPoTotalSellPrice.getText().toString().equals("")){
+                productItems.setProductTotalSellPrice(Float.parseFloat(edtPoTotalSellPrice.getText().toString()));
+            } else{
+                result = false;
+                break;
+            }
+
+            if (!edtPoTotalBuyPrice.getText().toString().equals("")){
+                productItems.setProductTotalBuyPrice(Float.parseFloat(edtPoTotalBuyPrice.getText().toString()));
+            } else{
+                result = false;
+                break;
+            }
+
+            productItemsArrayList.add(productItems);
+
+
+        }
+
+
+
+        if (productItemsArrayList.size()==0){
+            result = false;
+            Toast.makeText(this, "Tambahkan item terlebih dahulu.", Toast.LENGTH_SHORT).show();
+        } else if (!result){
+            Toast.makeText(this, "Masukkan semua detail item dengan benar.", Toast.LENGTH_SHORT).show();
+        }
+
+
+        return result;
     }
 
 
@@ -262,7 +393,7 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()){
                     for (DataSnapshot dataSnapshot: snapshot.getChildren()){
-                        String spinnerMaterialData = dataSnapshot.child("name").getValue(String.class);
+                        String spinnerMaterialData = dataSnapshot.child("productName").getValue(String.class);
                         productName.add(spinnerMaterialData);
                     }
                     ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddPurchaseOrderActivity.this, R.layout.style_spinner, productName);
@@ -296,20 +427,41 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
                             final Handler handler = new Handler();
                             Runnable runnable = new Runnable() {
                                 public void run() {
-                                    if(!Objects.requireNonNull(edtPoQuantity.getText()).toString().equals("")){
-                                        totalSellPrice = Float.parseFloat(Objects.requireNonNull(edtPoQuantity.getText()).toString())*Float.parseFloat(Objects.requireNonNull(edtSalePrice.getText()).toString());
-                                        totalBuyPrice = Float.parseFloat(Objects.requireNonNull(edtPoQuantity.getText()).toString())*Float.parseFloat(Objects.requireNonNull(edtBuyPrice.getText()).toString());
-
+                                    if(!edtPoQuantity.getText().toString().equals("")){
+                                        totalSellPrice = Float.parseFloat(edtPoQuantity.getText().toString())*Float.parseFloat(edtSalePrice.getText().toString());
+                                        totalBuyPrice = Float.parseFloat(edtPoQuantity.getText().toString())*Float.parseFloat(edtBuyPrice.getText().toString());
                                     } else {
                                         totalSellPrice = 0;
                                         totalBuyPrice = 0;
                                     }
+
+                                    edtBuyPrice.setOnKeyListener(new View.OnKeyListener() {
+                                        @Override
+                                        public boolean onKey(View view, int i, KeyEvent keyEvent) {
+                                            if (edtBuyPrice.getText().toString().equals("")){
+                                                edtBuyPrice.setText("0.00");
+                                            }
+                                            return false;
+                                        }
+                                    });
+
+                                    edtSalePrice.setOnKeyListener(new View.OnKeyListener() {
+                                        @Override
+                                        public boolean onKey(View view, int i, KeyEvent keyEvent) {
+                                            if (edtSalePrice.getText().toString().equals("")){
+                                                edtSalePrice.setText("0.00");
+                                            }
+                                            return false;
+                                        }
+                                    });
+
                                     edtPoTotalBuyPrice.setText(df.format(totalBuyPrice));
                                     edtPoTotalSellPrice.setText(df.format(totalSellPrice));
                                     handler.postDelayed(this, 1000);
 
                                 }
                             };
+
                             runnable.run();
                             /*sumTotalSellPrice = sumTotalSellPrice+totalSellPrice;
 

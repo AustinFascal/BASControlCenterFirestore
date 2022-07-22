@@ -56,7 +56,7 @@ public class AddGoodIssueActivity extends AppCompatActivity {
 
     private TextView tvGiVhlLengthVal, tvGiVhlWidthVal, tvGiVhlHeightVal,
             tvGiVhlFinalVolume, tvGiVhlHeightCorrection;
-    private AutoCompleteTextView spinnerGiVhlRegistNumber, spinnerGiProductName, spinnerGiTransportType,
+    private AutoCompleteTextView spinnerGiVhlRegistNumber, spinnerGiProductName, spinnerPoPtBasNumber, spinnerGiTransportType,
             edtGiPoNumberBas;
     String vhlData = "", materialData = "", transportData = "";
     Integer giYear = 0, giMonth = 0, giDay = 0;
@@ -69,7 +69,7 @@ public class AddGoodIssueActivity extends AppCompatActivity {
     private RadioGroup radioGroupOperation;
     private RadioButton radioOperationSelected;
 
-    List<String> vhlRegistNumber, materialName, transportTypeName;
+    List<String> vhlRegistNumber, materialName, transportTypeName, purchaseOrderNumber;
 
     private static final String ALLOWED_CHARACTERS ="0123456789QWERTYUIOPASDFGHJKLZXCVBNM";
 
@@ -104,12 +104,12 @@ public class AddGoodIssueActivity extends AppCompatActivity {
         edtGiDate = findViewById(R.id.edt_gi_date);
         edtGiTime = findViewById(R.id.edt_gi_time);
         edtGiHeightCorrection = findViewById(R.id.edt_gi_vhl_height_correction);
-        edtGiPoNumberBas = findViewById(R.id.edt_gi_po_number_bas);
 
         spinnerGiPoNumberCust = findViewById(R.id.spinner_gi_po_number_cust);
         spinnerGiVhlRegistNumber = findViewById(R.id.spinner_gi_vhl_regist_number);
         spinnerGiProductName = findViewById(R.id.spinner_gi_product_name);
         spinnerGiTransportType = findViewById(R.id.spinner_gi_transport_type);
+        spinnerPoPtBasNumber = findViewById(R.id.edt_gi_po_number_bas);
 
         tvGiVhlFinalVolume = findViewById(R.id.tv_gi_vhl_final_volume);
         tvGiVhlLengthVal = findViewById(R.id.tv_gi_vhl_length_val);
@@ -122,6 +122,7 @@ public class AddGoodIssueActivity extends AppCompatActivity {
         vhlRegistNumber  = new ArrayList<>();
         materialName  = new ArrayList<>();
         transportTypeName  = new ArrayList<>();
+        purchaseOrderNumber = new ArrayList<>();
 
         radioGroupOperation = findViewById(R.id.radio_group_operation);
         llHeightCorrectionFeature.setVisibility(View.GONE);
@@ -324,6 +325,28 @@ public class AddGoodIssueActivity extends AppCompatActivity {
             @Override
             public void onFocusChange(View view, boolean b) {
                 spinnerGiTransportType.setText(transportData);
+            }
+        });
+
+        databaseReference.child("PurchaseOrders").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()){
+                    for (DataSnapshot dataSnapshot: snapshot.getChildren()){
+                        String spinnerPurchaseOrders = dataSnapshot.child("poPtBasNumber").getValue(String.class);
+                        purchaseOrderNumber.add(spinnerPurchaseOrders);
+                    }
+                    ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddGoodIssueActivity.this, R.layout.style_spinner, purchaseOrderNumber);
+                    arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
+                    spinnerPoPtBasNumber.setAdapter(arrayAdapter);
+                } else {
+                    Toast.makeText(AddGoodIssueActivity.this, "Not exists", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
             }
         });
 
