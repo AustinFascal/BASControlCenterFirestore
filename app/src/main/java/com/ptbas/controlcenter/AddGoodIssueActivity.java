@@ -462,9 +462,9 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                 } else{
                     String giUID = "";
                     if (spinnerGiTransportType.getText().toString().equals("CURAH")){
-                        giUID = "GI-CRH-"+giYear.toString()+"-"+giMonth.toString()+"-"+giDay.toString()+"-"+getRandomString(4);
+                        giUID = getRandomString(4)+"-CRH-"+giYear.toString()+"-"+giMonth.toString()+"-"+giDay.toString();
                     } else {
-                        giUID = "GI-BRG-"+giYear.toString()+"-"+giMonth.toString()+"-"+giDay.toString()+"-"+getRandomString(4);
+                        giUID = getRandomString(4)+"-BRG-"+giYear.toString()+"-"+giMonth.toString()+"-"+giDay.toString();
                     }
                     DecimalFormat df = new DecimalFormat("0.00");
                     insertData(giUID, giPOCustomer, giPOBAS, giProductName, giTransportType, giVhlRegistNumber,
@@ -472,9 +472,6 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                             Integer.parseInt(giVhlLength), Integer.parseInt(giVhlWidth),
                             Integer.parseInt(giVhlHeight), Float.parseFloat(df.format(Float.parseFloat(giVhlCubication.replaceAll("[^0-9.]", "")))),
                             giStatus);
-
-                   // vhlRegistNumber, finalVhlBrand, vhlIdentityNumber, vhlEngineNumber, dateModified, dateCreated, vhlManufactureYear, Integer.parseInt(vhlLength), Integer.parseInt(vhlWidth), Integer.parseInt(vhlHeight), vhlStatus);
-
                 }
             }
         });

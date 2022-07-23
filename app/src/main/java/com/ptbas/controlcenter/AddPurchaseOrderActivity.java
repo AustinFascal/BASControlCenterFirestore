@@ -1,19 +1,28 @@
 package com.ptbas.controlcenter;
 
+import static android.content.ContentValues.TAG;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintHelper;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.app.DatePickerDialog;
+import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.drawable.ColorDrawable;
 import android.media.Image;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Html;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -24,8 +33,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.dynamic.IFragmentWrapper;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -36,19 +47,23 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.ptbas.controlcenter.model.ProductItems;
 import com.ptbas.controlcenter.model.ProductModel;
+import com.ptbas.controlcenter.model.PurchaseOrder;
 import com.ptbas.controlcenter.model.VehicleModel;
 
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Random;
 
 public class AddPurchaseOrderActivity extends AppCompatActivity {
 
-    LinearLayout llList,llAddItem;
+    LinearLayout llList,llAddItem, llInputAllData;
     Button btnAddRow;
     TextInputEditText edtPoDate, edtPoTOP, edtPoNumberCustomer, edtPoNumberPtbas;
     TextInputLayout wrapEdtPoNumberPtBas;
@@ -69,10 +84,16 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
 
     ArrayList<ProductItems> productItemsArrayList = new ArrayList<>();
 
+    private BottomSheetBehavior<ConstraintLayout> bottomSheetBehavior;
+    private ConstraintLayout bottomSheet;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_purchase_order);
+
+        bottomSheet = findViewById(R.id.bottomSheetPODetails);
+        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
 
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
 
@@ -80,11 +101,12 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
         customerName  = new ArrayList<>();
 
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setTitle("Buat Purchase Order");
+        actionBar.setTitle("Buat Purchase Order (PO)");
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setBackgroundDrawable(new ColorDrawable(getResources()
                 .getColor(R.color.white)));
 
+        llInputAllData = findViewById(R.id.ll_input_all_data);
         llList = findViewById(R.id.layout_list);
         llAddItem = findViewById(R.id.ll_add_item);
         btnAddRow = findViewById(R.id.btn_add_list);
@@ -147,6 +169,7 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
         edtPoDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                edtPoDate.setError(null);
                 final Calendar calendar = Calendar.getInstance();
                 int day = calendar.get(Calendar.DAY_OF_MONTH);
                 int month = calendar.get(Calendar.MONTH);
@@ -160,6 +183,25 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
                                 poYear = year;
                                 poMonth = month + 1;
                                 poDay = dayOfMonth;
+                            }
+                        }, year, month, day);
+                datePicker.show();
+            }
+        });
+
+        edtPoTOP.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final Calendar calendar = Calendar.getInstance();
+                int day = calendar.get(Calendar.DAY_OF_MONTH);
+                int month = calendar.get(Calendar.MONTH);
+                int year = calendar.get(Calendar.YEAR);
+
+                datePicker = new DatePickerDialog(AddPurchaseOrderActivity.this,
+                        new DatePickerDialog.OnDateSetListener() {
+                            @Override
+                            public void onDateSet(DatePicker datePicker, int year, int month, int dayOfMonth) {
+                                edtPoTOP.setText(dayOfMonth + "/" +(month + 1) + "/" + year);
                             }
                         }, year, month, day);
                 datePicker.show();
@@ -202,7 +244,6 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         String alias = snapshot.child("alias").getValue(String.class);
                         customerAlias = alias;
-
                     }
 
                     @Override
@@ -223,16 +264,17 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
         });
 
 
+        //TODO Make handler as onkeychangelistener
         final Handler handler = new Handler();
         Runnable runnable = new Runnable() {
             public void run() {
                 if (transportData.isEmpty()){
-                    edtPoNumberPtbas.setText(transportData+"-"+customerAlias+"-"+poYear+"-"+poMonth);
+                    edtPoNumberPtbas.setText(transportData+"-"+customerAlias+"-"+poMonth + "-" + poYear);
                 } else {
-                    edtPoNumberPtbas.setText(transportData.substring(0, 3) + "-" +customerAlias+"-"+ poYear + "-" + poMonth);
+                    edtPoNumberPtbas.setText(transportData.substring(0, 3) + "-" +customerAlias+"-"+ poMonth + "-" + poYear);
                     if (!Objects.requireNonNull(edtPoNumberCustomer.getText()).toString().equals("")
                             &&!customerData.isEmpty() &&!Objects.requireNonNull(edtPoDate.getText()).toString().equals("")){
-                        edtPoNumberPtbas.setText(randomString+"-"+transportData.substring(0, 3)+"-"+customerAlias+"-"+poYear+"-"+poMonth);
+                        edtPoNumberPtbas.setText(randomString+"-"+transportData.substring(0, 3)+"-"+customerAlias+"-"+poMonth + "-" + poYear);
                     }
                 }
                 handler.postDelayed(this, 1000);
@@ -245,9 +287,129 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
         fabProceed.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (checkIfValidAndProceed()){
-                    DatabaseReference ref2 = FirebaseDatabase.getInstance().getReference("PurchaseOrders" + "/" +
-                            Objects.requireNonNull(edtPoNumberPtbas.getText()).toString() + "/" + "OrderedItems");
+                if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED){
+                    bottomSheetBehavior.setState(bottomSheetBehavior.STATE_HIDDEN);
+                    bottomSheetCollapsed();
+                } else{
+                    if (checkIfValidAndProceed()){
+                        bottomSheetBehavior.setState(bottomSheetBehavior.STATE_EXPANDED);
+                        bottomSheetExpanded();
+                    }
+
+                }
+            }
+        });
+
+        bottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                switch (newState) {
+                    case BottomSheetBehavior.STATE_EXPANDED:
+                        if (checkIfValidAndProceed()) {
+                            String poUID = Objects.requireNonNull(edtPoNumberPtbas.getText()).toString();
+                            String poDateCreated = Objects.requireNonNull(edtPoDate.getText()).toString();
+                            String poInputDateCreated = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
+                            String poTOP = "";
+                            String poTransportType = Objects.requireNonNull(spinnerPoTransportType.getText()).toString();
+                            String poCustomerName = Objects.requireNonNull(spinnerPoCustName.getText()).toString();
+                            String poNumberCustomer = Objects.requireNonNull(edtPoNumberCustomer.getText()).toString();
+
+                            if (TextUtils.isEmpty(poDateCreated)) {
+                                edtPoDate.setError("Mohon masukkan tanggal order");
+                                edtPoDate.requestFocus();
+                            } else if (TextUtils.isEmpty(poTransportType)) {
+                                spinnerPoTransportType.setError("Mohon masukkan jenis transport");
+                                spinnerPoTransportType.requestFocus();
+                            } else if (TextUtils.isEmpty(poCustomerName)) {
+                                spinnerPoCustName.setError("Mohon masukkan nama customer");
+                                spinnerPoCustName.requestFocus();
+                            } else if (TextUtils.isEmpty(poNumberCustomer)) {
+                                edtPoNumberCustomer.setError("Mohon masukkan nomor PO customer");
+                                edtPoNumberCustomer.requestFocus();
+                            } else {
+                                if (TextUtils.isEmpty(poTOP)) {
+                                    poTOP = "-";
+                                } else {
+                                    poTOP = Objects.requireNonNull(edtPoTOP.getText()).toString();
+                                }
+                                insertData(poUID, poDateCreated, poInputDateCreated, poTOP, poTransportType, poCustomerName, poNumberCustomer);
+                            }
+
+                            bottomSheetExpanded();
+                        }
+
+                        Toast.makeText(AddPurchaseOrderActivity.this, "EXPANDED", Toast.LENGTH_SHORT).show();
+                        break;
+                    case BottomSheetBehavior.STATE_COLLAPSED:
+                        bottomSheetCollapsed();
+                        Toast.makeText(AddPurchaseOrderActivity.this, "COLLAPSED", Toast.LENGTH_SHORT).show();
+                        break;
+                    case BottomSheetBehavior.STATE_DRAGGING:
+                        bottomSheetCollapsed();
+                        break;
+                    /*case BottomSheetBehavior.STATE_HALF_EXPANDED:
+                        break;
+                    case BottomSheetBehavior.STATE_HIDDEN:
+                        break;
+                    case BottomSheetBehavior.STATE_SETTLING:
+                        break;*/
+                }
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+
+            }
+        });
+
+    }
+
+    private void bottomSheetExpanded() {
+        fabProceed.setImageDrawable(getResources().getDrawable(R.drawable.ic_outline_save));
+        fabProceed.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.blue_700)));
+        View viewLayout = AddPurchaseOrderActivity.this.getCurrentFocus();
+        if (viewLayout != null) {
+            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(viewLayout.getWindowToken(), 0);
+        }
+        llInputAllData.setVisibility(View.INVISIBLE);
+    }
+
+    private void bottomSheetCollapsed() {
+        fabProceed.setImageDrawable(getResources().getDrawable(R.drawable.ic_outline_check));
+        fabProceed.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.pure_orange)));
+        llInputAllData.setVisibility(View.VISIBLE);
+    }
+
+
+    private void insertData(String poUID, String poDateCreated, String poInputDateCreated, String poTOP, String poTransportType, String poCustomerName, String poNumberCustomer) {
+        PurchaseOrder purchaseOrder = new PurchaseOrder(poUID, poDateCreated, poInputDateCreated, poTOP, poTransportType,
+                poCustomerName, poNumberCustomer);
+
+        DatabaseReference ref1 = FirebaseDatabase.getInstance().getReference("PurchaseOrders" + "/" + poUID);
+        DatabaseReference ref2 = FirebaseDatabase.getInstance().getReference("PurchaseOrders" + "/" +
+                poUID + "/" + "OrderedItems");
+
+        TextView tvPoPtBasNumber = bottomSheet.findViewById(R.id.tvPoPtBasNumber);
+        TextView tvPoDate = bottomSheet.findViewById(R.id.tvPoDate);
+        TextView tvPoTOP = bottomSheet.findViewById(R.id.tvPoTOP);
+        TextView tvPoTransportType = bottomSheet.findViewById(R.id.tvPoTransportType);
+        TextView tvPoCustomerName = bottomSheet.findViewById(R.id.tvPoCustomerName);
+        TextView tvPoCustomerNumber = bottomSheet.findViewById(R.id.tvPoCustomerNumber);
+
+        tvPoPtBasNumber.setText(poUID);
+        tvPoDate.setText(poDateCreated);
+        tvPoTOP.setText(poTOP);
+        tvPoTransportType.setText(poTransportType);
+        tvPoCustomerName.setText(poCustomerName);
+        tvPoCustomerNumber.setText(poNumberCustomer);
+
+
+        /*ref1.setValue(purchaseOrder).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if(task.isSuccessful())
+                {
 
                     ref2.setValue(productItemsArrayList).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
@@ -255,9 +417,6 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
                         {
                             if(task.isSuccessful())
                             {
-                                Toast.makeText(AddPurchaseOrderActivity.this, "Success", Toast.LENGTH_SHORT).show();
-                                finish();
-
                                 try{
                                     float sum = 0;
                                     for(ProductItems productItems : productItemsArrayList) {
@@ -265,23 +424,25 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
                                     }
                                     Toast.makeText(AddPurchaseOrderActivity.this, String.valueOf(Float.parseFloat(String.valueOf(sum))), Toast.LENGTH_SHORT).show();
 
+                                    Toast.makeText(AddPurchaseOrderActivity.this, "Success", Toast.LENGTH_SHORT).show();
+                                    finish();
                                 } catch (Exception e) {
+                                    Log.e(TAG, e.getMessage());
+                                    Toast.makeText(AddPurchaseOrderActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                                 }
-
                             }
                         }
                     });
+
                 }
             }
-        });
+        });*/
     }
 
     private boolean checkIfValidAndProceed() {
 
         productItemsArrayList.clear();
         boolean result = true;
-
-
 
         for (int i=0; i<llList.getChildCount();i++){
             View productItemView = llList.getChildAt(i);
@@ -345,10 +506,7 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
             }
 
             productItemsArrayList.add(productItems);
-
-
         }
-
 
 
         if (productItemsArrayList.size()==0){
@@ -357,7 +515,6 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
         } else if (!result){
             Toast.makeText(this, "Masukkan semua detail item dengan benar.", Toast.LENGTH_SHORT).show();
         }
-
 
         return result;
     }
