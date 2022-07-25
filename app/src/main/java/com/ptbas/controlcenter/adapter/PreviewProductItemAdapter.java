@@ -15,6 +15,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.model.ProductItems;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.List;
 
 public class PreviewProductItemAdapter extends RecyclerView.Adapter<PreviewProductItemAdapter.ViewHolder> {
@@ -36,16 +39,23 @@ public class PreviewProductItemAdapter extends RecyclerView.Adapter<PreviewProdu
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        DecimalFormat df = new DecimalFormat("0.00");
         if (productItemsList != null && productItemsList.size() > 0){
             ProductItems productItems = productItemsList.get(position);
 
+            holder.tvNumber.setText(String.valueOf(position+1));
             holder.tvItemName.setText(productItems.getProductName());
             holder.tvItemQty.setText(String.valueOf(productItems.getProductQuantity()));
-            holder.tvItemTotalBuy.setText(String.valueOf(productItems.getProductTotalBuyPrice()));
-            holder.tvItemTotalSell.setText(String.valueOf(productItems.getProductTotalSellPrice()));
+            holder.tvItemTotalBuy.setText(currencyFormat(String.valueOf(productItems.getProductTotalBuyPrice())));
+            holder.tvItemTotalSell.setText(currencyFormat(String.valueOf(productItems.getProductTotalSellPrice())));
         } else {
             return;
         }
+    }
+
+    public static String currencyFormat(String amount) {
+        DecimalFormat formatter = new DecimalFormat("###,###,##0.00");
+        return formatter.format(Double.parseDouble(amount));
     }
 
     @Override
@@ -54,10 +64,11 @@ public class PreviewProductItemAdapter extends RecyclerView.Adapter<PreviewProdu
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tvItemName, tvItemQty, tvItemTotalBuy, tvItemTotalSell;
+        TextView tvNumber, tvItemName, tvItemQty, tvItemTotalBuy, tvItemTotalSell;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
+            tvNumber = itemView.findViewById(R.id.tvNumber);
             tvItemName = itemView.findViewById(R.id.tvItemName);
             tvItemQty = itemView.findViewById(R.id.tvItemQty);
             tvItemTotalBuy = itemView.findViewById(R.id.tvItemTotalBuy);

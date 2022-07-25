@@ -7,9 +7,10 @@
 
     <TableRow
         android:layout_width="0dp"
+        android:background="@drawable/table_border2"
         android:layout_height="match_parent">
         <TextView
-            android:background="@drawable/table_border"
+            android:id="@+id/tvNumber"
             android:padding="2dp"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -20,7 +21,6 @@
             android:textSize="14sp"
             android:textColor="@color/black"/>
         <TextView
-            android:background="@drawable/table_border"
             android:id="@+id/tvItemName"
             android:padding="2dp"
             android:layout_width="0dp"
@@ -33,7 +33,6 @@
             android:paddingHorizontal="10dp"
             android:textColor="@color/black"/>
         <TextView
-            android:background="@drawable/table_border"
             android:id="@+id/tvItemQty"
             android:padding="2dp"
             android:layout_width="0dp"
@@ -46,7 +45,6 @@
             android:layout_weight="1"
             android:textColor="@color/black"/>
         <TextView
-            android:background="@drawable/table_border"
             android:id="@+id/tvItemTotalBuy"
             android:padding="2dp"
             android:layout_width="0dp"
@@ -54,12 +52,10 @@
             android:text="6587000"
             android:layout_column="3"
             android:ellipsize="end"
-            android:maxLines="1"
             android:textSize="14sp"
             android:layout_weight="2"
             android:textColor="@color/black"/>
         <TextView
-            android:background="@drawable/table_border"
             android:id="@+id/tvItemTotalSell"
             android:padding="2dp"
             android:layout_width="0dp"
@@ -68,7 +64,6 @@
             android:layout_column="4"
             android:layout_weight="2"
             android:ellipsize="end"
-            android:maxLines="1"
             android:textSize="14sp"
             android:textColor="@color/black"/>
     </TableRow>

@@ -21,6 +21,7 @@
     <string name="inputPoProductName">Material<font color="#cc0029">*</font></string>
     <string name="inputPoProductType">Jenis<font color="#cc0029">*</font></string>
     <string name="inputCustomerName">Pilih Customer<font color="#cc0029">*</font></string>
+    <string name="inputCurrency">Mata Uang<font color="#cc0029">*</font></string>
 
 
     <string name="inputDateRequired">Tanggal<font color="#cc0029">*</font></string>

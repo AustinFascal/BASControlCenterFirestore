@@ -6,12 +6,13 @@ public class ProductItems implements Serializable {
 
     public String productName;
     public Integer productQuantity;
-    public Float productSellPrice, productBuyPrice, productTotalSellPrice, productTotalBuyPrice;
+    public Double productSellPrice, productBuyPrice, productTotalSellPrice, productTotalBuyPrice;
 
     public ProductItems() {
     }
 
-    public ProductItems(String productName, Integer productQuantity, Float productSellPrice, Float productBuyPrice, Float productTotalSellPrice, Float productTotalBuyPrice) {
+
+    public ProductItems(String productName, Integer productQuantity, Double productSellPrice, Double productBuyPrice, Double productTotalSellPrice, Double productTotalBuyPrice) {
         this.productName = productName;
         this.productQuantity = productQuantity;
         this.productSellPrice = productSellPrice;
@@ -36,35 +37,35 @@ public class ProductItems implements Serializable {
         this.productQuantity = productQuantity;
     }
 
-    public Float getProductSellPrice() {
+    public Double getProductSellPrice() {
         return productSellPrice;
     }
 
-    public void setProductSellPrice(Float productSellPrice) {
+    public void setProductSellPrice(Double productSellPrice) {
         this.productSellPrice = productSellPrice;
     }
 
-    public Float getProductBuyPrice() {
+    public Double getProductBuyPrice() {
         return productBuyPrice;
     }
 
-    public void setProductBuyPrice(Float productBuyPrice) {
+    public void setProductBuyPrice(Double productBuyPrice) {
         this.productBuyPrice = productBuyPrice;
     }
 
-    public Float getProductTotalSellPrice() {
+    public Double getProductTotalSellPrice() {
         return productTotalSellPrice;
     }
 
-    public void setProductTotalSellPrice(Float productTotalSellPrice) {
+    public void setProductTotalSellPrice(Double productTotalSellPrice) {
         this.productTotalSellPrice = productTotalSellPrice;
     }
 
-    public Float getProductTotalBuyPrice() {
+    public Double getProductTotalBuyPrice() {
         return productTotalBuyPrice;
     }
 
-    public void setProductTotalBuyPrice(Float productTotalBuyPrice) {
+    public void setProductTotalBuyPrice(Double productTotalBuyPrice) {
         this.productTotalBuyPrice = productTotalBuyPrice;
     }
 }

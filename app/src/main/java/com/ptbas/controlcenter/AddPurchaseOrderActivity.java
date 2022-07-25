@@ -49,10 +49,16 @@ import com.ptbas.controlcenter.model.ProductItems;
 import com.ptbas.controlcenter.model.ProductModel;
 import com.ptbas.controlcenter.model.PurchaseOrderModel;
 
+import org.w3c.dom.Text;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Currency;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -65,14 +71,14 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
     Button btnAddRow;
     TextInputEditText edtPoDate, edtPoTOP, edtPoNumberCustomer, edtPoNumberPtbas;
     TextInputLayout wrapEdtPoNumberPtBas;
-    AutoCompleteTextView spinnerPoTransportType, spinnerPoCustName;
-    List<String> productName, transportTypeName, customerName;
-    String transportData = "", customerData = "", customerAlias="", randomString="NULL";
+    AutoCompleteTextView spinnerPoTransportType, spinnerPoCustName, spinnerPoCurrency;
+    List<String> productName, transportTypeName, customerName, currencyName;
+    String transportData = "", customerData = "", customerAlias="", randomString="NULL", currencyData="";
     Integer poYear = 0, poMonth = 0, poDay = 0;
 
     //TextView tvSumTotal;
 
-    float totalSellPrice = 0, totalBuyPrice = 0, sumTotalSellPrice = 0;
+    double totalSellPrice = 0, totalBuyPrice = 0, sumTotalSellPrice = 0;
 
     private DatePickerDialog datePicker;
 
@@ -99,6 +105,7 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
 
         transportTypeName  = new ArrayList<>();
         customerName  = new ArrayList<>();
+        currencyName = new ArrayList<>();
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setTitle("Buat Purchase Order (PO)");
@@ -134,6 +141,7 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
         edtPoNumberCustomer = findViewById(R.id.edt_po_number_customer);
         spinnerPoTransportType = findViewById(R.id.spinner_po_transport_type);
         spinnerPoCustName = findViewById(R.id.spinner_po_cust_name);
+        spinnerPoCurrency = findViewById(R.id.spinner_po_currency);
         fabProceed = findViewById(R.id.fab_save_po_data);
 
         //tvSumTotal = findViewById(R.id.tv_sum_total);
@@ -171,6 +179,29 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
                     ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddPurchaseOrderActivity.this, R.layout.style_spinner, customerName);
                     arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
                     spinnerPoCustName.setAdapter(arrayAdapter);
+                } else {
+                    Toast.makeText(AddPurchaseOrderActivity.this, "Not exists", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+
+        databaseReference.child("CurrencyData").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()){
+                    for (DataSnapshot dataSnapshot: snapshot.getChildren()){
+                        String spinnerCurrencyData = dataSnapshot.child("currencyName").getValue(String.class);
+                        currencyName.add(spinnerCurrencyData);
+                    }
+                    ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddPurchaseOrderActivity.this, R.layout.style_spinner, currencyName);
+                    arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
+                    spinnerPoCurrency.setAdapter(arrayAdapter);
                 } else {
                     Toast.makeText(AddPurchaseOrderActivity.this, "Not exists", Toast.LENGTH_SHORT).show();
                 }
@@ -280,6 +311,23 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
             }
         });
 
+        spinnerPoCurrency.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                String selectedCurrency = (String) adapterView.getItemAtPosition(i);
+                currencyData = selectedCurrency;
+                spinnerPoCurrency.setError(null);
+            }
+        });
+
+        spinnerPoCurrency.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                spinnerPoCurrency.setText(currencyData);
+            }
+        });
+
+
 
         //TODO Make handler as onkeychangelistener
         final Handler handler = new Handler();
@@ -294,7 +342,7 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
                         edtPoNumberPtbas.setText(randomString+"-"+transportData.substring(0, 3)+"-"+customerAlias+"-"+poMonth + "-" + poYear);
                     }
                 }
-                handler.postDelayed(this, 1000);
+                handler.postDelayed(this, 500);
             }
         };
         runnable.run();
@@ -313,12 +361,17 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
                 String poNumberCustomer = Objects.requireNonNull(edtPoNumberCustomer.getText()).toString();
                 Boolean poStatus = true;
 
+                String poCurrency = Objects.requireNonNull(spinnerPoCurrency.getText()).toString();
+
                 if (TextUtils.isEmpty(poDateCreated)) {
                     edtPoDate.setError("Mohon masukkan tanggal order");
                     edtPoDate.requestFocus();
                 } else if (TextUtils.isEmpty(poTransportType)) {
                     spinnerPoTransportType.setError("Mohon masukkan jenis transport");
                     spinnerPoTransportType.requestFocus();
+                } else if (TextUtils.isEmpty(poCurrency)) {
+                    spinnerPoCurrency.setError("Mohon pilih mata uang yang digunakan untuk transaksi");
+                    spinnerPoCurrency.requestFocus();
                 } else if (TextUtils.isEmpty(poCustomerName)) {
                     spinnerPoCustName.setError("Mohon masukkan nama customer");
                     spinnerPoCustName.requestFocus();
@@ -332,17 +385,8 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
                         poTOP = Objects.requireNonNull(edtPoTOP.getText()).toString();
                     }
 
-                   /* if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED){
-                        bottomSheetBehavior.setState(bottomSheetBehavior.STATE_HIDDEN);
-                    } else{*/
-                    insertData(poUID, poDateCreated, poInputDateCreated, poTOP, poTransportType, poCustomerName, poNumberCustomer, poStatus);
-                    //}
-                    //bottomSheetExpanded();
+                    insertData(poUID, poCurrency, poDateCreated, poInputDateCreated, poTOP, poTransportType, poCustomerName, poNumberCustomer, poStatus);
                 }
-
-
-
-
             }
         });
 
@@ -385,15 +429,15 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
         llInputAllData.setVisibility(View.VISIBLE);
     }
 
-
-    private void insertData(String poUID, String poDateCreated, String poInputDateCreated, String poTOP, String poTransportType, String poCustomerName, String poNumberCustomer, Boolean poSatus) {
-        PurchaseOrderModel purchaseOrderModel = new PurchaseOrderModel(poUID, poDateCreated, poInputDateCreated, poTOP, poTransportType,
+    private void insertData(String poUID, String poCurrency, String poDateCreated, String poInputDateCreated, String poTOP, String poTransportType, String poCustomerName, String poNumberCustomer, Boolean poSatus) {
+        PurchaseOrderModel purchaseOrderModel = new PurchaseOrderModel(poUID, poCurrency, poDateCreated, poInputDateCreated, poTOP, poTransportType,
                 poCustomerName, poNumberCustomer, poSatus);
 
         DatabaseReference ref1 = FirebaseDatabase.getInstance().getReference("PurchaseOrders" + "/" + poUID);
         DatabaseReference ref2 = FirebaseDatabase.getInstance().getReference("PurchaseOrders" + "/" +
                 poUID + "/" + "OrderedItems");
 
+        TextView tvPoCurrency = bottomSheet.findViewById(R.id.tvPoCurrency);
         TextView tvPoPtBasNumber = bottomSheet.findViewById(R.id.tvPoPtBasNumber);
         TextView tvPoDate = bottomSheet.findViewById(R.id.tvPoDate);
         TextView tvPoTOP = bottomSheet.findViewById(R.id.tvPoTOP);
@@ -402,18 +446,47 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
         TextView tvPoCustomerNumber = bottomSheet.findViewById(R.id.tvPoCustomerNumber);
         ImageView ivCloseBottomSheetDetail = bottomSheet.findViewById(R.id.ivCloseBottomSheetDetail);
 
-        setPreviewItems();
+        TextView tvSubTotalBuy = bottomSheet.findViewById(R.id.tvSubTotalBuy);
+        TextView tvSubTotalSell = bottomSheet.findViewById(R.id.tvSubTotalSell);
+        TextView tvTotalVAT = bottomSheet.findViewById(R.id.tvTotalVAT);
+        TextView tvTotalSellFinal = bottomSheet.findViewById(R.id.tvTotalSellFinal);
+        TextView tvEstProfit = bottomSheet.findViewById(R.id.tvEstProfit);
 
-        tvPoPtBasNumber.setText(poUID);
-        tvPoDate.setText(poDateCreated);
-        tvPoTOP.setText(poTOP);
-        tvPoTransportType.setText(poTransportType);
-        tvPoCustomerName.setText(poCustomerName);
-        tvPoCustomerNumber.setText(poNumberCustomer);
+        DecimalFormat df = new DecimalFormat("0.00");
 
         if (checkIfValidAndProceed()) {
             bottomSheetBehavior.setState(bottomSheetBehavior.STATE_EXPANDED);
             bottomSheetExpanded();
+
+            setPreviewItems();
+
+            tvPoCurrency.setText(poCurrency);
+            tvPoPtBasNumber.setText(poUID);
+            tvPoDate.setText(poDateCreated);
+            tvPoTOP.setText(poTOP);
+            tvPoTransportType.setText(poTransportType);
+            tvPoCustomerName.setText(poCustomerName);
+            tvPoCustomerNumber.setText(poNumberCustomer);
+
+            try{
+                double sumSubTotalBuy = 0, sumSubTotalSell = 0, sumTotalVAT = 0, sumTotalSellFinal = 0, sumEstProfit = 0;
+                for(ProductItems productItems : productItemsArrayList) {
+                    sumSubTotalBuy += productItems.productTotalBuyPrice;
+                    sumSubTotalSell += productItems.productTotalSellPrice;
+                    sumTotalVAT = (0.11)*(sumSubTotalSell);
+                    sumTotalSellFinal = sumSubTotalSell+sumTotalVAT;
+                    sumEstProfit = sumSubTotalSell-sumSubTotalBuy;
+                }
+
+                tvSubTotalBuy.setText(currencyFormat(String.valueOf(sumSubTotalBuy)));
+                tvSubTotalSell.setText(currencyFormat(String.valueOf(sumSubTotalSell)));
+                tvTotalVAT.setText(currencyFormat(String.valueOf(sumTotalVAT)));
+                tvTotalSellFinal.setText(currencyFormat(String.valueOf(sumTotalSellFinal)));
+                tvEstProfit.setText(currencyFormat(String.valueOf(sumEstProfit)));
+            } catch (Exception e) {
+                Log.e(TAG, e.getMessage());
+                Toast.makeText(AddPurchaseOrderActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
         }
 
         ivCloseBottomSheetDetail.setOnClickListener(new View.OnClickListener() {
@@ -425,7 +498,7 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
         });
 
         if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED){
-            //bottomSheetBehavior.setState(bottomSheetBehavior.STATE_HIDDEN);
+
             ref1.setValue(purchaseOrderModel).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
@@ -438,19 +511,8 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
                             {
                                 if(task.isSuccessful())
                                 {
-                                    try{
-                                        float sum = 0;
-                                        for(ProductItems productItems : productItemsArrayList) {
-                                            sum += Float.parseFloat(String.valueOf(productItems.productTotalBuyPrice));
-                                        }
-                                        Toast.makeText(AddPurchaseOrderActivity.this, String.valueOf(Float.parseFloat(String.valueOf(sum))), Toast.LENGTH_SHORT).show();
-
-                                        Toast.makeText(AddPurchaseOrderActivity.this, "Success", Toast.LENGTH_SHORT).show();
-                                        finish();
-                                    } catch (Exception e) {
-                                        Log.e(TAG, e.getMessage());
-                                        Toast.makeText(AddPurchaseOrderActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-                                    }
+                                    Toast.makeText(AddPurchaseOrderActivity.this, "Success", Toast.LENGTH_SHORT).show();
+                                    finish();
                                 }
                             }
                         });
@@ -459,6 +521,12 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
                 }
             });
         }
+    }
+
+
+    public static String currencyFormat(String amount) {
+        DecimalFormat formatter = new DecimalFormat("###,###,##0.00");
+        return formatter.format(Double.parseDouble(amount));
     }
 
     private void setPreviewItems() {
@@ -475,6 +543,8 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
     }
 
     private boolean checkIfValidAndProceed() {
+
+        DecimalFormat df = new DecimalFormat("0.00");
 
         productItemsArrayList.clear();
         boolean result = true;
@@ -513,28 +583,28 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
             }
 
             if (!edtSalePrice.getText().toString().equals("")){
-                productItems.setProductSellPrice(Float.parseFloat(edtSalePrice.getText().toString()));
+                productItems.setProductSellPrice(Double.valueOf(edtSalePrice.getText().toString()));
             } else{
                 result = false;
                 break;
             }
 
             if (!edtBuyPrice.getText().toString().equals("")){
-                productItems.setProductBuyPrice(Float.parseFloat(edtBuyPrice.getText().toString()));
+                productItems.setProductBuyPrice(Double.valueOf(edtBuyPrice.getText().toString()));
             } else{
                 result = false;
                 break;
             }
 
             if (!edtPoTotalSellPrice.getText().toString().equals("")){
-                productItems.setProductTotalSellPrice(Float.parseFloat(edtPoTotalSellPrice.getText().toString()));
+                productItems.setProductTotalSellPrice(Double.valueOf(edtPoTotalSellPrice.getText().toString()));
             } else{
                 result = false;
                 break;
             }
 
             if (!edtPoTotalBuyPrice.getText().toString().equals("")){
-                productItems.setProductTotalBuyPrice(Float.parseFloat(edtPoTotalBuyPrice.getText().toString()));
+                productItems.setProductTotalBuyPrice(Double.valueOf(edtPoTotalBuyPrice.getText().toString()));
             } else{
                 result = false;
                 break;
@@ -613,15 +683,18 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
 
                         if (productModel!=null){
                             edtPoQuantity.setText(String.valueOf(0));
-                            edtBuyPrice.setText(df.format(Float.parseFloat(String.valueOf(productModel.getPriceBuy()))));
-                            edtSalePrice.setText(df.format(Float.parseFloat(String.valueOf(productModel.getPriceSell()))));
+                            edtBuyPrice.setText(String.valueOf(df.format(productModel.getPriceBuy())));
+                            edtSalePrice.setText(String.valueOf(df.format(productModel.getPriceSell())));
 
                             final Handler handler = new Handler();
                             Runnable runnable = new Runnable() {
                                 public void run() {
                                     if(!edtPoQuantity.getText().toString().equals("")){
-                                        totalSellPrice = Float.parseFloat(edtPoQuantity.getText().toString())*Float.parseFloat(edtSalePrice.getText().toString());
-                                        totalBuyPrice = Float.parseFloat(edtPoQuantity.getText().toString())*Float.parseFloat(edtBuyPrice.getText().toString());
+                                        Double quantity = Double.valueOf(edtPoQuantity.getText().toString());
+                                        Double salePrice = Double.valueOf(edtSalePrice.getText().toString());
+                                        Double buyPrice = Double.valueOf(edtBuyPrice.getText().toString());
+                                        totalSellPrice = quantity*salePrice;
+                                        totalBuyPrice = quantity*buyPrice;
                                     } else {
                                         totalSellPrice = 0;
                                         totalBuyPrice = 0;
@@ -647,19 +720,14 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
                                         }
                                     });
 
-                                    edtPoTotalBuyPrice.setText(df.format(totalBuyPrice));
-                                    edtPoTotalSellPrice.setText(df.format(totalSellPrice));
-                                    handler.postDelayed(this, 1000);
+                                    edtPoTotalBuyPrice.setText(String.format("%.2f", totalBuyPrice));
+                                    edtPoTotalSellPrice.setText(String.format("%.2f", totalSellPrice));
+                                    handler.postDelayed(this, 500);
 
                                 }
                             };
 
                             runnable.run();
-                            /*sumTotalSellPrice = sumTotalSellPrice+totalSellPrice;
-
-                            tvSumTotal.setText(String.valueOf(sumTotalSellPrice));*/
-
-                            // TODO: 21/07/2022 MAKE SUM TOTAL
 
                         } else {
                             Toast.makeText(AddPurchaseOrderActivity.this, "Null", Toast.LENGTH_SHORT).show();

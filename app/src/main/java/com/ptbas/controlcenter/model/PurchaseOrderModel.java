@@ -2,14 +2,15 @@ package com.ptbas.controlcenter.model;
 
 public class PurchaseOrderModel {
 
-    String poPtBasNumber, poDateCreated, poInputDateCreated, poTOP, poTransportType, poCustomerName, poNumberCustomer;
+    String poPtBasNumber, poCurrency, poDateCreated, poInputDateCreated, poTOP, poTransportType, poCustomerName, poNumberCustomer;
     Boolean poStatus;
 
     public PurchaseOrderModel() {
     }
 
-    public PurchaseOrderModel(String poPtBasNumber, String poDateCreated, String poInputDateCreated, String poTOP, String poTransportType, String poCustomerName, String poNumberCustomer, Boolean poStatus) {
+    public PurchaseOrderModel(String poPtBasNumber, String poCurrency, String poDateCreated, String poInputDateCreated, String poTOP, String poTransportType, String poCustomerName, String poNumberCustomer, Boolean poStatus) {
         this.poPtBasNumber = poPtBasNumber;
+        this.poCurrency = poCurrency;
         this.poDateCreated = poDateCreated;
         this.poInputDateCreated = poInputDateCreated;
         this.poTOP = poTOP;
@@ -19,20 +20,20 @@ public class PurchaseOrderModel {
         this.poStatus = poStatus;
     }
 
-    public Boolean getPoStatus() {
-        return poStatus;
-    }
-
-    public void setPoStatus(Boolean poStatus) {
-        this.poStatus = poStatus;
-    }
-
     public String getPoPtBasNumber() {
         return poPtBasNumber;
     }
 
     public void setPoPtBasNumber(String poPtBasNumber) {
         this.poPtBasNumber = poPtBasNumber;
+    }
+
+    public String getPoCurrency() {
+        return poCurrency;
+    }
+
+    public void setPoCurrency(String poCurrency) {
+        this.poCurrency = poCurrency;
     }
 
     public String getPoDateCreated() {
@@ -81,5 +82,13 @@ public class PurchaseOrderModel {
 
     public void setPoNumberCustomer(String poNumberCustomer) {
         this.poNumberCustomer = poNumberCustomer;
+    }
+
+    public Boolean getPoStatus() {
+        return poStatus;
+    }
+
+    public void setPoStatus(Boolean poStatus) {
+        this.poStatus = poStatus;
     }
 }
