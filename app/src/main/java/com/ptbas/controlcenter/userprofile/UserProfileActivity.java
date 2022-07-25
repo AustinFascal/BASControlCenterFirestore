@@ -1,19 +1,25 @@
 package com.ptbas.controlcenter.userprofile;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Configuration;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,7 +41,6 @@ import com.ptbas.controlcenter.model.UserModel;
 public class UserProfileActivity extends AppCompatActivity {
 
     private TextView textViewWelcome, textViewFullName, textViewEmail, textViewDoB, textViewGender, textViewPhone, textViewAccessCode;
-    private LinearLayoutCompat llAdminBAS, llAdminWings, llAdminSuper;
     private ProgressBar progressBar;
     private String fullName, doB, email, gender, phone, accessCode;
     private ImageView imageViewProfilePic;
@@ -49,6 +54,28 @@ public class UserProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_profile);
 
+
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setTitle("Profil Pengguna");
+        actionBar.setDisplayHomeAsUpEnabled(true);
+
+        int nightModeFlags =
+                this.getResources().getConfiguration().uiMode &
+                        Configuration.UI_MODE_NIGHT_MASK;
+        switch (nightModeFlags) {
+            case Configuration.UI_MODE_NIGHT_YES:
+                actionBar.setBackgroundDrawable(new ColorDrawable(getResources()
+                        .getColor(R.color.black)));
+                break;
+
+            case Configuration.UI_MODE_NIGHT_NO:
+
+            case Configuration.UI_MODE_NIGHT_UNDEFINED:
+                actionBar.setBackgroundDrawable(new ColorDrawable(getResources()
+                        .getColor(R.color.white)));
+                break;
+        }
+
         textViewWelcome = findViewById(R.id.textView_show_welcome);
         textViewFullName = findViewById(R.id.textView_show_full_name);
         textViewEmail = findViewById(R.id.textView_show_email);
@@ -57,31 +84,11 @@ public class UserProfileActivity extends AppCompatActivity {
         textViewPhone = findViewById(R.id.textView_show_mobile);
         textViewAccessCode = findViewById(R.id.textView_show_access_code);
 
-        llAdminBAS = findViewById(R.id.ll_admin_bas);
-        llAdminWings = findViewById(R.id.ll_admin_wings);
-        llAdminSuper = findViewById(R.id.ll_admin_super);
 
         progressBar = findViewById(R.id.progressBar);
 
         imageViewProfilePic = findViewById(R.id.imageView_profile_dp);
 
-        crdviewAddVehicle = findViewById(R.id.crdview_add_vehicle);
-        crdviewAddVehicle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(UserProfileActivity.this, AddVehicleActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        crdviewAddGoodIssue = findViewById(R.id.crdview_add_good_issue);
-        crdviewAddGoodIssue.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(UserProfileActivity.this, AddGoodIssueActivity.class);
-                startActivity(intent);
-            }
-        });
 
         imageViewProfilePic.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -158,21 +165,12 @@ public class UserProfileActivity extends AppCompatActivity {
                     switch (accessCode) {
                         case "000111":
                             textViewAccessCode.setText("Admin BAS");
-                            llAdminBAS.setVisibility(View.VISIBLE);
-                            llAdminWings.setVisibility(View.GONE);
-                            llAdminSuper.setVisibility(View.GONE);
                             break;
                         case "111000":
                             textViewAccessCode.setText("Admin Wings");
-                            llAdminBAS.setVisibility(View.GONE);
-                            llAdminWings.setVisibility(View.VISIBLE);
-                            llAdminSuper.setVisibility(View.GONE);
                             break;
                         case "111111":
                             textViewAccessCode.setText("Super Admin");
-                            llAdminBAS.setVisibility(View.GONE);
-                            llAdminWings.setVisibility(View.GONE);
-                            llAdminSuper.setVisibility(View.VISIBLE);
                             break;
                         default:
                             textViewAccessCode.setText("Unknown");
@@ -239,7 +237,8 @@ public class UserProfileActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         } else {
-            Toast.makeText(this, "Terjadi kesalahan", Toast.LENGTH_SHORT).show();
+            finish();
+            //Toast.makeText(this, "Terjadi kesalahan", Toast.LENGTH_SHORT).show();
         }
 
         return super.onOptionsItemSelected(item);

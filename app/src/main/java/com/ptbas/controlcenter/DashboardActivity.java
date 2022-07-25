@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -17,13 +18,16 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.view.View;
@@ -62,18 +66,22 @@ public class DashboardActivity extends AppCompatActivity {
     public FirebaseAuth authProfile;
     private String finalCountVehicle, finalCountUser, finalCountActiveGoodIssueData;
 
+    ConstraintLayout constraintLayout;
+
     private NestedScrollView nestedscrollview;
     private RelativeLayout linearLayout2;
     RecyclerView rvMainFeatures, rvStatistics;
     MainFeaturesMenuAdapter mainFeaturesMenuAdapter;
     StatisticsAdapter statisticsAdapter;
 
-    private ConstraintLayout swipeContainer;
+    private SwipeRefreshLayout swipeContainer;
     private CardView crdviewWrapInternetError, crdviewWrapShortcuts;
     private LinearLayout llWrapShortcuts, llWrapNoInternet;
 
     private TextView title;
     private ImageButton imgbtnMenu;
+
+    LinearLayout linearLayout;
 
     private Window window;
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
@@ -83,6 +91,9 @@ public class DashboardActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
+
+        linearLayout = findViewById(R.id.linearLayoutWashboard);
+
 
         if (Build.VERSION.SDK_INT >= 19 && Build.VERSION.SDK_INT < 21) {
             setWindowFlag(this, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, true);
@@ -95,6 +106,23 @@ public class DashboardActivity extends AppCompatActivity {
             getWindow().setStatusBarColor(Color.TRANSPARENT);
         }
         Window window = this.getWindow();
+
+
+        int nightModeFlags =
+                this.getResources().getConfiguration().uiMode &
+                        Configuration.UI_MODE_NIGHT_MASK;
+        switch (nightModeFlags) {
+            case Configuration.UI_MODE_NIGHT_YES:
+                linearLayout.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.dashboard_main_content_dark, null));
+                break;
+
+            case Configuration.UI_MODE_NIGHT_NO:
+
+            case Configuration.UI_MODE_NIGHT_UNDEFINED:
+                linearLayout.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.dashboard_main_content, null));
+                break;
+        }
+
 
 // clear FLAG_TRANSLUCENT_STATUS flag:
 
@@ -116,7 +144,7 @@ public class DashboardActivity extends AppCompatActivity {
             }
         });
 
-        //swipeContainer = findViewById(R.id.scroll_container_dashboard);
+        swipeContainer = findViewById(R.id.swipeContainerDashboard);
         crdviewWrapShortcuts = findViewById(R.id.crdview_wrap_shortcuts);
         llWrapShortcuts = findViewById(R.id.ll_wrap_shortcuts);
         llWrapNoInternet = findViewById(R.id.ll_wrap_no_internet);
@@ -125,12 +153,16 @@ public class DashboardActivity extends AppCompatActivity {
         crdviewWrapShortcuts.setVisibility(View.VISIBLE);
         //crdviewWrapInternetError.setVisibility(View.GONE);
 
+
+        //swipeContainer.setRefreshing(true);
         haveNetworkConnection();
 
         llAddGi =  findViewById(R.id.ll_add_gi);
         llAddVehicle = findViewById(R.id.ll_add_vehicle);
         llAddPo = findViewById(R.id.ll_add_po);
         llAddInvoice = findViewById(R.id.ll_add_invoice);
+
+        constraintLayout = findViewById(R.id.constraintLayout);
 
         llAddGi.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -190,6 +222,17 @@ public class DashboardActivity extends AppCompatActivity {
         } else {
             showUserProfile(firebaseUser);
         }
+
+        //swipeContainer.setRefreshing(true);
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                startActivity(getIntent());
+                finish();
+                overridePendingTransition(0, 0);
+                swipeContainer.setRefreshing(false);
+            }
+        });
 
         databaseReference.child("VehicleData").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -303,7 +346,7 @@ public class DashboardActivity extends AppCompatActivity {
 */
 
                     Uri uri = firebaseUser.getPhotoUrl();
-
+                    swipeContainer.setRefreshing(false);
                     Picasso.with(DashboardActivity.this).load(uri).into(imageViewProfilePic);
 
                 } else {
@@ -324,33 +367,39 @@ public class DashboardActivity extends AppCompatActivity {
 
         MainFeatureModel ob1 = new MainFeatureModel();
         ob1.setHeader("Manajemen Pengguna");
-        ob1.setDesc("Atur detail data pengguna aplikasi");
+        ob1.setDesc("Atur rincian data pengguna aplikasi");
         ob1.setImgName(R.drawable.ic_manage_user);
         holder.add(ob1);
 
         MainFeatureModel ob2 = new MainFeatureModel();
         ob2.setHeader("Manajemen Armada");
-        ob2.setDesc("Atur detail data armada/kendaraan");
+        ob2.setDesc("Atur rincian data armada/kendaraan");
         ob2.setImgName(R.drawable.ic_manage_vehicle);
         holder.add(ob2);
 
         MainFeatureModel ob3 = new MainFeatureModel();
         ob3.setHeader("Manajemen Purchase Order");
-        ob3.setDesc("Atur detail data purchase order");
+        ob3.setDesc("Atur rincian data purchase order");
         ob3.setImgName(R.drawable.ic_purchase_order);
         holder.add(ob3);
 
         MainFeatureModel ob4 = new MainFeatureModel();
         ob4.setHeader("Manajemen Good Issue");
-        ob4.setDesc("Atur detail data good issue");
+        ob4.setDesc("Atur rincian data good issue");
         ob4.setImgName(R.drawable.ic_good_issue);
         holder.add(ob4);
 
         MainFeatureModel ob5 = new MainFeatureModel();
-        ob5.setHeader("Manajemen Invoice");
-        ob5.setDesc("Atur data invoice transaksi");
-        ob5.setImgName(R.drawable.ic_invoice);
+        ob5.setHeader("Manajemen Customer");
+        ob5.setDesc("Atur rincian data customer");
+        ob5.setImgName(R.drawable.ic_manage_customers);
         holder.add(ob5);
+
+        MainFeatureModel ob6 = new MainFeatureModel();
+        ob6.setHeader("Manajemen Invoice");
+        ob6.setDesc("Atur data invoice transaksi");
+        ob6.setImgName(R.drawable.ic_invoice);
+        holder.add(ob6);
 
         return holder;
     }
@@ -372,7 +421,7 @@ public class DashboardActivity extends AppCompatActivity {
 
         StatisticsModel ob3 = new StatisticsModel();
         ob3.setHeader(finalCountActiveGoodIssueData);
-        ob3.setDesc("Jumlah GI Aktif");
+        ob3.setDesc("Jumlah GI Selesai");
         holder2.add(ob3);
 
         StatisticsModel ob4 = new StatisticsModel();
@@ -410,14 +459,14 @@ public class DashboardActivity extends AppCompatActivity {
         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo[] netInfo = cm.getAllNetworkInfo();
         for (NetworkInfo ni : netInfo) {
-            /*if (ni.getTypeName().equalsIgnoreCase("WIFI")){
+            if (ni.getTypeName().equalsIgnoreCase("WIFI")){
                 if (ni.isConnected()){
                     haveConnectedWifi = true;
-                    llWrapShortcuts.setVisibility(View.VISIBLE);
-                    llWrapNoInternet.setVisibility(View.GONE);
+                    //swipeContainer.setRefreshing(true);
+                    //swipeContainer.setRefreshing(false);
                 } else {
-                    llWrapShortcuts.setVisibility(View.GONE);
-                    llWrapNoInternet.setVisibility(View.VISIBLE);
+
+
                 }
             }
 
@@ -425,13 +474,12 @@ public class DashboardActivity extends AppCompatActivity {
             if (ni.getTypeName().equalsIgnoreCase("MOBILE")) {
                 if (ni.isConnected()) {
                     haveConnectedMobile = true;
-                    llWrapShortcuts.setVisibility(View.VISIBLE);
-                    llWrapNoInternet.setVisibility(View.GONE);
+                    //swipeContainer.setRefreshing(true);
+                    //swipeContainer.setRefreshing(false);
                 } else {
-                    llWrapShortcuts.setVisibility(View.GONE);
-                    llWrapNoInternet.setVisibility(View.VISIBLE);
+
                 }
-            }*/
+            }
             llWrapShortcuts.setVisibility(View.VISIBLE);
             llWrapNoInternet.setVisibility(View.GONE);
 

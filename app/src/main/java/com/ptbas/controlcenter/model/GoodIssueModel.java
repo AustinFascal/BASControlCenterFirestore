@@ -3,7 +3,7 @@ package com.ptbas.controlcenter.model;
 public class GoodIssueModel {
 
     String giUID, giPoCustNumber, giPoBasNumber, giMaterialName, giMaterialType, giVhlRegistNumber,
-            giTimeCreated, giDateCreated, giInputDateCreated, giInputDateModified;
+            giTimeCreated, giDateCreated, giInputDateCreated;
     Integer giHeightCorrection, vhlLength, vhlWidth, vhlHeight;
     Float giVhlCubication;
     Boolean giStatus;
@@ -13,7 +13,7 @@ public class GoodIssueModel {
 
     public GoodIssueModel(String giUID, String giPoCustNumber, String giPoBasNumber, String giMaterialName,
                           String giMaterialType, String giVhlRegistNumber, Integer giHeightCorrection, String giTimeCreated,
-                          String giDateCreated, String giInputDateCreated, String giInputDateModified,
+                          String giDateCreated, String giInputDateCreated,
                           Integer vhlLength, Integer vhlWidth, Integer vhlHeight,
                           Float giVhlCubication, Boolean giStatus) {
         this.giUID = giUID;
@@ -25,7 +25,6 @@ public class GoodIssueModel {
         this.giTimeCreated = giTimeCreated;
         this.giDateCreated = giDateCreated;
         this.giInputDateCreated = giInputDateCreated;
-        this.giInputDateModified = giInputDateModified;
         this.giHeightCorrection = giHeightCorrection;
         this.vhlLength = vhlLength;
         this.vhlWidth = vhlWidth;
@@ -104,14 +103,6 @@ public class GoodIssueModel {
 
     public void setGiInputDateCreated(String giInputDateCreated) {
         this.giInputDateCreated = giInputDateCreated;
-    }
-
-    public String getGiInputDateModified() {
-        return giInputDateModified;
-    }
-
-    public void setGiInputDateModified(String giInputDateModified) {
-        this.giInputDateModified = giInputDateModified;
     }
 
     public Integer getGiHeightCorrection() {

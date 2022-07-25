@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -77,6 +78,23 @@ public class AddVehicleActivity extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setBackgroundDrawable(new ColorDrawable(getResources()
                 .getColor(R.color.white)));
+
+        int nightModeFlags =
+                this.getResources().getConfiguration().uiMode &
+                        Configuration.UI_MODE_NIGHT_MASK;
+        switch (nightModeFlags) {
+            case Configuration.UI_MODE_NIGHT_YES:
+                actionBar.setBackgroundDrawable(new ColorDrawable(getResources()
+                        .getColor(R.color.black)));
+                break;
+
+            case Configuration.UI_MODE_NIGHT_NO:
+
+            case Configuration.UI_MODE_NIGHT_UNDEFINED:
+                actionBar.setBackgroundDrawable(new ColorDrawable(getResources()
+                        .getColor(R.color.white)));
+                break;
+        }
 
         spinnerVhlBrand.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

@@ -1,13 +1,14 @@
 package com.ptbas.controlcenter.model;
 
-public class PurchaseOrder {
+public class PurchaseOrderModel {
 
     String poPtBasNumber, poDateCreated, poInputDateCreated, poTOP, poTransportType, poCustomerName, poNumberCustomer;
+    Boolean poStatus;
 
-    public PurchaseOrder() {
+    public PurchaseOrderModel() {
     }
 
-    public PurchaseOrder(String poPtBasNumber, String poDateCreated, String poInputDateCreated, String poTOP, String poTransportType, String poCustomerName, String poNumberCustomer) {
+    public PurchaseOrderModel(String poPtBasNumber, String poDateCreated, String poInputDateCreated, String poTOP, String poTransportType, String poCustomerName, String poNumberCustomer, Boolean poStatus) {
         this.poPtBasNumber = poPtBasNumber;
         this.poDateCreated = poDateCreated;
         this.poInputDateCreated = poInputDateCreated;
@@ -15,6 +16,15 @@ public class PurchaseOrder {
         this.poTransportType = poTransportType;
         this.poCustomerName = poCustomerName;
         this.poNumberCustomer = poNumberCustomer;
+        this.poStatus = poStatus;
+    }
+
+    public Boolean getPoStatus() {
+        return poStatus;
+    }
+
+    public void setPoStatus(Boolean poStatus) {
+        this.poStatus = poStatus;
     }
 
     public String getPoPtBasNumber() {

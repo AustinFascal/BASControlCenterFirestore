@@ -118,9 +118,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:buttonTint="@color/purple_500"
                     android:text="Tidak Aktif"
-                    android:textColor="#555555"
+                    style="@style/Theme.TravelPermitBAS"
                     android:textSize="16sp" />
 
                 <RadioButton
@@ -128,10 +127,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:buttonTint="@color/purple_500"
                     android:checked="true"
                     android:text="Aktif"
-                    android:textColor="#555555"
+                    style="@style/Theme.TravelPermitBAS"
                     android:textSize="16sp" />
 
 

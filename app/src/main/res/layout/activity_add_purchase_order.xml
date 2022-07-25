@@ -183,12 +183,12 @@
                         android:text="TAMBAH ITEM"
                         android:textAllCaps="true" />
 
-                    <TextView
+                   <!-- <TextView
                         android:id="@+id/tv_sum_total"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:text="SUM TOTAL" />
+                        android:text="SUM TOTAL" />-->
 
                 </LinearLayout>
 

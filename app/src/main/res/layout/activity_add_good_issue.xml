@@ -64,11 +64,12 @@
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
                 android:layout_width="match_parent"
+                app:prefixText="PO-"
                 app:startIconDrawable="@drawable/ic_outline_receipt"
                 android:layout_height="wrap_content">
 
                 <AutoCompleteTextView
-                    android:id="@+id/edt_gi_po_number_bas"
+                    android:id="@+id/spinner_gi_po_number_bas"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890/"
@@ -83,7 +84,7 @@
                 android:layout_height="wrap_content">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/spinner_gi_po_number_cust"
+                    android:id="@+id/edt_gi_po_number_cust"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:focusable="false"
@@ -115,7 +116,7 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:startIconDrawable="@drawable/ic_product_loading"
@@ -126,7 +127,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@string/inputPoProductType"
-                        android:inputType="text"
+                        android:inputType="none"
+                        android:focusable="false"
                         android:maxLines="1" />
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
@@ -185,7 +187,7 @@
                                 android:layout_height="wrap_content"
                                 android:hint="Koreksi Tinggi"
                                 android:inputType="number"
-                                android:maxLength="2"/>
+                                android:maxLength="3"/>
                         </com.google.android.material.textfield.TextInputLayout>
                         <RadioGroup
                             android:layout_marginTop="5dp"
@@ -207,11 +209,10 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:layout_gravity="center_vertical"
-                                android:buttonTint="@color/purple_500"
                                 android:checked="true"
                                 android:text="-"
+                                style="@style/Theme.TravelPermitBAS"
                                 android:textStyle="bold"
-                                android:textColor="#555555"
                                 android:textSize="16sp" />
                             <RadioButton
                                 android:id="@+id/radio_plus_operation"
@@ -219,10 +220,9 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:layout_gravity="center_vertical"
-                                android:buttonTint="@color/purple_500"
                                 android:text="+"
+                                style="@style/Theme.TravelPermitBAS"
                                 android:textStyle="bold"
-                                android:textColor="#555555"
                                 android:textSize="16sp" />
 
 

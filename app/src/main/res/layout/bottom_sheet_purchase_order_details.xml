@@ -233,64 +233,72 @@
         </TableLayout>
 
         <TableLayout
+            android:stretchColumns="*"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <TableRow>
+            <TableRow
+                android:layout_width="0dp">
                 <TextView
+                    android:background="@drawable/table_border"
                     android:padding="2dp"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:text="No."
-                    android:layout_column="1"
+                    android:layout_column="0"
+                    android:layout_weight="1"
                     android:textSize="14sp"
                     android:textStyle="bold"
                     android:textColor="@color/black"/>
                 <TextView
+                    android:background="@drawable/table_border"
                     android:padding="2dp"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:text="Nama Item"
-                    android:layout_column="2"
+                    android:layout_column="1"
                     android:textSize="14sp"
                     android:ellipsize="end"
                     android:textStyle="bold"
-                    android:layout_weight="1"
+                    android:layout_weight="2"
                     android:paddingHorizontal="10dp"
                     android:textColor="@color/black"/>
                 <TextView
+                    android:background="@drawable/table_border"
                     android:padding="2dp"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:text="Qty"
+                    android:layout_column="2"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:layout_weight="1"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/black"/>
+                <TextView
+                    android:background="@drawable/table_border"
+                    android:padding="2dp"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Total Beli"
                     android:layout_column="3"
                     android:ellipsize="end"
                     android:maxLines="1"
-                    android:layout_weight="1"
+                    android:layout_weight="2"
                     android:textSize="14sp"
                     android:textStyle="bold"
                     android:textColor="@color/black"/>
                 <TextView
+                    android:background="@drawable/table_border"
                     android:padding="2dp"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="Total Beli"
+                    android:text="Total Jual"
                     android:layout_column="4"
                     android:ellipsize="end"
                     android:maxLines="1"
-                    android:layout_weight="1"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/black"/>
-                <TextView
-                    android:padding="2dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Total Jual"
-                    android:layout_column="5"
-                    android:ellipsize="end"
-                    android:maxLines="1"
-                    android:layout_weight="1"
+                    android:layout_weight="2"
                     android:textSize="14sp"
                     android:textStyle="bold"
                     android:textColor="@color/black"/>

@@ -5,6 +5,7 @@ import static android.content.ContentValues.TAG;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
@@ -16,6 +17,8 @@ import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -40,6 +43,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.ptbas.controlcenter.model.GoodIssueModel;
+import com.ptbas.controlcenter.model.PurchaseOrderModel;
 import com.ptbas.controlcenter.model.VehicleModel;
 
 import java.text.DecimalFormat;
@@ -58,12 +62,12 @@ public class AddGoodIssueActivity extends AppCompatActivity {
             tvGiVhlFinalVolume, tvGiVhlHeightCorrection;
     private AutoCompleteTextView spinnerGiVhlRegistNumber, spinnerGiProductName, spinnerPoPtBasNumber, spinnerGiTransportType,
             edtGiPoNumberBas;
-    String vhlData = "", materialData = "", transportData = "";
+    String vhlData = "", materialData = "", transportData = "", poPtBasNumber="";
     Integer giYear = 0, giMonth = 0, giDay = 0;
     private LinearLayout llHeightCorrectionFeature;
     private DatePickerDialog datePicker;
     private TimePickerDialog timePicker;
-    private TextInputEditText edtGiDate, edtGiTime, edtGiHeightCorrection, spinnerGiPoNumberCust;
+    private TextInputEditText edtGiDate, edtGiTime, edtGiHeightCorrection, edtGiPoNumberCust;
     private FloatingActionButton fabSaveGIData;
 
     private RadioGroup radioGroupOperation;
@@ -83,6 +87,7 @@ public class AddGoodIssueActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setTitle("Buat Good Issue");
         actionBar.setDisplayHomeAsUpEnabled(true);
+
         int nightModeFlags =
                 this.getResources().getConfiguration().uiMode &
                         Configuration.UI_MODE_NIGHT_MASK;
@@ -105,11 +110,11 @@ public class AddGoodIssueActivity extends AppCompatActivity {
         edtGiTime = findViewById(R.id.edt_gi_time);
         edtGiHeightCorrection = findViewById(R.id.edt_gi_vhl_height_correction);
 
-        spinnerGiPoNumberCust = findViewById(R.id.spinner_gi_po_number_cust);
+        edtGiPoNumberCust = findViewById(R.id.edt_gi_po_number_cust);
         spinnerGiVhlRegistNumber = findViewById(R.id.spinner_gi_vhl_regist_number);
         spinnerGiProductName = findViewById(R.id.spinner_gi_product_name);
         spinnerGiTransportType = findViewById(R.id.spinner_gi_transport_type);
-        spinnerPoPtBasNumber = findViewById(R.id.edt_gi_po_number_bas);
+        spinnerPoPtBasNumber = findViewById(R.id.spinner_gi_po_number_bas);
 
         tvGiVhlFinalVolume = findViewById(R.id.tv_gi_vhl_final_volume);
         tvGiVhlLengthVal = findViewById(R.id.tv_gi_vhl_length_val);
@@ -148,6 +153,8 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                             }
                         }, year, month, day);
                 datePicker.show();
+
+                edtGiDate.setError(null);
             }
         });
 
@@ -166,6 +173,7 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                     }
                 }, hour, minute, true);
                 timePicker.show();
+                edtGiTime.setError(null);
             }
         });
 
@@ -248,6 +256,16 @@ public class AddGoodIssueActivity extends AppCompatActivity {
             }
         });
 
+        edtGiHeightCorrection.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View view, int i, KeyEvent keyEvent) {
+                if (edtGiHeightCorrection.getText().toString().equals("")){
+                    edtGiHeightCorrection.setText("0");
+                }
+                return false;
+            }
+        });
+
         spinnerGiVhlRegistNumber.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
@@ -255,7 +273,8 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                 vhlData = selectedSpinnerVhlRegistNumber;
                 spinnerGiVhlRegistNumber.setError(null);
                 llHeightCorrectionFeature.setVisibility(View.VISIBLE);
-                edtGiHeightCorrection.setText("");
+                edtGiHeightCorrection.setText("0");
+
                 radioGroupOperation.check(R.id.radio_minus_operation);
 
                 DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("VehicleData/"+vhlData);
@@ -269,6 +288,8 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                             tvGiVhlLengthVal.setText(String.valueOf(vehicleModel.getVhlLength()));
                             tvGiVhlWidthVal.setText(String.valueOf(vehicleModel.getVhlWidth()));
                             tvGiVhlHeightVal.setText(String.valueOf(vehicleModel.getVhlHeight()));
+                            tvGiVhlHeightCorrection.setText(Html.fromHtml("Tinggi Hasil Koreksi: "+ vehicleModel.getVhlHeight() +" cm"));
+
 
                             float finalVolumeDefault =
                                     (Float.parseFloat(tvGiVhlLengthVal.getText().toString())*
@@ -293,6 +314,44 @@ public class AddGoodIssueActivity extends AppCompatActivity {
             @Override
             public void onFocusChange(View view, boolean b) {
                 spinnerGiVhlRegistNumber.setText(vhlData);
+            }
+        });
+
+
+        spinnerPoPtBasNumber.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                String selectedSpinnerPoPtBasNumber = (String) adapterView.getItemAtPosition(position);
+                poPtBasNumber = selectedSpinnerPoPtBasNumber;
+                spinnerPoPtBasNumber.setError(null);
+                edtGiPoNumberCust.setError(null);
+
+                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("PurchaseOrders/"+poPtBasNumber);
+                databaseReference.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        PurchaseOrderModel purchaseOrderModel = snapshot.getValue(PurchaseOrderModel.class);
+
+                        if (purchaseOrderModel !=null){
+                            edtGiPoNumberCust.setText(String.valueOf(purchaseOrderModel.getPoNumberCustomer()));
+                            if (purchaseOrderModel.getPoTransportType().contains("CUR")){
+                                spinnerGiTransportType.setText("CURAH");
+                                transportData = "CURAH";
+                            } else{
+                                spinnerGiTransportType.setText("BORONG");
+                                transportData = "BORONG";
+
+                            }
+                        } else {
+                            Toast.makeText(AddGoodIssueActivity.this, "Null", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
             }
         });
 
@@ -421,8 +480,8 @@ public class AddGoodIssueActivity extends AppCompatActivity {
             public void onClick(View view) {
                 String giDate = edtGiDate.getText().toString();
                 String giTime = Objects.requireNonNull(edtGiTime.getText()).toString();
-                String giPOCustomer = Objects.requireNonNull(spinnerGiPoNumberCust.getText()).toString();
-                String giPOBAS = Objects.requireNonNull(edtGiPoNumberBas.getText()).toString();
+                String giPOCustomer = Objects.requireNonNull(edtGiPoNumberCust.getText()).toString();
+                String giPOBAS = Objects.requireNonNull(spinnerPoPtBasNumber.getText()).toString();
                 String giProductName = Objects.requireNonNull(spinnerGiProductName.getText()).toString();
                 String giTransportType = Objects.requireNonNull(spinnerGiTransportType.getText()).toString();
                 String giVhlRegistNumber = Objects.requireNonNull(spinnerGiVhlRegistNumber.getText()).toString();
@@ -437,7 +496,11 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                 //String vhlStatus = "";
                 Boolean giStatus = true;
                 String giInputDateCreated = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
-                String giInputDateModified = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
+                //String giInputDateModified = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
+
+                int selectedStatusId = radioGroupOperation.getCheckedRadioButtonId();
+                radioOperationSelected = findViewById(selectedStatusId);
+                String radioOperation = radioOperationSelected.getText().toString();
 
                 if (TextUtils.isEmpty(giDate)){
                     edtGiDate.setError("Mohon masukkan tanggal pembuatan");
@@ -446,8 +509,8 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                     edtGiTime.setError("Mohon masukkan waktu pembuatan");
                     edtGiTime.requestFocus();
                 } else if (TextUtils.isEmpty(giPOCustomer)){
-                    spinnerGiPoNumberCust.setError("Mohon masukkan nomor PO customer");
-                    spinnerGiPoNumberCust.requestFocus();
+                    edtGiPoNumberCust.setError("Mohon masukkan nomor PO customer");
+                    edtGiPoNumberCust.requestFocus();
                 } else if (TextUtils.isEmpty(giProductName)){
                     spinnerGiProductName.setError("Mohon masukkan nama material");
                     spinnerGiProductName.requestFocus();
@@ -459,18 +522,16 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                     spinnerGiVhlRegistNumber.requestFocus();
                 } else if (edtGiHeightCorrection.getText().toString().isEmpty()){
                     giHeightCorrection.equals(0);
+                    edtGiHeightCorrection.setText("0");
                 } else{
                     String giUID = "";
-                    if (spinnerGiTransportType.getText().toString().equals("CURAH")){
-                        giUID = getRandomString(4)+"-CRH-"+giYear.toString()+"-"+giMonth.toString()+"-"+giDay.toString();
-                    } else {
-                        giUID = getRandomString(4)+"-BRG-"+giYear.toString()+"-"+giMonth.toString()+"-"+giDay.toString();
-                    }
+                    giUID = getRandomString(5)+"-"+transportData.substring(0, 3)+"-"+giDay.toString()+"-"+giMonth.toString()+"-"+giYear.toString();
+
                     DecimalFormat df = new DecimalFormat("0.00");
                     insertData(giUID, giPOCustomer, giPOBAS, giProductName, giTransportType, giVhlRegistNumber,
-                            Integer.parseInt(giHeightCorrection.replaceAll("[^0-9]", "")), giTime, giDate, giInputDateCreated, giInputDateModified,
+                            Integer.parseInt(radioOperation+giHeightCorrection.replaceAll("[^0-9]", "")), giTime, giDate, giInputDateCreated,
                             Integer.parseInt(giVhlLength), Integer.parseInt(giVhlWidth),
-                            Integer.parseInt(giVhlHeight), Float.parseFloat(df.format(Float.parseFloat(giVhlCubication.replaceAll("[^0-9.]", "")))),
+                            Integer.parseInt(tvGiVhlHeightCorrection.getText().toString().replaceAll("[^0-9]", "")), Float.parseFloat(df.format(Float.parseFloat(giVhlCubication.replaceAll("[^0-9.]", "")))),
                             giStatus);
                 }
             }
@@ -488,13 +549,11 @@ public class AddGoodIssueActivity extends AppCompatActivity {
 
     private void insertData(String giUID, String giPOCustomer, String giPOBAS, String giProductName,
                             String giTransportType, String giVhlRegistNumber, int parseInt,
-                            String giTime, String giDate, String giInputDateCreated,
-                            String giInputDateModified, int parseInt1, int parseInt2, int parseInt3,
+                            String giTime, String giDate, String giInputDateCreated, int parseInt1, int parseInt2, int parseInt3,
                             float parseFloat, Boolean giStatus) {
 
         GoodIssueModel goodIssueModel = new GoodIssueModel(giUID, giPOCustomer, giPOBAS, giProductName,
-                giTransportType, giVhlRegistNumber, parseInt, giTime, giDate, giInputDateCreated,
-                giInputDateModified, parseInt1, parseInt2, parseInt3, parseFloat, giStatus);
+                giTransportType, giVhlRegistNumber, parseInt, giTime, giDate, giInputDateCreated, parseInt1, parseInt2, parseInt3, parseFloat, giStatus);
 
         DatabaseReference referenceGoodIssueDetectExists = FirebaseDatabase.getInstance("https://bas-delivery-report-default-rtdb.asia-southeast1.firebasedatabase.app").getReference("GoodIssueData/"+giUID);
         referenceGoodIssueDetectExists.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -543,4 +602,5 @@ public class AddGoodIssueActivity extends AppCompatActivity {
         finish();
         return super.onOptionsItemSelected(item);
     }
+
 }

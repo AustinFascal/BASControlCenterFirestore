@@ -1,64 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TableLayout android:layout_width="match_parent"
+<TableLayout
+    android:stretchColumns="*"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <TableRow>
+    <TableRow
+        android:layout_width="0dp"
+        android:layout_height="match_parent">
         <TextView
+            android:background="@drawable/table_border"
             android:padding="2dp"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:text="0"
-            android:layout_column="1"
+            android:layout_column="0"
             android:gravity="center"
             android:textSize="14sp"
             android:textColor="@color/black"/>
         <TextView
+            android:background="@drawable/table_border"
             android:id="@+id/tvItemName"
             android:padding="2dp"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="Lorem Ipsum"
-            android:layout_column="2"
+            android:layout_column="1"
             android:textSize="14sp"
             android:ellipsize="end"
-            android:layout_weight="1"
+            android:layout_weight="2"
             android:paddingHorizontal="10dp"
             android:textColor="@color/black"/>
         <TextView
+            android:background="@drawable/table_border"
             android:id="@+id/tvItemQty"
             android:padding="2dp"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="25000"
+            android:layout_column="2"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textSize="14sp"
+            android:layout_weight="1"
+            android:textColor="@color/black"/>
+        <TextView
+            android:background="@drawable/table_border"
+            android:id="@+id/tvItemTotalBuy"
+            android:padding="2dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="6587000"
             android:layout_column="3"
             android:ellipsize="end"
             android:maxLines="1"
-            android:layout_weight="1"
             android:textSize="14sp"
+            android:layout_weight="2"
             android:textColor="@color/black"/>
         <TextView
-            android:id="@+id/tvItemTotalBuy"
-            android:padding="2dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="6587000"
-            android:layout_column="4"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:layout_weight="1"
-            android:textSize="14sp"
-            android:textColor="@color/black"/>
-        <TextView
+            android:background="@drawable/table_border"
             android:id="@+id/tvItemTotalSell"
             android:padding="2dp"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="7877800"
-            android:layout_column="5"
+            android:layout_column="4"
+            android:layout_weight="2"
             android:ellipsize="end"
             android:maxLines="1"
-            android:layout_weight="1"
             android:textSize="14sp"
             android:textColor="@color/black"/>
     </TableRow>
