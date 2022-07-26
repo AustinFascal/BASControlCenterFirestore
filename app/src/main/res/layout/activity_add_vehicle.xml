@@ -218,7 +218,7 @@
         android:layout_marginEnd="24dp"
         android:layout_marginBottom="24dp"
         android:contentDescription="Save"
-        android:src="@drawable/ic_outline_save"
+        android:src="@drawable/ic_outline_save_black"
         android:tintMode="@color/white"
         app:backgroundTint="@color/pure_orange" />
 </RelativeLayout>

@@ -19,19 +19,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.os.Handler;
-import android.os.SystemClock;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageButton;
@@ -50,14 +45,18 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.ptbas.controlcenter.adapter.MainFeaturesMenuAdapter;
 import com.ptbas.controlcenter.adapter.StatisticsAdapter;
+import com.ptbas.controlcenter.create.AddGoodIssueActivity;
+import com.ptbas.controlcenter.create.AddInvoiceActivity;
+import com.ptbas.controlcenter.create.AddPurchaseOrderActivity;
+import com.ptbas.controlcenter.create.AddVehicleActivity;
 import com.ptbas.controlcenter.model.MainFeatureModel;
 import com.ptbas.controlcenter.model.StatisticsModel;
 import com.ptbas.controlcenter.model.UserModel;
 import com.ptbas.controlcenter.userprofile.UserProfileActivity;
+import com.ptbas.controlcenter.viewholder.MainFeatureViewHolder;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.TimerTask;
 
 public class DashboardActivity extends AppCompatActivity {
 
@@ -83,8 +82,10 @@ public class DashboardActivity extends AppCompatActivity {
 
     LinearLayout linearLayout;
 
+
     private Window window;
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -93,7 +94,17 @@ public class DashboardActivity extends AppCompatActivity {
         setContentView(R.layout.activity_dashboard);
 
         linearLayout = findViewById(R.id.linearLayoutWashboard);
-
+        nestedscrollview = findViewById(R.id.nestedscrollview);
+        llTopView = findViewById(R.id.ll_top_view);
+        title = findViewById(R.id.title);
+        imgbtnMenu = findViewById(R.id.imgbtn_menu);
+        imageViewProfilePic = findViewById(R.id.imgbtn_profile);
+        swipeContainer = findViewById(R.id.swipeContainerDashboard);
+        crdviewWrapShortcuts = findViewById(R.id.crdview_wrap_shortcuts);
+        llWrapShortcuts = findViewById(R.id.ll_wrap_shortcuts);
+        llWrapNoInternet = findViewById(R.id.ll_wrap_no_internet);
+        rvMainFeatures = findViewById(R.id.rv_main_features);
+        rvStatistics = findViewById(R.id.rv_statistics);
 
         if (Build.VERSION.SDK_INT >= 19 && Build.VERSION.SDK_INT < 21) {
             setWindowFlag(this, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, true);
@@ -105,8 +116,8 @@ public class DashboardActivity extends AppCompatActivity {
             getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
             getWindow().setStatusBarColor(Color.TRANSPARENT);
         }
-        Window window = this.getWindow();
 
+        //Window window = this.getWindow();
 
         int nightModeFlags =
                 this.getResources().getConfiguration().uiMode &
@@ -123,19 +134,8 @@ public class DashboardActivity extends AppCompatActivity {
                 break;
         }
 
-
-// clear FLAG_TRANSLUCENT_STATUS flag:
-
-
-        nestedscrollview = findViewById(R.id.nestedscrollview);
-        llTopView = findViewById(R.id.ll_top_view);
-
-        title = findViewById(R.id.title);
-        imgbtnMenu = findViewById(R.id.imgbtn_menu);
-
         title.setText(R.string.app_name);
 
-        imageViewProfilePic = findViewById(R.id.imgbtn_profile);
         imageViewProfilePic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -144,17 +144,8 @@ public class DashboardActivity extends AppCompatActivity {
             }
         });
 
-        swipeContainer = findViewById(R.id.swipeContainerDashboard);
-        crdviewWrapShortcuts = findViewById(R.id.crdview_wrap_shortcuts);
-        llWrapShortcuts = findViewById(R.id.ll_wrap_shortcuts);
-        llWrapNoInternet = findViewById(R.id.ll_wrap_no_internet);
-        //crdviewWrapInternetError = findViewById(R.id.crdview_wrap_internet_error);
-
         crdviewWrapShortcuts.setVisibility(View.VISIBLE);
-        //crdviewWrapInternetError.setVisibility(View.GONE);
 
-
-        //swipeContainer.setRefreshing(true);
         haveNetworkConnection();
 
         llAddGi =  findViewById(R.id.ll_add_gi);
@@ -191,7 +182,8 @@ public class DashboardActivity extends AppCompatActivity {
         llAddInvoice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Intent intent = new Intent(DashboardActivity.this, AddInvoiceActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -204,15 +196,11 @@ public class DashboardActivity extends AppCompatActivity {
         };
         runnable.run();
 
-        rvMainFeatures = findViewById(R.id.rv_main_features);
-        rvStatistics = findViewById(R.id.rv_statistics);
-
         mainFeaturesMenuAdapter = new MainFeaturesMenuAdapter(dataQueue(),getApplicationContext());
         rvMainFeatures.setAdapter(mainFeaturesMenuAdapter);
 
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
         rvMainFeatures.setLayoutManager(gridLayoutManager);
-
 
         authProfile = FirebaseAuth.getInstance();
         FirebaseUser firebaseUser = authProfile.getCurrentUser();
@@ -223,7 +211,6 @@ public class DashboardActivity extends AppCompatActivity {
             showUserProfile(firebaseUser);
         }
 
-        //swipeContainer.setRefreshing(true);
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -303,7 +290,6 @@ public class DashboardActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 UserModel userModel = snapshot.getValue(UserModel.class);
-                //Toast.makeText(UserProfileActivity.this, userDetails.phone, Toast.LENGTH_SHORT).show();
                 if (userModel != null){
 /*
                     fullName = firebaseUser.getDisplayName();
@@ -413,11 +399,6 @@ public class DashboardActivity extends AppCompatActivity {
         ob1.setHeader("0");
         ob1.setDesc("Jumlah PO Aktif");
         holder2.add(ob1);
-
-        /*StatisticsModel ob2 = new StatisticsModel();
-        ob2.setHeader("0");
-        ob2.setDesc("Jumlah PO Selesai");
-        holder2.add(ob2);*/
 
         StatisticsModel ob3 = new StatisticsModel();
         ob3.setHeader(finalCountActiveGoodIssueData);

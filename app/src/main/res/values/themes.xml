@@ -29,4 +29,14 @@
 
     <style name="Theme.TravelPermitBAS.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+    <style name="customFAB">
+        <item name="android:background">@drawable/fab_label_background</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="Theme.TravelPermitBAS.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
 </resources>

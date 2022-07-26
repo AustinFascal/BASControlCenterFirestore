@@ -2,13 +2,15 @@ package com.ptbas.controlcenter.model;
 
 public class PurchaseOrderModel {
 
-    String poPtBasNumber, poCurrency, poDateCreated, poInputDateCreated, poTOP, poTransportType, poCustomerName, poNumberCustomer;
+    String poPtBasNumber, poCurrency, poDateCreated, poInputDateCreated, poTOP, poTransportType,
+            poCustomerName, poNumberCustomer;
+    Double poSubTotalBuy, poSubTotalSell, poVAT, poTotalSellFinal, poEstProfit;
     Boolean poStatus;
 
     public PurchaseOrderModel() {
     }
 
-    public PurchaseOrderModel(String poPtBasNumber, String poCurrency, String poDateCreated, String poInputDateCreated, String poTOP, String poTransportType, String poCustomerName, String poNumberCustomer, Boolean poStatus) {
+    public PurchaseOrderModel(String poPtBasNumber, String poCurrency, String poDateCreated, String poInputDateCreated, String poTOP, String poTransportType, String poCustomerName, String poNumberCustomer, Double poSubTotalBuy, Double poSubTotalSell, Double poVAT, Double poTotalSellFinal, Double poEstProfit, Boolean poStatus) {
         this.poPtBasNumber = poPtBasNumber;
         this.poCurrency = poCurrency;
         this.poDateCreated = poDateCreated;
@@ -17,6 +19,11 @@ public class PurchaseOrderModel {
         this.poTransportType = poTransportType;
         this.poCustomerName = poCustomerName;
         this.poNumberCustomer = poNumberCustomer;
+        this.poSubTotalBuy = poSubTotalBuy;
+        this.poSubTotalSell = poSubTotalSell;
+        this.poVAT = poVAT;
+        this.poTotalSellFinal = poTotalSellFinal;
+        this.poEstProfit = poEstProfit;
         this.poStatus = poStatus;
     }
 
@@ -84,6 +91,46 @@ public class PurchaseOrderModel {
         this.poNumberCustomer = poNumberCustomer;
     }
 
+    public Double getPoSubTotalBuy() {
+        return poSubTotalBuy;
+    }
+
+    public void setPoSubTotalBuy(Double poSubTotalBuy) {
+        this.poSubTotalBuy = poSubTotalBuy;
+    }
+
+    public Double getPoSubTotalSell() {
+        return poSubTotalSell;
+    }
+
+    public void setPoSubTotalSell(Double poSubTotalSell) {
+        this.poSubTotalSell = poSubTotalSell;
+    }
+
+    public Double getPoVAT() {
+        return poVAT;
+    }
+
+    public void setPoVAT(Double poVAT) {
+        this.poVAT = poVAT;
+    }
+
+    public Double getPoTotalSellFinal() {
+        return poTotalSellFinal;
+    }
+
+    public void setPoTotalSellFinal(Double poTotalSellFinal) {
+        this.poTotalSellFinal = poTotalSellFinal;
+    }
+
+    public Double getPoEstProfit() {
+        return poEstProfit;
+    }
+
+    public void setPoEstProfit(Double poEstProfit) {
+        this.poEstProfit = poEstProfit;
+    }
+
     public Boolean getPoStatus() {
         return poStatus;
     }
@@ -92,3 +139,4 @@ public class PurchaseOrderModel {
         this.poStatus = poStatus;
     }
 }
+

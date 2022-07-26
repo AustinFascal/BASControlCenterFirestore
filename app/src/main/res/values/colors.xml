@@ -12,4 +12,6 @@
     <color name="dark_green">#27702A</color>
     <color name="pure_orange">#FFA31A</color>
     <color name="pure_red">#F44336</color>
+    <color name="black_semi_transparent">#B2000000</color>
+    <color name="blue_500">#3F51B5</color>
 </resources>

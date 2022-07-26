@@ -5,7 +5,8 @@
     android:id="@+id/swipeContainer"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".AddPurchaseOrderActivity">
+    tools:context=".create.AddPurchaseOrderActivity">
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_save_po_data"
         android:layout_width="wrap_content"
@@ -16,7 +17,7 @@
         android:layout_marginTop="24dp"
         android:layout_marginEnd="24dp"
         android:layout_marginBottom="24dp"
-        android:contentDescription="Save"
+        android:contentDescription="Proceed"
         android:src="@drawable/ic_outline_check"
         android:tintMode="@color/white"
         app:backgroundTint="@color/pure_orange" />
@@ -29,7 +30,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            tools:context=".AddPurchaseOrderActivity">
+            tools:context=".create.AddPurchaseOrderActivity">
 
             <LinearLayout
                 android:id="@+id/ll_input_all_data"

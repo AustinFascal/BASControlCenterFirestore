@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        tools:context=".AddGoodIssueActivity">
+        tools:context=".create.AddGoodIssueActivity">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -500,7 +500,7 @@
         android:layout_marginEnd="24dp"
         android:layout_marginBottom="24dp"
         android:contentDescription="Save"
-        android:src="@drawable/ic_outline_save"
+        android:src="@drawable/ic_outline_save_black"
         android:tintMode="@color/white"
         app:backgroundTint="@color/pure_orange" />
 </RelativeLayout>

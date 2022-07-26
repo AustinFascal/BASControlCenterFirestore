@@ -1,5 +1,6 @@
 package com.ptbas.controlcenter.viewholder;
 
+import android.content.Intent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -7,7 +8,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.ptbas.controlcenter.DashboardActivity;
 import com.ptbas.controlcenter.R;
+import com.ptbas.controlcenter.userprofile.UserProfileActivity;
 
 
 public class MainFeatureViewHolder extends RecyclerView.ViewHolder {

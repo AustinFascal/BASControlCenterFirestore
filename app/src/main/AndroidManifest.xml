@@ -16,44 +16,68 @@
         android:theme="@style/Theme.TravelPermitBAS"
         tools:targetApi="31">
         <activity
-            android:theme="@style/Theme.TravelPermitBAS.NoActionBar"
-            android:name="com.ptbas.controlcenter.DashboardActivity"
+            android:name=".management.InvoiceManagementActivity"
             android:exported="false" />
         <activity
-            android:name="com.ptbas.controlcenter.AddPurchaseOrderActivity"
+            android:name=".management.CustomerManagementActivity"
             android:exported="false" />
         <activity
-            android:name="com.ptbas.controlcenter.AddGoodIssueActivity"
+            android:name=".management.GoodIssueManagementActivity"
             android:exported="false" />
         <activity
-            android:name="com.ptbas.controlcenter.AddVehicleActivity"
+            android:name=".management.PurchaseOrderManagementActivity"
             android:exported="false" />
         <activity
-            android:name="com.ptbas.controlcenter.userprofile.ChangePasswordActivity"
+            android:name=".management.VehicleManagementActivity"
             android:exported="false" />
         <activity
-            android:name="com.ptbas.controlcenter.userprofile.UpdateEmailActivity"
+            android:name=".management.UserManagementActivity"
             android:exported="false" />
         <activity
-            android:name="com.ptbas.controlcenter.userprofile.UpdateProfileActivity"
+            android:name=".create.AddInvoiceActivity"
             android:exported="false" />
         <activity
-            android:name="com.ptbas.controlcenter.userprofile.UploadProfilePicActivity"
+            android:name=".DashboardActivity"
+            android:exported="false"
+            android:theme="@style/Theme.TravelPermitBAS.NoActionBar" />
+        <activity
+            android:name=".create.AddPurchaseOrderActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".create.AddGoodIssueActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".create.AddVehicleActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".userprofile.ChangePasswordActivity"
             android:exported="false" />
         <activity
-            android:name="com.ptbas.controlcenter.userprofile.ForgotPasswordActivity"
+            android:name=".userprofile.UpdateEmailActivity"
             android:exported="false" />
         <activity
-            android:name="com.ptbas.controlcenter.userprofile.UserProfileActivity"
+            android:name=".userprofile.UpdateProfileActivity"
             android:exported="false" />
         <activity
-            android:name="com.ptbas.controlcenter.auth.RegisterActivity"
+            android:name=".userprofile.UploadProfilePicActivity"
             android:exported="false" />
         <activity
-            android:name="com.ptbas.controlcenter.auth.LoginActivity"
+            android:name=".userprofile.ForgotPasswordActivity"
             android:exported="false" />
         <activity
-            android:name="com.ptbas.controlcenter.MainActivity"
+            android:name=".userprofile.UserProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".auth.RegisterActivity"
+            android:exported="false" />
+        <activity
+            android:name=".auth.LoginActivity"
+            android:exported="false" />
+        <activity
+            android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -1,11 +1,10 @@
-package com.ptbas.controlcenter;
+package com.ptbas.controlcenter.create;
 
 import static android.content.ContentValues.TAG;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
@@ -18,7 +17,6 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -42,9 +40,11 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.model.GoodIssueModel;
 import com.ptbas.controlcenter.model.PurchaseOrderModel;
 import com.ptbas.controlcenter.model.VehicleModel;
+import com.ptbas.controlcenter.utils.LangUtils;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -83,6 +83,8 @@ public class AddGoodIssueActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_good_issue);
 
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+
+        LangUtils.setLocale(this, "en");
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setTitle("Buat Good Issue");
@@ -602,5 +604,7 @@ public class AddGoodIssueActivity extends AppCompatActivity {
         finish();
         return super.onOptionsItemSelected(item);
     }
+
+
 
 }

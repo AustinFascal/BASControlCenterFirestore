@@ -1,4 +1,4 @@
-package com.ptbas.controlcenter;
+package com.ptbas.controlcenter.create;
 
 import static android.content.ContentValues.TAG;
 
@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -30,9 +29,11 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
@@ -44,21 +45,17 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.adapter.PreviewProductItemAdapter;
 import com.ptbas.controlcenter.model.ProductItems;
 import com.ptbas.controlcenter.model.ProductModel;
 import com.ptbas.controlcenter.model.PurchaseOrderModel;
+import com.ptbas.controlcenter.utils.LangUtils;
 
-import org.w3c.dom.Text;
-
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Currency;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -76,13 +73,14 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
     String transportData = "", customerData = "", customerAlias="", randomString="NULL", currencyData="";
     Integer poYear = 0, poMonth = 0, poDay = 0;
 
-    //TextView tvSumTotal;
-
     double totalSellPrice = 0, totalBuyPrice = 0, sumTotalSellPrice = 0;
 
     private DatePickerDialog datePicker;
 
     FloatingActionButton fabProceed;
+    FloatingActionsMenu fabExpandMenu;
+    com.getbase.floatingactionbutton.FloatingActionButton fabActionSaveCloud, fabActionUpdateData,
+            fabActionGenerateQrCode, fabActionSaveToPdf;
 
     private static final String ALLOWED_CHARACTERS ="0123456789QWERTYUIOPASDFGHJKLZXCVBNM";
 
@@ -97,6 +95,8 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_purchase_order);
+
+        LangUtils.setLocale(this, "en");
 
         bottomSheet = findViewById(R.id.bottomSheetPODetails);
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
@@ -144,7 +144,13 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
         spinnerPoCurrency = findViewById(R.id.spinner_po_currency);
         fabProceed = findViewById(R.id.fab_save_po_data);
 
-        //tvSumTotal = findViewById(R.id.tv_sum_total);
+        fabExpandMenu = findViewById(R.id.fab_expand_menu);
+        fabActionSaveCloud = findViewById(R.id.fab_action_save_cloud);
+        fabActionUpdateData = findViewById(R.id.fab_action_update_data);
+        fabActionGenerateQrCode = findViewById(R.id.fab_action_generate_qr_code);
+        fabActionSaveToPdf = findViewById(R.id.fab_action_save_to_pdf);
+
+        fabExpandMenu.setVisibility(View.GONE);
 
         databaseReference.child("TransportTypeData").addValueEventListener(new ValueEventListener() {
             @Override
@@ -190,7 +196,6 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
             }
         });
 
-
         databaseReference.child("CurrencyData").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -212,7 +217,6 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
 
             }
         });
-
 
         edtPoDate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -327,27 +331,38 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
             }
         });
 
-
-
         //TODO Make handler as onkeychangelistener
         final Handler handler = new Handler();
         Runnable runnable = new Runnable() {
             public void run() {
                 if (transportData.isEmpty()){
-                    edtPoNumberPtbas.setText(transportData+"-"+customerAlias+"-"+poMonth + "-" + poYear);
-                } else {
-                    edtPoNumberPtbas.setText(transportData.substring(0, 3) + "-" +customerAlias+"-"+ poMonth + "-" + poYear);
-                    if (!Objects.requireNonNull(edtPoNumberCustomer.getText()).toString().equals("")
-                            &&!customerData.isEmpty() &&!Objects.requireNonNull(edtPoDate.getText()).toString().equals("")){
-                        edtPoNumberPtbas.setText(randomString+"-"+transportData.substring(0, 3)+"-"+customerAlias+"-"+poMonth + "-" + poYear);
+                    if (poMonth==0||poYear==0){
+                        edtPoNumberPtbas.setText(transportData+"-"+customerAlias+"--");
+                    } else {
+                        edtPoNumberPtbas.setText(transportData+"-"+customerAlias+"-"+poMonth + "-" + poYear);
                     }
+                } else {
+                    if (poMonth==0||poYear==0){
+                        edtPoNumberPtbas.setText(transportData.substring(0, 3) + "-" +customerAlias+"--");
+                        if (!Objects.requireNonNull(edtPoNumberCustomer.getText()).toString().equals("")
+                                &&!customerData.isEmpty() &&!Objects.requireNonNull(edtPoDate.getText()).toString().equals("")){
+                            edtPoNumberPtbas.setText(randomString+"-"+transportData.substring(0, 3)+"-"+customerAlias+"--");
+                        }
+                    } else {
+                        edtPoNumberPtbas.setText(transportData.substring(0, 3) + "-" +customerAlias+"-"+ poMonth + "-" + poYear);
+                        if (!Objects.requireNonNull(edtPoNumberCustomer.getText()).toString().equals("")
+                                &&!customerData.isEmpty() &&!Objects.requireNonNull(edtPoDate.getText()).toString().equals("")){
+                            edtPoNumberPtbas.setText(randomString+"-"+transportData.substring(0, 3)+"-"+customerAlias+"-"+poMonth + "-" + poYear);
+                        }
+                    }
+
                 }
                 handler.postDelayed(this, 500);
             }
         };
+
         runnable.run();
         addView();
-
 
         fabProceed.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -385,7 +400,8 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
                         poTOP = Objects.requireNonNull(edtPoTOP.getText()).toString();
                     }
 
-                    insertData(poUID, poCurrency, poDateCreated, poInputDateCreated, poTOP, poTransportType, poCustomerName, poNumberCustomer, poStatus);
+                    insertData(poUID, poCurrency, poDateCreated, poInputDateCreated, poTOP,
+                            poTransportType, poCustomerName, poNumberCustomer, poStatus);
                 }
             }
         });
@@ -396,10 +412,12 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
                 switch (newState) {
                     case BottomSheetBehavior.STATE_EXPANDED:
                         bottomSheetExpanded();
+                        fabExpandMenu.setVisibility(View.VISIBLE);
                         break;
                     case BottomSheetBehavior.STATE_COLLAPSED:
                     case BottomSheetBehavior.STATE_DRAGGING:
                         bottomSheetCollapsed();
+                        fabExpandMenu.setVisibility(View.GONE);
                         break;
                 }
             }
@@ -413,30 +431,27 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
     }
 
     private void bottomSheetExpanded() {
-        fabProceed.setImageDrawable(getResources().getDrawable(R.drawable.ic_outline_save));
-        fabProceed.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.blue_700)));
+        fabProceed.setVisibility(View.GONE);
+        fabExpandMenu.setVisibility(View.VISIBLE);
         View viewLayout = AddPurchaseOrderActivity.this.getCurrentFocus();
         if (viewLayout != null) {
             InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(viewLayout.getWindowToken(), 0);
         }
-        llInputAllData.setVisibility(View.INVISIBLE);
     }
 
     private void bottomSheetCollapsed() {
-        fabProceed.setImageDrawable(getResources().getDrawable(R.drawable.ic_outline_check));
-        fabProceed.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.pure_orange)));
-        llInputAllData.setVisibility(View.VISIBLE);
+        fabProceed.setVisibility(View.VISIBLE);
+        fabExpandMenu.setVisibility(View.GONE);
+        fabExpandMenu.collapse();
     }
 
-    private void insertData(String poUID, String poCurrency, String poDateCreated, String poInputDateCreated, String poTOP, String poTransportType, String poCustomerName, String poNumberCustomer, Boolean poSatus) {
-        PurchaseOrderModel purchaseOrderModel = new PurchaseOrderModel(poUID, poCurrency, poDateCreated, poInputDateCreated, poTOP, poTransportType,
-                poCustomerName, poNumberCustomer, poSatus);
+    // Get passed data and save to cloud
+    private void insertData(String poUID, String poCurrency, String poDateCreated,
+                            String poInputDateCreated, String poTOP, String poTransportType,
+                            String poCustomerName, String poNumberCustomer, Boolean poSatus) {
 
-        DatabaseReference ref1 = FirebaseDatabase.getInstance().getReference("PurchaseOrders" + "/" + poUID);
-        DatabaseReference ref2 = FirebaseDatabase.getInstance().getReference("PurchaseOrders" + "/" +
-                poUID + "/" + "OrderedItems");
-
+        RelativeLayout wrapTitle = bottomSheet.findViewById(R.id.wrapTitle);
         TextView tvPoCurrency = bottomSheet.findViewById(R.id.tvPoCurrency);
         TextView tvPoPtBasNumber = bottomSheet.findViewById(R.id.tvPoPtBasNumber);
         TextView tvPoDate = bottomSheet.findViewById(R.id.tvPoDate);
@@ -452,14 +467,25 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
         TextView tvTotalSellFinal = bottomSheet.findViewById(R.id.tvTotalSellFinal);
         TextView tvEstProfit = bottomSheet.findViewById(R.id.tvEstProfit);
 
-        DecimalFormat df = new DecimalFormat("0.00");
+        double poSubTotalBuy = 0, poSubTotalSell = 0, poVAT = 0, poTotalSellFinal = 0, poEstProfit = 0;
+
+        ivCloseBottomSheetDetail.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                bottomSheetBehavior.setState(bottomSheetBehavior.STATE_HIDDEN);
+                bottomSheetCollapsed();
+            }
+        });
+
+        wrapTitle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                bottomSheetBehavior.setState(bottomSheetBehavior.STATE_HIDDEN);
+                bottomSheetCollapsed();
+            }
+        });
 
         if (checkIfValidAndProceed()) {
-            bottomSheetBehavior.setState(bottomSheetBehavior.STATE_EXPANDED);
-            bottomSheetExpanded();
-
-            setPreviewItems();
-
             tvPoCurrency.setText(poCurrency);
             tvPoPtBasNumber.setText(poUID);
             tvPoDate.setText(poDateCreated);
@@ -476,6 +502,12 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
                     sumTotalVAT = (0.11)*(sumSubTotalSell);
                     sumTotalSellFinal = sumSubTotalSell+sumTotalVAT;
                     sumEstProfit = sumSubTotalSell-sumSubTotalBuy;
+
+                    poSubTotalBuy = sumSubTotalBuy;
+                    poSubTotalSell = sumSubTotalSell;
+                    poVAT = sumTotalVAT;
+                    poTotalSellFinal = sumTotalSellFinal;
+                    poEstProfit = sumEstProfit;
                 }
 
                 tvSubTotalBuy.setText(currencyFormat(String.valueOf(sumSubTotalBuy)));
@@ -483,44 +515,60 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
                 tvTotalVAT.setText(currencyFormat(String.valueOf(sumTotalVAT)));
                 tvTotalSellFinal.setText(currencyFormat(String.valueOf(sumTotalSellFinal)));
                 tvEstProfit.setText(currencyFormat(String.valueOf(sumEstProfit)));
+
+                bottomSheetBehavior.setState(bottomSheetBehavior.STATE_EXPANDED);
+                RecyclerView rvItems = bottomSheet.findViewById(R.id.rvItems);
+                rvItems.setHasFixedSize(true);
+                rvItems.setLayoutManager(new LinearLayoutManager(this));
+
+                previewProductItemAdapter = new PreviewProductItemAdapter(this, getList());
+                rvItems.setAdapter(previewProductItemAdapter);
+
+                DatabaseReference ref1 = FirebaseDatabase.getInstance().getReference("PurchaseOrders" + "/" + poUID);
+                DatabaseReference ref2 = FirebaseDatabase.getInstance().getReference("PurchaseOrders" + "/" +
+                        poUID + "/" + "OrderedItems");
+
+                // Create PO object
+                PurchaseOrderModel purchaseOrderModel = new PurchaseOrderModel(
+                        poUID, poCurrency, poDateCreated, poInputDateCreated, poTOP, poTransportType,
+                        poCustomerName, poNumberCustomer, poSubTotalBuy, poSubTotalSell, poVAT,
+                        poTotalSellFinal, poEstProfit, poSatus);
+
+                fabActionSaveCloud.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED){
+                            ref1.setValue(purchaseOrderModel).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if(task.isSuccessful())
+                                    {
+                                        ref2.setValue(productItemsArrayList).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task)
+                                            {
+                                                if(task.isSuccessful())
+                                                {
+                                                    Toast.makeText(AddPurchaseOrderActivity.this, "Berhasil menambahkan data", Toast.LENGTH_SHORT).show();
+                                                    finish();
+                                                }
+                                            }
+                                        });
+
+                                    }
+                                }
+                            });
+                        }
+                    }
+                });
+
             } catch (Exception e) {
                 Log.e(TAG, e.getMessage());
                 Toast.makeText(AddPurchaseOrderActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         }
 
-        ivCloseBottomSheetDetail.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                bottomSheetBehavior.setState(bottomSheetBehavior.STATE_HIDDEN);
-                bottomSheetCollapsed();
-            }
-        });
 
-        if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED){
-
-            ref1.setValue(purchaseOrderModel).addOnCompleteListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    if(task.isSuccessful())
-                    {
-
-                        ref2.setValue(productItemsArrayList).addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task)
-                            {
-                                if(task.isSuccessful())
-                                {
-                                    Toast.makeText(AddPurchaseOrderActivity.this, "Success", Toast.LENGTH_SHORT).show();
-                                    finish();
-                                }
-                            }
-                        });
-
-                    }
-                }
-            });
-        }
     }
 
 
@@ -530,12 +578,7 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
     }
 
     private void setPreviewItems() {
-        RecyclerView rvItems = bottomSheet.findViewById(R.id.rvItems);
-        rvItems.setHasFixedSize(true);
-        rvItems.setLayoutManager(new LinearLayoutManager(this));
 
-        previewProductItemAdapter = new PreviewProductItemAdapter(this, getList());
-        rvItems.setAdapter(previewProductItemAdapter);
     }
 
     private List<ProductItems> getList() {
