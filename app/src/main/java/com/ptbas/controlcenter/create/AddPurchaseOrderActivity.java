@@ -1,7 +1,6 @@
 package com.ptbas.controlcenter.create;
 
 import static android.content.ContentValues.TAG;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -45,6 +44,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import com.ptbas.controlcenter.DialogInterface;
 import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.adapter.PreviewProductItemAdapter;
 import com.ptbas.controlcenter.model.ProductItems;
@@ -89,12 +90,16 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
     private BottomSheetBehavior<ConstraintLayout> bottomSheetBehavior;
     private ConstraintLayout bottomSheet;
 
+    DialogInterface dialogInterface = new DialogInterface();
+
     PreviewProductItemAdapter previewProductItemAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_purchase_order);
+
+
 
         LangUtils.setLocale(this, "en");
 
@@ -151,6 +156,8 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
         fabActionSaveToPdf = findViewById(R.id.fab_action_save_to_pdf);
 
         fabExpandMenu.setVisibility(View.GONE);
+
+        spinnerPoCurrency.setText("IDR");
 
         databaseReference.child("TransportTypeData").addValueEventListener(new ValueEventListener() {
             @Override
@@ -806,7 +813,14 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        finish();
+        dialogInterface.discardDialogConfirmation(AddPurchaseOrderActivity.this);
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    public void onBackPressed() {
+        dialogInterface.discardDialogConfirmation(AddPurchaseOrderActivity.this);
+    }
+
+
 }

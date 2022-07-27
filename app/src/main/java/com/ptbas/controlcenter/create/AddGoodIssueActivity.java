@@ -40,6 +40,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.ptbas.controlcenter.DialogInterface;
 import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.model.GoodIssueModel;
 import com.ptbas.controlcenter.model.PurchaseOrderModel;
@@ -49,7 +50,9 @@ import com.ptbas.controlcenter.utils.LangUtils;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -76,6 +79,8 @@ public class AddGoodIssueActivity extends AppCompatActivity {
     List<String> vhlRegistNumber, materialName, transportTypeName, purchaseOrderNumber;
 
     private static final String ALLOWED_CHARACTERS ="0123456789QWERTYUIOPASDFGHJKLZXCVBNM";
+
+    DialogInterface dialogInterface = new DialogInterface();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -327,6 +332,8 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                 poPtBasNumber = selectedSpinnerPoPtBasNumber;
                 spinnerPoPtBasNumber.setError(null);
                 edtGiPoNumberCust.setError(null);
+                materialName.clear();
+
 
                 DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("PurchaseOrders/"+poPtBasNumber);
                 databaseReference.addValueEventListener(new ValueEventListener() {
@@ -354,6 +361,31 @@ public class AddGoodIssueActivity extends AppCompatActivity {
 
                     }
                 });
+
+
+                DatabaseReference databaseReferencePO = FirebaseDatabase.getInstance().getReference("PurchaseOrders/"+poPtBasNumber+"/OrderedItems");
+                databaseReferencePO.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists()){
+                            for (DataSnapshot dataSnapshot: snapshot.getChildren()){
+                                String spinnerMaterialData = dataSnapshot.child("productName").getValue(String.class);
+                                materialName.add(spinnerMaterialData);
+                                materialName.remove("JASA ANGKUT");
+                            }
+                            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddGoodIssueActivity.this, R.layout.style_spinner, materialName);
+                            arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
+                            spinnerGiProductName.setAdapter(arrayAdapter);
+                        } else {
+                            Toast.makeText(AddGoodIssueActivity.this, "Not exists", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
             }
         });
 
@@ -363,6 +395,15 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                 String selectedSpinnerMaterialName = (String) adapterView.getItemAtPosition(position);
                 materialData = selectedSpinnerMaterialName;
                 spinnerGiProductName.setError(null);
+            }
+        });
+
+        spinnerGiProductName.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View view, int i, KeyEvent keyEvent) {
+                spinnerGiProductName.setError(null);
+                spinnerGiProductName.clearFocus();
+                return false;
             }
         });
 
@@ -433,7 +474,7 @@ public class AddGoodIssueActivity extends AppCompatActivity {
             }
         });
 
-        databaseReference.child("MaterialData").addValueEventListener(new ValueEventListener() {
+        /*databaseReference.child("MaterialData").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()){
@@ -453,7 +494,13 @@ public class AddGoodIssueActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError error) {
 
             }
-        });
+        });*/
+
+
+
+
+
+
 
         databaseReference.child("TransportTypeData").addValueEventListener(new ValueEventListener() {
             @Override
@@ -494,11 +541,8 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                 String giVhlHeight = tvGiVhlHeightVal.getText().toString();
                 String giVhlCubication = tvGiVhlFinalVolume.getText().toString();
 
-                // String finalVhlBrand = vhlBrand;
-                //String vhlStatus = "";
                 Boolean giStatus = true;
                 String giInputDateCreated = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
-                //String giInputDateModified = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
 
                 int selectedStatusId = radioGroupOperation.getCheckedRadioButtonId();
                 radioOperationSelected = findViewById(selectedStatusId);
@@ -525,16 +569,25 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                 } else if (edtGiHeightCorrection.getText().toString().isEmpty()){
                     giHeightCorrection.equals(0);
                     edtGiHeightCorrection.setText("0");
-                } else{
-                    String giUID = "";
-                    giUID = getRandomString(5)+"-"+transportData.substring(0, 3)+"-"+giDay.toString()+"-"+giMonth.toString()+"-"+giYear.toString();
+                }
 
-                    DecimalFormat df = new DecimalFormat("0.00");
-                    insertData(giUID, giPOCustomer, giPOBAS, giProductName, giTransportType, giVhlRegistNumber,
-                            Integer.parseInt(radioOperation+giHeightCorrection.replaceAll("[^0-9]", "")), giTime, giDate, giInputDateCreated,
-                            Integer.parseInt(giVhlLength), Integer.parseInt(giVhlWidth),
-                            Integer.parseInt(tvGiVhlHeightCorrection.getText().toString().replaceAll("[^0-9]", "")), Float.parseFloat(df.format(Float.parseFloat(giVhlCubication.replaceAll("[^0-9.]", "")))),
-                            giStatus);
+                for(int i = 0; i<materialName.size(); i++){
+                    if (!spinnerGiProductName.getText().toString().equals(materialName.get(i).toString())){
+                        spinnerGiProductName.setError("Nama material tidak ditemukan");
+                        spinnerGiProductName.requestFocus();
+                    } else{
+                        spinnerGiProductName.setError(null);
+                        spinnerGiProductName.clearFocus();
+                        String giUID = "";
+                        giUID = getRandomString(5)+"-"+transportData.substring(0, 3)+"-"+giDay.toString()+"-"+giMonth.toString()+"-"+giYear.toString();
+
+                        DecimalFormat df = new DecimalFormat("0.00");
+                        insertData(giUID, giPOCustomer, giPOBAS, giProductName, giTransportType, giVhlRegistNumber,
+                                Integer.parseInt(radioOperation+giHeightCorrection.replaceAll("[^0-9]", "")), giTime, giDate, giInputDateCreated,
+                                Integer.parseInt(giVhlLength), Integer.parseInt(giVhlWidth),
+                                Integer.parseInt(tvGiVhlHeightCorrection.getText().toString().replaceAll("[^0-9]", "")), Float.parseFloat(df.format(Float.parseFloat(giVhlCubication.replaceAll("[^0-9.]", "")))),
+                                giStatus);
+                    }
                 }
             }
         });
@@ -589,10 +642,7 @@ public class AddGoodIssueActivity extends AppCompatActivity {
 
             }
         });
-
-
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -601,8 +651,13 @@ public class AddGoodIssueActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        finish();
+        dialogInterface.discardDialogConfirmation(AddGoodIssueActivity.this);
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        dialogInterface.discardDialogConfirmation(AddGoodIssueActivity.this);
     }
 
 
