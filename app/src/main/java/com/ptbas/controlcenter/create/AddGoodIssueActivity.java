@@ -40,7 +40,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.ptbas.controlcenter.DashboardActivity;
 import com.ptbas.controlcenter.DialogInterface;
+import com.ptbas.controlcenter.Helper;
 import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.model.GoodIssueModel;
 import com.ptbas.controlcenter.model.PurchaseOrderModel;
@@ -569,26 +571,30 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                 } else if (edtGiHeightCorrection.getText().toString().isEmpty()){
                     giHeightCorrection.equals(0);
                     edtGiHeightCorrection.setText("0");
-                }
+                } else{
+                    for(int i = 0; i<materialName.size(); i++){
+                        if (!spinnerGiProductName.getText().toString().equals(materialName.get(i).toString())){
+                            spinnerGiProductName.setError("Nama material tidak ditemukan");
+                            spinnerGiProductName.requestFocus();
+                        } else{
+                            spinnerGiProductName.setError(null);
+                            spinnerGiProductName.clearFocus();
+                            String giUID = "";
+                            giUID = getRandomString(5)+"-"+transportData.substring(0, 3)+"-"+giDay.toString()+"-"+giMonth.toString()+"-"+giYear.toString();
 
-                for(int i = 0; i<materialName.size(); i++){
-                    if (!spinnerGiProductName.getText().toString().equals(materialName.get(i).toString())){
-                        spinnerGiProductName.setError("Nama material tidak ditemukan");
-                        spinnerGiProductName.requestFocus();
-                    } else{
-                        spinnerGiProductName.setError(null);
-                        spinnerGiProductName.clearFocus();
-                        String giUID = "";
-                        giUID = getRandomString(5)+"-"+transportData.substring(0, 3)+"-"+giDay.toString()+"-"+giMonth.toString()+"-"+giYear.toString();
-
-                        DecimalFormat df = new DecimalFormat("0.00");
-                        insertData(giUID, giPOCustomer, giPOBAS, giProductName, giTransportType, giVhlRegistNumber,
-                                Integer.parseInt(radioOperation+giHeightCorrection.replaceAll("[^0-9]", "")), giTime, giDate, giInputDateCreated,
-                                Integer.parseInt(giVhlLength), Integer.parseInt(giVhlWidth),
-                                Integer.parseInt(tvGiVhlHeightCorrection.getText().toString().replaceAll("[^0-9]", "")), Float.parseFloat(df.format(Float.parseFloat(giVhlCubication.replaceAll("[^0-9.]", "")))),
-                                giStatus);
+                            DecimalFormat df = new DecimalFormat("0.00");
+                            insertData(giUID, giPOCustomer, giPOBAS, giProductName, giTransportType, giVhlRegistNumber,
+                                    Integer.parseInt(radioOperation+giHeightCorrection.replaceAll("[^0-9]", "")),
+                                    giTime, giDate, giInputDateCreated,
+                                    Integer.parseInt(giVhlLength), Integer.parseInt(giVhlWidth),
+                                    Integer.parseInt(tvGiVhlHeightCorrection.getText().toString().replaceAll("[^0-9]", "")),
+                                    Float.parseFloat(df.format(Float.parseFloat(giVhlCubication.replaceAll("[^0-9.]", "")))),
+                                    giStatus);
+                        }
                     }
                 }
+
+
             }
         });
     }
@@ -608,7 +614,8 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                             float parseFloat, Boolean giStatus) {
 
         GoodIssueModel goodIssueModel = new GoodIssueModel(giUID, giPOCustomer, giPOBAS, giProductName,
-                giTransportType, giVhlRegistNumber, parseInt, giTime, giDate, giInputDateCreated, parseInt1, parseInt2, parseInt3, parseFloat, giStatus);
+                giTransportType, giVhlRegistNumber, parseInt, giTime, giDate, giInputDateCreated,
+                parseInt1, parseInt2, parseInt3, parseFloat, giStatus);
 
         DatabaseReference referenceGoodIssueDetectExists = FirebaseDatabase.getInstance("https://bas-delivery-report-default-rtdb.asia-southeast1.firebasedatabase.app").getReference("GoodIssueData/"+giUID);
         referenceGoodIssueDetectExists.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -622,8 +629,7 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
-                                Toast.makeText(AddGoodIssueActivity.this, "Data berhasil ditambahkan", Toast.LENGTH_SHORT).show();
-                                finish();
+                                dialogInterface.savedInformation(AddGoodIssueActivity.this);
                             } else {
                                 try{
                                     throw task.getException();

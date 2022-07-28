@@ -42,16 +42,13 @@
             android:theme="@style/Theme.TravelPermitBAS.NoActionBar" />
         <activity
             android:name=".create.AddPurchaseOrderActivity"
-            android:exported="false"
-            android:screenOrientation="portrait" />
+            android:exported="false" />
         <activity
             android:name=".create.AddGoodIssueActivity"
-            android:exported="false"
-            android:screenOrientation="portrait" />
+            android:exported="false" />
         <activity
             android:name=".create.AddVehicleActivity"
-            android:exported="false"
-            android:screenOrientation="portrait" />
+            android:exported="false" />
         <activity
             android:name=".userprofile.ChangePasswordActivity"
             android:exported="false" />

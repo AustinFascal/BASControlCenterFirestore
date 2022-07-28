@@ -64,6 +64,7 @@ import java.util.ArrayList;
 
 public class DashboardActivity extends AppCompatActivity {
 
+    public static SwipeRefreshLayout swipeContainer;
     private LinearLayout llAddGi, llAddVehicle, llAddPo, llAddInvoice, llTopView;
     private ImageView imageViewProfilePic;
     public FirebaseAuth authProfile;
@@ -77,7 +78,7 @@ public class DashboardActivity extends AppCompatActivity {
     MainFeaturesMenuAdapter mainFeaturesMenuAdapter;
     StatisticsAdapter statisticsAdapter;
 
-    private SwipeRefreshLayout swipeContainer;
+    //SwipeRefreshLayout swipeContainer;
     private CardView crdviewWrapInternetError, crdviewWrapShortcuts;
     private LinearLayout llWrapShortcuts, llWrapNoInternet;
 
@@ -89,6 +90,8 @@ public class DashboardActivity extends AppCompatActivity {
 
     private Window window;
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+
+    Helper helper = new Helper();
 
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -215,13 +218,18 @@ public class DashboardActivity extends AppCompatActivity {
             showUserProfile(firebaseUser);
         }
 
+
+
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                startActivity(getIntent());
+
+                helper.swipeRefresh(DashboardActivity.this);
+
+               /* startActivity(getIntent());
                 finish();
                 overridePendingTransition(0, 0);
-                swipeContainer.setRefreshing(false);
+                swipeContainer.setRefreshing(false);*/
             }
         });
 
@@ -489,26 +497,48 @@ public class DashboardActivity extends AppCompatActivity {
             public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
 
                 if (scrollY > 50) {
-                    llTopView.setBackgroundColor(ContextCompat.getColor(DashboardActivity.this, android.R.color.white));
-                    llTopView.setElevation(20);
-                    title.setTextColor(ContextCompat.getColor(DashboardActivity.this, R.color.black));
-                    imgbtnMenu.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(DashboardActivity.this, R.color.black)));
+                    int nightModeFlags =
+                            DashboardActivity.this.getResources().getConfiguration().uiMode &
+                                    Configuration.UI_MODE_NIGHT_MASK;
+                    switch (nightModeFlags) {
+                        case Configuration.UI_MODE_NIGHT_YES:
+                            llTopView.setBackgroundColor(ContextCompat.getColor(DashboardActivity.this, android.R.color.black));
+                            llTopView.setElevation(20);
+                            title.setTextColor(ContextCompat.getColor(DashboardActivity.this, R.color.white));
+                            imgbtnMenu.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(DashboardActivity.this, R.color.white)));
 
-                    if (Build.VERSION.SDK_INT >= 21) {
-                        //Window window = getWindow();
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);//  set status text dark
-                        }
-                        getWindow().setStatusBarColor(ContextCompat.getColor(DashboardActivity.this, R.color.white));// set status background white
+                            if (Build.VERSION.SDK_INT >= 21) {
+                                //Window window = getWindow();
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                    getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);//  set status text dark
+                                }
+                                getWindow().setStatusBarColor(ContextCompat.getColor(DashboardActivity.this, R.color.black));// set status background white
+                            }
+                            break;
+                        case Configuration.UI_MODE_NIGHT_NO:
+                        case Configuration.UI_MODE_NIGHT_UNDEFINED:
+                            llTopView.setBackgroundColor(ContextCompat.getColor(DashboardActivity.this, android.R.color.white));
+                            llTopView.setElevation(20);
+                            title.setTextColor(ContextCompat.getColor(DashboardActivity.this, R.color.black));
+                            imgbtnMenu.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(DashboardActivity.this, R.color.black)));
+
+                            if (Build.VERSION.SDK_INT >= 21) {
+                                //Window window = getWindow();
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                    getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);//  set status text dark
+                                }
+                                getWindow().setStatusBarColor(ContextCompat.getColor(DashboardActivity.this, R.color.white));// set status background white
+                            }
+                            break;
                     }
+
 
                 }
                 if (scrollY < 50) {
-                    llTopView.setBackgroundColor(ContextCompat.getColor(DashboardActivity.this, android.R.color.transparent));
-                    llTopView.setElevation(0);
                     title.setTextColor(ContextCompat.getColor(DashboardActivity.this, R.color.white));
                     imgbtnMenu.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(DashboardActivity.this, R.color.white)));
-
+                    llTopView.setBackgroundColor(ContextCompat.getColor(DashboardActivity.this, android.R.color.transparent));
+                    llTopView.setElevation(0);
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR);//  set status text dark
                     }

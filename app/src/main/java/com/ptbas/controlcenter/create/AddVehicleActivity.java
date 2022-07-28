@@ -28,6 +28,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.ptbas.controlcenter.DialogInterface;
 import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.model.VehicleModel;
 
@@ -52,6 +53,8 @@ public class AddVehicleActivity extends AppCompatActivity {
 
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
     List<String> names;
+
+    DialogInterface dialogInterface = new DialogInterface();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -191,8 +194,7 @@ public class AddVehicleActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
-                    Toast.makeText(AddVehicleActivity.this, "Data berhasil ditambahkan", Toast.LENGTH_SHORT).show();
-                    finish();
+                    dialogInterface.savedInformation(AddVehicleActivity.this);
                 } else {
                     try{
                         throw task.getException();

@@ -99,8 +99,6 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_purchase_order);
 
-
-
         LangUtils.setLocale(this, "en");
 
         bottomSheet = findViewById(R.id.bottomSheetPODetails);
@@ -556,8 +554,7 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
                                             {
                                                 if(task.isSuccessful())
                                                 {
-                                                    Toast.makeText(AddPurchaseOrderActivity.this, "Berhasil menambahkan data", Toast.LENGTH_SHORT).show();
-                                                    finish();
+                                                    dialogInterface.savedInformation(AddPurchaseOrderActivity.this);
                                                 }
                                             }
                                         });
