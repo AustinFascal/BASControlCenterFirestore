@@ -15,7 +15,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -29,7 +28,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -51,13 +49,12 @@ import com.ptbas.controlcenter.adapter.MainFeaturesMenuAdapter;
 import com.ptbas.controlcenter.adapter.StatisticsAdapter;
 import com.ptbas.controlcenter.create.AddGoodIssueActivity;
 import com.ptbas.controlcenter.create.AddInvoiceActivity;
-import com.ptbas.controlcenter.create.AddPurchaseOrderActivity;
+import com.ptbas.controlcenter.create.AddReceivedOrder;
 import com.ptbas.controlcenter.create.AddVehicleActivity;
 import com.ptbas.controlcenter.model.MainFeatureModel;
 import com.ptbas.controlcenter.model.StatisticsModel;
 import com.ptbas.controlcenter.model.UserModel;
 import com.ptbas.controlcenter.userprofile.UserProfileActivity;
-import com.ptbas.controlcenter.viewholder.MainFeatureViewHolder;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -181,7 +178,7 @@ public class DashboardActivity extends AppCompatActivity {
         llAddPo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(DashboardActivity.this, AddPurchaseOrderActivity.class);
+                Intent intent = new Intent(DashboardActivity.this, AddReceivedOrder.class);
                 startActivity(intent);
             }
         });
@@ -224,7 +221,7 @@ public class DashboardActivity extends AppCompatActivity {
             @Override
             public void onRefresh() {
 
-                helper.swipeRefresh(DashboardActivity.this);
+                helper.refreshDashboard(DashboardActivity.this);
 
                /* startActivity(getIntent());
                 finish();

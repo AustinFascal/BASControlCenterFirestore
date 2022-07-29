@@ -63,7 +63,7 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.Random;
 
-public class AddPurchaseOrderActivity extends AppCompatActivity {
+public class AddReceivedOrder extends AppCompatActivity {
 
     LinearLayout llList,llAddItem, llInputAllData;
     Button btnAddRow;
@@ -97,7 +97,7 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_purchase_order);
+        setContentView(R.layout.activity_add_receive_order);
 
         LangUtils.setLocale(this, "en");
 
@@ -165,11 +165,11 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
                         String spinnerMaterialData = dataSnapshot.child("name").getValue(String.class);
                         transportTypeName.add(spinnerMaterialData);
                     }
-                    ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddPurchaseOrderActivity.this, R.layout.style_spinner, transportTypeName);
+                    ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddReceivedOrder.this, R.layout.style_spinner, transportTypeName);
                     arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
                     spinnerPoTransportType.setAdapter(arrayAdapter);
                 } else {
-                    Toast.makeText(AddPurchaseOrderActivity.this, "Not exists", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AddReceivedOrder.this, "Not exists", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -187,11 +187,11 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
                         String spinnerMaterialData = dataSnapshot.child("name").getValue(String.class);
                         customerName.add(spinnerMaterialData);
                     }
-                    ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddPurchaseOrderActivity.this, R.layout.style_spinner, customerName);
+                    ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddReceivedOrder.this, R.layout.style_spinner, customerName);
                     arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
                     spinnerPoCustName.setAdapter(arrayAdapter);
                 } else {
-                    Toast.makeText(AddPurchaseOrderActivity.this, "Not exists", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AddReceivedOrder.this, "Not exists", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -209,11 +209,11 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
                         String spinnerCurrencyData = dataSnapshot.child("currencyName").getValue(String.class);
                         currencyName.add(spinnerCurrencyData);
                     }
-                    ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddPurchaseOrderActivity.this, R.layout.style_spinner, currencyName);
+                    ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddReceivedOrder.this, R.layout.style_spinner, currencyName);
                     arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
                     spinnerPoCurrency.setAdapter(arrayAdapter);
                 } else {
-                    Toast.makeText(AddPurchaseOrderActivity.this, "Not exists", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AddReceivedOrder.this, "Not exists", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -232,7 +232,7 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
                 int month = calendar.get(Calendar.MONTH);
                 int year = calendar.get(Calendar.YEAR);
 
-                datePicker = new DatePickerDialog(AddPurchaseOrderActivity.this,
+                datePicker = new DatePickerDialog(AddReceivedOrder.this,
                         new DatePickerDialog.OnDateSetListener() {
                             @Override
                             public void onDateSet(DatePicker datePicker, int year, int month, int dayOfMonth) {
@@ -254,7 +254,7 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
                 int month = calendar.get(Calendar.MONTH);
                 int year = calendar.get(Calendar.YEAR);
 
-                datePicker = new DatePickerDialog(AddPurchaseOrderActivity.this,
+                datePicker = new DatePickerDialog(AddReceivedOrder.this,
                         new DatePickerDialog.OnDateSetListener() {
                             @Override
                             public void onDateSet(DatePicker datePicker, int year, int month, int dayOfMonth) {
@@ -438,7 +438,7 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
     private void bottomSheetExpanded() {
         fabProceed.setVisibility(View.GONE);
         fabExpandMenu.setVisibility(View.VISIBLE);
-        View viewLayout = AddPurchaseOrderActivity.this.getCurrentFocus();
+        View viewLayout = AddReceivedOrder.this.getCurrentFocus();
         if (viewLayout != null) {
             InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(viewLayout.getWindowToken(), 0);
@@ -529,8 +529,8 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
                 previewProductItemAdapter = new PreviewProductItemAdapter(this, getList());
                 rvItems.setAdapter(previewProductItemAdapter);
 
-                DatabaseReference ref1 = FirebaseDatabase.getInstance().getReference("PurchaseOrders" + "/" + poUID);
-                DatabaseReference ref2 = FirebaseDatabase.getInstance().getReference("PurchaseOrders" + "/" +
+                DatabaseReference ref1 = FirebaseDatabase.getInstance().getReference("ReceivedOrders" + "/" + poUID);
+                DatabaseReference ref2 = FirebaseDatabase.getInstance().getReference("ReceivedOrders" + "/" +
                         poUID + "/" + "OrderedItems");
 
                 // Create PO object
@@ -554,7 +554,7 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
                                             {
                                                 if(task.isSuccessful())
                                                 {
-                                                    dialogInterface.savedInformation(AddPurchaseOrderActivity.this);
+                                                    dialogInterface.savedInformation(AddReceivedOrder.this);
                                                 }
                                             }
                                         });
@@ -568,7 +568,7 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
 
             } catch (Exception e) {
                 Log.e(TAG, e.getMessage());
-                Toast.makeText(AddPurchaseOrderActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(AddReceivedOrder.this, e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         }
 
@@ -705,11 +705,11 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
                         String spinnerMaterialData = dataSnapshot.child("productName").getValue(String.class);
                         productName.add(spinnerMaterialData);
                     }
-                    ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddPurchaseOrderActivity.this, R.layout.style_spinner, productName);
+                    ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddReceivedOrder.this, R.layout.style_spinner, productName);
                     arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
                     spinnerMaterialName.setAdapter(arrayAdapter);
                 } else {
-                    Toast.makeText(AddPurchaseOrderActivity.this, "Not exists", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AddReceivedOrder.this, "Not exists", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -777,7 +777,7 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
                             runnable.run();
 
                         } else {
-                            Toast.makeText(AddPurchaseOrderActivity.this, "Null", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(AddReceivedOrder.this, "Null", Toast.LENGTH_SHORT).show();
                         }
                     }
 
@@ -810,13 +810,13 @@ public class AddPurchaseOrderActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        dialogInterface.discardDialogConfirmation(AddPurchaseOrderActivity.this);
+        dialogInterface.discardDialogConfirmation(AddReceivedOrder.this);
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     public void onBackPressed() {
-        dialogInterface.discardDialogConfirmation(AddPurchaseOrderActivity.this);
+        dialogInterface.discardDialogConfirmation(AddReceivedOrder.this);
     }
 
 

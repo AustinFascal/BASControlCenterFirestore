@@ -2,9 +2,6 @@ package com.ptbas.controlcenter;
 
 import android.app.Activity;
 
-import com.google.android.material.transition.MaterialContainerTransform;
-import com.ptbas.controlcenter.create.AddGoodIssueActivity;
-
 import dev.shreyaspatil.MaterialDialog.BottomSheetMaterialDialog;
 import dev.shreyaspatil.MaterialDialog.model.TextAlignment;
 
@@ -48,7 +45,7 @@ public class DialogInterface {
                     @Override
                     public void onClick(dev.shreyaspatil.MaterialDialog.interfaces.DialogInterface dialogInterface, int which) {
                         dialogInterface.dismiss();
-                        helper.swipeRefresh(activity.getApplicationContext());
+                        helper.refreshDashboard(activity.getApplicationContext());
                     }
 
                 })

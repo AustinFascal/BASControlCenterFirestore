@@ -5,7 +5,7 @@
     android:id="@+id/swipeContainer"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".create.AddPurchaseOrderActivity">
+    tools:context=".create.AddReceivedOrder">
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_save_po_data"
@@ -30,7 +30,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            tools:context=".create.AddPurchaseOrderActivity">
+            tools:context=".create.AddReceivedOrder">
 
             <LinearLayout
                 android:id="@+id/ll_input_all_data"
@@ -146,6 +146,7 @@
                         android:id="@+id/edt_po_number_customer"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:text="-"
                         android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890/"
                         android:hint="@string/inputPoNumberCustomer2"
                         android:inputType="textFilter|textCapCharacters" />
@@ -156,7 +157,7 @@
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:prefixText="PO-"
+                    app:prefixText="RO-"
                     app:startIconDrawable="@drawable/ic_outline_receipt">
 
                     <com.google.android.material.textfield.TextInputEditText

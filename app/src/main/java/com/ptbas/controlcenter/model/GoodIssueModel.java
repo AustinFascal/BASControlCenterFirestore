@@ -2,33 +2,36 @@ package com.ptbas.controlcenter.model;
 
 public class GoodIssueModel {
 
-    String giUID, giPoCustNumber, giPoBasNumber, giMaterialName, giMaterialType, giVhlRegistNumber,
-            giTimeCreated, giDateCreated, giInputDateCreated;
-    Integer giHeightCorrection, vhlLength, vhlWidth, vhlHeight;
+    //MANDATORY
+    String giUID, giCreatedBy, giRoUID, giPoCustNumber, giMatName, giMatType, vhlUID,
+            giDateCreated, giTimeCreted;
+    Integer vhlLength, vhlWidth, vhlHeight, vhlHeightCorrection, vhlHeightAfterCorrection;
     Float giVhlCubication;
     Boolean giStatus;
 
     GoodIssueModel() {
     }
 
-    public GoodIssueModel(String giUID, String giPoCustNumber, String giPoBasNumber, String giMaterialName,
-                          String giMaterialType, String giVhlRegistNumber, Integer giHeightCorrection, String giTimeCreated,
-                          String giDateCreated, String giInputDateCreated,
+    public GoodIssueModel(String giUID, String giCreatedBy, String giRoUID,
+                          String giPoCustNumber, String giMatName, String giMatType,
+                          String vhlUID, String giDateCreated, String giTimeCreted,
                           Integer vhlLength, Integer vhlWidth, Integer vhlHeight,
+                          Integer vhlHeightCorrection, Integer vhlHeightAfterCorrection,
                           Float giVhlCubication, Boolean giStatus) {
         this.giUID = giUID;
+        this.giCreatedBy = giCreatedBy;
+        this.giRoUID = giRoUID;
         this.giPoCustNumber = giPoCustNumber;
-        this.giPoBasNumber = giPoBasNumber;
-        this.giMaterialName = giMaterialName;
-        this.giMaterialType = giMaterialType;
-        this.giVhlRegistNumber = giVhlRegistNumber;
-        this.giTimeCreated = giTimeCreated;
+        this.giMatName = giMatName;
+        this.giMatType = giMatType;
+        this.vhlUID = vhlUID;
         this.giDateCreated = giDateCreated;
-        this.giInputDateCreated = giInputDateCreated;
-        this.giHeightCorrection = giHeightCorrection;
+        this.giTimeCreted = giTimeCreted;
         this.vhlLength = vhlLength;
         this.vhlWidth = vhlWidth;
         this.vhlHeight = vhlHeight;
+        this.vhlHeightCorrection = vhlHeightCorrection;
+        this.vhlHeightAfterCorrection = vhlHeightAfterCorrection;
         this.giVhlCubication = giVhlCubication;
         this.giStatus = giStatus;
     }
@@ -41,6 +44,22 @@ public class GoodIssueModel {
         this.giUID = giUID;
     }
 
+    public String getGiCreatedBy() {
+        return giCreatedBy;
+    }
+
+    public void setGiCreatedBy(String giCreatedBy) {
+        this.giCreatedBy = giCreatedBy;
+    }
+
+    public String getGiRoUID() {
+        return giRoUID;
+    }
+
+    public void setGiRoUID(String giRoUID) {
+        this.giRoUID = giRoUID;
+    }
+
     public String getGiPoCustNumber() {
         return giPoCustNumber;
     }
@@ -49,44 +68,28 @@ public class GoodIssueModel {
         this.giPoCustNumber = giPoCustNumber;
     }
 
-    public String getGiPoBasNumber() {
-        return giPoBasNumber;
+    public String getGiMatName() {
+        return giMatName;
     }
 
-    public void setGiPoBasNumber(String giPoBasNumber) {
-        this.giPoBasNumber = giPoBasNumber;
+    public void setGiMatName(String giMatName) {
+        this.giMatName = giMatName;
     }
 
-    public String getGiMaterialName() {
-        return giMaterialName;
+    public String getGiMatType() {
+        return giMatType;
     }
 
-    public void setGiMaterialName(String giMaterialName) {
-        this.giMaterialName = giMaterialName;
+    public void setGiMatType(String giMatType) {
+        this.giMatType = giMatType;
     }
 
-    public String getGiMaterialType() {
-        return giMaterialType;
+    public String getVhlUID() {
+        return vhlUID;
     }
 
-    public void setGiMaterialType(String giMaterialType) {
-        this.giMaterialType = giMaterialType;
-    }
-
-    public String getGiVhlRegistNumber() {
-        return giVhlRegistNumber;
-    }
-
-    public void setGiVhlRegistNumber(String giVhlRegistNumber) {
-        this.giVhlRegistNumber = giVhlRegistNumber;
-    }
-
-    public String getGiTimeCreated() {
-        return giTimeCreated;
-    }
-
-    public void setGiTimeCreated(String giTimeCreated) {
-        this.giTimeCreated = giTimeCreated;
+    public void setVhlUID(String vhlUID) {
+        this.vhlUID = vhlUID;
     }
 
     public String getGiDateCreated() {
@@ -97,20 +100,12 @@ public class GoodIssueModel {
         this.giDateCreated = giDateCreated;
     }
 
-    public String getGiInputDateCreated() {
-        return giInputDateCreated;
+    public String getGiTimeCreted() {
+        return giTimeCreted;
     }
 
-    public void setGiInputDateCreated(String giInputDateCreated) {
-        this.giInputDateCreated = giInputDateCreated;
-    }
-
-    public Integer getGiHeightCorrection() {
-        return giHeightCorrection;
-    }
-
-    public void setGiHeightCorrection(Integer giHeightCorrection) {
-        this.giHeightCorrection = giHeightCorrection;
+    public void setGiTimeCreted(String giTimeCreted) {
+        this.giTimeCreted = giTimeCreted;
     }
 
     public Integer getVhlLength() {
@@ -135,6 +130,22 @@ public class GoodIssueModel {
 
     public void setVhlHeight(Integer vhlHeight) {
         this.vhlHeight = vhlHeight;
+    }
+
+    public Integer getVhlHeightCorrection() {
+        return vhlHeightCorrection;
+    }
+
+    public void setVhlHeightCorrection(Integer vhlHeightCorrection) {
+        this.vhlHeightCorrection = vhlHeightCorrection;
+    }
+
+    public Integer getVhlHeightAfterCorrection() {
+        return vhlHeightAfterCorrection;
+    }
+
+    public void setVhlHeightAfterCorrection(Integer vhlHeightAfterCorrection) {
+        this.vhlHeightAfterCorrection = vhlHeightAfterCorrection;
     }
 
     public Float getGiVhlCubication() {

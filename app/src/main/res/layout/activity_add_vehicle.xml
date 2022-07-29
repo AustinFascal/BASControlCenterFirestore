@@ -47,7 +47,8 @@
                 android:layout_height="wrap_content"
                 android:divider="@drawable/divider_transparent"
                 android:orientation="horizontal"
-                android:showDividers="middle">
+                android:showDividers="middle"
+                android:baselineAligned="false">
 
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -107,38 +108,32 @@
                 android:id="@+id/radio_group_status"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/textView_register_gender"
-                android:layout_toEndOf="@id/imageViewGender"
                 android:background="@drawable/outline_box"
                 android:orientation="horizontal"
                 android:padding="5dp">
-
-                <RadioButton
-                    android:id="@+id/radio_inactive"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Tidak Aktif"
-                    style="@style/Theme.TravelPermitBAS"
-                    android:textSize="16sp" />
-
                 <RadioButton
                     android:id="@+id/radio_active"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:checked="true"
-                    android:text="Aktif"
+                    android:text="@string/active"
                     style="@style/Theme.TravelPermitBAS"
                     android:textSize="16sp" />
-
-
+                <RadioButton
+                    android:id="@+id/radio_inactive"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/inactive"
+                    style="@style/Theme.TravelPermitBAS"
+                    android:textSize="16sp" />
             </RadioGroup>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Detail Lainnya (opsional)" />
+                android:text="@string/other_detail" />
 
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
@@ -217,8 +212,8 @@
         android:layout_marginTop="24dp"
         android:layout_marginEnd="24dp"
         android:layout_marginBottom="24dp"
-        android:contentDescription="Save"
         android:src="@drawable/ic_outline_save_black"
         android:tintMode="@color/white"
-        app:backgroundTint="@color/pure_orange" />
+        app:backgroundTint="@color/pure_orange"
+        android:contentDescription="Save Data" />
 </RelativeLayout>

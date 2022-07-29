@@ -40,9 +40,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.ptbas.controlcenter.DashboardActivity;
 import com.ptbas.controlcenter.DialogInterface;
-import com.ptbas.controlcenter.Helper;
 import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.model.GoodIssueModel;
 import com.ptbas.controlcenter.model.PurchaseOrderModel;
@@ -52,9 +50,7 @@ import com.ptbas.controlcenter.utils.LangUtils;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -63,38 +59,39 @@ import java.util.Random;
 
 public class AddGoodIssueActivity extends AppCompatActivity {
 
-    private TextView tvGiVhlLengthVal, tvGiVhlWidthVal, tvGiVhlHeightVal,
-            tvGiVhlFinalVolume, tvGiVhlHeightCorrection;
-    private AutoCompleteTextView spinnerGiVhlRegistNumber, spinnerGiProductName, spinnerPoPtBasNumber, spinnerGiTransportType,
-            edtGiPoNumberBas;
-    String vhlData = "", materialData = "", transportData = "", poPtBasNumber="";
+    String vhlData = "", matName = "", matType = "", roNumber ="";
     Integer giYear = 0, giMonth = 0, giDay = 0;
-    private LinearLayout llHeightCorrectionFeature;
-    private DatePickerDialog datePicker;
-    private TimePickerDialog timePicker;
-    private TextInputEditText edtGiDate, edtGiTime, edtGiHeightCorrection, edtGiPoNumberCust;
-    private FloatingActionButton fabSaveGIData;
 
-    private RadioGroup radioGroupOperation;
-    private RadioButton radioOperationSelected;
+    TextView tvHeightCorrection, tvVhlVolume;
+    TextInputEditText edtGiDate, edtGiTime, edtPoNumberCust, edtVhlLength, edtVhlWidth, edtVhlHeight,
+            edtHeightCorrection;
+    AutoCompleteTextView spinnerRoNumber, spinnerMatName,
+            spinnerMatType, spinnerVhlUID;
 
-    List<String> vhlRegistNumber, materialName, transportTypeName, purchaseOrderNumber;
+    //LinearLayout llHeightCorrectionFeature;
+    DatePickerDialog datePicker;
+    TimePickerDialog timePicker;
+    RadioGroup radioGroupOperation;
+    RadioButton radioOperationSelected;
+
+    FloatingActionButton fabSaveGIData;
 
     private static final String ALLOWED_CHARACTERS ="0123456789QWERTYUIOPASDFGHJKLZXCVBNM";
 
+    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+
     DialogInterface dialogInterface = new DialogInterface();
+    List<String> vhlUIDList, matNameList, matTypeNameList, receiveOrderNumberList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_good_issue);
 
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-
         LangUtils.setLocale(this, "en");
 
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setTitle("Buat Good Issue");
+        Objects.requireNonNull(actionBar).setTitle("Buat Good Issue");
         actionBar.setDisplayHomeAsUpEnabled(true);
 
         int nightModeFlags =
@@ -105,43 +102,38 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                 actionBar.setBackgroundDrawable(new ColorDrawable(getResources()
                         .getColor(R.color.black)));
                 break;
-
             case Configuration.UI_MODE_NIGHT_NO:
-
             case Configuration.UI_MODE_NIGHT_UNDEFINED:
                 actionBar.setBackgroundDrawable(new ColorDrawable(getResources()
                         .getColor(R.color.white)));
                 break;
         }
 
+        vhlUIDList  = new ArrayList<>();
+        matNameList  = new ArrayList<>();
+        matTypeNameList  = new ArrayList<>();
+        receiveOrderNumberList = new ArrayList<>();
 
         edtGiDate = findViewById(R.id.edt_gi_date);
         edtGiTime = findViewById(R.id.edt_gi_time);
-        edtGiHeightCorrection = findViewById(R.id.edt_gi_vhl_height_correction);
 
-        edtGiPoNumberCust = findViewById(R.id.edt_gi_po_number_cust);
-        spinnerGiVhlRegistNumber = findViewById(R.id.spinner_gi_vhl_regist_number);
-        spinnerGiProductName = findViewById(R.id.spinner_gi_product_name);
-        spinnerGiTransportType = findViewById(R.id.spinner_gi_transport_type);
-        spinnerPoPtBasNumber = findViewById(R.id.spinner_gi_po_number_bas);
+        spinnerRoNumber = findViewById(R.id.spinner_ro_number);
+        edtPoNumberCust = findViewById(R.id.edt_po_number_cust);
+        spinnerMatName = findViewById(R.id.spinner_mat_name);
+        spinnerMatType = findViewById(R.id.spinner_mat_type);
+        spinnerVhlUID = findViewById(R.id.spinner_vhl_uid);
 
-        tvGiVhlFinalVolume = findViewById(R.id.tv_gi_vhl_final_volume);
-        tvGiVhlLengthVal = findViewById(R.id.tv_gi_vhl_length_val);
-        tvGiVhlWidthVal = findViewById(R.id.tv_gi_vhl_width_val);
-        tvGiVhlHeightVal = findViewById(R.id.tv_gi_vhl_height_val);
-        tvGiVhlHeightCorrection = findViewById(R.id.tv_gi_vhl_height_correction);
-        llHeightCorrectionFeature = findViewById(R.id.ll_height_correction_feature);
+        edtVhlLength = findViewById(R.id.edt_vhl_length);
+        edtVhlWidth = findViewById(R.id.edt_vhl_width);
+        edtVhlHeight = findViewById(R.id.edt_vhl_height);
+        radioGroupOperation = findViewById(R.id.radio_group_operation);
+        edtHeightCorrection = findViewById(R.id.edt_vhl_height_correction);
+        tvHeightCorrection = findViewById(R.id.tv_vhl_height_correction);
+        tvVhlVolume = findViewById(R.id.tv_vhl_volume);
+
         fabSaveGIData = findViewById(R.id.fab_save_gi_data);
 
-        vhlRegistNumber  = new ArrayList<>();
-        materialName  = new ArrayList<>();
-        transportTypeName  = new ArrayList<>();
-        purchaseOrderNumber = new ArrayList<>();
-
-        radioGroupOperation = findViewById(R.id.radio_group_operation);
-        llHeightCorrectionFeature.setVisibility(View.GONE);
-
-        tvGiVhlFinalVolume.setText(Html.fromHtml("0 m\u00B3"));
+        tvVhlVolume.setText(Html.fromHtml("0 m\u00B3"));
 
         edtGiDate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -155,7 +147,7 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                         new DatePickerDialog.OnDateSetListener() {
                             @Override
                             public void onDateSet(DatePicker datePicker, int year, int month, int dayOfMonth) {
-                                edtGiDate.setText(dayOfMonth + "/" +(month + 1) + "/" + year);
+                                edtGiDate.setText(String.valueOf(dayOfMonth + "/" +(month + 1) + "/" + year));
                                 giYear = year;
                                 giMonth = month + 1;
                                 giDay = dayOfMonth;
@@ -176,17 +168,18 @@ public class AddGoodIssueActivity extends AppCompatActivity {
 
                 timePicker = new TimePickerDialog(AddGoodIssueActivity.this,
                         new TimePickerDialog.OnTimeSetListener() {
-                    @Override
-                    public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
-                        edtGiTime.setText(selectedHour+":"+selectedMinute);
-                    }
-                }, hour, minute, true);
+                            @Override
+                            public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
+                                edtGiTime.setText(String.valueOf(selectedHour+":"+selectedMinute));
+                            }
+                        }, hour, minute, true);
                 timePicker.show();
                 edtGiTime.setError(null);
             }
         });
 
-        edtGiHeightCorrection.addTextChangedListener(new TextWatcher() {
+
+        edtHeightCorrection.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -199,38 +192,61 @@ public class AddGoodIssueActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                DecimalFormat df = new DecimalFormat("0.00");
+                processCountVolume(edtHeightCorrection);
+
+                /*DecimalFormat df = new DecimalFormat("0.00");
                 int selectedStatusId = radioGroupOperation.getCheckedRadioButtonId();
                 radioOperationSelected = findViewById(selectedStatusId);
                 String radioOperation = radioOperationSelected.getText().toString();
 
-                if (edtGiHeightCorrection.getText().toString().equals("")){
+                if (edtHeightCorrection.getText().toString().equals("")){
                     float finalVolumeDefault =
-                            (Float.parseFloat(tvGiVhlLengthVal.getText().toString())*
-                                    Float.parseFloat(tvGiVhlWidthVal.getText().toString())*
-                                    Float.parseFloat(tvGiVhlHeightVal.getText().toString()))/1000000;
-                    tvGiVhlFinalVolume.setText(Html.fromHtml(String.valueOf(df.format(finalVolumeDefault))+" m\u00B3"));
-                    tvGiVhlHeightCorrection.setText(Html.fromHtml("Tinggi Hasil Koreksi: "+tvGiVhlHeightVal.getText().toString())+" cm");
+                            (Float.parseFloat(edtVhlLength.getText().toString())*
+                                    Float.parseFloat(edtVhlWidth.getText().toString())*
+                                    Float.parseFloat(edtVhlHeight.getText().toString()))/1000000;
+                    tvVhlVolume.setText(Html.fromHtml(String.valueOf(df.format(finalVolumeDefault))+" m\u00B3"));
+                    tvHeightCorrection.setText(Html.fromHtml("Tinggi Hasil Koreksi: "+tvHeightCorrection.getText().toString())+" cm");
                 } else {
                     float finalVolume;
                     int finalHeightCorrection;
                     if (radioOperation.equals("+")){
-                        finalVolume = (Float.parseFloat(tvGiVhlLengthVal.getText().toString()) *
-                                Float.parseFloat(tvGiVhlWidthVal.getText().toString()) *
-                                (Float.parseFloat(tvGiVhlHeightVal.getText().toString()) +
-                                        Float.parseFloat(edtGiHeightCorrection.getText().toString()))) / 1000000;
-                        finalHeightCorrection = Integer.parseInt(tvGiVhlHeightVal.getText().toString()) + Integer.parseInt(edtGiHeightCorrection.getText().toString());
+                        finalVolume =
+                                (Float.parseFloat(edtVhlLength.getText().toString()) * Float.parseFloat(edtVhlWidth.getText().toString()) * (Float.parseFloat(edtVhlHeight.getText().toString()) + Float.parseFloat(edtHeightCorrection.getText().toString()))) / 1000000;
+                        finalHeightCorrection = Integer.parseInt(edtVhlHeight.getText().toString()) + Integer.parseInt(edtHeightCorrection.getText().toString());
                     } else{
-                        finalVolume = (Float.parseFloat(tvGiVhlLengthVal.getText().toString()) *
-                                Float.parseFloat(tvGiVhlWidthVal.getText().toString()) *
-                                (Float.parseFloat(tvGiVhlHeightVal.getText().toString()) -
-                                        Float.parseFloat(edtGiHeightCorrection.getText().toString()))) / 1000000;
-                        finalHeightCorrection = Integer.parseInt(tvGiVhlHeightVal.getText().toString()) - Integer.parseInt(edtGiHeightCorrection.getText().toString());
+                        finalVolume =
+                                (Float.parseFloat(edtVhlLength.getText().toString()) * Float.parseFloat(edtVhlWidth.getText().toString()) * (Float.parseFloat(edtVhlHeight.getText().toString()) - Float.parseFloat(edtHeightCorrection.getText().toString()))) / 1000000;
+                        finalHeightCorrection = Integer.parseInt(edtVhlHeight.getText().toString()) - Integer.parseInt(edtHeightCorrection.getText().toString());
                     }
-                    tvGiVhlFinalVolume.setText(Html.fromHtml(String.valueOf(df.format(finalVolume))+" m\u00B3"));
-                    tvGiVhlHeightCorrection.setText(Html.fromHtml("Tinggi Hasil Koreksi: "+finalHeightCorrection)+" cm");
-                }
+                    tvVhlVolume.setText(Html.fromHtml(String.valueOf(df.format(finalVolume))+" m\u00B3"));
+                    tvHeightCorrection.setText(Html.fromHtml("Tinggi Hasil Koreksi: "+finalHeightCorrection)+" cm");
+                }*/
 
+            }
+        });
+
+
+        edtVhlLength.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View view, int i, KeyEvent keyEvent) {
+                processCountVolume(edtVhlLength);
+                return false;
+            }
+        });
+
+        edtVhlWidth.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View view, int i, KeyEvent keyEvent) {
+                processCountVolume(edtVhlWidth);
+                return false;
+            }
+        });
+
+        edtVhlHeight.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View view, int i, KeyEvent keyEvent) {
+                processCountVolume(edtVhlHeight);
+                return false;
             }
         });
 
@@ -242,47 +258,45 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                 radioOperationSelected = findViewById(selectedStatusId);
                 String radioOperation = radioOperationSelected.getText().toString();
 
-                if (!edtGiHeightCorrection.getText().toString().isEmpty()){
+                if (!edtHeightCorrection.getText().toString().isEmpty()){
                     float finalVolume;
                     int finalHeightCorrection;
                     if (radioOperation.equals("+")){
-                        finalVolume = (Float.parseFloat(tvGiVhlLengthVal.getText().toString()) *
-                                Float.parseFloat(tvGiVhlWidthVal.getText().toString()) *
-                                (Float.parseFloat(tvGiVhlHeightVal.getText().toString()) +
-                                        Float.parseFloat(edtGiHeightCorrection.getText().toString()))) / 1000000;
-                        finalHeightCorrection = Integer.parseInt(tvGiVhlHeightVal.getText().toString()) + Integer.parseInt(edtGiHeightCorrection.getText().toString());
+                        finalVolume =
+                                (Float.parseFloat(edtVhlLength.getText().toString()) * Float.parseFloat(edtVhlWidth.getText().toString()) * (Float.parseFloat(edtVhlHeight.getText().toString()) + Float.parseFloat(edtHeightCorrection.getText().toString()))) / 1000000;
+                        finalHeightCorrection = Integer.parseInt(edtVhlHeight.getText().toString()) + Integer.parseInt(edtHeightCorrection.getText().toString());
                     } else{
-                        finalVolume = (Float.parseFloat(tvGiVhlLengthVal.getText().toString()) *
-                                Float.parseFloat(tvGiVhlWidthVal.getText().toString()) *
-                                (Float.parseFloat(tvGiVhlHeightVal.getText().toString()) -
-                                        Float.parseFloat(edtGiHeightCorrection.getText().toString()))) / 1000000;
-                        finalHeightCorrection = Integer.parseInt(tvGiVhlHeightVal.getText().toString()) - Integer.parseInt(edtGiHeightCorrection.getText().toString());
+                        finalVolume =
+                                (Float.parseFloat(edtVhlLength.getText().toString()) * Float.parseFloat(edtVhlWidth.getText().toString()) * (Float.parseFloat(edtVhlHeight.getText().toString()) - Float.parseFloat(edtHeightCorrection.getText().toString()))) / 1000000;
+                        finalHeightCorrection = Integer.parseInt(edtVhlHeight.getText().toString()) - Integer.parseInt(edtHeightCorrection.getText().toString());
                     }
-                    tvGiVhlFinalVolume.setText(Html.fromHtml(String.valueOf(df.format(finalVolume))+" m\u00B3"));
-                    tvGiVhlHeightCorrection.setText(Html.fromHtml("Tinggi Hasil Koreksi: "+finalHeightCorrection)+" cm");
+                    tvVhlVolume.setText(Html.fromHtml(String.valueOf(df.format(finalVolume))+" m\u00B3"));
+                    tvHeightCorrection.setText(Html.fromHtml("Tinggi Hasil Koreksi: "+finalHeightCorrection)+" cm");
                 }
 
             }
         });
 
-        edtGiHeightCorrection.setOnKeyListener(new View.OnKeyListener() {
+        edtHeightCorrection.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View view, int i, KeyEvent keyEvent) {
-                if (edtGiHeightCorrection.getText().toString().equals("")){
-                    edtGiHeightCorrection.setText("0");
+                if (edtHeightCorrection.getText().toString().equals("")){
+                    edtHeightCorrection.setText("0");
                 }
                 return false;
             }
         });
 
-        spinnerGiVhlRegistNumber.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+
+        spinnerVhlUID.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 String selectedSpinnerVhlRegistNumber = (String) adapterView.getItemAtPosition(position);
                 vhlData = selectedSpinnerVhlRegistNumber;
-                spinnerGiVhlRegistNumber.setError(null);
-                llHeightCorrectionFeature.setVisibility(View.VISIBLE);
-                edtGiHeightCorrection.setText("0");
+                spinnerVhlUID.setError(null);
+                //llHeightCorrectionFeature.setVisibility(View.VISIBLE);
+                edtHeightCorrection.setText("0");
 
                 radioGroupOperation.check(R.id.radio_minus_operation);
 
@@ -294,17 +308,16 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                         VehicleModel vehicleModel = snapshot.getValue(VehicleModel.class);
 
                         if (vehicleModel!=null){
-                            tvGiVhlLengthVal.setText(String.valueOf(vehicleModel.getVhlLength()));
-                            tvGiVhlWidthVal.setText(String.valueOf(vehicleModel.getVhlWidth()));
-                            tvGiVhlHeightVal.setText(String.valueOf(vehicleModel.getVhlHeight()));
-                            tvGiVhlHeightCorrection.setText(Html.fromHtml("Tinggi Hasil Koreksi: "+ vehicleModel.getVhlHeight() +" cm"));
-
+                            edtVhlLength.setText(String.valueOf(vehicleModel.getVhlLength()));
+                            edtVhlWidth.setText(String.valueOf(vehicleModel.getVhlWidth()));
+                            edtVhlHeight.setText(String.valueOf(vehicleModel.getVhlHeight()));
+                            tvHeightCorrection.setText(Html.fromHtml("Tinggi Hasil Koreksi: "+ vehicleModel.getVhlHeight() +" cm"));
 
                             float finalVolumeDefault =
-                                    (Float.parseFloat(tvGiVhlLengthVal.getText().toString())*
-                                            Float.parseFloat(tvGiVhlWidthVal.getText().toString())*
-                                            Float.parseFloat(tvGiVhlHeightVal.getText().toString()))/1000000;
-                            tvGiVhlFinalVolume.setText(Html.fromHtml(String.valueOf(df.format(finalVolumeDefault))+" m\u00B3"));
+                                    (Float.parseFloat(edtVhlLength.getText().toString())*
+                                            Float.parseFloat(edtVhlWidth.getText().toString())*
+                                            Float.parseFloat(edtVhlHeight.getText().toString()))/1000000;
+                            tvVhlVolume.setText(Html.fromHtml(String.valueOf(df.format(finalVolumeDefault))+" m\u00B3"));
 
                         } else {
                             Toast.makeText(AddGoodIssueActivity.this, "Null", Toast.LENGTH_SHORT).show();
@@ -319,38 +332,33 @@ public class AddGoodIssueActivity extends AppCompatActivity {
             }
         });
 
-        spinnerGiVhlRegistNumber.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean b) {
-                spinnerGiVhlRegistNumber.setText(vhlData);
-            }
-        });
 
 
-        spinnerPoPtBasNumber.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+        spinnerRoNumber.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 String selectedSpinnerPoPtBasNumber = (String) adapterView.getItemAtPosition(position);
-                poPtBasNumber = selectedSpinnerPoPtBasNumber;
-                spinnerPoPtBasNumber.setError(null);
-                edtGiPoNumberCust.setError(null);
-                materialName.clear();
+                roNumber = selectedSpinnerPoPtBasNumber;
+                spinnerRoNumber.setError(null);
+                edtPoNumberCust.setError(null);
+                matNameList.clear();
 
 
-                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("PurchaseOrders/"+poPtBasNumber);
+                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("ReceivedOrders/"+ roNumber);
                 databaseReference.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         PurchaseOrderModel purchaseOrderModel = snapshot.getValue(PurchaseOrderModel.class);
 
                         if (purchaseOrderModel !=null){
-                            edtGiPoNumberCust.setText(String.valueOf(purchaseOrderModel.getPoNumberCustomer()));
+                            edtPoNumberCust.setText(String.valueOf(purchaseOrderModel.getPoNumberCustomer()));
                             if (purchaseOrderModel.getPoTransportType().contains("CUR")){
-                                spinnerGiTransportType.setText("CURAH");
-                                transportData = "CURAH";
+                                spinnerMatType.setText("CURAH");
+                                matType = "CURAH";
                             } else{
-                                spinnerGiTransportType.setText("BORONG");
-                                transportData = "BORONG";
+                                spinnerMatType.setText("BORONG");
+                                matType = "BORONG";
 
                             }
                         } else {
@@ -365,19 +373,19 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                 });
 
 
-                DatabaseReference databaseReferencePO = FirebaseDatabase.getInstance().getReference("PurchaseOrders/"+poPtBasNumber+"/OrderedItems");
+                DatabaseReference databaseReferencePO = FirebaseDatabase.getInstance().getReference("ReceivedOrders/"+ roNumber +"/OrderedItems");
                 databaseReferencePO.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         if (snapshot.exists()){
                             for (DataSnapshot dataSnapshot: snapshot.getChildren()){
-                                String spinnerMaterialData = dataSnapshot.child("productName").getValue(String.class);
-                                materialName.add(spinnerMaterialData);
-                                materialName.remove("JASA ANGKUT");
+                                String spinnerMaterialData = dataSnapshot.child("matName").getValue(String.class);
+                                matNameList.add(spinnerMaterialData);
+                                matNameList.remove("JASA ANGKUT");
                             }
-                            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddGoodIssueActivity.this, R.layout.style_spinner, materialName);
+                            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddGoodIssueActivity.this, R.layout.style_spinner, matNameList);
                             arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
-                            spinnerGiProductName.setAdapter(arrayAdapter);
+                            spinnerMatName.setAdapter(arrayAdapter);
                         } else {
                             Toast.makeText(AddGoodIssueActivity.this, "Not exists", Toast.LENGTH_SHORT).show();
                         }
@@ -391,58 +399,58 @@ public class AddGoodIssueActivity extends AppCompatActivity {
             }
         });
 
-        spinnerGiProductName.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        spinnerMatName.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 String selectedSpinnerMaterialName = (String) adapterView.getItemAtPosition(position);
-                materialData = selectedSpinnerMaterialName;
-                spinnerGiProductName.setError(null);
+                matName = selectedSpinnerMaterialName;
+                spinnerMatName.setError(null);
             }
         });
 
-        spinnerGiProductName.setOnKeyListener(new View.OnKeyListener() {
+        spinnerMatName.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View view, int i, KeyEvent keyEvent) {
-                spinnerGiProductName.setError(null);
-                spinnerGiProductName.clearFocus();
+                spinnerMatName.setError(null);
+                spinnerMatName.clearFocus();
                 return false;
             }
         });
 
-        spinnerGiProductName.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+        spinnerMatName.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean b) {
-                spinnerGiProductName.setText(materialData);
+                spinnerMatName.setText(matName);
             }
         });
 
-        spinnerGiTransportType.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        spinnerMatType.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 String selectedSpinnerTransportType = (String) adapterView.getItemAtPosition(position);
-                transportData = selectedSpinnerTransportType;
-                spinnerGiTransportType.setError(null);
+                matType = selectedSpinnerTransportType;
+                spinnerMatType.setError(null);
             }
         });
 
-        spinnerGiTransportType.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+        spinnerMatType.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean b) {
-                spinnerGiTransportType.setText(transportData);
+                spinnerMatType.setText(matType);
             }
         });
 
-        databaseReference.child("PurchaseOrders").addValueEventListener(new ValueEventListener() {
+        databaseReference.child("ReceivedOrders").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()){
                     for (DataSnapshot dataSnapshot: snapshot.getChildren()){
-                        String spinnerPurchaseOrders = dataSnapshot.child("poPtBasNumber").getValue(String.class);
-                        purchaseOrderNumber.add(spinnerPurchaseOrders);
+                        String spinnerPurchaseOrders = dataSnapshot.child("roNumber").getValue(String.class);
+                        receiveOrderNumberList.add(spinnerPurchaseOrders);
                     }
-                    ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddGoodIssueActivity.this, R.layout.style_spinner, purchaseOrderNumber);
+                    ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddGoodIssueActivity.this, R.layout.style_spinner, receiveOrderNumberList);
                     arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
-                    spinnerPoPtBasNumber.setAdapter(arrayAdapter);
+                    spinnerRoNumber.setAdapter(arrayAdapter);
                 } else {
                     Toast.makeText(AddGoodIssueActivity.this, "Not exists", Toast.LENGTH_SHORT).show();
                 }
@@ -459,12 +467,12 @@ public class AddGoodIssueActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()){
                     for (DataSnapshot dataSnapshot: snapshot.getChildren()){
-                        String spinnerVhlRegistNumber = dataSnapshot.child("vhlRegistNumber").getValue(String.class);
-                        vhlRegistNumber.add(spinnerVhlRegistNumber);
+                        String spinnerVhlRegistNumber = dataSnapshot.child("vhlUID").getValue(String.class);
+                        vhlUIDList.add(spinnerVhlRegistNumber);
                     }
-                    ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddGoodIssueActivity.this, R.layout.style_spinner, vhlRegistNumber);
+                    ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddGoodIssueActivity.this, R.layout.style_spinner, vhlUIDList);
                     arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
-                    spinnerGiVhlRegistNumber.setAdapter(arrayAdapter);
+                    spinnerVhlUID.setAdapter(arrayAdapter);
                 } else {
                     Toast.makeText(AddGoodIssueActivity.this, "Not exists", Toast.LENGTH_SHORT).show();
                 }
@@ -510,11 +518,11 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                 if (snapshot.exists()){
                     for (DataSnapshot dataSnapshot: snapshot.getChildren()){
                         String spinnerTransportTypeData = dataSnapshot.child("name").getValue(String.class);
-                        transportTypeName.add(spinnerTransportTypeData);
+                        matTypeNameList.add(spinnerTransportTypeData);
                     }
-                    ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddGoodIssueActivity.this, R.layout.style_spinner, transportTypeName);
+                    ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddGoodIssueActivity.this, R.layout.style_spinner, matTypeNameList);
                     arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
-                    spinnerGiTransportType.setAdapter(arrayAdapter);
+                    spinnerMatType.setAdapter(arrayAdapter);
                 } else {
                     Toast.makeText(AddGoodIssueActivity.this, "Not exists", Toast.LENGTH_SHORT).show();
                 }
@@ -529,103 +537,135 @@ public class AddGoodIssueActivity extends AppCompatActivity {
         fabSaveGIData.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String giDate = edtGiDate.getText().toString();
+                String giDate = Objects.requireNonNull(edtGiDate.getText()).toString();
                 String giTime = Objects.requireNonNull(edtGiTime.getText()).toString();
-                String giPOCustomer = Objects.requireNonNull(edtGiPoNumberCust.getText()).toString();
-                String giPOBAS = Objects.requireNonNull(spinnerPoPtBasNumber.getText()).toString();
-                String giProductName = Objects.requireNonNull(spinnerGiProductName.getText()).toString();
-                String giTransportType = Objects.requireNonNull(spinnerGiTransportType.getText()).toString();
-                String giVhlRegistNumber = Objects.requireNonNull(spinnerGiVhlRegistNumber.getText()).toString();
-                String giHeightCorrection = Objects.requireNonNull(edtGiHeightCorrection.getText()).toString();
 
-                String giVhlLength = tvGiVhlLengthVal.getText().toString();
-                String giVhlWidth = tvGiVhlWidthVal.getText().toString();
-                String giVhlHeight = tvGiVhlHeightVal.getText().toString();
-                String giVhlCubication = tvGiVhlFinalVolume.getText().toString();
+                String giRONumber = Objects.requireNonNull(spinnerRoNumber.getText()).toString();
+                String giPOCustomerNumber = Objects.requireNonNull(edtPoNumberCust.getText()).toString();
 
-                Boolean giStatus = true;
-                String giInputDateCreated = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
+                String giMatName = Objects.requireNonNull(spinnerMatName.getText()).toString();
+                String giMatType = Objects.requireNonNull(spinnerMatType.getText()).toString();
+
+                String giVhlUID = Objects.requireNonNull(spinnerVhlUID.getText()).toString();
+                String giHeightCorrection = Objects.requireNonNull(edtHeightCorrection.getText()).toString();
+                String giCreatedBy = "";
+
+                String giVhlLength = Objects.requireNonNull(edtVhlLength.getText()).toString();
+                String giVhlWidth = Objects.requireNonNull(edtVhlWidth.getText()).toString();
+                String giVhlHeight = Objects.requireNonNull(edtVhlHeight.getText()).toString();
+                String giVhlCubication = tvVhlVolume.getText().toString();
 
                 int selectedStatusId = radioGroupOperation.getCheckedRadioButtonId();
                 radioOperationSelected = findViewById(selectedStatusId);
                 String radioOperation = radioOperationSelected.getText().toString();
 
+                //boolean giStatus = false;
+                //String giInputDateCreated = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
+
                 if (TextUtils.isEmpty(giDate)){
                     edtGiDate.setError("Mohon masukkan tanggal pembuatan");
                     edtGiDate.requestFocus();
-                } else if (TextUtils.isEmpty(giTime)){
+                }
+                if (TextUtils.isEmpty(giTime)){
                     edtGiTime.setError("Mohon masukkan waktu pembuatan");
                     edtGiTime.requestFocus();
-                } else if (TextUtils.isEmpty(giPOCustomer)){
-                    edtGiPoNumberCust.setError("Mohon masukkan nomor PO customer");
-                    edtGiPoNumberCust.requestFocus();
-                } else if (TextUtils.isEmpty(giProductName)){
-                    spinnerGiProductName.setError("Mohon masukkan nama material");
-                    spinnerGiProductName.requestFocus();
-                } else if (TextUtils.isEmpty(giTransportType)){
-                    spinnerGiTransportType.setError("Mohon masukkan jenis transport");
-                    spinnerGiTransportType.requestFocus();
-                } else if (TextUtils.isEmpty(giVhlRegistNumber)){
-                    spinnerGiVhlRegistNumber.setError("Mohon masukkan NOPOL kendaraan");
-                    spinnerGiVhlRegistNumber.requestFocus();
-                } else if (edtGiHeightCorrection.getText().toString().isEmpty()){
+                }
+                if (TextUtils.isEmpty(giRONumber)){
+                    spinnerRoNumber.setError("Mohon masukkan nomor RO");
+                    spinnerRoNumber.requestFocus();
+                }
+                if (TextUtils.isEmpty(giPOCustomerNumber)){
+                    edtPoNumberCust.setError("Mohon masukkan nomor PO customer");
+                    edtPoNumberCust.requestFocus();
+                }
+                if (TextUtils.isEmpty(giMatName)){
+                    spinnerMatName.setError("Mohon masukkan nama material");
+                    spinnerMatName.requestFocus();
+                }
+                if (TextUtils.isEmpty(giMatType)){
+                    spinnerMatType.setError("Mohon masukkan jenis transport");
+                    spinnerMatType.requestFocus();
+                }
+                if (TextUtils.isEmpty(giVhlUID)){
+                    spinnerVhlUID.setError("Mohon masukkan NOPOL kendaraan");
+                    spinnerVhlUID.requestFocus();
+                }
+
+                if (TextUtils.isEmpty(giVhlLength)||giVhlLength.equals("0")){
+                    edtVhlLength.setError("Mohon masukkan lebar kendaraan");
+                    edtVhlLength.requestFocus();
+                }
+                if (TextUtils.isEmpty(giVhlWidth)||giVhlWidth.equals("0")){
+                    edtVhlWidth.setError("Mohon masukkan lebar kendaraan");
+                    edtVhlWidth.requestFocus();
+                }
+                if (TextUtils.isEmpty(giVhlHeight)||giVhlHeight.equals("0")){
+                    edtVhlHeight.setError("Mohon masukkan lebar kendaraan");
+                    edtVhlHeight.requestFocus();
+                }
+                if (edtHeightCorrection.getText().toString().isEmpty()){
                     giHeightCorrection.equals(0);
-                    edtGiHeightCorrection.setText("0");
-                } else{
-                    for(int i = 0; i<materialName.size(); i++){
-                        if (!spinnerGiProductName.getText().toString().equals(materialName.get(i).toString())){
-                            spinnerGiProductName.setError("Nama material tidak ditemukan");
-                            spinnerGiProductName.requestFocus();
+                    edtHeightCorrection.setText("0");
+                }
+
+                if (!TextUtils.isEmpty(giDate)&&!TextUtils.isEmpty(giTime)
+                        &&!TextUtils.isEmpty(giRONumber)&&!TextUtils.isEmpty(giPOCustomerNumber)
+                        &&!TextUtils.isEmpty(giMatName)&&!TextUtils.isEmpty(giMatType)
+                        &&!TextUtils.isEmpty(giVhlUID)&&!TextUtils.isEmpty(giVhlWidth)
+                        &&!TextUtils.isEmpty(giVhlLength)&&!TextUtils.isEmpty(giVhlHeight)
+                        &&!TextUtils.isEmpty(giHeightCorrection))
+
+                    for(int i = 0; i<matNameList.size(); i++){
+                        if (!spinnerMatName.getText().toString().equals(matNameList.get(i).toString())){
+                            spinnerMatName.setError("Nama material tidak ditemukan");
+                            spinnerMatName.requestFocus();
                         } else{
-                            spinnerGiProductName.setError(null);
-                            spinnerGiProductName.clearFocus();
+                            spinnerMatName.setError(null);
+                            spinnerMatName.clearFocus();
                             String giUID = "";
-                            giUID = getRandomString(5)+"-"+transportData.substring(0, 3)+"-"+giDay.toString()+"-"+giMonth.toString()+"-"+giYear.toString();
+                            giUID = getRandomString(5)+"-"+ matType.substring(0, 3)+"-"+giDay.toString()+"-"+giMonth.toString()+"-"+giYear.toString();
 
                             DecimalFormat df = new DecimalFormat("0.00");
-                            insertData(giUID, giPOCustomer, giPOBAS, giProductName, giTransportType, giVhlRegistNumber,
+                            insertData(giUID, giCreatedBy, giRONumber, giPOCustomerNumber, giMatName, giMatType,
+                                    giVhlUID, giDate, giTime,
+                                    Integer.parseInt(giVhlLength),
+                                    Integer.parseInt(giVhlWidth),
+                                    Integer.parseInt(giVhlHeight),
                                     Integer.parseInt(radioOperation+giHeightCorrection.replaceAll("[^0-9]", "")),
-                                    giTime, giDate, giInputDateCreated,
-                                    Integer.parseInt(giVhlLength), Integer.parseInt(giVhlWidth),
-                                    Integer.parseInt(tvGiVhlHeightCorrection.getText().toString().replaceAll("[^0-9]", "")),
+                                    Integer.parseInt(tvHeightCorrection.getText().toString().replaceAll("[^0-9]", "")),
                                     Float.parseFloat(df.format(Float.parseFloat(giVhlCubication.replaceAll("[^0-9.]", "")))),
-                                    giStatus);
+                                    false);
                         }
                     }
-                }
+
 
 
             }
         });
     }
 
-    private static String getRandomString(final int sizeOfRandomString)
-    {
-        final Random random=new Random();
-        final StringBuilder sb=new StringBuilder(sizeOfRandomString);
-        for(int i=0;i<sizeOfRandomString;++i)
-            sb.append(ALLOWED_CHARACTERS.charAt(random.nextInt(ALLOWED_CHARACTERS.length())));
-        return sb.toString();
-    }
 
-    private void insertData(String giUID, String giPOCustomer, String giPOBAS, String giProductName,
-                            String giTransportType, String giVhlRegistNumber, int parseInt,
-                            String giTime, String giDate, String giInputDateCreated, int parseInt1, int parseInt2, int parseInt3,
-                            float parseFloat, Boolean giStatus) {
 
-        GoodIssueModel goodIssueModel = new GoodIssueModel(giUID, giPOCustomer, giPOBAS, giProductName,
-                giTransportType, giVhlRegistNumber, parseInt, giTime, giDate, giInputDateCreated,
-                parseInt1, parseInt2, parseInt3, parseFloat, giStatus);
+    private void insertData(String giUID, String giCreatedBy, String giRoUID,
+                            String giPoCustNumber, String giMatName, String giMatType,
+                            String vhlUID, String giDateCreated, String giTimeCreted,
+                            int vhlLength, int vhlWidth, int vhlHeight,
+                            int vhlHeightCorrection, int vhlHeightAfterCorrection,
+                            float giVhlCubication, Boolean giStatus) {
 
-        DatabaseReference referenceGoodIssueDetectExists = FirebaseDatabase.getInstance("https://bas-delivery-report-default-rtdb.asia-southeast1.firebasedatabase.app").getReference("GoodIssueData/"+giUID);
-        referenceGoodIssueDetectExists.addListenerForSingleValueEvent(new ValueEventListener() {
+        GoodIssueModel goodIssueModel = new GoodIssueModel(giUID, giCreatedBy, giRoUID, giPoCustNumber,
+                giMatName, giMatType, vhlUID, giDateCreated, giTimeCreted, vhlLength,
+                vhlWidth, vhlHeight, vhlHeightCorrection, vhlHeightAfterCorrection, giVhlCubication, giStatus);
+
+        DatabaseReference refGIExists = FirebaseDatabase.getInstance("https://bas-delivery-report-default-rtdb.asia-southeast1.firebasedatabase.app").getReference("GoodIssueData/"+giUID);
+        refGIExists.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     Toast.makeText(AddGoodIssueActivity.this, "Terjadi kesalahan pembuatan UID, coba tutup dan buka kembali aplikasi", Toast.LENGTH_SHORT).show();
                 } else {
-                    DatabaseReference referenceGoodIssue = FirebaseDatabase.getInstance("https://bas-delivery-report-default-rtdb.asia-southeast1.firebasedatabase.app").getReference("GoodIssueData");
-                    referenceGoodIssue.child(giUID).setValue(goodIssueModel).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    DatabaseReference refGI = FirebaseDatabase.getInstance("https://bas-delivery-report-default-rtdb.asia-southeast1.firebasedatabase.app").getReference("GoodIssueData");
+                    refGI.child(giUID).setValue(goodIssueModel).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
@@ -650,6 +690,45 @@ public class AddGoodIssueActivity extends AppCompatActivity {
         });
     }
 
+    public void processCountVolume(TextInputEditText textInputEditText){
+        DecimalFormat df = new DecimalFormat("0.00");
+        int selectedStatusId = radioGroupOperation.getCheckedRadioButtonId();
+        radioOperationSelected = findViewById(selectedStatusId);
+        String radioOperation = radioOperationSelected.getText().toString();
+        if (textInputEditText.getText().toString().equals("")){
+            textInputEditText.setText("0");
+            float finalVolumeDefault =
+                    (Float.parseFloat(edtVhlLength.getText().toString())*
+                            Float.parseFloat(edtVhlWidth.getText().toString())*
+                            Float.parseFloat(edtVhlHeight.getText().toString()))/1000000;
+            tvVhlVolume.setText(Html.fromHtml(String.valueOf(df.format(finalVolumeDefault))+" m\u00B3"));
+            //tvHeightCorrection.setText(Html.fromHtml("Tinggi Hasil Koreksi: "+tvHeightCorrection.getText().toString())+" cm");
+        } else {
+            float finalVolume;
+            int finalHeightCorrection;
+            if (radioOperation.equals("+")){
+                finalVolume =
+                        (Float.parseFloat(edtVhlLength.getText().toString()) * Float.parseFloat(edtVhlWidth.getText().toString()) * (Float.parseFloat(edtVhlHeight.getText().toString()) + Float.parseFloat(edtHeightCorrection.getText().toString()))) / 1000000;
+                finalHeightCorrection = Integer.parseInt(edtVhlHeight.getText().toString()) + Integer.parseInt(edtHeightCorrection.getText().toString());
+            } else{
+                finalVolume =
+                        (Float.parseFloat(edtVhlLength.getText().toString()) * Float.parseFloat(edtVhlWidth.getText().toString()) * (Float.parseFloat(edtVhlHeight.getText().toString()) - Float.parseFloat(edtHeightCorrection.getText().toString()))) / 1000000;
+                finalHeightCorrection = Integer.parseInt(edtVhlHeight.getText().toString()) - Integer.parseInt(edtHeightCorrection.getText().toString());
+            }
+            tvVhlVolume.setText(Html.fromHtml(String.valueOf(df.format(finalVolume))+" m\u00B3"));
+            tvHeightCorrection.setText(Html.fromHtml("Tinggi Hasil Koreksi: "+finalHeightCorrection)+" cm");
+        }
+    }
+
+    private static String getRandomString(final int sizeOfRandomString)
+    {
+        final Random random=new Random();
+        final StringBuilder sb=new StringBuilder(sizeOfRandomString);
+        for(int i=0;i<sizeOfRandomString;++i)
+            sb.append(ALLOWED_CHARACTERS.charAt(random.nextInt(ALLOWED_CHARACTERS.length())));
+        return sb.toString();
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         return super.onCreateOptionsMenu(menu);
@@ -665,7 +744,5 @@ public class AddGoodIssueActivity extends AppCompatActivity {
     public void onBackPressed() {
         dialogInterface.discardDialogConfirmation(AddGoodIssueActivity.this);
     }
-
-
 
 }
