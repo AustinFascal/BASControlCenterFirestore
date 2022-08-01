@@ -5,6 +5,7 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.content.ContextCompat;
@@ -44,6 +45,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -53,6 +55,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.ptbas.controlcenter.adapter.MainFeaturesMenuAdapter;
 import com.ptbas.controlcenter.adapter.StatisticsAdapter;
+import com.ptbas.controlcenter.create.AddCustomerActivity;
 import com.ptbas.controlcenter.create.AddGoodIssueActivity;
 import com.ptbas.controlcenter.create.AddInvoiceActivity;
 import com.ptbas.controlcenter.create.AddReceivedOrder;
@@ -69,12 +72,12 @@ import java.util.Objects;
 public class DashboardActivity extends AppCompatActivity {
 
     public static SwipeRefreshLayout swipeContainer;
-    private LinearLayout llAddGi, llAddVehicle, llAddPo, llAddInvoice, llTopView;
+    private LinearLayout llAddGi, llShowOthers, llAddPo, llAddInvoice, llTopView;
     private ImageView imageViewProfilePic;
     public FirebaseAuth authProfile;
     private String finalCountVehicle, finalCountUser, finalCountActiveReceivedOrderData, finalCountActiveGoodIssueData, finalCountCustomer;
 
-    ConstraintLayout constraintLayout;
+    CoordinatorLayout constraintLayout;
 
     private NestedScrollView nestedscrollview;
     private RelativeLayout linearLayout2;
@@ -97,6 +100,9 @@ public class DashboardActivity extends AppCompatActivity {
 
     Helper helper = new Helper();
 
+    private BottomSheetBehavior<ConstraintLayout> bottomSheetBehavior;
+    private ConstraintLayout bottomSheet;
+
 
     @SuppressLint("ClickableViewAccessibility")
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -105,6 +111,63 @@ public class DashboardActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
 
+        bottomSheet = findViewById(R.id.bottomSheetPODetails);
+        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
+        bottomSheetBehavior.setFitToContents(true);
+
+        LinearLayout llAddVehicle= bottomSheet.findViewById(R.id.ll_add_vehicle);
+        LinearLayout llAddCustomer= bottomSheet.findViewById(R.id.ll_add_customer);
+        ImageView ivExpandCollapse = bottomSheet.findViewById(R.id.iv_expand_collapse);
+
+        llAddVehicle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(DashboardActivity.this, AddVehicleActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        llAddCustomer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(DashboardActivity.this, AddCustomerActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        bottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                switch (newState) {
+                    case BottomSheetBehavior.STATE_EXPANDED:
+                        ivExpandCollapse.setImageResource(R.drawable.ic_outline_keyboard_arrow_down);
+                        ivExpandCollapse.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                            }
+                        });
+                        break;
+                    case BottomSheetBehavior.STATE_COLLAPSED:
+                    case BottomSheetBehavior.STATE_DRAGGING:
+                        ivExpandCollapse.setImageResource(R.drawable.ic_outline_keyboard_arrow_up);
+                        ivExpandCollapse.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                            }
+                        });
+                        break;
+                }
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+
+            }
+        });
+
+        bottomSheetBehavior.setState(bottomSheetBehavior.STATE_HIDDEN);
         linearLayout = findViewById(R.id.linearLayoutWashboard);
         nestedscrollview = findViewById(R.id.nestedscrollview);
         llTopView = findViewById(R.id.ll_top_view);
@@ -116,7 +179,7 @@ public class DashboardActivity extends AppCompatActivity {
         llWrapShortcuts = findViewById(R.id.ll_wrap_shortcuts);
         rvMainFeatures = findViewById(R.id.rv_main_features);
         rvStatistics = findViewById(R.id.rv_statistics);
-        tvShowAllShortcuts = findViewById(R.id.tv_show_all_shortcuts);
+        //tvShowAllShortcuts = findViewById(R.id.tv_show_all_shortcuts);
 
         if (Build.VERSION.SDK_INT >= 19 && Build.VERSION.SDK_INT < 21) {
             setWindowFlag(this, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, true);
@@ -161,13 +224,14 @@ public class DashboardActivity extends AppCompatActivity {
         haveNetworkConnection();
 
         llAddGi =  findViewById(R.id.ll_add_gi);
-        llAddVehicle = findViewById(R.id.ll_add_vehicle);
+        llShowOthers = findViewById(R.id.ll_show_other);
         llAddPo = findViewById(R.id.ll_add_po);
         llAddInvoice = findViewById(R.id.ll_add_invoice);
 
         constraintLayout = findViewById(R.id.constraintLayout);
 
-        LinearLayout dragtoexpand = (LinearLayout) findViewById(R.id.dragtoexpand);
+
+        //LinearLayout dragtoexpand = (LinearLayout) findViewById(R.id.dragtoexpand);
 
         Fade fade = new Fade();
         View decor = getWindow().getDecorView();
@@ -178,7 +242,7 @@ public class DashboardActivity extends AppCompatActivity {
         getWindow().setEnterTransition(fade);
         getWindow().setExitTransition(fade);
 
-        dragtoexpand.setOnClickListener(new View.OnClickListener() {
+        /*dragtoexpand.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(DashboardActivity.this, AllShortcutsActivity.class);
@@ -194,7 +258,7 @@ public class DashboardActivity extends AppCompatActivity {
                 ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(DashboardActivity.this, crdviewWrapShortcuts, Objects.requireNonNull(ViewCompat.getTransitionName(crdviewWrapShortcuts)));
                 startActivity(intent, optionsCompat.toBundle());
             }
-        });
+        });*/
 
         llAddGi.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -204,11 +268,17 @@ public class DashboardActivity extends AppCompatActivity {
             }
         });
 
-        llAddVehicle.setOnClickListener(new View.OnClickListener() {
+        llShowOthers.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(DashboardActivity.this, AddVehicleActivity.class);
-                startActivity(intent);
+                /*Intent intent = new Intent(DashboardActivity.this, AddVehicleActivity.class);
+                startActivity(intent);*/
+                /*Intent intent = new Intent(DashboardActivity.this, AllShortcutsActivity.class);
+                ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(DashboardActivity.this, crdviewWrapShortcuts, Objects.requireNonNull(ViewCompat.getTransitionName(crdviewWrapShortcuts)));
+                startActivity(intent, optionsCompat.toBundle());*/
+                bottomSheetBehavior.setState(bottomSheetBehavior.STATE_EXPANDED);
+
+
             }
         });
 
@@ -576,6 +646,8 @@ public class DashboardActivity extends AppCompatActivity {
             public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
 
                 if (scrollY > 50) {
+                    bottomSheetBehavior.setState(bottomSheetBehavior.STATE_COLLAPSED);
+
                     int nightModeFlags =
                             DashboardActivity.this.getResources().getConfiguration().uiMode &
                                     Configuration.UI_MODE_NIGHT_MASK;
@@ -612,6 +684,9 @@ public class DashboardActivity extends AppCompatActivity {
                     }
 
 
+                }
+                if (scrollY < 300) {
+                    bottomSheetBehavior.setState(bottomSheetBehavior.STATE_HIDDEN);
                 }
                 if (scrollY < 50) {
                     title.setTextColor(ContextCompat.getColor(DashboardActivity.this, R.color.white));
