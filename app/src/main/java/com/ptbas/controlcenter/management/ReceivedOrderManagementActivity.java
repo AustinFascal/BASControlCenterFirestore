@@ -12,7 +12,7 @@ import android.view.MenuItem;
 
 import com.ptbas.controlcenter.R;
 
-public class PurchaseOrderManagementActivity extends AppCompatActivity {
+public class ReceivedOrderManagementActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,7 +20,7 @@ public class PurchaseOrderManagementActivity extends AppCompatActivity {
         setContentView(R.layout.activity_purchase_order_management);
 
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setTitle("Manajemen Purchase Order (PO)");
+        actionBar.setTitle("Manajemen Received Order (RO)");
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setBackgroundDrawable(new ColorDrawable(getResources()
                 .getColor(R.color.white)));

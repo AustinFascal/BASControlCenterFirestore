@@ -46,20 +46,18 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import com.ptbas.controlcenter.DialogInterface;
+import com.ptbas.controlcenter.Helper;
 import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.adapter.PreviewProductItemAdapter;
 import com.ptbas.controlcenter.model.ProductItems;
 import com.ptbas.controlcenter.model.ProductModel;
-import com.ptbas.controlcenter.model.PurchaseOrderModel;
+import com.ptbas.controlcenter.model.ReceivedOrderModel;
 import com.ptbas.controlcenter.utils.LangUtils;
 
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.Random;
 
@@ -91,13 +89,14 @@ public class AddReceivedOrder extends AppCompatActivity {
     private ConstraintLayout bottomSheet;
 
     DialogInterface dialogInterface = new DialogInterface();
+    Helper helper = new Helper();
 
     PreviewProductItemAdapter previewProductItemAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_receive_order);
+        setContentView(R.layout.activity_add_received_order);
 
         LangUtils.setLocale(this, "en");
 
@@ -111,7 +110,7 @@ public class AddReceivedOrder extends AppCompatActivity {
         currencyName = new ArrayList<>();
 
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setTitle("Buat Purchase Order (PO)");
+        actionBar.setTitle("Buat Received Order (RO)");
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setBackgroundDrawable(new ColorDrawable(getResources()
                 .getColor(R.color.white)));
@@ -179,13 +178,14 @@ public class AddReceivedOrder extends AppCompatActivity {
             }
         });
 
-        databaseReference.child("CustomerData").addValueEventListener(new ValueEventListener() {
+        databaseReference.child("CustomerData").orderByChild("custName").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()){
                     for (DataSnapshot dataSnapshot: snapshot.getChildren()){
-                        String spinnerMaterialData = dataSnapshot.child("name").getValue(String.class);
-                        customerName.add(spinnerMaterialData);
+                        String spinnerCustUID = dataSnapshot.child("custUID").getValue(String.class);
+                        String spinnerCustName = dataSnapshot.child("custName").getValue(String.class);
+                        customerName.add(spinnerCustUID+" - "+spinnerCustName);
                     }
                     ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddReceivedOrder.this, R.layout.style_spinner, customerName);
                     arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
@@ -294,13 +294,19 @@ public class AddReceivedOrder extends AppCompatActivity {
                 String selectedSpinnerCustomerName = (String) adapterView.getItemAtPosition(position);
                 customerData = selectedSpinnerCustomerName;
                 spinnerPoCustName.setError(null);
+                customerAlias = selectedSpinnerCustomerName.replaceAll("[^0-9]", "");
 
-                DatabaseReference databaseReference2 = FirebaseDatabase.getInstance().getReference("CustomerData/"+selectedSpinnerCustomerName.replaceAll(" ", "").toLowerCase());
-                databaseReference2.addValueEventListener(new ValueEventListener() {
+                /*databaseReference.child("CustomerData").addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        String alias = snapshot.child("alias").getValue(String.class);
-                        customerAlias = alias;
+                        if (snapshot.exists()){
+                            for (DataSnapshot dataSnapshot: snapshot.getChildren()){
+                                String selectedSpinnerCustomerName = dataSnapshot.child("custName").getValue(String.class);
+                                //customerName.add(spinnerMaterialData);
+                            }
+                        } else {
+                            Toast.makeText(AddReceivedOrder.this, "Not exists", Toast.LENGTH_SHORT).show();
+                        }
                     }
 
                     @Override
@@ -308,6 +314,20 @@ public class AddReceivedOrder extends AppCompatActivity {
 
                     }
                 });
+
+                DatabaseReference databaseReference2 = FirebaseDatabase.getInstance().getReference("CustomerData/".concat(databaseReference.getKey())+selectedSpinnerCustomerName.replaceAll(" ", "").toLowerCase());
+                databaseReference2.child(get).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        String alias = snapshot.child("custUID").getValue(String.class);
+                        customerAlias = alias;
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });*/
 
                 randomString = getRandomString(5);
             }
@@ -349,14 +369,12 @@ public class AddReceivedOrder extends AppCompatActivity {
                 } else {
                     if (poMonth==0||poYear==0){
                         edtPoNumberPtbas.setText(transportData.substring(0, 3) + "-" +customerAlias+"--");
-                        if (!Objects.requireNonNull(edtPoNumberCustomer.getText()).toString().equals("")
-                                &&!customerData.isEmpty() &&!Objects.requireNonNull(edtPoDate.getText()).toString().equals("")){
+                        if (!customerData.isEmpty() &&!Objects.requireNonNull(edtPoDate.getText()).toString().equals("")){
                             edtPoNumberPtbas.setText(randomString+"-"+transportData.substring(0, 3)+"-"+customerAlias+"--");
                         }
                     } else {
                         edtPoNumberPtbas.setText(transportData.substring(0, 3) + "-" +customerAlias+"-"+ poMonth + "-" + poYear);
-                        if (!Objects.requireNonNull(edtPoNumberCustomer.getText()).toString().equals("")
-                                &&!customerData.isEmpty() &&!Objects.requireNonNull(edtPoDate.getText()).toString().equals("")){
+                        if (!customerData.isEmpty() &&!Objects.requireNonNull(edtPoDate.getText()).toString().equals("")){
                             edtPoNumberPtbas.setText(randomString+"-"+transportData.substring(0, 3)+"-"+customerAlias+"-"+poMonth + "-" + poYear);
                         }
                     }
@@ -372,42 +390,47 @@ public class AddReceivedOrder extends AppCompatActivity {
         fabProceed.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String poUID = Objects.requireNonNull(edtPoNumberPtbas.getText()).toString();
-                String poDateCreated = Objects.requireNonNull(edtPoDate.getText()).toString();
-                String poInputDateCreated = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
-                String poTOP = "";
-                String poTransportType = Objects.requireNonNull(spinnerPoTransportType.getText()).toString();
-                String poCustomerName = Objects.requireNonNull(spinnerPoCustName.getText()).toString();
-                String poNumberCustomer = Objects.requireNonNull(edtPoNumberCustomer.getText()).toString();
-                Boolean poStatus = true;
+                String roCreatedBy = helper.getUserId();
+                String roDateCreated = Objects.requireNonNull(edtPoDate.getText()).toString();
+                String roTOP = "";
+                String roMatType = Objects.requireNonNull(spinnerPoTransportType.getText()).toString();
+                String roCurrency = Objects.requireNonNull(spinnerPoCurrency.getText()).toString();
+                String roCustName = Objects.requireNonNull(spinnerPoCustName.getText()).toString();
+                String roPoCustNumber = Objects.requireNonNull(edtPoNumberCustomer.getText()).toString();
+                String roUID = Objects.requireNonNull(edtPoNumberPtbas.getText()).toString();
 
-                String poCurrency = Objects.requireNonNull(spinnerPoCurrency.getText()).toString();
-
-                if (TextUtils.isEmpty(poDateCreated)) {
+                if (TextUtils.isEmpty(roDateCreated)) {
                     edtPoDate.setError("Mohon masukkan tanggal order");
                     edtPoDate.requestFocus();
-                } else if (TextUtils.isEmpty(poTransportType)) {
-                    spinnerPoTransportType.setError("Mohon masukkan jenis transport");
+                }
+
+                if (edtPoTOP.getText().toString().equals("")) {
+                    roTOP = "-";
+                } else {
+                    roTOP = Objects.requireNonNull(edtPoTOP.getText()).toString();
+                }
+
+                if (TextUtils.isEmpty(roMatType)) {
+                    spinnerPoTransportType.setError("Mohon masukkan jenis material");
                     spinnerPoTransportType.requestFocus();
-                } else if (TextUtils.isEmpty(poCurrency)) {
+                }
+
+                if (TextUtils.isEmpty(roCurrency)) {
                     spinnerPoCurrency.setError("Mohon pilih mata uang yang digunakan untuk transaksi");
                     spinnerPoCurrency.requestFocus();
-                } else if (TextUtils.isEmpty(poCustomerName)) {
+                }
+
+                if (TextUtils.isEmpty(roCustName)) {
                     spinnerPoCustName.setError("Mohon masukkan nama customer");
                     spinnerPoCustName.requestFocus();
-                } else if (TextUtils.isEmpty(poNumberCustomer)) {
-                    edtPoNumberCustomer.setError("Mohon masukkan nomor PO customer");
-                    edtPoNumberCustomer.requestFocus();
-                } else {
-                    if (edtPoTOP.getText().toString().equals("")) {
-                        poTOP = "-";
-                    } else {
-                        poTOP = Objects.requireNonNull(edtPoTOP.getText()).toString();
-                    }
-
-                    insertData(poUID, poCurrency, poDateCreated, poInputDateCreated, poTOP,
-                            poTransportType, poCustomerName, poNumberCustomer, poStatus);
                 }
+
+                if (!TextUtils.isEmpty(roDateCreated)&&!TextUtils.isEmpty(roMatType)&&!TextUtils.isEmpty(roCurrency)&&
+                        !TextUtils.isEmpty(roCustName)){
+                    insertData(roUID, roCreatedBy, roDateCreated, roTOP, roMatType, roCurrency, roPoCustNumber,
+                            roCustName, false);
+                }
+
             }
         });
 
@@ -452,9 +475,9 @@ public class AddReceivedOrder extends AppCompatActivity {
     }
 
     // Get passed data and save to cloud
-    private void insertData(String poUID, String poCurrency, String poDateCreated,
-                            String poInputDateCreated, String poTOP, String poTransportType,
-                            String poCustomerName, String poNumberCustomer, Boolean poSatus) {
+    private void insertData(String roUID, String roCreatedBy, String roDateCreated,
+                            String roTOP, String roMatType, String roCurrency,
+                            String roPoCustNumber, String roCustName, Boolean roSatus) {
 
         RelativeLayout wrapTitle = bottomSheet.findViewById(R.id.wrapTitle);
         TextView tvPoCurrency = bottomSheet.findViewById(R.id.tvPoCurrency);
@@ -491,19 +514,19 @@ public class AddReceivedOrder extends AppCompatActivity {
         });
 
         if (checkIfValidAndProceed()) {
-            tvPoCurrency.setText(poCurrency);
-            tvPoPtBasNumber.setText(poUID);
-            tvPoDate.setText(poDateCreated);
-            tvPoTOP.setText(poTOP);
-            tvPoTransportType.setText(poTransportType);
-            tvPoCustomerName.setText(poCustomerName);
-            tvPoCustomerNumber.setText(poNumberCustomer);
+            tvPoCurrency.setText(roCurrency);
+            tvPoPtBasNumber.setText(roUID);
+            tvPoDate.setText(roDateCreated);
+            tvPoTOP.setText(roTOP);
+            tvPoTransportType.setText(roMatType);
+            tvPoCustomerName.setText(roCustName);
+            tvPoCustomerNumber.setText(roPoCustNumber);
 
             try{
                 double sumSubTotalBuy = 0, sumSubTotalSell = 0, sumTotalVAT = 0, sumTotalSellFinal = 0, sumEstProfit = 0;
                 for(ProductItems productItems : productItemsArrayList) {
-                    sumSubTotalBuy += productItems.productTotalBuyPrice;
-                    sumSubTotalSell += productItems.productTotalSellPrice;
+                    sumSubTotalBuy += productItems.matTotalBuyPrice;
+                    sumSubTotalSell += productItems.matTotalSellPrice;
                     sumTotalVAT = (0.11)*(sumSubTotalSell);
                     sumTotalSellFinal = sumSubTotalSell+sumTotalVAT;
                     sumEstProfit = sumSubTotalSell-sumSubTotalBuy;
@@ -529,21 +552,21 @@ public class AddReceivedOrder extends AppCompatActivity {
                 previewProductItemAdapter = new PreviewProductItemAdapter(this, getList());
                 rvItems.setAdapter(previewProductItemAdapter);
 
-                DatabaseReference ref1 = FirebaseDatabase.getInstance().getReference("ReceivedOrders" + "/" + poUID);
+                DatabaseReference ref1 = FirebaseDatabase.getInstance().getReference("ReceivedOrders" + "/" + roUID);
                 DatabaseReference ref2 = FirebaseDatabase.getInstance().getReference("ReceivedOrders" + "/" +
-                        poUID + "/" + "OrderedItems");
+                        roUID + "/" + "OrderedItems");
 
                 // Create PO object
-                PurchaseOrderModel purchaseOrderModel = new PurchaseOrderModel(
-                        poUID, poCurrency, poDateCreated, poInputDateCreated, poTOP, poTransportType,
-                        poCustomerName, poNumberCustomer, poSubTotalBuy, poSubTotalSell, poVAT,
-                        poTotalSellFinal, poEstProfit, poSatus);
+                ReceivedOrderModel receivedOrderModel = new ReceivedOrderModel(
+                        roUID, roCreatedBy, roDateCreated, roTOP, roMatType, roCurrency,
+                        roPoCustNumber, roCustName, poSubTotalBuy, poSubTotalSell, poVAT,
+                        poTotalSellFinal, poEstProfit, roSatus);
 
                 fabActionSaveCloud.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED){
-                            ref1.setValue(purchaseOrderModel).addOnCompleteListener(new OnCompleteListener<Void>() {
+                            ref1.setValue(receivedOrderModel).addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
                                     if(task.isSuccessful())
@@ -554,7 +577,7 @@ public class AddReceivedOrder extends AppCompatActivity {
                                             {
                                                 if(task.isSuccessful())
                                                 {
-                                                    dialogInterface.savedInformation(AddReceivedOrder.this);
+                                                    dialogInterface.savedROInformation(AddReceivedOrder.this);
                                                 }
                                             }
                                         });
@@ -609,49 +632,49 @@ public class AddReceivedOrder extends AppCompatActivity {
             ProductItems productItems = new ProductItems();
 
             if (!spinnerMaterialName.getText().toString().equals("")){
-                productItems.setProductName(spinnerMaterialName.getText().toString());
+                productItems.setMatName(spinnerMaterialName.getText().toString());
             } else{
                 result = false;
                 break;
             }
 
             if (!edtPoQuantity.getText().toString().equals("")){
-                productItems.setProductQuantity(Integer.parseInt(edtPoQuantity.getText().toString()));
+                productItems.setMatQuantity(Integer.parseInt(edtPoQuantity.getText().toString()));
             }else{
                 result = false;
                 break;
             }
 
             if (!edtPoQuantity.getText().toString().equals("0")){
-                productItems.setProductQuantity(Integer.parseInt(edtPoQuantity.getText().toString()));
+                productItems.setMatQuantity(Integer.parseInt(edtPoQuantity.getText().toString()));
             }else{
                 result = false;
                 break;
             }
 
             if (!edtSalePrice.getText().toString().equals("")){
-                productItems.setProductSellPrice(Double.valueOf(edtSalePrice.getText().toString()));
+                productItems.setMatSellPrice(Double.valueOf(edtSalePrice.getText().toString()));
             } else{
                 result = false;
                 break;
             }
 
             if (!edtBuyPrice.getText().toString().equals("")){
-                productItems.setProductBuyPrice(Double.valueOf(edtBuyPrice.getText().toString()));
+                productItems.setMatBuyPrice(Double.valueOf(edtBuyPrice.getText().toString()));
             } else{
                 result = false;
                 break;
             }
 
             if (!edtPoTotalSellPrice.getText().toString().equals("")){
-                productItems.setProductTotalSellPrice(Double.valueOf(edtPoTotalSellPrice.getText().toString()));
+                productItems.setMatTotalSellPrice(Double.valueOf(edtPoTotalSellPrice.getText().toString()));
             } else{
                 result = false;
                 break;
             }
 
             if (!edtPoTotalBuyPrice.getText().toString().equals("")){
-                productItems.setProductTotalBuyPrice(Double.valueOf(edtPoTotalBuyPrice.getText().toString()));
+                productItems.setMatTotalBuyPrice(Double.valueOf(edtPoTotalBuyPrice.getText().toString()));
             } else{
                 result = false;
                 break;
@@ -751,7 +774,7 @@ public class AddReceivedOrder extends AppCompatActivity {
                                         @Override
                                         public boolean onKey(View view, int i, KeyEvent keyEvent) {
                                             if (edtBuyPrice.getText().toString().equals("")){
-                                                edtBuyPrice.setText("0.00");
+                                                edtBuyPrice.setText("0");
                                             }
                                             return false;
                                         }
@@ -761,7 +784,7 @@ public class AddReceivedOrder extends AppCompatActivity {
                                         @Override
                                         public boolean onKey(View view, int i, KeyEvent keyEvent) {
                                             if (edtSalePrice.getText().toString().equals("")){
-                                                edtSalePrice.setText("0.00");
+                                                edtSalePrice.setText("0");
                                             }
                                             return false;
                                         }
@@ -818,6 +841,5 @@ public class AddReceivedOrder extends AppCompatActivity {
     public void onBackPressed() {
         dialogInterface.discardDialogConfirmation(AddReceivedOrder.this);
     }
-
 
 }

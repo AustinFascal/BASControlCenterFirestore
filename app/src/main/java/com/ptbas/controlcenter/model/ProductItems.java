@@ -4,68 +4,68 @@ import java.io.Serializable;
 
 public class ProductItems implements Serializable {
 
-    public String productName;
-    public Integer productQuantity;
-    public Double productSellPrice, productBuyPrice, productTotalSellPrice, productTotalBuyPrice;
+    public String matName;
+    public Integer matQuantity;
+    public Double matSellPrice, matBuyPrice, matTotalSellPrice, matTotalBuyPrice;
 
     public ProductItems() {
     }
 
+    public ProductItems(String matName, Integer matQuantity, Double matSellPrice, Double matBuyPrice, Double matTotalSellPrice, Double matTotalBuyPrice) {
 
-    public ProductItems(String productName, Integer productQuantity, Double productSellPrice, Double productBuyPrice, Double productTotalSellPrice, Double productTotalBuyPrice) {
-        this.productName = productName;
-        this.productQuantity = productQuantity;
-        this.productSellPrice = productSellPrice;
-        this.productBuyPrice = productBuyPrice;
-        this.productTotalSellPrice = productTotalSellPrice;
-        this.productTotalBuyPrice = productTotalBuyPrice;
+        this.matName = matName;
+        this.matQuantity = matQuantity;
+        this.matSellPrice = matSellPrice;
+        this.matBuyPrice = matBuyPrice;
+        this.matTotalSellPrice = matTotalSellPrice;
+        this.matTotalBuyPrice = matTotalBuyPrice;
     }
 
-    public String getProductName() {
-        return productName;
+    public String getMatName() {
+        return matName;
     }
 
-    public void setProductName(String productName) {
-        this.productName = productName;
+    public void setMatName(String matName) {
+        this.matName = matName;
     }
 
-    public Integer getProductQuantity() {
-        return productQuantity;
+    public Integer getMatQuantity() {
+        return matQuantity;
     }
 
-    public void setProductQuantity(Integer productQuantity) {
-        this.productQuantity = productQuantity;
+    public void setMatQuantity(Integer matQuantity) {
+        this.matQuantity = matQuantity;
     }
 
-    public Double getProductSellPrice() {
-        return productSellPrice;
+    public Double getMatSellPrice() {
+        return matSellPrice;
     }
 
-    public void setProductSellPrice(Double productSellPrice) {
-        this.productSellPrice = productSellPrice;
+    public void setMatSellPrice(Double matSellPrice) {
+        this.matSellPrice = matSellPrice;
     }
 
-    public Double getProductBuyPrice() {
-        return productBuyPrice;
+    public Double getMatBuyPrice() {
+        return matBuyPrice;
     }
 
-    public void setProductBuyPrice(Double productBuyPrice) {
-        this.productBuyPrice = productBuyPrice;
+    public void setMatBuyPrice(Double matBuyPrice) {
+        this.matBuyPrice = matBuyPrice;
     }
 
-    public Double getProductTotalSellPrice() {
-        return productTotalSellPrice;
+    public Double getMatTotalSellPrice() {
+        return matTotalSellPrice;
     }
 
-    public void setProductTotalSellPrice(Double productTotalSellPrice) {
-        this.productTotalSellPrice = productTotalSellPrice;
+    public void setMatTotalSellPrice(Double matTotalSellPrice) {
+        this.matTotalSellPrice = matTotalSellPrice;
     }
 
-    public Double getProductTotalBuyPrice() {
-        return productTotalBuyPrice;
+    public Double getMatTotalBuyPrice() {
+        return matTotalBuyPrice;
     }
 
-    public void setProductTotalBuyPrice(Double productTotalBuyPrice) {
-        this.productTotalBuyPrice = productTotalBuyPrice;
+    public void setMatTotalBuyPrice(Double matTotalBuyPrice) {
+        this.matTotalBuyPrice = matTotalBuyPrice;
     }
 }

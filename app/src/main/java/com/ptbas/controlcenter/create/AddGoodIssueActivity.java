@@ -24,7 +24,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.DatePicker;
-import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -41,19 +40,17 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.ptbas.controlcenter.DialogInterface;
+import com.ptbas.controlcenter.Helper;
 import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.model.GoodIssueModel;
-import com.ptbas.controlcenter.model.PurchaseOrderModel;
+import com.ptbas.controlcenter.model.ReceivedOrderModel;
 import com.ptbas.controlcenter.model.VehicleModel;
 import com.ptbas.controlcenter.utils.LangUtils;
 
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.Random;
 
@@ -81,6 +78,7 @@ public class AddGoodIssueActivity extends AppCompatActivity {
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
 
     DialogInterface dialogInterface = new DialogInterface();
+    Helper helper = new Helper();
     List<String> vhlUIDList, matNameList, matTypeNameList, receiveOrderNumberList;
 
     @Override
@@ -349,11 +347,11 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                 databaseReference.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        PurchaseOrderModel purchaseOrderModel = snapshot.getValue(PurchaseOrderModel.class);
+                        ReceivedOrderModel receivedOrderModel = snapshot.getValue(ReceivedOrderModel.class);
 
-                        if (purchaseOrderModel !=null){
-                            edtPoNumberCust.setText(String.valueOf(purchaseOrderModel.getPoNumberCustomer()));
-                            if (purchaseOrderModel.getPoTransportType().contains("CUR")){
+                        if (receivedOrderModel !=null){
+                            edtPoNumberCust.setText(String.valueOf(receivedOrderModel.getRoPoCustNumber()));
+                            if (receivedOrderModel.getRoMatType().contains("CUR")){
                                 spinnerMatType.setText("CURAH");
                                 matType = "CURAH";
                             } else{
@@ -445,8 +443,11 @@ public class AddGoodIssueActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()){
                     for (DataSnapshot dataSnapshot: snapshot.getChildren()){
-                        String spinnerPurchaseOrders = dataSnapshot.child("roNumber").getValue(String.class);
-                        receiveOrderNumberList.add(spinnerPurchaseOrders);
+                        if (Objects.equals(dataSnapshot.child("roStatus").getValue(), true)){
+                            String spinnerPurchaseOrders = dataSnapshot.child("roUID").getValue(String.class);
+                            receiveOrderNumberList.add(spinnerPurchaseOrders);
+                        }
+
                     }
                     ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddGoodIssueActivity.this, R.layout.style_spinner, receiveOrderNumberList);
                     arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
@@ -548,7 +549,7 @@ public class AddGoodIssueActivity extends AppCompatActivity {
 
                 String giVhlUID = Objects.requireNonNull(spinnerVhlUID.getText()).toString();
                 String giHeightCorrection = Objects.requireNonNull(edtHeightCorrection.getText()).toString();
-                String giCreatedBy = "";
+                String giCreatedBy = helper.getUserId();
 
                 String giVhlLength = Objects.requireNonNull(edtVhlLength.getText()).toString();
                 String giVhlWidth = Objects.requireNonNull(edtVhlWidth.getText()).toString();

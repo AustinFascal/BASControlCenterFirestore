@@ -131,9 +131,8 @@
                         android:id="@+id/spinner_po_cust_name"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZ "
                         android:hint="@string/inputCustomerName"
-                        android:inputType="textFilter|textCapCharacters" />
+                        android:inputType="textCapCharacters" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -147,9 +146,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="-"
-                        android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890/"
                         android:hint="@string/inputPoNumberCustomer2"
-                        android:inputType="textFilter|textCapCharacters" />
+                        android:inputType="textCapCharacters" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout

@@ -9,16 +9,14 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.ptbas.controlcenter.DashboardActivity;
 import com.ptbas.controlcenter.R;
-import com.ptbas.controlcenter.management.CustomerManagementActivity;
+import com.ptbas.controlcenter.create.AddCustomerActivity;
 import com.ptbas.controlcenter.management.GoodIssueManagementActivity;
 import com.ptbas.controlcenter.management.InvoiceManagementActivity;
-import com.ptbas.controlcenter.management.PurchaseOrderManagementActivity;
+import com.ptbas.controlcenter.management.ReceivedOrderManagementActivity;
 import com.ptbas.controlcenter.management.UserManagementActivity;
 import com.ptbas.controlcenter.management.VehicleManagementActivity;
 import com.ptbas.controlcenter.model.MainFeatureModel;
-import com.ptbas.controlcenter.userprofile.UserProfileActivity;
 import com.ptbas.controlcenter.viewholder.MainFeatureViewHolder;
 
 import java.util.ArrayList;
@@ -61,7 +59,7 @@ public class MainFeaturesMenuAdapter extends RecyclerView.Adapter<MainFeatureVie
                     intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(intent2);
                 } else if (pos == 2){
-                    Intent intent2 = new Intent(context, PurchaseOrderManagementActivity.class);
+                    Intent intent2 = new Intent(context, ReceivedOrderManagementActivity.class);
                     intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(intent2);
                 } else if (pos == 3){
@@ -69,7 +67,7 @@ public class MainFeaturesMenuAdapter extends RecyclerView.Adapter<MainFeatureVie
                     intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(intent2);
                 } else if (pos == 4){
-                    Intent intent2 = new Intent(context, CustomerManagementActivity.class);
+                    Intent intent2 = new Intent(context, AddCustomerActivity.class);
                     intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(intent2);
                 } else if (pos == 5){

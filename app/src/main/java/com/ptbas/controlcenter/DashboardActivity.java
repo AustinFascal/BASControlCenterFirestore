@@ -5,8 +5,11 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
+import androidx.core.view.ViewCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -28,6 +31,9 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.transition.Fade;
+import android.view.DragEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -58,6 +64,7 @@ import com.ptbas.controlcenter.userprofile.UserProfileActivity;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class DashboardActivity extends AppCompatActivity {
 
@@ -65,7 +72,7 @@ public class DashboardActivity extends AppCompatActivity {
     private LinearLayout llAddGi, llAddVehicle, llAddPo, llAddInvoice, llTopView;
     private ImageView imageViewProfilePic;
     public FirebaseAuth authProfile;
-    private String finalCountVehicle, finalCountUser, finalCountActiveGoodIssueData;
+    private String finalCountVehicle, finalCountUser, finalCountActiveReceivedOrderData, finalCountActiveGoodIssueData, finalCountCustomer;
 
     ConstraintLayout constraintLayout;
 
@@ -77,9 +84,9 @@ public class DashboardActivity extends AppCompatActivity {
 
     //SwipeRefreshLayout swipeContainer;
     private CardView crdviewWrapInternetError, crdviewWrapShortcuts;
-    private LinearLayout llWrapShortcuts, llWrapNoInternet;
+    private LinearLayout llWrapShortcuts;
 
-    private TextView title;
+    private TextView title, tvShowAllShortcuts;
     private ImageButton imgbtnMenu;
 
     LinearLayout linearLayout;
@@ -91,6 +98,7 @@ public class DashboardActivity extends AppCompatActivity {
     Helper helper = new Helper();
 
 
+    @SuppressLint("ClickableViewAccessibility")
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,9 +114,9 @@ public class DashboardActivity extends AppCompatActivity {
         swipeContainer = findViewById(R.id.swipeContainerDashboard);
         crdviewWrapShortcuts = findViewById(R.id.crdview_wrap_shortcuts);
         llWrapShortcuts = findViewById(R.id.ll_wrap_shortcuts);
-        llWrapNoInternet = findViewById(R.id.ll_wrap_no_internet);
         rvMainFeatures = findViewById(R.id.rv_main_features);
         rvStatistics = findViewById(R.id.rv_statistics);
+        tvShowAllShortcuts = findViewById(R.id.tv_show_all_shortcuts);
 
         if (Build.VERSION.SDK_INT >= 19 && Build.VERSION.SDK_INT < 21) {
             setWindowFlag(this, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, true);
@@ -158,6 +166,35 @@ public class DashboardActivity extends AppCompatActivity {
         llAddInvoice = findViewById(R.id.ll_add_invoice);
 
         constraintLayout = findViewById(R.id.constraintLayout);
+
+        LinearLayout dragtoexpand = (LinearLayout) findViewById(R.id.dragtoexpand);
+
+        Fade fade = new Fade();
+        View decor = getWindow().getDecorView();
+        fade.excludeTarget(decor.findViewById(androidx.appcompat.R.id.action_bar_container), true);
+        fade.excludeTarget(android.R.id.statusBarBackground, true);
+        fade.excludeTarget(android.R.id.navigationBarBackground, true);
+
+        getWindow().setEnterTransition(fade);
+        getWindow().setExitTransition(fade);
+
+        dragtoexpand.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(DashboardActivity.this, AllShortcutsActivity.class);
+                ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(DashboardActivity.this, crdviewWrapShortcuts, Objects.requireNonNull(ViewCompat.getTransitionName(crdviewWrapShortcuts)));
+                startActivity(intent, optionsCompat.toBundle());
+            }
+        });
+
+        tvShowAllShortcuts.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(DashboardActivity.this, AllShortcutsActivity.class);
+                ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(DashboardActivity.this, crdviewWrapShortcuts, Objects.requireNonNull(ViewCompat.getTransitionName(crdviewWrapShortcuts)));
+                startActivity(intent, optionsCompat.toBundle());
+            }
+        });
 
         llAddGi.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -256,11 +293,37 @@ public class DashboardActivity extends AppCompatActivity {
             }
         });
 
-        databaseReference.child("GoodIssueData").orderByChild("giStatus").equalTo(true).addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference.child("GoodIssueData").orderByChild("giStatus").equalTo(false).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 int countFinal = Integer.parseInt(String.valueOf(dataSnapshot.getChildrenCount()));
                 getActiveGoodIssueDataCount(String.valueOf(countFinal));
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+        databaseReference.child("ReceivedOrders").orderByChild("roStatus").equalTo(false).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                int countFinal = Integer.parseInt(String.valueOf(dataSnapshot.getChildrenCount()));
+                getActiveReceivedOrderDataCount(String.valueOf(countFinal));
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+        databaseReference.child("CustomerData").orderByKey().addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                int countFinal = Integer.parseInt(String.valueOf(dataSnapshot.getChildrenCount()));
+                getCustomerDataCount(String.valueOf(countFinal));
             }
 
             @Override
@@ -282,6 +345,11 @@ public class DashboardActivity extends AppCompatActivity {
         });
     }
 
+
+    private void getActiveReceivedOrderDataCount(String countFinal) {
+        finalCountActiveReceivedOrderData = countFinal;
+        showStatistics();
+    }
     private void getActiveGoodIssueDataCount(String countFinal) {
         finalCountActiveGoodIssueData = countFinal;
         showStatistics();
@@ -294,6 +362,10 @@ public class DashboardActivity extends AppCompatActivity {
 
     public void getUserDataCount(String countFinal){
         finalCountUser = countFinal;
+        showStatistics();
+    }
+    public void getCustomerDataCount(String countFinal){
+        finalCountCustomer = countFinal;
         showStatistics();
     }
 
@@ -385,7 +457,7 @@ public class DashboardActivity extends AppCompatActivity {
         holder.add(ob2);
 
         MainFeatureModel ob3 = new MainFeatureModel();
-        ob3.setHeader("Manajemen Purchase Order");
+        ob3.setHeader("Manajemen Received Order");
         ob3.setDesc("Atur rincian data purchase order");
         ob3.setImgName(R.drawable.ic_purchase_order);
         holder.add(ob3);
@@ -417,24 +489,35 @@ public class DashboardActivity extends AppCompatActivity {
         ArrayList<StatisticsModel> holder2 = new ArrayList<>();
 
         StatisticsModel ob1 = new StatisticsModel();
-        ob1.setHeader("0");
-        ob1.setDesc("Jumlah PO Aktif");
+        ob1.setHeader(finalCountActiveReceivedOrderData);
+        ob1.setDesc("RO Need Approval");
         holder2.add(ob1);
 
+        StatisticsModel ob2 = new StatisticsModel();
+        ob2.setHeader(finalCountActiveGoodIssueData);
+        ob2.setDesc("GI Need Approval");
+        holder2.add(ob2);
+
         StatisticsModel ob3 = new StatisticsModel();
-        ob3.setHeader(finalCountActiveGoodIssueData);
-        ob3.setDesc("Jumlah GI Selesai");
+        ob3.setHeader(finalCountVehicle);
+        ob3.setDesc("Jumlah Armada");
         holder2.add(ob3);
 
         StatisticsModel ob4 = new StatisticsModel();
-        ob4.setHeader(finalCountVehicle);
-        ob4.setDesc("Jumlah Armada");
+        ob4.setHeader(finalCountUser);
+        ob4.setDesc("Jumlah Pengguna");
         holder2.add(ob4);
 
         StatisticsModel ob5 = new StatisticsModel();
-        ob5.setHeader(finalCountUser);
-        ob5.setDesc("Jumlah Pengguna");
+        ob5.setHeader(finalCountCustomer);
+        ob5.setDesc("Jumlah Customer");
         holder2.add(ob5);
+
+        StatisticsModel ob6 = new StatisticsModel();
+        ob6.setHeader("0");
+        ob6.setDesc("Jumlah Supplier");
+        holder2.add(ob6);
+
 
         return holder2;
     }
@@ -483,7 +566,6 @@ public class DashboardActivity extends AppCompatActivity {
                 }
             }
             llWrapShortcuts.setVisibility(View.VISIBLE);
-            llWrapNoInternet.setVisibility(View.GONE);
 
         }
 
@@ -543,13 +625,13 @@ public class DashboardActivity extends AppCompatActivity {
 
                 }
 
-                if (scrollY == 0) {
+                /*if (scrollY == 0) {
                     Toast.makeText(DashboardActivity.this, "reached top", Toast.LENGTH_SHORT).show();
                 }
 
                 if (scrollY == ( v.getMeasuredHeight() - v.getChildAt(0).getMeasuredHeight() )) {
                     Toast.makeText(DashboardActivity.this, "Bottom Scroll", Toast.LENGTH_SHORT).show();
-                }
+                }*/
             }
         });
     }
