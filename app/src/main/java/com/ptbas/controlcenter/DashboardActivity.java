@@ -230,9 +230,6 @@ public class DashboardActivity extends AppCompatActivity {
 
         constraintLayout = findViewById(R.id.constraintLayout);
 
-
-        //LinearLayout dragtoexpand = (LinearLayout) findViewById(R.id.dragtoexpand);
-
         Fade fade = new Fade();
         View decor = getWindow().getDecorView();
         fade.excludeTarget(decor.findViewById(androidx.appcompat.R.id.action_bar_container), true);
@@ -241,24 +238,6 @@ public class DashboardActivity extends AppCompatActivity {
 
         getWindow().setEnterTransition(fade);
         getWindow().setExitTransition(fade);
-
-        /*dragtoexpand.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(DashboardActivity.this, AllShortcutsActivity.class);
-                ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(DashboardActivity.this, crdviewWrapShortcuts, Objects.requireNonNull(ViewCompat.getTransitionName(crdviewWrapShortcuts)));
-                startActivity(intent, optionsCompat.toBundle());
-            }
-        });
-
-        tvShowAllShortcuts.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(DashboardActivity.this, AllShortcutsActivity.class);
-                ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(DashboardActivity.this, crdviewWrapShortcuts, Objects.requireNonNull(ViewCompat.getTransitionName(crdviewWrapShortcuts)));
-                startActivity(intent, optionsCompat.toBundle());
-            }
-        });*/
 
         llAddGi.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -560,12 +539,12 @@ public class DashboardActivity extends AppCompatActivity {
 
         StatisticsModel ob1 = new StatisticsModel();
         ob1.setHeader(finalCountActiveReceivedOrderData);
-        ob1.setDesc("RO Need Approval");
+        ob1.setDesc("RO Butuh Persetujuan");
         holder2.add(ob1);
 
         StatisticsModel ob2 = new StatisticsModel();
         ob2.setHeader(finalCountActiveGoodIssueData);
-        ob2.setDesc("GI Need Approval");
+        ob2.setDesc("GI Butuh Persetujuan");
         holder2.add(ob2);
 
         StatisticsModel ob3 = new StatisticsModel();

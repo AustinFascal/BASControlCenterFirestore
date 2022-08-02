@@ -269,7 +269,7 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                         finalHeightCorrection = Integer.parseInt(edtVhlHeight.getText().toString()) - Integer.parseInt(edtHeightCorrection.getText().toString());
                     }
                     tvVhlVolume.setText(Html.fromHtml(String.valueOf(df.format(finalVolume))+" m\u00B3"));
-                    tvHeightCorrection.setText(Html.fromHtml("Tinggi Hasil Koreksi: "+finalHeightCorrection)+" cm");
+                    tvHeightCorrection.setText(Html.fromHtml("Tinggi Hasil Koreksi (TK): "+finalHeightCorrection)+" cm");
                 }
 
             }
@@ -309,7 +309,7 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                             edtVhlLength.setText(String.valueOf(vehicleModel.getVhlLength()));
                             edtVhlWidth.setText(String.valueOf(vehicleModel.getVhlWidth()));
                             edtVhlHeight.setText(String.valueOf(vehicleModel.getVhlHeight()));
-                            tvHeightCorrection.setText(Html.fromHtml("Tinggi Hasil Koreksi: "+ vehicleModel.getVhlHeight() +" cm"));
+                            tvHeightCorrection.setText(Html.fromHtml("Tinggi Hasil Koreksi (TK): "+ vehicleModel.getVhlHeight() +" cm"));
 
                             float finalVolumeDefault =
                                     (Float.parseFloat(edtVhlLength.getText().toString())*
@@ -635,7 +635,7 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                                     Integer.parseInt(radioOperation+giHeightCorrection.replaceAll("[^0-9]", "")),
                                     Integer.parseInt(tvHeightCorrection.getText().toString().replaceAll("[^0-9]", "")),
                                     Float.parseFloat(df.format(Float.parseFloat(giVhlCubication.replaceAll("[^0-9.]", "")))),
-                                    false);
+                                    false, false);
                         }
                     }
 
@@ -645,18 +645,16 @@ public class AddGoodIssueActivity extends AppCompatActivity {
         });
     }
 
-
-
     private void insertData(String giUID, String giCreatedBy, String giRoUID,
                             String giPoCustNumber, String giMatName, String giMatType,
                             String vhlUID, String giDateCreated, String giTimeCreted,
                             int vhlLength, int vhlWidth, int vhlHeight,
                             int vhlHeightCorrection, int vhlHeightAfterCorrection,
-                            float giVhlCubication, Boolean giStatus) {
+                            float giVhlCubication, Boolean giStatus, Boolean giInvoiced) {
 
         GoodIssueModel goodIssueModel = new GoodIssueModel(giUID, giCreatedBy, giRoUID, giPoCustNumber,
                 giMatName, giMatType, vhlUID, giDateCreated, giTimeCreted, vhlLength,
-                vhlWidth, vhlHeight, vhlHeightCorrection, vhlHeightAfterCorrection, giVhlCubication, giStatus);
+                vhlWidth, vhlHeight, vhlHeightCorrection, vhlHeightAfterCorrection, giVhlCubication, giStatus, giInvoiced);
 
         DatabaseReference refGIExists = FirebaseDatabase.getInstance("https://bas-delivery-report-default-rtdb.asia-southeast1.firebasedatabase.app").getReference("GoodIssueData/"+giUID);
         refGIExists.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -670,7 +668,7 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
-                                dialogInterface.savedInformation(AddGoodIssueActivity.this);
+                                dialogInterface.savedInformationFromManagement(AddGoodIssueActivity.this);
                             } else {
                                 try{
                                     throw task.getException();
@@ -717,7 +715,7 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                 finalHeightCorrection = Integer.parseInt(edtVhlHeight.getText().toString()) - Integer.parseInt(edtHeightCorrection.getText().toString());
             }
             tvVhlVolume.setText(Html.fromHtml(String.valueOf(df.format(finalVolume))+" m\u00B3"));
-            tvHeightCorrection.setText(Html.fromHtml("Tinggi Hasil Koreksi: "+finalHeightCorrection)+" cm");
+            tvHeightCorrection.setText(Html.fromHtml("Tinggi Hasil Koreksi (TK): "+finalHeightCorrection)+" cm");
         }
     }
 

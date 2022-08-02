@@ -31,8 +31,8 @@
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:startIconDrawable="@drawable/ic_outline_today"
-                    android:layout_weight="1">
+                    android:layout_weight="1"
+                    app:startIconDrawable="@drawable/ic_outline_today">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/edt_gi_date"
@@ -47,8 +47,8 @@
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:startIconDrawable="@drawable/ic_outline_access_time"
-                    android:layout_weight="1">
+                    android:layout_weight="1"
+                    app:startIconDrawable="@drawable/ic_outline_access_time">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/edt_gi_time"
@@ -64,9 +64,9 @@
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
                 android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 app:prefixText="RO-"
-                app:startIconDrawable="@drawable/ic_outline_receipt"
-                android:layout_height="wrap_content">
+                app:startIconDrawable="@drawable/ic_outline_receipt">
 
                 <AutoCompleteTextView
                     android:id="@+id/spinner_ro_number"
@@ -80,8 +80,8 @@
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
-                app:startIconDrawable="@drawable/ic_outline_receipt"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                app:startIconDrawable="@drawable/ic_outline_receipt">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edt_po_number_cust"
@@ -103,8 +103,8 @@
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:startIconDrawable="@drawable/ic_outline_category"
-                    android:layout_weight="1">
+                    android:layout_weight="1"
+                    app:startIconDrawable="@drawable/ic_outline_category">
 
                     <AutoCompleteTextView
                         android:id="@+id/spinner_mat_name"
@@ -119,16 +119,16 @@
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:startIconDrawable="@drawable/ic_product_loading"
-                    android:layout_weight="1">
+                    android:layout_weight="1"
+                    app:startIconDrawable="@drawable/ic_product_loading">
 
                     <AutoCompleteTextView
                         android:id="@+id/spinner_mat_type"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:focusable="false"
                         android:hint="@string/inputPoProductType"
                         android:inputType="none"
-                        android:focusable="false"
                         android:maxLines="1" />
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
@@ -137,8 +137,8 @@
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:startIconDrawable="@drawable/ic_100"
-                app:placeholderText="Contoh: L4332AAD">
+                app:placeholderText="Contoh: L4332AAD"
+                app:startIconDrawable="@drawable/ic_100">
 
                 <AutoCompleteTextView
                     android:id="@+id/spinner_vhl_uid"
@@ -158,6 +158,7 @@
                 android:divider="@drawable/divider_transparent"
                 android:orientation="vertical"
                 android:showDividers="middle">
+
                 <LinearLayout
                     android:id="@+id/ll_height_correction_feature"
                     android:layout_width="match_parent"
@@ -165,93 +166,98 @@
                     android:divider="@drawable/divider_transparent"
                     android:orientation="vertical"
                     android:showDividers="middle">
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:divider="@drawable/divider_transparent"
                         android:orientation="horizontal"
                         android:showDividers="middle">
+
                         <com.google.android.material.textfield.TextInputLayout
                             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            app:suffixText="cm"
                             app:expandedHintEnabled="true"
+                            app:placeholderText="Contoh: 55"
                             app:startIconDrawable="@drawable/ic_outline_height"
-                            app:placeholderText="Contoh: 55">
+                            app:suffixText="cm">
 
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/edt_vhl_height_correction"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:hint="Koreksi Tinggi"
-                                android:text="0"
+                                android:hint="Koreksi Tinggi (K)"
                                 android:inputType="number"
-                                android:maxLength="2"/>
+                                android:maxLength="2"
+                                android:text="0" />
                         </com.google.android.material.textfield.TextInputLayout>
+
                         <RadioGroup
-                            android:layout_marginTop="5dp"
-                            android:layout_weight="2"
                             android:id="@+id/radio_group_operation"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_below="@id/textView_register_gender"
+                            android:layout_marginTop="5dp"
                             android:layout_toEndOf="@id/imageViewGender"
+                            android:layout_weight="2"
                             android:background="@drawable/outline_box"
                             android:orientation="horizontal"
                             android:paddingHorizontal="4dp">
 
 
-
                             <RadioButton
                                 android:id="@+id/radio_minus_operation"
+                                style="@style/Theme.TravelPermitBAS"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_weight="1"
                                 android:layout_gravity="center_vertical"
+                                android:layout_weight="1"
                                 android:checked="true"
                                 android:text="-"
-                                style="@style/Theme.TravelPermitBAS"
-                                android:textStyle="bold"
-                                android:textSize="16sp" />
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+
                             <RadioButton
                                 android:id="@+id/radio_plus_operation"
+                                style="@style/Theme.TravelPermitBAS"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_weight="1"
                                 android:layout_gravity="center_vertical"
+                                android:layout_weight="1"
                                 android:text="+"
-                                style="@style/Theme.TravelPermitBAS"
-                                android:textStyle="bold"
-                                android:textSize="16sp" />
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
 
 
                         </RadioGroup>
 
                     </LinearLayout>
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:showDividers="middle">
+
                         <TextView
                             android:id="@+id/tv_vhl_height_correction"
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
                             android:layout_weight="1"
-                            android:gravity="center_vertical"
                             android:ellipsize="end"
-                            android:textStyle="bold"
+                            android:gravity="center_vertical"
+                            android:text="Tinggi Hasil Koreksi (TK): 0 cm"
                             android:textSize="16sp"
-                            android:text="Tinggi Hasil Koreksi: 0 cm" />
+                            android:textStyle="bold" />
 
                         <ImageButton
                             android:layout_width="32dp"
                             android:layout_height="32dp"
-                            android:textAlignment="textEnd"
                             android:backgroundTint="@color/white"
-                            android:src="@drawable/ic_outline_info" />
+                            android:src="@drawable/ic_outline_info"
+                            android:textAlignment="textEnd" />
                     </LinearLayout>
 
                 </LinearLayout>
@@ -259,60 +265,60 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:baselineAligned="false"
                     android:divider="@drawable/divider_transparent"
                     android:orientation="horizontal"
-                    android:showDividers="middle"
-                    android:baselineAligned="false">
+                    android:showDividers="middle">
 
                     <com.google.android.material.textfield.TextInputLayout
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:suffixText="cm"
-                        android:layout_weight="1">
+                        android:layout_weight="1"
+                        app:suffixText="cm">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/edt_vhl_length"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="@string/inputVhlLength"
-                            android:text="0"
                             android:inputType="number"
-                            android:maxLength="3" />
+                            android:maxLength="3"
+                            android:text="0" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <com.google.android.material.textfield.TextInputLayout
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:suffixText="cm"
-                        android:layout_weight="1">
+                        android:layout_weight="1"
+                        app:suffixText="cm">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/edt_vhl_width"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="@string/inputVhlWidth"
-                            android:text="0"
                             android:inputType="number"
-                            android:maxLength="3" />
+                            android:maxLength="3"
+                            android:text="0" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <com.google.android.material.textfield.TextInputLayout
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:suffixText="cm"
-                        android:layout_weight="1">
+                        android:layout_weight="1"
+                        app:suffixText="cm">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/edt_vhl_height"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="@string/inputVhlHeight"
-                            android:text="0"
                             android:inputType="number"
-                            android:maxLength="3" />
+                            android:maxLength="3"
+                            android:text="0" />
                     </com.google.android.material.textfield.TextInputLayout>
                 </LinearLayout>
 
@@ -504,11 +510,11 @@
                         <ImageButton
                             android:layout_width="32dp"
                             android:layout_height="32dp"
-                            android:backgroundTint="@color/white"
                             android:layout_alignParentTop="true"
                             android:layout_alignParentEnd="true"
                             android:layout_marginTop="12dp"
                             android:layout_marginEnd="12dp"
+                            android:backgroundTint="@color/white"
                             android:src="@drawable/ic_outline_info"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />

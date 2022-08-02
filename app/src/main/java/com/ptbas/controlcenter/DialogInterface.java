@@ -1,8 +1,11 @@
 package com.ptbas.controlcenter;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.ptbas.controlcenter.create.AddReceivedOrder;
 
 import dev.shreyaspatil.MaterialDialog.BottomSheetMaterialDialog;
@@ -28,7 +31,7 @@ public class DialogInterface {
                     @Override
                     public void onClick(dev.shreyaspatil.MaterialDialog.interfaces.DialogInterface dialogInterface, int which) {
                         dialogInterface.dismiss();
-                        helper.refreshDashboard(activity.getApplicationContext());
+                        activity.finish();
                     }
 
                 })
@@ -65,6 +68,33 @@ public class DialogInterface {
         mBottomSheetDialog.show();
     }
 
+    public void savedInformationFromManagement(Activity activity){
+        BottomSheetMaterialDialog mBottomSheetDialog = new BottomSheetMaterialDialog.Builder(activity)
+                .setTitle("Sukses!")
+                .setAnimation(R.raw.lottie_saved)
+                .setMessage("Berhasil menambahkan data. Mau menambah data lagi?")
+                .setCancelable(false)
+                .setPositiveButton("TAMBAH LAGI", R.drawable.ic_outline_add, new BottomSheetMaterialDialog.OnClickListener() {
+                    @Override
+                    public void onClick(dev.shreyaspatil.MaterialDialog.interfaces.DialogInterface dialogInterface, int which) {
+                        dialogInterface.dismiss();
+                    }
+
+                })
+                .setNegativeButton("SELESAI", R.drawable.ic_outline_close, new BottomSheetMaterialDialog.OnClickListener() {
+                    @Override
+                    public void onClick(dev.shreyaspatil.MaterialDialog.interfaces.DialogInterface dialogInterface, int which) {
+                        dialogInterface.dismiss();
+                        activity.finish();
+                    }
+
+                })
+                .build();
+
+        // Show Dialog
+        mBottomSheetDialog.show();
+    }
+
     public void savedROInformation(Activity activity){
         BottomSheetMaterialDialog mBottomSheetDialog = new BottomSheetMaterialDialog.Builder(activity)
                 .setTitle("Sukses!")
@@ -91,6 +121,61 @@ public class DialogInterface {
                 .build();
 
         // Show Dialog
+        mBottomSheetDialog.show();
+    }
+
+    public void approveGiConfirmation(Context context, String giUID){
+        BottomSheetMaterialDialog mBottomSheetDialog = new BottomSheetMaterialDialog.Builder((Activity) context)
+                .setTitle("Setujui Data?")
+                .setAnimation(R.raw.lottie_approval)
+                .setMessage("Apakah Anda yakin ingin menyetujui data Good Issue yang Anda pilih? Setelah disetujui, status tidak dapat dikembalikan.")
+                .setCancelable(true)
+                .setPositiveButton("YA", R.drawable.ic_outline_check, new BottomSheetMaterialDialog.OnClickListener() {
+                    @Override
+                    public void onClick(dev.shreyaspatil.MaterialDialog.interfaces.DialogInterface dialogInterface, int which) {
+                        dialogInterface.dismiss();
+                        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+                        databaseReference.child("GoodIssueData").child(giUID).child("giStatus").setValue(true);
+                    }
+
+                })
+                .setNegativeButton("TIDAK", R.drawable.ic_outline_close, new BottomSheetMaterialDialog.OnClickListener() {
+                    @Override
+                    public void onClick(dev.shreyaspatil.MaterialDialog.interfaces.DialogInterface dialogInterface, int which) {
+                        dialogInterface.dismiss();
+                    }
+
+                })
+                .build();
+
+        mBottomSheetDialog.show();
+    }
+
+
+    public void deleteGiConfirmation(Context context, String giUID){
+        BottomSheetMaterialDialog mBottomSheetDialog = new BottomSheetMaterialDialog.Builder((Activity) context)
+                .setTitle("Hapus Data?")
+                .setAnimation(R.raw.lottie_delete)
+                .setMessage("Apakah Anda yakin ingin menghapus data Good Issue yang Anda pilih? Setelah dihapus, data tidak dapat dikembalikan.")
+                .setCancelable(true)
+                .setPositiveButton("YA", R.drawable.ic_outline_check, new BottomSheetMaterialDialog.OnClickListener() {
+                    @Override
+                    public void onClick(dev.shreyaspatil.MaterialDialog.interfaces.DialogInterface dialogInterface, int which) {
+                        dialogInterface.dismiss();
+                        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+                        databaseReference.child("GoodIssueData").child(giUID).removeValue();
+                    }
+
+                })
+                .setNegativeButton("TIDAK", R.drawable.ic_outline_close, new BottomSheetMaterialDialog.OnClickListener() {
+                    @Override
+                    public void onClick(dev.shreyaspatil.MaterialDialog.interfaces.DialogInterface dialogInterface, int which) {
+                        dialogInterface.dismiss();
+                    }
+
+                })
+                .build();
+
         mBottomSheetDialog.show();
     }
 }

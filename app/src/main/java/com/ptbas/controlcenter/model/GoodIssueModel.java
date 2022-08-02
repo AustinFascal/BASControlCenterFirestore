@@ -7,17 +7,12 @@ public class GoodIssueModel {
             giDateCreated, giTimeCreted;
     Integer vhlLength, vhlWidth, vhlHeight, vhlHeightCorrection, vhlHeightAfterCorrection;
     Float giVhlCubication;
-    Boolean giStatus;
+    Boolean giStatus, giInvoiced;
 
     GoodIssueModel() {
     }
 
-    public GoodIssueModel(String giUID, String giCreatedBy, String giRoUID,
-                          String giPoCustNumber, String giMatName, String giMatType,
-                          String vhlUID, String giDateCreated, String giTimeCreted,
-                          Integer vhlLength, Integer vhlWidth, Integer vhlHeight,
-                          Integer vhlHeightCorrection, Integer vhlHeightAfterCorrection,
-                          Float giVhlCubication, Boolean giStatus) {
+    public GoodIssueModel(String giUID, String giCreatedBy, String giRoUID, String giPoCustNumber, String giMatName, String giMatType, String vhlUID, String giDateCreated, String giTimeCreted, Integer vhlLength, Integer vhlWidth, Integer vhlHeight, Integer vhlHeightCorrection, Integer vhlHeightAfterCorrection, Float giVhlCubication, Boolean giStatus, Boolean giInvoiced) {
         this.giUID = giUID;
         this.giCreatedBy = giCreatedBy;
         this.giRoUID = giRoUID;
@@ -34,6 +29,7 @@ public class GoodIssueModel {
         this.vhlHeightAfterCorrection = vhlHeightAfterCorrection;
         this.giVhlCubication = giVhlCubication;
         this.giStatus = giStatus;
+        this.giInvoiced = giInvoiced;
     }
 
     public String getGiUID() {
@@ -162,5 +158,13 @@ public class GoodIssueModel {
 
     public void setGiStatus(Boolean giStatus) {
         this.giStatus = giStatus;
+    }
+
+    public Boolean getGiInvoiced() {
+        return giInvoiced;
+    }
+
+    public void setGiInvoiced(Boolean giInvoiced) {
+        this.giInvoiced = giInvoiced;
     }
 }

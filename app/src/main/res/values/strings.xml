@@ -4,9 +4,9 @@
     <string name="click_here_to_reset">Atur Ulang Kata Sandi</string>
     <string name="loading">Sedang memuat</string>
     <string name="inputRegistNumber">Nomor Polisi (TNKB)<font color="#cc0029">*</font></string>
-    <string name="inputVhlLength">Panjang<font color="#cc0029">*</font></string>
-    <string name="inputVhlWidth">Lebar<font color="#cc0029">*</font></string>
-    <string name="inputVhlHeight">Tinggi<font color="#cc0029">*</font></string>
+    <string name="inputVhlLength">Panjang (P)<font color="#cc0029">*</font></string>
+    <string name="inputVhlWidth">Lebar (L)<font color="#cc0029">*</font></string>
+    <string name="inputVhlHeight">Tinggi (T)<font color="#cc0029">*</font></string>
     <string name="inputVhlBrand">Merk Kendaraan</string>
     <string name="inputVhlIdentityNumber">Nomor Rangka/NIK/VIN</string>
     <string name="inputVhlEngineNumber">Nomor Mesin</string>
