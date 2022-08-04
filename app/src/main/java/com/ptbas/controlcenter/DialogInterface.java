@@ -3,6 +3,9 @@ package com.ptbas.controlcenter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -42,6 +45,13 @@ public class DialogInterface {
     }
 
     public void savedInformation(Activity activity){
+        Vibrator vibrator = (Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            vibrator.vibrate(VibrationEffect.createOneShot(100,
+                    VibrationEffect.DEFAULT_AMPLITUDE));
+        } else {
+            vibrator.vibrate(100);
+        }
         BottomSheetMaterialDialog mBottomSheetDialog = new BottomSheetMaterialDialog.Builder(activity)
                 .setTitle("Sukses!")
                 .setAnimation(R.raw.lottie_saved)
@@ -69,6 +79,13 @@ public class DialogInterface {
     }
 
     public void savedInformationFromManagement(Activity activity){
+        Vibrator vibrator = (Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            vibrator.vibrate(VibrationEffect.createOneShot(100,
+                    VibrationEffect.DEFAULT_AMPLITUDE));
+        } else {
+            vibrator.vibrate(100);
+        }
         BottomSheetMaterialDialog mBottomSheetDialog = new BottomSheetMaterialDialog.Builder(activity)
                 .setTitle("Sukses!")
                 .setAnimation(R.raw.lottie_saved)
@@ -96,6 +113,14 @@ public class DialogInterface {
     }
 
     public void savedROInformation(Activity activity){
+        Vibrator vibrator = (Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            vibrator.vibrate(VibrationEffect.createOneShot(100,
+                    VibrationEffect.DEFAULT_AMPLITUDE));
+        } else {
+            vibrator.vibrate(100);
+        }
+
         BottomSheetMaterialDialog mBottomSheetDialog = new BottomSheetMaterialDialog.Builder(activity)
                 .setTitle("Sukses!")
                 .setAnimation(R.raw.lottie_saved)
@@ -126,9 +151,9 @@ public class DialogInterface {
 
     public void approveGiConfirmation(Context context, String giUID){
         BottomSheetMaterialDialog mBottomSheetDialog = new BottomSheetMaterialDialog.Builder((Activity) context)
-                .setTitle("Setujui Data?")
+                .setTitle("Validasi Data")
                 .setAnimation(R.raw.lottie_approval)
-                .setMessage("Apakah Anda yakin ingin menyetujui data Good Issue yang Anda pilih? Setelah disetujui, status tidak dapat dikembalikan.")
+                .setMessage("Apakah Anda yakin ingin mengesahkan data Good Issue yang Anda pilih? Setelah disahkan, status tidak dapat dikembalikan.")
                 .setCancelable(true)
                 .setPositiveButton("YA", R.drawable.ic_outline_check, new BottomSheetMaterialDialog.OnClickListener() {
                     @Override
@@ -154,7 +179,7 @@ public class DialogInterface {
 
     public void deleteGiConfirmation(Context context, String giUID){
         BottomSheetMaterialDialog mBottomSheetDialog = new BottomSheetMaterialDialog.Builder((Activity) context)
-                .setTitle("Hapus Data?")
+                .setTitle("Hapus Data")
                 .setAnimation(R.raw.lottie_delete)
                 .setMessage("Apakah Anda yakin ingin menghapus data Good Issue yang Anda pilih? Setelah dihapus, data tidak dapat dikembalikan.")
                 .setCancelable(true)

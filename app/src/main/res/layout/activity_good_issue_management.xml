@@ -19,30 +19,33 @@
             app:cardPreventCornerOverlap="false">
 
             <LinearLayout
-                android:paddingHorizontal="12dp"
-                android:paddingVertical="18dp"
-                android:divider="@drawable/divider_transparent"
-                android:showDividers="middle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:divider="@drawable/divider_transparent"
                 android:gravity="center"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:paddingHorizontal="12dp"
+                android:paddingTop="18dp"
+                android:showDividers="middle">
+
                 <LinearLayout
                     android:id="@+id/wrap_search_by_spinner"
-                    android:visibility="gone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:divider="@drawable/divider_transparent"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
-                    android:showDividers="middle">
+                    android:paddingBottom="16dp"
+                    android:showDividers="middle"
+                    android:visibility="gone">
 
                     <com.google.android.material.textfield.TextInputLayout
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
                         android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        app:placeholderText="Pilih Kategori"
-                        android:layout_height="wrap_content">
+                        app:placeholderText="Pilih Kategori">
+
                         <AutoCompleteTextView
                             android:id="@+id/spinner_search_type"
                             android:layout_width="match_parent"
@@ -52,17 +55,17 @@
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <ImageButton
-                        android:visibility="gone"
-                        android:layout_marginTop="3dp"
-                        android:layout_marginBottom="1dp"
-                        android:background="@drawable/outline_box"
-                        android:id="@+id/btn_gi_search_by_reset"
+                        android:id="@+id/btn_gi_search_by_type_reset"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_gravity="center_vertical"
+                        android:layout_marginTop="3dp"
+                        android:layout_marginBottom="1dp"
                         android:layout_weight="3.8"
+                        android:background="@drawable/outline_box"
                         android:scaleType="centerInside"
-                        android:src="@drawable/ic_outline_restore"/>
+                        android:src="@drawable/ic_outline_restore"
+                        android:visibility="gone" />
 
                     <!--
                                         <androidx.appcompat.widget.SearchView
@@ -81,130 +84,257 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:visibility="gone"
                     android:id="@+id/wrap_filter"
-                    android:divider="@drawable/divider_transparent"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:showDividers="middle"
+                    android:divider="@drawable/divider_transparent"
                     android:gravity="center_vertical"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:showDividers="middle"
+                    android:visibility="visible">
 
-                    <LinearLayout
-                        android:visibility="visible"
+                    <com.ptbas.controlcenter.DragLinearLayout
+                        android:id="@+id/drag_linear_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:divider="@drawable/divider_transparent"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal"
+                        android:orientation="vertical"
                         android:showDividers="middle">
 
-                        <com.google.android.material.textfield.TextInputLayout
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1">
-                            <AutoCompleteTextView
-                                android:id="@+id/spinner_approval_status"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:hint="Status Disahkan"
-                                android:inputType="none" />
-                        </com.google.android.material.textfield.TextInputLayout>
-
-                        <com.google.android.material.textfield.TextInputLayout
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1">
-                            <AutoCompleteTextView
-                                android:id="@+id/spinner_invoiced_status"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:hint="Status Ditagihkan"
-                                android:inputType="none" />
-                        </com.google.android.material.textfield.TextInputLayout>
-
-                        <ImageButton
-                            android:visibility="gone"
-                            android:layout_marginTop="3dp"
-                            android:layout_marginBottom="1dp"
-                            android:background="@drawable/outline_box"
-                            android:id="@+id/btn_gi_search_status_reset"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_gravity="center_vertical"
-                            android:layout_weight="1.3"
-                            android:scaleType="centerInside"
-                            android:src="@drawable/ic_outline_restore"/>
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:divider="@drawable/divider_transparent"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal"
-                        android:showDividers="middle">
-
-                        <com.google.android.material.textfield.TextInputLayout
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        <LinearLayout
+                            android:id="@+id/ll_wrap_filter_by_status"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            app:startIconDrawable="@drawable/ic_outline_today">
+                            android:divider="@drawable/divider_transparent"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:showDividers="middle"
+                            android:tag="firstView">
 
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/edt_gi_date_filter_start"
+                            <ImageView
+                                android:layout_width="24dp"
+                                android:layout_height="match_parent"
+                                android:src="@drawable/ic_outline_drag_indicator" />
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:focusable="false"
-                                android:hint="Mulai"
-                                android:inputType="none" />
-                        </com.google.android.material.textfield.TextInputLayout>
+                                android:layout_weight="1"
+                                app:startIconDrawable="@drawable/ic_outline_today">
 
-                        <com.google.android.material.textfield.TextInputLayout
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                <com.google.android.material.textfield.TextInputEditText
+                                    android:id="@+id/edt_gi_date_filter_start"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:focusable="false"
+                                    android:hint="Mulai"
+                                    android:inputType="none" />
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                app:startIconDrawable="@drawable/ic_outline_today">
+
+                                <com.google.android.material.textfield.TextInputEditText
+                                    android:id="@+id/edt_gi_date_filter_end"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:focusable="false"
+                                    android:hint="Akhir"
+                                    android:inputType="none" />
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                            <ImageButton
+                                android:id="@+id/btn_gi_search_date_reset"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center_vertical"
+                                android:layout_marginBottom="1dp"
+                                android:layout_weight="1.3"
+                                android:background="@drawable/outline_box"
+                                android:scaleType="centerInside"
+                                android:src="@drawable/ic_outline_restore"
+                                android:visibility="gone" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/ll_wrap_filter_by_date_range"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            app:startIconDrawable="@drawable/ic_outline_today">
+                            android:divider="@drawable/divider_transparent"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:showDividers="middle"
+                            android:visibility="visible">
 
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/edt_gi_date_filter_end"
+                            <ImageView
+                                android:layout_width="24dp"
+                                android:layout_height="match_parent"
+                                android:src="@drawable/ic_outline_drag_indicator" />
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:focusable="false"
-                                android:hint="Akhir"
-                                android:inputType="none" />
-                        </com.google.android.material.textfield.TextInputLayout>
+                                android:layout_height="match_parent"
+                                android:layout_weight="1">
 
-                        <ImageButton
-                            android:visibility="gone"
-                            android:layout_marginTop="3dp"
-                            android:layout_marginBottom="1dp"
-                            android:background="@drawable/outline_box"
-                            android:id="@+id/btn_gi_search_date_reset"
+                                <AutoCompleteTextView
+                                    android:id="@+id/spinner_approval_status"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:hint="Status Disahkan"
+                                    android:inputType="none" />
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1">
+
+                                <AutoCompleteTextView
+                                    android:id="@+id/spinner_invoiced_status"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:hint="Status Ditagihkan"
+                                    android:inputType="none" />
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                            <ImageButton
+                                android:id="@+id/btn_gi_search_status_reset"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center_vertical"
+                                android:layout_marginTop="3dp"
+                                android:layout_marginBottom="1dp"
+                                android:layout_weight="1.3"
+                                android:background="@drawable/outline_box"
+                                android:scaleType="centerInside"
+                                android:src="@drawable/ic_outline_restore"
+                                android:visibility="gone" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/ll_wrap_filter_by_name_and_type"
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_gravity="center_vertical"
-                            android:layout_weight="1.3"
-                            android:scaleType="centerInside"
-                            android:src="@drawable/ic_outline_restore"/>
+                            android:layout_height="wrap_content"
+                            android:divider="@drawable/divider_transparent"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:showDividers="middle"
+                            android:visibility="visible">
 
-                    </LinearLayout>
+                            <ImageView
+                                android:layout_width="24dp"
+                                android:layout_height="match_parent"
+                                android:src="@drawable/ic_outline_drag_indicator" />
 
+                            <com.google.android.material.textfield.TextInputLayout
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1">
+
+                                <AutoCompleteTextView
+                                    android:id="@+id/spinner_mat_name"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:hint="Nama Material"
+                                    android:inputType="none" />
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1">
+
+                                <AutoCompleteTextView
+                                    android:id="@+id/spinner_mat_type"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:hint="Tipe Material"
+                                    android:inputType="none" />
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                            <ImageButton
+                                android:id="@+id/btn_gi_search_nametype_reset"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center_vertical"
+                                android:layout_marginTop="3dp"
+                                android:layout_marginBottom="1dp"
+                                android:layout_weight="1.3"
+                                android:background="@drawable/outline_box"
+                                android:scaleType="centerInside"
+                                android:src="@drawable/ic_outline_restore"
+                                android:visibility="gone" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/ll_wrap_filter_by_company"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:divider="@drawable/divider_transparent"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:showDividers="middle"
+                            android:visibility="visible">
+
+                            <ImageView
+                                android:layout_width="24dp"
+                                android:layout_height="match_parent"
+                                android:src="@drawable/ic_outline_drag_indicator" />
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1">
+
+                                <AutoCompleteTextView
+                                    android:id="@+id/spinner_company_name"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:hint="Perusahaan"
+                                    android:inputType="none" />
+                            </com.google.android.material.textfield.TextInputLayout>
+
+
+                            <ImageButton
+                                android:id="@+id/btn_gi_search_company_reset"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center_vertical"
+                                android:layout_marginTop="3dp"
+                                android:layout_marginBottom="1dp"
+                                android:layout_weight="1.3"
+                                android:background="@drawable/outline_box"
+                                android:scaleType="centerInside"
+                                android:src="@drawable/ic_outline_restore"
+                                android:visibility="gone" />
+
+                        </LinearLayout>
+
+                    </com.ptbas.controlcenter.DragLinearLayout>
                 </LinearLayout>
-<!--
-                <ImageButton
+
+                <Button
                     android:id="@+id/imgbtn_expand_collapse_filter_layout"
                     style="@style/MaterialDialog.NegativeButton"
-                    android:padding="4dp"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:src="@drawable/ic_outline_keyboard_arrow_down"/>
--->
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:drawableEnd="@drawable/ic_outline_keyboard_arrow_up"
+                    android:paddingTop="4dp"
+                    android:text="Tampilkan lebih sedikit"
+                    android:visibility="gone" />
 
             </LinearLayout>
 

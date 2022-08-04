@@ -362,20 +362,20 @@ public class AddReceivedOrder extends AppCompatActivity {
             public void run() {
                 if (transportData.isEmpty()){
                     if (poMonth==0||poYear==0){
-                        edtPoNumberPtbas.setText(transportData+"-"+customerAlias+"--");
+                        edtPoNumberPtbas.setText(customerAlias+"-"+transportData+"--");
                     } else {
-                        edtPoNumberPtbas.setText(transportData+"-"+customerAlias+"-"+poMonth + "-" + poYear);
+                        edtPoNumberPtbas.setText(customerAlias+"-"+transportData+"-"+poMonth + "-" + poYear);
                     }
                 } else {
                     if (poMonth==0||poYear==0){
-                        edtPoNumberPtbas.setText(transportData.substring(0, 3) + "-" +customerAlias+"--");
+                        edtPoNumberPtbas.setText(customerAlias+"-"+transportData.substring(0, 3) + "--");
                         if (!customerData.isEmpty() &&!Objects.requireNonNull(edtPoDate.getText()).toString().equals("")){
-                            edtPoNumberPtbas.setText(randomString+"-"+transportData.substring(0, 3)+"-"+customerAlias+"--");
+                            edtPoNumberPtbas.setText(customerAlias+"-"+randomString+"-"+transportData.substring(0, 3)+"--");
                         }
                     } else {
-                        edtPoNumberPtbas.setText(transportData.substring(0, 3) + "-" +customerAlias+"-"+ poMonth + "-" + poYear);
+                        edtPoNumberPtbas.setText(customerAlias+"-"+transportData.substring(0, 3) + "-" + poMonth + "-" + poYear);
                         if (!customerData.isEmpty() &&!Objects.requireNonNull(edtPoDate.getText()).toString().equals("")){
-                            edtPoNumberPtbas.setText(randomString+"-"+transportData.substring(0, 3)+"-"+customerAlias+"-"+poMonth + "-" + poYear);
+                            edtPoNumberPtbas.setText(customerAlias+"-"+randomString+"-"+transportData.substring(0, 3)+"-"+poMonth + "-" + poYear);
                         }
                     }
 
