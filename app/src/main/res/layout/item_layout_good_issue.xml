@@ -127,7 +127,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="DISETUJUI"
+                            android:text="VALID"
                             android:textSize="11sp"
                             android:textStyle="bold" />
                     </LinearLayout>
@@ -185,7 +185,7 @@
                 android:layout_weight="1"
                 android:backgroundTint="@color/white"
                 android:drawableLeft="@drawable/ic_outline_check"
-                android:text="SETUJUI"
+                android:text="SAHKAN"
                 android:textAllCaps="true" />
         </LinearLayout>
     </LinearLayout>

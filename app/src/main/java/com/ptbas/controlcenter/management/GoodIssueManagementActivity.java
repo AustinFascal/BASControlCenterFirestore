@@ -55,20 +55,13 @@ import java.util.Collections;
 
 public class GoodIssueManagementActivity extends AppCompatActivity {
 
-/*
-    private BottomSheetBehavior<ConstraintLayout> bottomSheetBehavior;
-    private ConstraintLayout bottomSheet;
-*/
 
     public String dateStart = "", dateEnd = "", searchTypeData="";
 
-    LinearLayout llExpandFilter;
-    ImageButton imgbtnExpandCollapseFilterLayout;
     CardView cdvFilter;
     ExtendedFloatingActionButton fabAddGi;
 
-    private NestedScrollView nestedScrollView;
-    private RelativeLayout wrapExpandCollapse;
+    NestedScrollView nestedScrollView;
     private TextInputEditText edtGiDateFilterStart, edtGiDateFilterEnd;
     ImageButton btnGiSearchByDateReset, btnGiSearchByStatusReset, btnGiSearchByReset;
     DatePickerDialog datePicker;
@@ -83,13 +76,8 @@ public class GoodIssueManagementActivity extends AppCompatActivity {
     Context context;
 
     AutoCompleteTextView spinnerApprovalStatus, spinnerInvoicedStatus, spinnerSearchType;
-    //SearchView edtKeywordSearchGi;
 
-/*
-    FloatingActionsMenu fabExpandMenu;
-    com.getbase.floatingactionbutton.FloatingActionButton fabCreateGI, fabApprovedGI, fabInvoicedGI;
-*/
-
+    LinearLayout wrapSearchBySpinner, wrapFilter;
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,9 +93,12 @@ public class GoodIssueManagementActivity extends AppCompatActivity {
         spinnerInvoicedStatus = findViewById(R.id.spinner_invoiced_status);
         spinnerSearchType = findViewById(R.id.spinner_search_type);
 
-        String[] approvalStatus = {"Semua", "Sudah Disetujui", "Belum Disetujui"};
-        String[] invoicedStatus = {"Semua", "Sudah DITAGIHKAN", "Belum Ditagihkan"};
-        String[] searchBy = {"ID Good Issue", "Nomor Received Order", "Nomor PO Customer", "NOPOL Kendaraan"};
+        wrapSearchBySpinner = findViewById(R.id.wrap_search_by_spinner);
+        wrapFilter = findViewById(R.id.wrap_filter);
+
+        String[] approvalStatus = {"Valid", "Belum Valid"};
+        String[] invoicedStatus = {"Sudah", "Belum"};
+        String[] searchBy = {"ID Good Issue", "ID Received Order", "Nomor PO Customer", "NOPOL Kendaraan"};
         String[] searchByValue = {"giUID", "giRoUID", "giPoCustNumber", "vhlUID"};
         ArrayList<String> arrayListApprovalStatus = new ArrayList<>(Arrays.asList(approvalStatus));
         ArrayList<String> arrayListInvoicedStatus = new ArrayList<>(Arrays.asList(invoicedStatus));
@@ -119,56 +110,19 @@ public class GoodIssueManagementActivity extends AppCompatActivity {
         spinnerInvoicedStatus.setAdapter(arrayAdapterInvoicedStatus);
         spinnerSearchType.setAdapter(arrayAdapterSearchType);
 
-        /*edtKeywordSearchGi = findViewById(R.id.edt_keyword_search_gi);
-        edtKeywordSearchGi.setQueryHint("Kata Kunci");*/
-
-
-/*
-        bottomSheet = findViewById(R.id.bottomSheetGIMenu);
-        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
-        bottomSheetBehavior.setFitToContents(true);
-        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-*/
         fabAddGi = findViewById(R.id.fab_add_gi);
         cdvFilter = findViewById(R.id.cdv_filter);
-        llExpandFilter = findViewById(R.id.ll_expand_filter);
-        imgbtnExpandCollapseFilterLayout = findViewById(R.id.imgbtn_expand_collapse_filter_layout);
 
         rvGoodIssueList = findViewById(R.id.rv_good_issue_list);
-        //wrapExpandCollapse = findViewById(R.id.wrap_expand_collapse);
         edtGiDateFilterStart = findViewById(R.id.edt_gi_date_filter_start);
         edtGiDateFilterEnd = findViewById(R.id.edt_gi_date_filter_end);
         btnGiSearchByDateReset = findViewById(R.id.btn_gi_search_date_reset);
         btnGiSearchByStatusReset = findViewById(R.id.btn_gi_search_status_reset);
         btnGiSearchByReset = findViewById(R.id.btn_gi_search_by_reset);
 
-/*
-        fabExpandMenu = findViewById(R.id.fab_expand_menu);
-        fabCreateGI = findViewById(R.id.fab_create_gi);
-        fabApprovedGI = findViewById(R.id.fab_approved_gi);
-        fabInvoicedGI = findViewById(R.id.fab_invoiced_gi);
-*/
-
-        fabAddGi.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(GoodIssueManagementActivity.this, AddGoodIssueActivity.class);
-                startActivity(intent);
-            }
-        });
-
-
-        imgbtnExpandCollapseFilterLayout.setOnClickListener(view -> {
-            if (llExpandFilter.getVisibility() == View.VISIBLE){
-                TransitionManager.beginDelayedTransition(cdvFilter, new AutoTransition());
-                llExpandFilter.setVisibility(View.GONE);
-                imgbtnExpandCollapseFilterLayout.setImageResource(R.drawable.ic_outline_keyboard_arrow_down);
-            } else{
-                TransitionManager.beginDelayedTransition(cdvFilter, new AutoTransition());
-                llExpandFilter.setVisibility(View.VISIBLE);
-                imgbtnExpandCollapseFilterLayout.setImageResource(R.drawable.ic_outline_keyboard_arrow_up);
-
-            }
+        fabAddGi.setOnClickListener(view -> {
+            Intent intent = new Intent(GoodIssueManagementActivity.this, AddGoodIssueActivity.class);
+            startActivity(intent);
         });
 
         showData();
@@ -197,165 +151,172 @@ public class GoodIssueManagementActivity extends AppCompatActivity {
                 break;
         }
 
-        rvGoodIssueList.setOnTouchListener(new View.OnTouchListener() {
+        rvGoodIssueList.setOnTouchListener((v, event) -> {
+            switch ( event.getAction( ) ) {
+                case MotionEvent.ACTION_SCROLL:
+                case MotionEvent.ACTION_MOVE:
+                case MotionEvent.ACTION_DOWN:
+                    fabAddGi.hide();
+                    break;
+                case MotionEvent.ACTION_CANCEL:
+                case MotionEvent.ACTION_UP:
+                    fabAddGi.show();
+                    break;
+            }
+            return false;
+        });
+
+        edtGiDateFilterStart.setOnClickListener(view -> {
+            final Calendar calendar = Calendar.getInstance();
+            int day = calendar.get(Calendar.DAY_OF_MONTH);
+            int month = calendar.get(Calendar.MONTH);
+            int year = calendar.get(Calendar.YEAR);
+
+            datePicker = new DatePickerDialog(GoodIssueManagementActivity.this,
+                    (datePicker, year12, month12, dayOfMonth) -> {
+                        edtGiDateFilterStart.setText(dayOfMonth + "/" + (month12 + 1) + "/" + year12);
+                        dateStart = dayOfMonth + "/" + (month12 + 1) + "/" + year12;
+                        searchDate();
+                        btnGiSearchByDateReset.setVisibility(View.VISIBLE);
+                    }, year, month, day);
+            datePicker.show();
+
+        });
+
+        edtGiDateFilterEnd.setOnClickListener(view -> {
+            final Calendar calendar = Calendar.getInstance();
+            int day = calendar.get(Calendar.DAY_OF_MONTH);
+            int month = calendar.get(Calendar.MONTH);
+            int year = calendar.get(Calendar.YEAR);
+
+            datePicker = new DatePickerDialog(GoodIssueManagementActivity.this,
+                    (datePicker, year1, month1, dayOfMonth) -> {
+                        edtGiDateFilterEnd.setText(dayOfMonth + "/" + (month1 + 1) + "/" + year1);
+                        dateEnd = dayOfMonth + "/" + (month1 + 1) + "/" + year1;
+                        searchDate();
+                        btnGiSearchByDateReset.setVisibility(View.VISIBLE);
+                    }, year, month, day);
+            datePicker.show();
+
+        });
+
+        btnGiSearchByDateReset.setOnClickListener(view -> {
+            edtGiDateFilterStart.setText(null);
+            edtGiDateFilterEnd.setText(null);
+            dateStart = "";
+            dateEnd = "";
+            showData();
+            btnGiSearchByDateReset.setVisibility(View.GONE);
+        });
+
+        btnGiSearchByReset.setOnClickListener(view -> {
+            spinnerSearchType.setText("");
+            spinnerSearchType.clearFocus();
+            btnGiSearchByReset.setVisibility(View.GONE);
+        });
+
+        btnGiSearchByStatusReset.setOnClickListener(view -> {
+            spinnerApprovalStatus.setText("");
+            spinnerInvoicedStatus.setText("");
+            spinnerApprovalStatus.clearFocus();
+            spinnerInvoicedStatus.clearFocus();
+            btnGiSearchByStatusReset.setVisibility(View.GONE);
+        });
+
+        spinnerSearchType.setOnItemClickListener((adapterView, view, i, l) -> {
+            btnGiSearchByReset.setVisibility(View.VISIBLE);
+            switch (i){
+                case 0:
+                    searchTypeData = searchByValue[0];
+                    break;
+                case 1:
+                    searchTypeData = searchByValue[1];
+                    break;
+                case 2:
+                    searchTypeData = searchByValue[2];
+                    break;
+                case 3:
+                    searchTypeData = searchByValue[3];
+                    break;
+                default:
+                    break;
+            }
+        });
+
+        spinnerApprovalStatus.setOnItemClickListener((adapterView, view, i, l) -> {
+            spinnerInvoicedStatus.setText("");
+            btnGiSearchByStatusReset.setVisibility(View.VISIBLE);
+            switch (i){
+                case 0:
+                    showDataSearchApprovalStatus(true);
+                    break;
+                case 1:
+                    showDataSearchApprovalStatus(false);
+                    break;
+                default:
+                    break;
+            }
+        });
+
+        spinnerInvoicedStatus.setOnItemClickListener((adapterView, view, i, l) -> {
+            spinnerApprovalStatus.setText("");
+            btnGiSearchByStatusReset.setVisibility(View.VISIBLE);
+            switch (i){
+                case 0:
+                    showDataSearchInvoicedStatus(true);
+                    break;
+                case 1:
+                    showDataSearchInvoicedStatus(false);
+                    break;
+                default:
+                    break;
+            }
+        });
+
+    }
+
+    private void showDataSearchInvoicedStatus(boolean b) {
+        Query query = databaseReference.child("GoodIssueData").orderByChild("giInvoiced").startAt(b).endAt(b);
+        query.addValueEventListener(new ValueEventListener() {
             @Override
-            public boolean onTouch( View v, MotionEvent event ) {
-                switch ( event.getAction( ) ) {
-                    case MotionEvent.ACTION_SCROLL:
-                    case MotionEvent.ACTION_MOVE:
-                    case MotionEvent.ACTION_DOWN:
-                        fabAddGi.hide();
-                        //bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-/*
-                        fabExpandMenu.collapse();
-                        fabExpandMenu.animate()
-                                .translationY(200)
-                                .setDuration(50)
-                                .alpha(0.0f)
-                                .setListener(new AnimatorListenerAdapter() {
-                                    @Override
-                                    public void onAnimationEnd(Animator animation) {
-                                        super.onAnimationEnd(animation);
-                                        //fabExpandMenu.setVisibility(View.GONE);
-                                    }
-                                });
-*/
-                        break;
-                    case MotionEvent.ACTION_CANCEL:
-                    case MotionEvent.ACTION_UP:
-                        fabAddGi.show();
-/*
-                        fabExpandMenu.animate()
-                                .translationY(0)
-                                .setDuration(50)
-                                .alpha(1.0f)
-                                .setListener(new AnimatorListenerAdapter() {
-                                    @Override
-                                    public void onAnimationEnd(Animator animation) {
-                                        super.onAnimationEnd(animation);
-                                        //fabExpandMenu.setVisibility(View.VISIBLE);
-                                    }
-                                });
-*/
-                        //bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-                        break;
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                goodIssueModelArrayList.clear();
+                for (DataSnapshot item : snapshot.getChildren()){
+                    GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
+                    goodIssueModelArrayList.add(goodIssueModel);
                 }
-                return false;
+                Collections.reverse(goodIssueModelArrayList);
+                giManagementAdapter = new GIManagementAdapter(context, goodIssueModelArrayList);
+                rvGoodIssueList.setAdapter(giManagementAdapter);
             }
-        });
 
-        edtGiDateFilterStart.setOnClickListener(new View.OnClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
-            public void onClick(View view) {
-                final Calendar calendar = Calendar.getInstance();
-                int day = calendar.get(Calendar.DAY_OF_MONTH);
-                int month = calendar.get(Calendar.MONTH);
-                int year = calendar.get(Calendar.YEAR);
-
-                datePicker = new DatePickerDialog(GoodIssueManagementActivity.this,
-                        (datePicker, year12, month12, dayOfMonth) -> {
-                            edtGiDateFilterStart.setText(dayOfMonth + "/" + (month12 + 1) + "/" + year12);
-                            dateStart = dayOfMonth + "/" + (month12 + 1) + "/" + year12;
-                            searchDate();
-                            btnGiSearchByDateReset.setVisibility(View.VISIBLE);
-                        }, year, month, day);
-                datePicker.show();
+            public void onCancelled(@NonNull DatabaseError error) {
 
             }
         });
+    }
 
-        edtGiDateFilterEnd.setOnClickListener(new View.OnClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.N)
+    private void showDataSearchApprovalStatus(boolean b) {
+        Query query = databaseReference.child("GoodIssueData").orderByChild("giStatus").startAt(b).endAt(b);
+        query.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onClick(View view) {
-                final Calendar calendar = Calendar.getInstance();
-                int day = calendar.get(Calendar.DAY_OF_MONTH);
-                int month = calendar.get(Calendar.MONTH);
-                int year = calendar.get(Calendar.YEAR);
-
-                datePicker = new DatePickerDialog(GoodIssueManagementActivity.this,
-                        (datePicker, year1, month1, dayOfMonth) -> {
-                            edtGiDateFilterEnd.setText(dayOfMonth + "/" + (month1 + 1) + "/" + year1);
-                            dateEnd = dayOfMonth + "/" + (month1 + 1) + "/" + year1;
-                            searchDate();
-                            btnGiSearchByDateReset.setVisibility(View.VISIBLE);
-                        }, year, month, day);
-                datePicker.show();
-
-            }
-        });
-
-        btnGiSearchByDateReset.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                edtGiDateFilterStart.setText(null);
-                edtGiDateFilterEnd.setText(null);
-                dateStart = "";
-                dateEnd = "";
-                showData();
-                btnGiSearchByDateReset.setVisibility(View.GONE);
-            }
-        });
-
-        btnGiSearchByReset.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                spinnerSearchType.setText("");
-                spinnerSearchType.clearFocus();
-                btnGiSearchByReset.setVisibility(View.GONE);
-            }
-        });
-
-        btnGiSearchByStatusReset.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                spinnerApprovalStatus.setText("");
-                spinnerInvoicedStatus.setText("");
-                btnGiSearchByStatusReset.setVisibility(View.GONE);
-            }
-        });
-
-        /*LinearLayout llAddGi = bottomSheet.findViewById(R.id.ll_add_gi);
-
-        llAddGi.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(GoodIssueManagementActivity.this, AddGoodIssueActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        wrapExpandCollapse.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-            }
-        });*/
-
-        spinnerSearchType.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                btnGiSearchByReset.setVisibility(View.VISIBLE);
-                switch (i){
-                    case 0:
-                        searchTypeData = searchByValue[0];
-                        break;
-                    case 1:
-                        searchTypeData = searchByValue[1];
-                        break;
-                    case 2:
-                        searchTypeData = searchByValue[2];
-                        break;
-                    case 3:
-                        searchTypeData = searchByValue[3];
-                        break;
-                    default:
-                        break;
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                goodIssueModelArrayList.clear();
+                for (DataSnapshot item : snapshot.getChildren()){
+                    GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
+                    goodIssueModelArrayList.add(goodIssueModel);
                 }
+                Collections.reverse(goodIssueModelArrayList);
+                giManagementAdapter = new GIManagementAdapter(context, goodIssueModelArrayList);
+                rvGoodIssueList.setAdapter(giManagementAdapter);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
             }
         });
-
     }
 
     private void searchDate(){
@@ -460,8 +421,20 @@ public class GoodIssueManagementActivity extends AppCompatActivity {
         SearchView searchView = (SearchView) menu.findItem(R.id.search_gi_data).getActionView();
         searchView.setQueryHint("Kata Kunci");
         searchView.setInputType(InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
+        searchView.setOnSearchClickListener(view -> {
+            cdvFilter.setVisibility(View.VISIBLE);
+            wrapSearchBySpinner.setVisibility(View.VISIBLE);
+            wrapFilter.setVisibility(View.GONE);
+            TransitionManager.beginDelayedTransition(cdvFilter, new AutoTransition());
 
-        //String roUID = spinnerSearchType.getText().toString();
+        });
+
+        searchView.setOnCloseListener(() -> {
+            cdvFilter.setVisibility(View.GONE);
+            wrapSearchBySpinner.setVisibility(View.GONE);
+            TransitionManager.beginDelayedTransition(cdvFilter, new AutoTransition());
+            return false;
+        });
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -471,11 +444,17 @@ public class GoodIssueManagementActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                if (searchView.getQuery().toString().isEmpty()){
-                    showData();
+                if (spinnerSearchType.getText().toString().isEmpty()){
+                    spinnerSearchType.setError("Mohon pilih kategori pencarian terlebih dahulu");
                 } else {
-                    showDataSearchByType(newText, searchTypeData);
+                    spinnerSearchType.setError(null);
+                    if (searchView.getQuery().toString().isEmpty()){
+                        showData();
+                    } else {
+                        showDataSearchByType(newText, searchTypeData);
+                    }
                 }
+
                 return true;
             }
         });
@@ -504,8 +483,28 @@ public class GoodIssueManagementActivity extends AppCompatActivity {
         });
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.search_gi_data:
+
+                return true;
+            case R.id.filter_gi_data:
+                TransitionManager.beginDelayedTransition(cdvFilter, new AutoTransition());
+                if (cdvFilter.getVisibility()==View.GONE) {
+                    cdvFilter.setVisibility(View.VISIBLE);
+                    wrapFilter.setVisibility(View.VISIBLE);
+                    item.setIcon(R.drawable.ic_outline_filter_alt_off);
+                } else {
+                    cdvFilter.setVisibility(View.GONE);
+                    wrapFilter.setVisibility(View.GONE);
+                    item.setIcon(R.drawable.ic_outline_filter_alt);
+                }
+                return true;
+            default:
+                break;
+        }
         helper.refreshDashboard(this.getApplicationContext());
         return super.onOptionsItemSelected(item);
     }

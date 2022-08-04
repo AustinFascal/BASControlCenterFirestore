@@ -514,12 +514,12 @@ public class DashboardActivity extends AppCompatActivity {
 
         StatisticsModel ob1 = new StatisticsModel();
         ob1.setHeader(finalCountActiveReceivedOrderData);
-        ob1.setDesc("RO Perlu Persetujuan");
+        ob1.setDesc("RO Perlu Divalidasi");
         holder2.add(ob1);
 
         StatisticsModel ob2 = new StatisticsModel();
         ob2.setHeader(finalCountActiveGoodIssueData);
-        ob2.setDesc("GI Perlu Persetujuan");
+        ob2.setDesc("GI Perlu Divalidasi");
         holder2.add(ob2);
 
         StatisticsModel ob3 = new StatisticsModel();

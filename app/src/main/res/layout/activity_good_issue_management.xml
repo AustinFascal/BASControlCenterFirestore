@@ -9,24 +9,27 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <androidx.cardview.widget.CardView
-            android:layout_marginTop="-4dp"
+            android:layout_marginTop="-8dp"
             android:id="@+id/cdv_filter"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:cardCornerRadius="8dp"
             app:cardElevation="8dp"
+            android:visibility="gone"
             app:cardPreventCornerOverlap="false">
 
             <LinearLayout
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="18dp"
+                android:divider="@drawable/divider_transparent"
+                android:showDividers="middle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:orientation="vertical">
                 <LinearLayout
-                    android:layout_marginTop="16dp"
-                    android:paddingBottom="10dp"
-                    android:paddingHorizontal="12dp"
-                    android:visibility="visible"
+                    android:id="@+id/wrap_search_by_spinner"
+                    android:visibility="gone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:divider="@drawable/divider_transparent"
@@ -78,16 +81,14 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_marginBottom="8dp"
                     android:visibility="gone"
-                    android:id="@+id/ll_expand_filter"
+                    android:id="@+id/wrap_filter"
                     android:divider="@drawable/divider_transparent"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:showDividers="middle"
                     android:gravity="center_vertical"
-                    android:orientation="vertical"
-                    android:paddingHorizontal="12dp">
+                    android:orientation="vertical">
 
                     <LinearLayout
                         android:visibility="visible"
@@ -101,25 +102,25 @@
                         <com.google.android.material.textfield.TextInputLayout
                             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
+                            android:layout_height="match_parent"
                             android:layout_weight="1">
                             <AutoCompleteTextView
                                 android:id="@+id/spinner_approval_status"
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:hint="Status Disetujui"
+                                android:layout_height="match_parent"
+                                android:hint="Status Disahkan"
                                 android:inputType="none" />
                         </com.google.android.material.textfield.TextInputLayout>
 
                         <com.google.android.material.textfield.TextInputLayout
                             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
+                            android:layout_height="match_parent"
                             android:layout_weight="1">
                             <AutoCompleteTextView
                                 android:id="@+id/spinner_invoiced_status"
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
+                                android:layout_height="match_parent"
                                 android:hint="Status Ditagihkan"
                                 android:inputType="none" />
                         </com.google.android.material.textfield.TextInputLayout>
@@ -195,6 +196,7 @@
                     </LinearLayout>
 
                 </LinearLayout>
+<!--
                 <ImageButton
                     android:id="@+id/imgbtn_expand_collapse_filter_layout"
                     style="@style/MaterialDialog.NegativeButton"
@@ -202,6 +204,7 @@
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:src="@drawable/ic_outline_keyboard_arrow_down"/>
+-->
 
             </LinearLayout>
 

@@ -119,7 +119,7 @@
                                         android:ellipsize="end"
                                         android:gravity="center_vertical"
                                         android:maxLines="2"
-                                        android:text="Setujui Received Order"
+                                        android:text="Validasi Received Order"
                                         android:textAlignment="center" />
 
                                 </LinearLayout>
@@ -145,7 +145,7 @@
                                         android:ellipsize="end"
                                         android:gravity="center_vertical"
                                         android:maxLines="2"
-                                        android:text="Setujui Good Issue"
+                                        android:text="Validasi Good Issue"
                                         android:textAlignment="center" />
 
                                 </LinearLayout>
