@@ -33,6 +33,8 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.database.DataSnapshot;
@@ -46,6 +48,7 @@ import com.ptbas.controlcenter.Helper;
 import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.adapter.GIManagementAdapter;
 import com.ptbas.controlcenter.create.AddGoodIssueActivity;
+import com.ptbas.controlcenter.create.RecapGoodIssueDataActivity;
 import com.ptbas.controlcenter.model.GoodIssueModel;
 import com.ptbas.controlcenter.utils.LangUtils;
 
@@ -62,14 +65,16 @@ public class GoodIssueManagementActivity extends AppCompatActivity {
 
     Context context;
     CardView cdvFilter;
-    ExtendedFloatingActionButton fabAddGi;
+    FloatingActionsMenu fabExpandMenu;
+    FloatingActionButton fabActionCreateGi, fabActionRecapData;
     NestedScrollView nestedScrollView;
     TextInputEditText edtGiDateFilterStart, edtGiDateFilterEnd;
     ImageButton btnGiSearchByDateReset, btnGiSearchByStatusReset, btnGiSearchByTypeReset,
             btnGiSearchByNameTypeReset, btnGiSearchByCompanyReset;
     AutoCompleteTextView spinnerApprovalStatus, spinnerInvoicedStatus, spinnerSearchType,
             spinnerMaterialName, spinnerMaterialType, spinnerCompanyName;
-    LinearLayout wrapSearchBySpinner, wrapFilter, llWrapFilterByStatus, llWrapFilterByDateRange;
+    LinearLayout wrapSearchBySpinner, wrapFilter, llWrapFilterByStatus, llWrapFilterByDateRange,
+            llWrapFilterByNameType, llWrapFilterByCompany;
     Button imgbtnExpandCollapseFilterLayout;
     DatePickerDialog datePicker;
     RecyclerView rvGoodIssueList;
@@ -94,7 +99,10 @@ public class GoodIssueManagementActivity extends AppCompatActivity {
 
         context = this;
 
-        fabAddGi = findViewById(R.id.fab_add_gi);
+        fabExpandMenu = findViewById(R.id.fab_expand_menu);
+        fabActionCreateGi = findViewById(R.id.fab_action_create_gi);
+        fabActionRecapData = findViewById(R.id.fab_action_recap_data);
+
         cdvFilter = findViewById(R.id.cdv_filter);
         nestedScrollView = findViewById(R.id.nestedScrollView);
         spinnerApprovalStatus = findViewById(R.id.spinner_approval_status);
@@ -107,6 +115,8 @@ public class GoodIssueManagementActivity extends AppCompatActivity {
         wrapFilter = findViewById(R.id.wrap_filter);
         llWrapFilterByStatus = findViewById(R.id.ll_wrap_filter_by_status);
         llWrapFilterByDateRange = findViewById(R.id.ll_wrap_filter_by_date_range);
+        llWrapFilterByNameType = findViewById(R.id.ll_wrap_filter_by_name_and_type);
+        llWrapFilterByCompany = findViewById(R.id.ll_wrap_filter_by_company);
         imgbtnExpandCollapseFilterLayout = findViewById(R.id.imgbtn_expand_collapse_filter_layout);
         rvGoodIssueList = findViewById(R.id.rv_good_issue_list);
         edtGiDateFilterStart = findViewById(R.id.edt_gi_date_filter_start);
@@ -218,8 +228,14 @@ public class GoodIssueManagementActivity extends AppCompatActivity {
         });
 
         // GO TO ADD GOOD ISSUE ACTIVITY
-        fabAddGi.setOnClickListener(view -> {
+        fabActionCreateGi.setOnClickListener(view -> {
             Intent intent = new Intent(GoodIssueManagementActivity.this, AddGoodIssueActivity.class);
+            startActivity(intent);
+        });
+
+        // GO TO RECAP GOOD ISSUE ACTIVITY
+        fabActionRecapData.setOnClickListener(view -> {
+            Intent intent = new Intent(GoodIssueManagementActivity.this, RecapGoodIssueDataActivity.class);
             startActivity(intent);
         });
 
@@ -232,11 +248,12 @@ public class GoodIssueManagementActivity extends AppCompatActivity {
                 case MotionEvent.ACTION_SCROLL:
                 case MotionEvent.ACTION_MOVE:
                 case MotionEvent.ACTION_DOWN:
-                    fabAddGi.hide();
+                    fabExpandMenu.animate().translationY(800).setDuration(100).start();
+                    fabExpandMenu.collapse();
                     break;
                 case MotionEvent.ACTION_CANCEL:
                 case MotionEvent.ACTION_UP:
-                    fabAddGi.show();
+                    fabExpandMenu.animate().translationY(0).setDuration(100).start();
                     break;
             }
             return false;
@@ -260,7 +277,6 @@ public class GoodIssueManagementActivity extends AppCompatActivity {
                         btnGiSearchByDateReset.setVisibility(View.VISIBLE);
                     }, year, month, day);
             datePicker.show();
-
         });
         edtGiDateFilterEnd.setOnClickListener(view -> {
             final Calendar calendar = Calendar.getInstance();
@@ -279,7 +295,6 @@ public class GoodIssueManagementActivity extends AppCompatActivity {
                         resetSearchByStatus();
                     }, year, month, day);
             datePicker.show();
-
         });
 
         spinnerSearchType.setOnItemClickListener((adapterView, view, i, l) -> {
@@ -361,8 +376,6 @@ public class GoodIssueManagementActivity extends AppCompatActivity {
             resetSearchByStatus();
             btnGiSearchByCompanyReset.setVisibility(View.VISIBLE);
             showDataSearchByCompanyID(companyID);
-            //Toast.makeText(context, companyID, Toast.LENGTH_SHORT).show();
-            //Toast.makeText(context, selectedCompanyID, Toast.LENGTH_SHORT).show();
         });
 
         btnGiSearchByTypeReset.setOnClickListener(view -> {
@@ -399,27 +412,61 @@ public class GoodIssueManagementActivity extends AppCompatActivity {
 
     private void expandFilterViewValidation() {
         if (expandStatus){
-            if (firstViewData.getId()==R.id.ll_wrap_filter_by_status){
-                llWrapFilterByDateRange.setVisibility(View.GONE);
-            }
-            if (firstViewData.getId()==R.id.ll_wrap_filter_by_date_range){
-                llWrapFilterByStatus.setVisibility(View.GONE);
-            }
+            showHideFilterComponents(true);
             expandStatus=false;
             imgbtnExpandCollapseFilterLayout.setText("Tampilkan lebih banyak");
             imgbtnExpandCollapseFilterLayout.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_outline_keyboard_arrow_down, 0);
         } else {
-            if (firstViewData.getId()==R.id.ll_wrap_filter_by_status){
-                llWrapFilterByDateRange.setVisibility(View.VISIBLE);
-            }
-            if (firstViewData.getId()==R.id.ll_wrap_filter_by_date_range){
-                llWrapFilterByStatus.setVisibility(View.VISIBLE);
-            }
+            showHideFilterComponents(false);
             expandStatus=true;
             imgbtnExpandCollapseFilterLayout.setText("Tampilkan lebih sedikit");
             imgbtnExpandCollapseFilterLayout.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_outline_keyboard_arrow_up, 0);
-            //imgbtnExpandCollapseFilterLayout.setImageResource(R.drawable.ic_outline_keyboard_arrow_up);
+        }
+    }
 
+    private void showHideFilterComponents(Boolean expandStatus) {
+        if (expandStatus){
+            if (firstViewData.getId()==R.id.ll_wrap_filter_by_status){
+                llWrapFilterByDateRange.setVisibility(View.GONE);
+                llWrapFilterByNameType.setVisibility(View.GONE);
+                llWrapFilterByCompany.setVisibility(View.GONE);
+            }
+            if (firstViewData.getId()==R.id.ll_wrap_filter_by_date_range){
+                llWrapFilterByStatus.setVisibility(View.GONE);
+                llWrapFilterByNameType.setVisibility(View.GONE);
+                llWrapFilterByCompany.setVisibility(View.GONE);
+            }
+            if (firstViewData.getId()==R.id.ll_wrap_filter_by_name_and_type){
+                llWrapFilterByDateRange.setVisibility(View.GONE);
+                llWrapFilterByStatus.setVisibility(View.GONE);
+                llWrapFilterByCompany.setVisibility(View.GONE);
+            }
+            if (firstViewData.getId()==R.id.ll_wrap_filter_by_company){
+                llWrapFilterByDateRange.setVisibility(View.GONE);
+                llWrapFilterByStatus.setVisibility(View.GONE);
+                llWrapFilterByNameType.setVisibility(View.GONE);
+            }
+        } else {
+            if (firstViewData.getId()==R.id.ll_wrap_filter_by_status){
+                llWrapFilterByDateRange.setVisibility(View.VISIBLE);
+                llWrapFilterByNameType.setVisibility(View.VISIBLE);
+                llWrapFilterByCompany.setVisibility(View.VISIBLE);
+            }
+            if (firstViewData.getId()==R.id.ll_wrap_filter_by_date_range){
+                llWrapFilterByStatus.setVisibility(View.VISIBLE);
+                llWrapFilterByNameType.setVisibility(View.VISIBLE);
+                llWrapFilterByCompany.setVisibility(View.VISIBLE);
+            }
+            if (firstViewData.getId()==R.id.ll_wrap_filter_by_name_and_type){
+                llWrapFilterByDateRange.setVisibility(View.VISIBLE);
+                llWrapFilterByStatus.setVisibility(View.VISIBLE);
+                llWrapFilterByCompany.setVisibility(View.VISIBLE);
+            }
+            if (firstViewData.getId()==R.id.ll_wrap_filter_by_company){
+                llWrapFilterByDateRange.setVisibility(View.VISIBLE);
+                llWrapFilterByStatus.setVisibility(View.VISIBLE);
+                llWrapFilterByNameType.setVisibility(View.VISIBLE);
+            }
         }
     }
 

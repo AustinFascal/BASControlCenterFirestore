@@ -77,7 +77,15 @@
                     android:ellipsize="end"
                     android:maxLines="1"
                     android:text="Jenis Material | Nama Material" />
-
+                <TextView
+                    android:id="@+id/tv_po_cust_number"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:text="Nomor PO Customer"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/tv_gi_uid"
@@ -98,6 +106,7 @@
                     android:text="Nomor RO UID"
                     android:textSize="16sp"
                     android:textStyle="bold" />
+
 
 
                 <TextView
@@ -148,6 +157,22 @@
                             android:textSize="11sp"
                             android:textStyle="bold" />
                     </LinearLayout>
+
+                </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/ll_status_po_vailable"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/pill_red"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="2dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="NOMOR PO BELUM TERSEDIA"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
                 </LinearLayout>
 
             </LinearLayout>

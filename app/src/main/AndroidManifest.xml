@@ -4,7 +4,7 @@
     package="com.ptbas.controlcenter">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:allowBackup="true"
@@ -16,6 +16,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TravelPermitBAS"
         tools:targetApi="31">
+        <activity
+            android:name=".create.RecapGoodIssueDataActivity"
+            android:exported="false" />
         <activity
             android:name=".AllShortcutsActivity"
             android:exported="false" />

@@ -10,9 +10,9 @@
     <color name="white">#FFFFFFFF</color>
     <color name="light_grey">#E6E6E6</color>
     <color name="dark_green">#27702A</color>
-    <color name="pure_green">#58B35C</color>
+    <color name="pure_green">#6DBE71</color>
     <color name="pure_orange">#FB6C3F</color>
-    <color name="pure_red">#F44336</color>
+    <color name="pure_red">#F8746A</color>
     <color name="black_semi_transparent">#B2000000</color>
     <color name="blue_500">#3F51B5</color>
 </resources>

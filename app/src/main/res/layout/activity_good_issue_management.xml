@@ -102,7 +102,7 @@
                         android:showDividers="middle">
 
                         <LinearLayout
-                            android:id="@+id/ll_wrap_filter_by_status"
+                            android:id="@+id/ll_wrap_filter_by_date_range"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:divider="@drawable/divider_transparent"
@@ -163,7 +163,7 @@
                         </LinearLayout>
 
                         <LinearLayout
-                            android:id="@+id/ll_wrap_filter_by_date_range"
+                            android:id="@+id/ll_wrap_filter_by_status"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:divider="@drawable/divider_transparent"
@@ -304,7 +304,8 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="match_parent"
                                     android:hint="Perusahaan"
-                                    android:inputType="none" />
+                                    android:digits="QWERTYUIOPASDFGHJKLZXCVBNM1234567890-, "
+                                    android:inputType="textFilter|textCapCharacters" />
                             </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -369,7 +370,40 @@
         </androidx.core.widget.NestedScrollView>
     </RelativeLayout>
 
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+    <com.getbase.floatingactionbutton.FloatingActionsMenu
+        android:id="@+id/fab_expand_menu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="end|bottom"
+        android:layout_marginEnd="14dp"
+        android:layout_marginBottom="12dp"
+        app:fab_addButtonColorNormal="@color/blue_700"
+        app:fab_addButtonColorPressed="@color/blue_500"
+        app:fab_labelStyle="@style/customFAB"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_action_recap_data"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fab_colorNormal="@color/white"
+            app:fab_colorPressed="@color/light_grey"
+            app:fab_icon="@drawable/ic_recap_data"
+            app:fab_title="Buat Rekap Data" />
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_action_create_gi"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fab_colorNormal="@color/white"
+            app:fab_colorPressed="@color/light_grey"
+            app:fab_icon="@drawable/ic_add_good_issue"
+            app:fab_title="Buat Good Issue" />
+    </com.getbase.floatingactionbutton.FloatingActionsMenu>
+
+
+    <!--<com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/fab_add_gi"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -381,7 +415,7 @@
         android:layout_gravity="end|bottom"
         android:layout_marginEnd="14dp"
         android:layout_marginBottom="14dp"
-        android:text="BUAT GOOD ISSUE"/>
+        android:text="BUAT GOOD ISSUE"/>-->
     <!--
         <com.getbase.floatingactionbutton.FloatingActionsMenu
             android:id="@+id/fab_expand_menu"

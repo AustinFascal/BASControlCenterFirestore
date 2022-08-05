@@ -51,18 +51,21 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
 
 
     public class ItemViewHolder extends RecyclerView.ViewHolder {
-        LinearLayout llStatusApproved, llStatusInvoiced;
-        TextView tvCubication, tvGiDateTime, tvGiUid, tvRoUid, tvGiMatDetail, tvGiVhlDetail, tvVhlUid;
+        LinearLayout llStatusApproved, llStatusInvoiced, llStatusPOAvailable;
+        TextView tvCubication, tvGiDateTime, tvGiUid, tvRoUid, tvGiMatDetail, tvGiVhlDetail,
+                tvVhlUid, tvPoCustNumber;
         Button btnDeleteGi, btnApproveGi;
 
         public ItemViewHolder(@NonNull View itemView) {
             super(itemView);
             llStatusApproved = itemView.findViewById(R.id.ll_status_approved);
             llStatusInvoiced = itemView.findViewById(R.id.ll_status_invoiced);
+            llStatusPOAvailable = itemView.findViewById(R.id.ll_status_po_vailable);
             tvCubication = itemView.findViewById(R.id.tv_cubication);
             tvGiDateTime = itemView.findViewById(R.id.tv_gi_date_time);
             tvGiUid = itemView.findViewById(R.id.tv_gi_uid);
             tvRoUid = itemView.findViewById(R.id.tv_ro_uid);
+            tvPoCustNumber = itemView.findViewById(R.id.tv_po_cust_number);
             tvGiMatDetail = itemView.findViewById(R.id.tv_gi_mat_detail);
             tvGiVhlDetail = itemView.findViewById(R.id.tv_gi_vhl_detail);
             tvVhlUid = itemView.findViewById(R.id.tv_vhl_uid);
@@ -77,6 +80,7 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
             String dateNTime = goodIssueModel.getGiDateCreated()+" | "+goodIssueModel.getGiTimeCreted();
             String giUID = "GI-"+goodIssueModel.getGiUID();
             String roUID = "RO-"+goodIssueModel.getGiRoUID();
+            String poCustNumb = "PO-"+goodIssueModel.getGiPoCustNumber();
             String matDetail = goodIssueModel.getGiMatType()+" | "+goodIssueModel.getGiMatName();
             String vhlDetail = "(P) "+goodIssueModel.getVhlLength().toString()+" (L) "+goodIssueModel.getVhlWidth().toString()+" (T) "+goodIssueModel.getVhlHeight().toString()+" | "+"(K) "+goodIssueModel.getVhlHeightCorrection().toString()+" (TK) "+goodIssueModel.getVhlHeightAfterCorrection().toString();
             String vhlUID = goodIssueModel.getVhlUID();
@@ -87,6 +91,7 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
             tvGiDateTime.setText(dateNTime);
             tvGiUid.setText(giUID);
             tvRoUid.setText(roUID);
+            tvPoCustNumber.setText(poCustNumb);
             tvGiMatDetail.setText(matDetail);
             tvGiVhlDetail.setText(vhlDetail);
             tvVhlUid.setText(vhlUID);
@@ -102,6 +107,14 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
                 llStatusInvoiced.setVisibility(View.VISIBLE);
             } else {
                 llStatusInvoiced.setVisibility(View.GONE);
+            }
+
+            if (poCustNumb.equals("PO-")||poCustNumb.equals("PO--")){
+                tvPoCustNumber.setVisibility(View.GONE);
+                llStatusPOAvailable.setVisibility(View.VISIBLE);
+            } else {
+                tvPoCustNumber.setVisibility(View.VISIBLE);
+                llStatusPOAvailable.setVisibility(View.GONE);
             }
 
             btnApproveGi.setOnClickListener(new View.OnClickListener() {
