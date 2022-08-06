@@ -391,7 +391,7 @@
             app:fab_colorNormal="@color/white"
             app:fab_colorPressed="@color/light_grey"
             app:fab_icon="@drawable/ic_recap_data"
-            app:fab_title="Buat Rekap Data" />
+            app:fab_title="Buat Rekap Data Valid" />
         <com.getbase.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab_action_create_gi"
             android:layout_width="wrap_content"
@@ -401,65 +401,5 @@
             app:fab_icon="@drawable/ic_add_good_issue"
             app:fab_title="Buat Good Issue" />
     </com.getbase.floatingactionbutton.FloatingActionsMenu>
-
-
-    <!--<com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        android:id="@+id/fab_add_gi"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:icon="@drawable/ic_outline_add_circle"
-        app:iconTint="@color/white"
-        android:layout_alignParentEnd="true"
-        android:textColor="@color/white"
-        android:layout_alignParentBottom="true"
-        android:layout_gravity="end|bottom"
-        android:layout_marginEnd="14dp"
-        android:layout_marginBottom="14dp"
-        android:text="BUAT GOOD ISSUE"/>-->
-    <!--
-        <com.getbase.floatingactionbutton.FloatingActionsMenu
-            android:id="@+id/fab_expand_menu"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true"
-            android:layout_gravity="end|bottom"
-            android:layout_marginEnd="14dp"
-            android:layout_marginBottom="12dp"
-            app:fab_addButtonColorNormal="@color/blue_700"
-            app:fab_addButtonColorPressed="@color/blue_500"
-            app:fab_labelStyle="@style/customFAB"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
-            <com.getbase.floatingactionbutton.FloatingActionButton
-                android:id="@+id/fab_invoiced_gi"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:fab_colorNormal="@color/white"
-                app:fab_colorPressed="@color/light_grey"
-                app:fab_icon="@drawable/ic_invoiced"
-                app:fab_title="Good Issue Ditagihkan" />
-            <com.getbase.floatingactionbutton.FloatingActionButton
-                android:id="@+id/fab_approved_gi"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:fab_colorNormal="@color/white"
-                app:fab_colorPressed="@color/light_grey"
-                app:fab_icon="@drawable/ic_approve_gi"
-                app:fab_title="Good Issue Disetujui" />
-            <com.getbase.floatingactionbutton.FloatingActionButton
-                android:id="@+id/fab_create_gi"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:fab_colorNormal="@color/white"
-                app:fab_colorPressed="@color/light_grey"
-                app:fab_icon="@drawable/ic_add_good_issue"
-                app:fab_title="Tambah Good Issue" />
-        </com.getbase.floatingactionbutton.FloatingActionsMenu>
-    -->
-
-    <!--
-        <include layout="@layout/bottom_sheet_good_issue_management"/>
-    -->
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

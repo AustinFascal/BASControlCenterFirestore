@@ -192,6 +192,7 @@
             android:paddingHorizontal="4dp"
             android:orientation="horizontal">
             <Button
+                android:tag="DeleteGI"
                 style="@style/MaterialDialog.NegativeButton"
                 android:id="@+id/btn_delete_gi"
                 android:layout_width="match_parent"

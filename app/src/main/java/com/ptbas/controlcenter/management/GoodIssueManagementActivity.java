@@ -43,6 +43,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.ptbas.controlcenter.DialogInterface;
 import com.ptbas.controlcenter.DragLinearLayout;
 import com.ptbas.controlcenter.Helper;
 import com.ptbas.controlcenter.R;
@@ -90,6 +91,8 @@ public class GoodIssueManagementActivity extends AppCompatActivity {
     View firstViewData;
 
     List<String> arrayListMaterialName, arrayListCompanyName;
+
+    DialogInterface dialogInterface = new DialogInterface();
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -696,15 +699,45 @@ public class GoodIssueManagementActivity extends AppCompatActivity {
         rvGoodIssueList.setAdapter(giManagementAdapter);
     }
 
+
     private void showDataDefaultQuery() {
-        databaseReference.child("GoodIssueData").orderByChild("giDateCreated").addValueEventListener(new ValueEventListener() {
+        Query query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated");
+        query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 goodIssueModelArrayList.clear();
                 for (DataSnapshot item : snapshot.getChildren()){
                     GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
                     goodIssueModelArrayList.add(goodIssueModel);
+
                 }
+
+                Collections.reverse(goodIssueModelArrayList);
+                giManagementAdapter = new GIManagementAdapter(context, goodIssueModelArrayList);
+                rvGoodIssueList.setAdapter(giManagementAdapter);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+
+       /* databaseReference.child("GoodIssueData").orderByChild("giDateCreated").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                goodIssueModelArrayList.clear();
+                for (DataSnapshot item : snapshot.getChildren()){
+                    if (item.child("giPoCustNumber").getValue().toString().equals("-")){
+                        GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
+                        goodIssueModelArrayList.add(goodIssueModel);
+                    } else {
+                        GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
+                        goodIssueModelArrayList.add(goodIssueModel);
+                    }
+                }
+
                 Collections.reverse(goodIssueModelArrayList);
                 giManagementAdapter = new GIManagementAdapter(context, goodIssueModelArrayList);
                 rvGoodIssueList.setAdapter(giManagementAdapter);
@@ -715,7 +748,7 @@ public class GoodIssueManagementActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError error) {
 
             }
-        });
+        });*/
     }
 
     @Override

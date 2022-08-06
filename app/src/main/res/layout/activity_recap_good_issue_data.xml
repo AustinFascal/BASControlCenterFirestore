@@ -229,4 +229,17 @@
         </androidx.core.widget.NestedScrollView>
     </RelativeLayout>
 
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/fab_create_gi_recap"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:icon="@drawable/ic_outline_add_circle"
+        app:iconTint="@color/white"
+        android:layout_alignParentEnd="true"
+        android:textColor="@color/white"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="center|bottom"
+        android:layout_marginBottom="14dp"
+        android:text="BUAT REKAP DATA"/>
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

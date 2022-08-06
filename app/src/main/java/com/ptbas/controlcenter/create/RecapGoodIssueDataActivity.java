@@ -15,7 +15,6 @@ import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.transition.AutoTransition;
 import android.transition.TransitionManager;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -28,6 +27,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -35,11 +35,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.ptbas.controlcenter.DialogInterface;
 import com.ptbas.controlcenter.DragLinearLayout;
 import com.ptbas.controlcenter.Helper;
 import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.adapter.GIManagementAdapter;
-import com.ptbas.controlcenter.management.GoodIssueManagementActivity;
 import com.ptbas.controlcenter.model.GoodIssueModel;
 import com.ptbas.controlcenter.utils.LangUtils;
 
@@ -70,6 +70,11 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
 
     ImageButton btnGiSearchByDateReset, btnGiSearchByRoUIDReset, btnGiSearchByPoUIDReset;
 
+    ExtendedFloatingActionButton fabCreateGiRecap;
+
+    DialogInterface dialogInterface = new DialogInterface();
+    String roPoCustNumber;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,6 +98,8 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
         btnGiSearchByRoUIDReset = findViewById(R.id.btn_gi_search_rouid_reset);
         btnGiSearchByPoUIDReset = findViewById(R.id.btn_gi_search_pouid_reset);
 
+        fabCreateGiRecap = findViewById(R.id.fab_create_gi_recap);
+
         ActionBar actionBar = getSupportActionBar();
 
         Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
@@ -100,7 +107,7 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
         // ACTION BAR FOR STANDARD ACTIVITY
         assert actionBar != null;
         helper.handleActionBarConfigForStandardActivity(
-                this, actionBar, "Rekap Data Good Issue");
+                this, actionBar, "Rekap Data Valid Good Issue");
 
         // SYSTEM UI MODE FOR STANDARD ACTIVITY
         helper.handleUIModeForStandardActivity(this, actionBar);
@@ -217,26 +224,33 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
             }
         });
 
-        spinnerPoUID.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                btnGiSearchByPoUIDReset.setVisibility(View.VISIBLE);
-                spinnerRoUID.setText(null);
-                spinnerRoUID.clearFocus();
-                btnGiSearchByRoUIDReset.setVisibility(View.GONE);
-                spinnerPoUID.setError(null);
-            }
+        spinnerPoUID.setOnItemClickListener((adapterView, view, i, l) -> {
+            btnGiSearchByPoUIDReset.setVisibility(View.VISIBLE);
+            spinnerRoUID.setText(null);
+            spinnerRoUID.clearFocus();
+            btnGiSearchByRoUIDReset.setVisibility(View.GONE);
+            spinnerPoUID.setError(null);
         });
 
-        spinnerRoUID.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                btnGiSearchByRoUIDReset.setVisibility(View.VISIBLE);
-                spinnerPoUID.setText(null);
-                spinnerPoUID.clearFocus();
-                btnGiSearchByPoUIDReset.setVisibility(View.GONE);
-                spinnerRoUID.setError(null);
-            }
+        spinnerRoUID.setOnItemClickListener((adapterView, view, i, l) -> {
+            btnGiSearchByRoUIDReset.setVisibility(View.VISIBLE);
+            spinnerPoUID.setText(null);
+            spinnerPoUID.clearFocus();
+            btnGiSearchByPoUIDReset.setVisibility(View.GONE);
+            spinnerRoUID.setError(null);
+
+            DatabaseReference databaseReferencePO = FirebaseDatabase.getInstance().getReference("ReceivedOrders/"+ spinnerRoUID.getText().toString());
+            databaseReferencePO.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    roPoCustNumber = snapshot.child("roPoCustNumber").getValue(String.class);
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
         });
 
         btnGiSearchByDateReset.setOnClickListener(new View.OnClickListener() {
@@ -268,6 +282,8 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
             }
         });
 
+        fabCreateGiRecap.hide();
+
 
 
         btnSearchData.setOnClickListener(view -> {
@@ -275,29 +291,38 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
             pouidVal = spinnerPoUID.getText().toString();
 
 
-
+            if (!dateStartVal.isEmpty()&&!dateEndVal.isEmpty()){
                 Query query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated").startAt(dateStartVal).endAt(dateEndVal);
                 query.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         goodIssueModelArrayList.clear();
                         for (DataSnapshot item : snapshot.getChildren()){
-
-
-                                if(item.child("giRoUID").getValue().toString().equals(rouidVal)
-                                        ||item.child("giPoCustNumber").getValue().toString().equals(pouidVal)) {
+                            if (!rouidVal.isEmpty()){
+                                if(item.child("giRoUID").getValue().toString().equals(rouidVal) && !roPoCustNumber.equals("-")) {
                                     if (item.child("giStatus").getValue().equals(true)){
-                                        if (!item.child("giPoCustNumber").getValue().toString().equals("-")){
-                                            GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
-                                            goodIssueModelArrayList.add(goodIssueModel);
-                                        }
-
+                                        GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
+                                        goodIssueModelArrayList.add(goodIssueModel);
+                                        fabCreateGiRecap.show();
                                     }
                                 }
-
+                            }
+                            if (!pouidVal.isEmpty()){
+                                if(item.child("giPoCustNumber").getValue().toString().equals(pouidVal)&&!item.child("giPoCustNumber").getValue().toString().equals("-")) {
+                                    if (item.child("giStatus").getValue().equals(true)){
+                                        GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
+                                        goodIssueModelArrayList.add(goodIssueModel);
+                                        fabCreateGiRecap.show();
+                                    }
+                                }
+                            }
+                            if (goodIssueModelArrayList.size()==0) {
+                                fabCreateGiRecap.hide();
+                            }
                         }
                         giManagementAdapter = new GIManagementAdapter(context, goodIssueModelArrayList);
                         rvGoodIssueList.setAdapter(giManagementAdapter);
+
                     }
 
                     @Override
@@ -306,7 +331,9 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
                     }
                 });
 
-
+            } else {
+                Toast.makeText(context, "Mohon masukkan rentang tanggal terlebih dahulu", Toast.LENGTH_SHORT).show();
+            }
         });
     }
 

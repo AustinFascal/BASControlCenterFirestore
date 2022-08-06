@@ -78,6 +78,32 @@ public class DialogInterface {
         mBottomSheetDialog.show();
     }
 
+    public void noPoNumberInformation(Context context){
+        Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            vibrator.vibrate(VibrationEffect.createOneShot(100,
+                    VibrationEffect.DEFAULT_AMPLITUDE));
+        } else {
+            vibrator.vibrate(100);
+        }
+        BottomSheetMaterialDialog mBottomSheetDialog = new BottomSheetMaterialDialog.Builder((Activity) context)
+                .setTitle("Perhatian!", TextAlignment.START)
+                .setAnimation(R.raw.lottie_attention)
+                .setMessage("Data Good Issue ini masih belum memiliki nomor PO. Mohon perbarui  data tersebut agar dapat melakukan validasi dan dapat muncul saat direkap.", TextAlignment.START)
+                .setCancelable(true)
+                .setPositiveButton("OKE", new BottomSheetMaterialDialog.OnClickListener() {
+                    @Override
+                    public void onClick(dev.shreyaspatil.MaterialDialog.interfaces.DialogInterface dialogInterface, int which) {
+                        dialogInterface.dismiss();
+                    }
+
+                })
+                .build();
+
+        // Show Dialog
+        mBottomSheetDialog.show();
+    }
+
     public void savedInformationFromManagement(Activity activity){
         Vibrator vibrator = (Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -111,6 +137,59 @@ public class DialogInterface {
         // Show Dialog
         mBottomSheetDialog.show();
     }
+
+    public void updatedInformation(Activity activity){
+        Vibrator vibrator = (Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            vibrator.vibrate(VibrationEffect.createOneShot(100,
+                    VibrationEffect.DEFAULT_AMPLITUDE));
+        } else {
+            vibrator.vibrate(100);
+        }
+        BottomSheetMaterialDialog mBottomSheetDialog = new BottomSheetMaterialDialog.Builder(activity)
+                .setTitle("Sukses!", TextAlignment.START)
+                .setAnimation(R.raw.lottie_success)
+                .setMessage("Data berhasil diperbarui", TextAlignment.START)
+                .setCancelable(false)
+                .setPositiveButton("OKE", new BottomSheetMaterialDialog.OnClickListener() {
+                    @Override
+                    public void onClick(dev.shreyaspatil.MaterialDialog.interfaces.DialogInterface dialogInterface, int which) {
+                        dialogInterface.dismiss();
+                        activity.finish();
+                    }
+
+                })
+                .build();
+
+        // Show Dialog
+        mBottomSheetDialog.show();
+    }
+
+
+    public void dataCannotBeChangedInformation(Activity activity){
+        Vibrator vibrator = (Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            vibrator.vibrate(VibrationEffect.createOneShot(100,
+                    VibrationEffect.DEFAULT_AMPLITUDE));
+        } else {
+            vibrator.vibrate(100);
+        }
+        BottomSheetMaterialDialog mBottomSheetDialog = new BottomSheetMaterialDialog.Builder(activity)
+                .setMessage("Anda tidak dapat mengubah data ini", TextAlignment.START)
+                .setCancelable(false)
+                .setPositiveButton("OKE", new BottomSheetMaterialDialog.OnClickListener() {
+                    @Override
+                    public void onClick(dev.shreyaspatil.MaterialDialog.interfaces.DialogInterface dialogInterface, int which) {
+                        dialogInterface.dismiss();
+                    }
+
+                })
+                .build();
+
+        // Show Dialog
+        mBottomSheetDialog.show();
+    }
+
 
     public void savedROInformation(Activity activity){
         Vibrator vibrator = (Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE);

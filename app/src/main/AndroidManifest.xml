@@ -56,6 +56,10 @@
         <activity
             android:name=".create.AddGoodIssueActivity"
             android:exported="false" />
+
+        <activity
+            android:name=".update.UpdateGoodIssueActivity"
+            android:exported="false" />
         <activity
             android:name=".create.AddVehicleActivity"
             android:exported="false" />
