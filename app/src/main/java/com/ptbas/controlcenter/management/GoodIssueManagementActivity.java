@@ -19,13 +19,11 @@ import android.os.Vibrator;
 import android.text.InputType;
 import android.transition.AutoTransition;
 import android.transition.TransitionManager;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -35,7 +33,6 @@ import android.widget.Toast;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
-import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -49,7 +46,7 @@ import com.ptbas.controlcenter.Helper;
 import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.adapter.GIManagementAdapter;
 import com.ptbas.controlcenter.create.AddGoodIssueActivity;
-import com.ptbas.controlcenter.create.RecapGoodIssueDataActivity;
+import com.ptbas.controlcenter.RecapGoodIssueDataActivity;
 import com.ptbas.controlcenter.model.GoodIssueModel;
 import com.ptbas.controlcenter.utils.LangUtils;
 
@@ -58,7 +55,6 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 public class GoodIssueManagementActivity extends AppCompatActivity {
 
@@ -261,6 +257,8 @@ public class GoodIssueManagementActivity extends AppCompatActivity {
             }
             return false;
         });
+
+
 
         // HANDLE FILTER COMPONENTS WHEN ON CLICK
         edtGiDateFilterStart.setOnClickListener(view -> {

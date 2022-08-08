@@ -1,16 +1,22 @@
 package com.ptbas.controlcenter;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
+import android.os.Environment;
 import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
+import androidx.core.content.FileProvider;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -24,9 +30,61 @@ import com.ptbas.controlcenter.model.UserModel;
 import com.ptbas.controlcenter.userprofile.UserProfileActivity;
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
+import java.util.List;
+
 public class Helper {
 
     public FirebaseAuth authProfile;
+
+    public static String getAppPath(Context context) {
+
+        File dir = new File(Environment.getExternalStorageDirectory()
+                +File.separator
+                +"BASCC"
+                +File.separator);
+
+        if (!dir.exists()){
+            dir.mkdir();
+        }
+        return dir.getPath() + File.separator;
+    }
+
+    public static void openFilePDF(Context context, File url){
+        Uri uri = FileProvider.getUriForFile(
+                context,
+                context.getApplicationContext().getPackageName() + ".fileprovider",
+                url
+        );
+
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+
+        List<ResolveInfo> resolveInfoList = context.getPackageManager().queryIntentActivities(
+                intent,
+                PackageManager.MATCH_DEFAULT_ONLY
+        );
+
+        for (ResolveInfo resolveInfo : resolveInfoList){
+            String name = resolveInfo.activityInfo.packageName;
+            context.grantUriPermission(name, uri,
+                    Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        }
+
+        if (url.exists()) {
+            intent.setDataAndType(uri, "application/pdf");
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+
+            try {
+                context.startActivity(intent);
+            }
+            catch (ActivityNotFoundException e) {
+                Toast.makeText(context, e.toString(), Toast.LENGTH_SHORT).show();
+            }
+        }
+
+
+    }
 
 
     public void refreshDashboard(Context context){

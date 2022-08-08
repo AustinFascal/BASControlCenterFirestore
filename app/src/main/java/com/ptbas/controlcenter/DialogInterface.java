@@ -3,10 +3,18 @@ package com.ptbas.controlcenter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Matrix;
+import android.icu.number.Scale;
 import android.os.Build;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
+import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.ScaleAnimation;
+import android.widget.ImageView;
 
+import com.airbnb.lottie.LottieAnimationView;
+import com.airbnb.lottie.LottieConfig;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.ptbas.controlcenter.create.AddReceivedOrder;
@@ -40,7 +48,7 @@ public class DialogInterface {
                 })
                 .build();
 
-        // Show Dialog
+        mBottomSheetDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
         mBottomSheetDialog.show();
     }
 
@@ -54,7 +62,7 @@ public class DialogInterface {
         }
         BottomSheetMaterialDialog mBottomSheetDialog = new BottomSheetMaterialDialog.Builder(activity)
                 .setTitle("Sukses!")
-                .setAnimation(R.raw.lottie_saved)
+                .setAnimation(R.raw.lottie_success_2)
                 .setMessage("Berhasil menambahkan data. Mau menambah data lagi?")
                 .setCancelable(false)
                 .setPositiveButton("TAMBAH LAGI", R.drawable.ic_outline_add, new BottomSheetMaterialDialog.OnClickListener() {
@@ -74,7 +82,7 @@ public class DialogInterface {
                 })
                 .build();
 
-        // Show Dialog
+        mBottomSheetDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
         mBottomSheetDialog.show();
     }
 
@@ -89,7 +97,7 @@ public class DialogInterface {
         BottomSheetMaterialDialog mBottomSheetDialog = new BottomSheetMaterialDialog.Builder((Activity) context)
                 .setTitle("Perhatian!", TextAlignment.START)
                 .setAnimation(R.raw.lottie_attention)
-                .setMessage("Data Good Issue ini masih belum memiliki nomor PO. Mohon perbarui  data tersebut agar dapat melakukan validasi dan dapat muncul saat direkap.", TextAlignment.START)
+                .setMessage("Data Good Issue ini masih belum memiliki nomor PO. Mohon perbarui  data tersebut agar dapat melakukan validasi dan dapat muncul saat direkapitulasi.", TextAlignment.START)
                 .setCancelable(true)
                 .setPositiveButton("OKE", new BottomSheetMaterialDialog.OnClickListener() {
                     @Override
@@ -100,7 +108,7 @@ public class DialogInterface {
                 })
                 .build();
 
-        // Show Dialog
+        mBottomSheetDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
         mBottomSheetDialog.show();
     }
 
@@ -114,7 +122,7 @@ public class DialogInterface {
         }
         BottomSheetMaterialDialog mBottomSheetDialog = new BottomSheetMaterialDialog.Builder(activity)
                 .setTitle("Sukses!")
-                .setAnimation(R.raw.lottie_saved)
+                .setAnimation(R.raw.lottie_success_2)
                 .setMessage("Berhasil menambahkan data. Mau menambah data lagi?")
                 .setCancelable(false)
                 .setPositiveButton("TAMBAH LAGI", R.drawable.ic_outline_add, new BottomSheetMaterialDialog.OnClickListener() {
@@ -134,7 +142,7 @@ public class DialogInterface {
                 })
                 .build();
 
-        // Show Dialog
+        mBottomSheetDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
         mBottomSheetDialog.show();
     }
 
@@ -161,7 +169,7 @@ public class DialogInterface {
                 })
                 .build();
 
-        // Show Dialog
+        mBottomSheetDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
         mBottomSheetDialog.show();
     }
 
@@ -176,7 +184,7 @@ public class DialogInterface {
         }
         BottomSheetMaterialDialog mBottomSheetDialog = new BottomSheetMaterialDialog.Builder(activity)
                 .setMessage("Anda tidak dapat mengubah data ini", TextAlignment.START)
-                .setCancelable(false)
+                .setCancelable(true)
                 .setPositiveButton("OKE", new BottomSheetMaterialDialog.OnClickListener() {
                     @Override
                     public void onClick(dev.shreyaspatil.MaterialDialog.interfaces.DialogInterface dialogInterface, int which) {
@@ -186,7 +194,31 @@ public class DialogInterface {
                 })
                 .build();
 
-        // Show Dialog
+        mBottomSheetDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
+        mBottomSheetDialog.show();
+    }
+
+    public void mustAddDateRangeInformation(Activity activity){
+        Vibrator vibrator = (Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            vibrator.vibrate(VibrationEffect.createOneShot(100,
+                    VibrationEffect.DEFAULT_AMPLITUDE));
+        } else {
+            vibrator.vibrate(100);
+        }
+        BottomSheetMaterialDialog mBottomSheetDialog = new BottomSheetMaterialDialog.Builder(activity)
+                .setMessage("Mohon masukkan rentang tanggal dan pilih ID Received Order atau ID Purchase Order Customer", TextAlignment.START)
+                .setCancelable(true)
+                .setPositiveButton("OKE", new BottomSheetMaterialDialog.OnClickListener() {
+                    @Override
+                    public void onClick(dev.shreyaspatil.MaterialDialog.interfaces.DialogInterface dialogInterface, int which) {
+                        dialogInterface.dismiss();
+                    }
+
+                })
+                .build();
+
+        mBottomSheetDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
         mBottomSheetDialog.show();
     }
 
@@ -202,7 +234,7 @@ public class DialogInterface {
 
         BottomSheetMaterialDialog mBottomSheetDialog = new BottomSheetMaterialDialog.Builder(activity)
                 .setTitle("Sukses!")
-                .setAnimation(R.raw.lottie_saved)
+                .setAnimation(R.raw.lottie_success_2)
                 .setMessage("Berhasil menambahkan data. Mau menambah data lagi?")
                 .setCancelable(false)
                 .setPositiveButton("TAMBAH LAGI", R.drawable.ic_outline_add, new BottomSheetMaterialDialog.OnClickListener() {
@@ -224,7 +256,7 @@ public class DialogInterface {
                 })
                 .build();
 
-        // Show Dialog
+        mBottomSheetDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
         mBottomSheetDialog.show();
     }
 
@@ -252,6 +284,7 @@ public class DialogInterface {
                 })
                 .build();
 
+        mBottomSheetDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
         mBottomSheetDialog.show();
     }
 
@@ -280,6 +313,7 @@ public class DialogInterface {
                 })
                 .build();
 
+        mBottomSheetDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
         mBottomSheetDialog.show();
     }
 }

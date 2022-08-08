@@ -1,14 +1,20 @@
-package com.ptbas.controlcenter.create;
+package com.ptbas.controlcenter;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.VibrationEffect;
@@ -19,7 +25,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -35,17 +40,31 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.ptbas.controlcenter.DialogInterface;
-import com.ptbas.controlcenter.DragLinearLayout;
-import com.ptbas.controlcenter.Helper;
-import com.ptbas.controlcenter.R;
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Chunk;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
 import com.ptbas.controlcenter.adapter.GIManagementAdapter;
+import com.ptbas.controlcenter.create.AddGoodIssueActivity;
 import com.ptbas.controlcenter.model.GoodIssueModel;
+import com.ptbas.controlcenter.model.ReceivedOrderModel;
 import com.ptbas.controlcenter.utils.LangUtils;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Objects;
 
 public class RecapGoodIssueDataActivity extends AppCompatActivity {
 
@@ -56,6 +75,7 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
     DatePickerDialog datePicker;
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
     ArrayList<GoodIssueModel> goodIssueModelArrayList = new ArrayList<>();
+    ArrayList<ReceivedOrderModel> receivedOrderModelArrayList = new ArrayList<>();
     GIManagementAdapter giManagementAdapter;
     RecyclerView rvGoodIssueList;
     Context context;
@@ -63,10 +83,11 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
     Boolean expandStatus = true, firstViewDataFirstTimeStatus = true;
     CardView cdvFilter;
     View firstViewData;
+    NestedScrollView nestedScrollView;
 
     List<String> arrayListRoUID, arrayListPoUID;
 
-    LinearLayout llWrapFilterByDateRange, llWrapFilterByRouid, llWrapFilterByPoCustNumb;
+    LinearLayout llWrapFilterByDateRange, llWrapFilterByRouid, llWrapFilterByPoCustNumb, llNoData;
 
     ImageButton btnGiSearchByDateReset, btnGiSearchByRoUIDReset, btnGiSearchByPoUIDReset;
 
@@ -74,6 +95,9 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
 
     DialogInterface dialogInterface = new DialogInterface();
     String roPoCustNumber;
+
+    public String custNameVal = "";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,6 +117,9 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
         llWrapFilterByDateRange = findViewById(R.id.ll_wrap_filter_by_date_range);
         llWrapFilterByRouid = findViewById(R.id.ll_wrap_filter_by_rouid);
         llWrapFilterByPoCustNumb = findViewById(R.id.ll_wrap_filter_by_po_cust_numb);
+
+        llNoData = findViewById(R.id.ll_no_data);
+        nestedScrollView = findViewById(R.id.nestedScrollView);
 
         btnGiSearchByDateReset = findViewById(R.id.btn_gi_search_date_reset);
         btnGiSearchByRoUIDReset = findViewById(R.id.btn_gi_search_rouid_reset);
@@ -287,52 +314,277 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
 
 
         btnSearchData.setOnClickListener(view -> {
-            rouidVal = spinnerRoUID.getText().toString();
-            pouidVal = spinnerPoUID.getText().toString();
+            if (!Objects.requireNonNull(edtDateStart.getText()).toString().isEmpty()&&
+                    !Objects.requireNonNull(edtDateEnd.getText()).toString().isEmpty()){
+                searchQuery();
+            } else {
+                nestedScrollView.setVisibility(View.GONE);
+                dialogInterface.mustAddDateRangeInformation(this);
+            }
+        });
+
+        fabCreateGiRecap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                /*Intent intent = new Intent(this, SecondActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putParcelableArrayList("mylist", arraylist);
+                intent.putExtras(bundle);
+                this.startActivity(intent);*/
+
+                if (ContextCompat.checkSelfPermission(context,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE)!=
+                        PackageManager.PERMISSION_GRANTED){
+                    ActivityCompat.requestPermissions((Activity) context,
+                            new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 10);
+                } else {
 
 
-            if (!dateStartVal.isEmpty()&&!dateEndVal.isEmpty()){
-                Query query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated").startAt(dateStartVal).endAt(dateEndVal);
-                query.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        goodIssueModelArrayList.clear();
-                        for (DataSnapshot item : snapshot.getChildren()){
-                            if (!rouidVal.isEmpty()){
-                                if(item.child("giRoUID").getValue().toString().equals(rouidVal) && !roPoCustNumber.equals("-")) {
-                                    if (item.child("giStatus").getValue().equals(true)){
-                                        GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
-                                        goodIssueModelArrayList.add(goodIssueModel);
-                                        fabCreateGiRecap.show();
-                                    }
+                    createPDF(Helper.getAppPath(context)+rouidVal+".pdf");
+
+                    //Toast.makeText(context, String.valueOf(goodIssueModelArrayList.size()), Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    /*public void print(View view) {
+
+*//*
+        PdfDocument recapDocument = new PdfDocument();
+        Paint paint = new Paint();
+        PdfDocument.PageInfo pdfPageInfo = new PdfDocument.PageInfo.Builder(1200,2010)
+*//*
+    }*/
+
+    private void createPDF(String dest){
+
+
+        Toast.makeText(context, dest, Toast.LENGTH_LONG).show();
+        if (new File(dest).exists()){
+            new File(dest).delete();
+        }
+
+        try {
+            Document document = new Document();
+            PdfWriter.getInstance(document, new FileOutputStream(dest));
+            document.open();
+            document.setPageSize(PageSize.A4);
+            document.addAuthor("PT BAS");
+            document.addCreator("BAS Control Center");
+            document.addCreationDate();
+
+            Font fontNormal = new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.NORMAL, BaseColor.BLACK);
+            Font fontBold = new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.BOLD, BaseColor.BLACK);
+            Font fontBigBold = new Font(Font.FontFamily.TIMES_ROMAN, 20, Font.BOLD, BaseColor.BLACK);
+
+            Chunk title = new Chunk("RO-"+rouidVal, fontBigBold);
+            Paragraph paragraphTitle = new Paragraph(title);
+            paragraphTitle.setAlignment(Element.ALIGN_CENTER);
+            paragraphTitle.setSpacingAfter(15);
+            document.add(paragraphTitle);
+
+            Chunk poNumberVal = new Chunk("PO-"+goodIssueModelArrayList.get(0).getGiPoCustNumber(), fontNormal);
+            Paragraph paragraphPONumber = new Paragraph(poNumberVal);
+            paragraphPONumber.setAlignment(Element.ALIGN_LEFT);
+            paragraphPONumber.setSpacingAfter(0);
+            document.add(paragraphPONumber);
+
+            Chunk roMatNameType = new Chunk(goodIssueModelArrayList.get(0).getGiMatName()+" | "+goodIssueModelArrayList.get(0).getGiMatType(), fontNormal);
+            Paragraph paragraphROMatNameType = new Paragraph(roMatNameType);
+            paragraphROMatNameType.setAlignment(Element.ALIGN_LEFT);
+            paragraphROMatNameType.setSpacingAfter(0);
+            document.add(paragraphROMatNameType);
+
+            //Toast.makeText(context, custNameVal, Toast.LENGTH_SHORT).show();
+            Chunk roCustName = new Chunk(custNameVal, fontNormal);
+            Paragraph paragraphROCustName = new Paragraph(roCustName);
+            paragraphROCustName.setAlignment(Element.ALIGN_LEFT);
+            paragraphROCustName.setSpacingAfter(15);
+            document.add(paragraphROCustName);
+
+
+
+            PdfPTable table = new PdfPTable(10);
+            table.setWidthPercentage(100);
+            table.setWidths(new float[]{1,4,3,4,2,2,2,2,2,3});
+
+            PdfPCell cell;
+            cell = new PdfPCell(new Phrase("No", fontBold));
+            cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            table.addCell(cell);
+
+            cell = new PdfPCell(new Phrase("Tanggal", fontBold));
+            cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            table.addCell(cell);
+
+            cell = new PdfPCell(new Phrase("ID", fontBold));
+            cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            table.addCell(cell);
+
+            cell = new PdfPCell(new Phrase("NOPOL", fontBold));
+            cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            table.addCell(cell);
+
+            cell = new PdfPCell(new Phrase("P", fontBold));
+            cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            table.addCell(cell);
+
+            cell = new PdfPCell(new Phrase("L", fontBold));
+            cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            table.addCell(cell);
+
+            cell = new PdfPCell(new Phrase("T", fontBold));
+            cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            table.addCell(cell);
+
+            cell = new PdfPCell(new Phrase("K", fontBold));
+            cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            table.addCell(cell);
+
+            cell = new PdfPCell(new Phrase("TK", fontBold));
+            cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            table.addCell(cell);
+
+            cell = new PdfPCell(new Phrase("M3", fontBold));
+            cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            table.addCell(cell);
+
+            for (int i = 0; i < goodIssueModelArrayList.size(); i++){
+                cell = new PdfPCell(new Phrase(String.valueOf(i+1), fontBold));
+                cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                table.addCell(cell);
+
+                cell = new PdfPCell(new Phrase(goodIssueModelArrayList.get(i).getGiDateCreated(), fontNormal));
+                cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                table.addCell(cell);
+
+                cell = new PdfPCell(new Phrase(goodIssueModelArrayList.get(i).getGiUID().substring(0,5), fontNormal));
+                cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                table.addCell(cell);
+
+                cell = new PdfPCell(new Phrase(goodIssueModelArrayList.get(i).getVhlUID(), fontNormal));
+                cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                table.addCell(cell);
+
+                cell = new PdfPCell(new Phrase(goodIssueModelArrayList.get(i).getVhlLength().toString(), fontNormal));
+                cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                table.addCell(cell);
+
+                cell = new PdfPCell(new Phrase(goodIssueModelArrayList.get(i).getVhlWidth().toString(), fontNormal));
+                cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                table.addCell(cell);
+
+                cell = new PdfPCell(new Phrase(goodIssueModelArrayList.get(i).getVhlHeight().toString(), fontNormal));
+                cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                table.addCell(cell);
+
+                cell = new PdfPCell(new Phrase(goodIssueModelArrayList.get(i).getVhlHeightCorrection().toString(), fontNormal));
+                cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                table.addCell(cell);
+
+                cell = new PdfPCell(new Phrase(goodIssueModelArrayList.get(i).getVhlHeightAfterCorrection().toString(), fontNormal));
+                cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                table.addCell(cell);
+
+                cell = new PdfPCell(new Phrase(goodIssueModelArrayList.get(i).getGiVhlCubication().toString(), fontNormal));
+                cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                table.addCell(cell);
+            }
+
+            document.add(table);
+            document.close();
+            Helper.openFilePDF(context, new File(Helper.getAppPath(context)+rouidVal+".pdf"));
+        } catch (DocumentException | FileNotFoundException e) {
+            e.printStackTrace();
+            Toast.makeText(context, e.toString(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+
+    private void searchQuery(){
+        rouidVal = spinnerRoUID.getText().toString();
+        pouidVal = spinnerPoUID.getText().toString();
+
+        Query query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated").startAt(dateStartVal).endAt(dateEndVal);
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                goodIssueModelArrayList.clear();
+                if (snapshot.exists()){
+                    for (DataSnapshot item : snapshot.getChildren()) {
+                        if (!rouidVal.isEmpty()){
+                            if (Objects.requireNonNull(item.child("giRoUID").getValue()).toString().equals(rouidVal) &&
+                                    !roPoCustNumber.equals("-")) {
+                                if (Objects.equals(item.child("giStatus").getValue(), true)) {
+                                    GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
+                                    goodIssueModelArrayList.add(goodIssueModel);
+                                    fabCreateGiRecap.show();
+                                    nestedScrollView.setVisibility(View.VISIBLE);
+                                    llNoData.setVisibility(View.GONE);
+
+                                    DatabaseReference databaseReferencePO = FirebaseDatabase.getInstance().getReference("ReceivedOrders/"+ spinnerRoUID.getText().toString());
+                                    databaseReferencePO.addValueEventListener(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                            custNameVal = snapshot.child("roCustName").getValue(String.class);
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError error) {
+
+                                        }
+                                    });
                                 }
-                            }
-                            if (!pouidVal.isEmpty()){
-                                if(item.child("giPoCustNumber").getValue().toString().equals(pouidVal)&&!item.child("giPoCustNumber").getValue().toString().equals("-")) {
-                                    if (item.child("giStatus").getValue().equals(true)){
-                                        GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
-                                        goodIssueModelArrayList.add(goodIssueModel);
-                                        fabCreateGiRecap.show();
-                                    }
-                                }
-                            }
-                            if (goodIssueModelArrayList.size()==0) {
-                                fabCreateGiRecap.hide();
+
                             }
                         }
-                        giManagementAdapter = new GIManagementAdapter(context, goodIssueModelArrayList);
-                        rvGoodIssueList.setAdapter(giManagementAdapter);
+                        if (!pouidVal.isEmpty()){
+                            if (Objects.requireNonNull(item.child("giPoCustNumber").getValue()).toString().equals(pouidVal) &&
+                                    !Objects.requireNonNull(item.child("giPoCustNumber").getValue()).toString().equals("-")) {
+                                if (Objects.equals(item.child("giStatus").getValue(), true)) {
+                                    GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
+                                    goodIssueModelArrayList.add(goodIssueModel);
+                                    fabCreateGiRecap.show();
+                                    nestedScrollView.setVisibility(View.VISIBLE);
+                                    llNoData.setVisibility(View.GONE);
 
+                                    DatabaseReference databaseReferencePO = FirebaseDatabase.getInstance().getReference("ReceivedOrders/"+ spinnerRoUID.getText().toString());
+                                    databaseReferencePO.addValueEventListener(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                            custNameVal = snapshot.child("roCustName").getValue(String.class);
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError error) {
+
+                                        }
+                                    });
+                                }
+                            }
+                        }
                     }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
+                    if (goodIssueModelArrayList.size()==0) {
+                        fabCreateGiRecap.hide();
+                        nestedScrollView.setVisibility(View.GONE);
+                        llNoData.setVisibility(View.VISIBLE);
+                        //Toast.makeText(context, "Data tidak ditemukan", Toast.LENGTH_SHORT).show();
                     }
-                });
+                } else  {
+                    fabCreateGiRecap.hide();
+                    nestedScrollView.setVisibility(View.GONE);
+                    llNoData.setVisibility(View.VISIBLE);
+                    //Toast.makeText(context, "Data tidak ditemukan", Toast.LENGTH_SHORT).show();
+                }
+                giManagementAdapter = new GIManagementAdapter(context, goodIssueModelArrayList);
+                rvGoodIssueList.setAdapter(giManagementAdapter);
 
-            } else {
-                Toast.makeText(context, "Mohon masukkan rentang tanggal terlebih dahulu", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
             }
         });
     }

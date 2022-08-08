@@ -1,6 +1,9 @@
 package com.ptbas.controlcenter.model;
 
-public class GoodIssueModel {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class GoodIssueModel implements Parcelable {
 
     //MANDATORY
     String giUID, giCreatedBy, giRoUID, giPoCustNumber, giMatName, giMatType, vhlUID,
@@ -31,6 +34,64 @@ public class GoodIssueModel {
         this.giStatus = giStatus;
         this.giInvoiced = giInvoiced;
     }
+
+    protected GoodIssueModel(Parcel in) {
+        giUID = in.readString();
+        giCreatedBy = in.readString();
+        giRoUID = in.readString();
+        giPoCustNumber = in.readString();
+        giMatName = in.readString();
+        giMatType = in.readString();
+        vhlUID = in.readString();
+        giDateCreated = in.readString();
+        giTimeCreted = in.readString();
+        if (in.readByte() == 0) {
+            vhlLength = null;
+        } else {
+            vhlLength = in.readInt();
+        }
+        if (in.readByte() == 0) {
+            vhlWidth = null;
+        } else {
+            vhlWidth = in.readInt();
+        }
+        if (in.readByte() == 0) {
+            vhlHeight = null;
+        } else {
+            vhlHeight = in.readInt();
+        }
+        if (in.readByte() == 0) {
+            vhlHeightCorrection = null;
+        } else {
+            vhlHeightCorrection = in.readInt();
+        }
+        if (in.readByte() == 0) {
+            vhlHeightAfterCorrection = null;
+        } else {
+            vhlHeightAfterCorrection = in.readInt();
+        }
+        if (in.readByte() == 0) {
+            giVhlCubication = null;
+        } else {
+            giVhlCubication = in.readFloat();
+        }
+        byte tmpGiStatus = in.readByte();
+        giStatus = tmpGiStatus == 0 ? null : tmpGiStatus == 1;
+        byte tmpGiInvoiced = in.readByte();
+        giInvoiced = tmpGiInvoiced == 0 ? null : tmpGiInvoiced == 1;
+    }
+
+    public static final Parcelable.Creator<GoodIssueModel> CREATOR = new Parcelable.Creator<GoodIssueModel>() {
+        @Override
+        public GoodIssueModel createFromParcel(Parcel in) {
+            return new GoodIssueModel(in);
+        }
+
+        @Override
+        public GoodIssueModel[] newArray(int size) {
+            return new GoodIssueModel[size];
+        }
+    };
 
     public String getGiUID() {
         return giUID;
@@ -166,5 +227,61 @@ public class GoodIssueModel {
 
     public void setGiInvoiced(Boolean giInvoiced) {
         this.giInvoiced = giInvoiced;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(giUID);
+        parcel.writeString(giCreatedBy);
+        parcel.writeString(giRoUID);
+        parcel.writeString(giPoCustNumber);
+        parcel.writeString(giMatName);
+        parcel.writeString(giMatType);
+        parcel.writeString(vhlUID);
+        parcel.writeString(giDateCreated);
+        parcel.writeString(giTimeCreted);
+        if (vhlLength == null) {
+            parcel.writeByte((byte) 0);
+        } else {
+            parcel.writeByte((byte) 1);
+            parcel.writeInt(vhlLength);
+        }
+        if (vhlWidth == null) {
+            parcel.writeByte((byte) 0);
+        } else {
+            parcel.writeByte((byte) 1);
+            parcel.writeInt(vhlWidth);
+        }
+        if (vhlHeight == null) {
+            parcel.writeByte((byte) 0);
+        } else {
+            parcel.writeByte((byte) 1);
+            parcel.writeInt(vhlHeight);
+        }
+        if (vhlHeightCorrection == null) {
+            parcel.writeByte((byte) 0);
+        } else {
+            parcel.writeByte((byte) 1);
+            parcel.writeInt(vhlHeightCorrection);
+        }
+        if (vhlHeightAfterCorrection == null) {
+            parcel.writeByte((byte) 0);
+        } else {
+            parcel.writeByte((byte) 1);
+            parcel.writeInt(vhlHeightAfterCorrection);
+        }
+        if (giVhlCubication == null) {
+            parcel.writeByte((byte) 0);
+        } else {
+            parcel.writeByte((byte) 1);
+            parcel.writeFloat(giVhlCubication);
+        }
+        parcel.writeByte((byte) (giStatus == null ? 0 : giStatus ? 1 : 2));
+        parcel.writeByte((byte) (giInvoiced == null ? 0 : giInvoiced ? 1 : 2));
     }
 }

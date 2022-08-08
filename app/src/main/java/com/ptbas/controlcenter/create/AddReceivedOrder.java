@@ -833,13 +833,20 @@ public class AddReceivedOrder extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        dialogInterface.discardDialogConfirmation(AddReceivedOrder.this);
+        onBackPressed();
+        //dialogInterface.discardDialogConfirmation(AddReceivedOrder.this);
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     public void onBackPressed() {
-        dialogInterface.discardDialogConfirmation(AddReceivedOrder.this);
+        if (bottomSheetBehavior.getState()==BottomSheetBehavior.STATE_EXPANDED){
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            bottomSheetCollapsed();
+        } else {
+            dialogInterface.discardDialogConfirmation(AddReceivedOrder.this);
+        }
+
     }
 
 }
