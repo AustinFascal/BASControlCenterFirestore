@@ -115,67 +115,47 @@
                                 android:layout_height="match_parent"
                                 android:src="@drawable/ic_outline_drag_indicator" />
 
-                            <com.google.android.material.textfield.TextInputLayout
-                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+                            <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                app:placeholderText="Pilih Kategori">
-
-                                <AutoCompleteTextView
-                                    android:id="@+id/rouid"
+                                android:orientation="vertical">
+                                <com.google.android.material.textfield.TextInputLayout
+                                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:hint="ID Received Order" />
-                            </com.google.android.material.textfield.TextInputLayout>
+                                    android:layout_weight="1"
+                                    app:placeholderText="Pilih Kategori">
+
+                                    <AutoCompleteTextView
+                                        android:id="@+id/rouid"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:hint="ID Received Order" />
+                                </com.google.android.material.textfield.TextInputLayout>
+
+                                <com.google.android.material.textfield.TextInputLayout
+                                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:layout_marginTop="5dp"
+                                    app:placeholderText="Pilih Kategori">
+
+                                    <com.google.android.material.textfield.TextInputEditText
+                                        android:id="@+id/pouid"
+                                        android:maxLines="1"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:hint="ID Nomor PO Customer"
+                                        android:focusable="false"
+                                        android:inputType="none"/>
+                                </com.google.android.material.textfield.TextInputLayout>
+
+                            </LinearLayout>
 
 
                             <ImageButton
                                 android:id="@+id/btn_gi_search_rouid_reset"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:layout_gravity="center_vertical"
-                                android:layout_marginTop="3dp"
-                                android:layout_marginBottom="1dp"
-                                android:layout_weight="3"
-                                android:background="@drawable/outline_box"
-                                android:scaleType="centerInside"
-                                android:src="@drawable/ic_outline_restore"
-                                android:visibility="gone" />
-
-                        </LinearLayout>
-                        <LinearLayout
-                            android:id="@+id/ll_wrap_filter_by_po_cust_numb"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:divider="@drawable/divider_transparent"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal"
-                            android:showDividers="middle"
-                            android:visibility="visible">
-                            <ImageView
-                                android:layout_width="24dp"
-                                android:layout_height="match_parent"
-                                android:src="@drawable/ic_outline_drag_indicator" />
-
-                            <com.google.android.material.textfield.TextInputLayout
-                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                app:placeholderText="Pilih Kategori">
-
-                                <AutoCompleteTextView
-                                    android:id="@+id/pouid"
-                                    android:maxLines="1"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:hint="ID Nomor PO Customer" />
-                            </com.google.android.material.textfield.TextInputLayout>
-
-
-                            <ImageButton
-                                android:id="@+id/btn_gi_search_pouid_reset"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:layout_gravity="center_vertical"

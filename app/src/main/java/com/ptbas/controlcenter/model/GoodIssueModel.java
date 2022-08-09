@@ -6,7 +6,7 @@ import android.os.Parcelable;
 public class GoodIssueModel implements Parcelable {
 
     //MANDATORY
-    String giUID, giCreatedBy, giRoUID, giPoCustNumber, giMatName, giMatType, vhlUID,
+    String giUID, giCreatedBy, giVerifiedBy, giRoUID, giPoCustNumber, giMatName, giMatType, vhlUID,
             giDateCreated, giTimeCreted;
     Integer vhlLength, vhlWidth, vhlHeight, vhlHeightCorrection, vhlHeightAfterCorrection;
     Float giVhlCubication;
@@ -15,9 +15,10 @@ public class GoodIssueModel implements Parcelable {
     GoodIssueModel() {
     }
 
-    public GoodIssueModel(String giUID, String giCreatedBy, String giRoUID, String giPoCustNumber, String giMatName, String giMatType, String vhlUID, String giDateCreated, String giTimeCreted, Integer vhlLength, Integer vhlWidth, Integer vhlHeight, Integer vhlHeightCorrection, Integer vhlHeightAfterCorrection, Float giVhlCubication, Boolean giStatus, Boolean giInvoiced) {
+    public GoodIssueModel(String giUID, String giCreatedBy, String giVerifiedBy, String giRoUID, String giPoCustNumber, String giMatName, String giMatType, String vhlUID, String giDateCreated, String giTimeCreted, Integer vhlLength, Integer vhlWidth, Integer vhlHeight, Integer vhlHeightCorrection, Integer vhlHeightAfterCorrection, Float giVhlCubication, Boolean giStatus, Boolean giInvoiced) {
         this.giUID = giUID;
         this.giCreatedBy = giCreatedBy;
+        this.giVerifiedBy = giVerifiedBy;
         this.giRoUID = giRoUID;
         this.giPoCustNumber = giPoCustNumber;
         this.giMatName = giMatName;
@@ -38,6 +39,7 @@ public class GoodIssueModel implements Parcelable {
     protected GoodIssueModel(Parcel in) {
         giUID = in.readString();
         giCreatedBy = in.readString();
+        giVerifiedBy = in.readString();
         giRoUID = in.readString();
         giPoCustNumber = in.readString();
         giMatName = in.readString();
@@ -107,6 +109,14 @@ public class GoodIssueModel implements Parcelable {
 
     public void setGiCreatedBy(String giCreatedBy) {
         this.giCreatedBy = giCreatedBy;
+    }
+
+    public String getGiVerifiedBy() {
+        return giVerifiedBy;
+    }
+
+    public void setGiVerifiedBy(String giVerifiedBy) {
+        this.giVerifiedBy = giVerifiedBy;
     }
 
     public String getGiRoUID() {
@@ -238,6 +248,7 @@ public class GoodIssueModel implements Parcelable {
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(giUID);
         parcel.writeString(giCreatedBy);
+        parcel.writeString(giVerifiedBy);
         parcel.writeString(giRoUID);
         parcel.writeString(giPoCustNumber);
         parcel.writeString(giMatName);

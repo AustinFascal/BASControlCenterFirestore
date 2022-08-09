@@ -45,6 +45,7 @@ import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.model.GoodIssueModel;
 import com.ptbas.controlcenter.model.ReceivedOrderModel;
 import com.ptbas.controlcenter.model.VehicleModel;
+import com.ptbas.controlcenter.update.UpdateGoodIssueActivity;
 import com.ptbas.controlcenter.utils.LangUtils;
 
 import java.text.DecimalFormat;
@@ -333,6 +334,7 @@ public class AddGoodIssueActivity extends AppCompatActivity {
 
 
 
+
         spinnerRoNumber.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
@@ -342,25 +344,33 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                 edtPoNumberCust.setError(null);
                 matNameList.clear();
 
-
                 DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("ReceivedOrders/"+ roNumber);
                 databaseReference.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         ReceivedOrderModel receivedOrderModel = snapshot.getValue(ReceivedOrderModel.class);
+                        if (Objects.equals(snapshot.child("roStatus").getValue(), true)) {
+                            if (receivedOrderModel != null) {
+                                edtPoNumberCust.setText(String.valueOf(receivedOrderModel.getRoPoCustNumber()));
+                                if (receivedOrderModel.getRoMatType().contains("CUR")) {
+                                    spinnerMatType.setText("CURAH");
+                                    matType = "CURAH";
+                                } else {
+                                    spinnerMatType.setText("BORONG");
+                                    matType = "BORONG";
 
-                        if (receivedOrderModel !=null){
-                            edtPoNumberCust.setText(String.valueOf(receivedOrderModel.getRoPoCustNumber()));
-                            if (receivedOrderModel.getRoMatType().contains("CUR")){
-                                spinnerMatType.setText("CURAH");
-                                matType = "CURAH";
-                            } else{
-                                spinnerMatType.setText("BORONG");
-                                matType = "BORONG";
-
+                                }
+                                edtPoNumberCust.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        dialogInterface.changePoNumberCustomer(AddGoodIssueActivity.this, roNumber);
+                                    }
+                                });
+                            } else {
+                                Toast.makeText(AddGoodIssueActivity.this, "Null", Toast.LENGTH_SHORT).show();
                             }
                         } else {
-                            Toast.makeText(AddGoodIssueActivity.this, "Null", Toast.LENGTH_SHORT).show();
+                            dialogInterface.roNotActiveYet(AddGoodIssueActivity.this, roNumber);
                         }
                     }
 
@@ -443,17 +453,18 @@ public class AddGoodIssueActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()){
                     for (DataSnapshot dataSnapshot: snapshot.getChildren()){
-                        if (Objects.equals(dataSnapshot.child("roStatus").getValue(), true)){
+
                             String spinnerPurchaseOrders = dataSnapshot.child("roUID").getValue(String.class);
                             receiveOrderNumberList.add(spinnerPurchaseOrders);
-                        }
 
                     }
                     ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddGoodIssueActivity.this, R.layout.style_spinner, receiveOrderNumberList);
                     arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
                     spinnerRoNumber.setAdapter(arrayAdapter);
                 } else {
-                    Toast.makeText(AddGoodIssueActivity.this, "Not exists", Toast.LENGTH_SHORT).show();
+                    dialogInterface.roNotExistsDialog(AddGoodIssueActivity.this);
+
+                    //Toast.makeText(AddGoodIssueActivity.this, "Not exists", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -550,6 +561,7 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                 String giVhlUID = Objects.requireNonNull(spinnerVhlUID.getText()).toString();
                 String giHeightCorrection = Objects.requireNonNull(edtHeightCorrection.getText()).toString();
                 String giCreatedBy = helper.getUserId();
+                String giVerifiedBy = "";
 
                 String giVhlLength = Objects.requireNonNull(edtVhlLength.getText()).toString();
                 String giVhlWidth = Objects.requireNonNull(edtVhlWidth.getText()).toString();
@@ -627,7 +639,7 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                             giUID = getRandomString(5)+"-"+ matType.substring(0, 3)+"-"+giDay.toString()+"-"+giMonth.toString()+"-"+giYear.toString();
 
                             DecimalFormat df = new DecimalFormat("0.00");
-                            insertData(giUID, giCreatedBy, giRONumber, giPOCustomerNumber, giMatName, giMatType,
+                            insertData(giUID, giCreatedBy, giVerifiedBy, giRONumber, giPOCustomerNumber, giMatName, giMatType,
                                     giVhlUID, giDate, giTime,
                                     Integer.parseInt(giVhlLength),
                                     Integer.parseInt(giVhlWidth),
@@ -645,14 +657,14 @@ public class AddGoodIssueActivity extends AppCompatActivity {
         });
     }
 
-    private void insertData(String giUID, String giCreatedBy, String giRoUID,
+    private void insertData(String giUID, String giCreatedBy, String giVerifiedBy, String giRoUID,
                             String giPoCustNumber, String giMatName, String giMatType,
                             String vhlUID, String giDateCreated, String giTimeCreted,
                             int vhlLength, int vhlWidth, int vhlHeight,
                             int vhlHeightCorrection, int vhlHeightAfterCorrection,
                             float giVhlCubication, Boolean giStatus, Boolean giInvoiced) {
 
-        GoodIssueModel goodIssueModel = new GoodIssueModel(giUID, giCreatedBy, giRoUID, giPoCustNumber,
+        GoodIssueModel goodIssueModel = new GoodIssueModel(giUID, giCreatedBy, giVerifiedBy, giRoUID, giPoCustNumber,
                 giMatName, giMatType, vhlUID, giDateCreated, giTimeCreted, vhlLength,
                 vhlWidth, vhlHeight, vhlHeightCorrection, vhlHeightAfterCorrection, giVhlCubication, giStatus, giInvoiced);
 

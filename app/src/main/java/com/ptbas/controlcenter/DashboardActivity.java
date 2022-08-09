@@ -315,8 +315,20 @@ public class DashboardActivity extends AppCompatActivity {
         databaseReference.child("GoodIssueData").orderByChild("giInvoiced").equalTo(false).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                int countFinal = Integer.parseInt(String.valueOf(dataSnapshot.getChildrenCount()));
-                getActivefinalCountActiveGoodIssueDataToInvoicedCount(String.valueOf(countFinal));
+                /*int countFinal = Integer.parseInt(String.valueOf(dataSnapshot.getChildrenCount()));
+                getActivefinalCountActiveGoodIssueDataToInvoicedCount(String.valueOf(countFinal));*/
+                databaseReference.child("GoodIssueData").orderByChild("giStatus").equalTo(true).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        int countFinal = Integer.parseInt(String.valueOf(dataSnapshot.getChildrenCount()));
+                        getActivefinalCountActiveGoodIssueDataToInvoicedCount(String.valueOf(countFinal));
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
             }
 
             @Override

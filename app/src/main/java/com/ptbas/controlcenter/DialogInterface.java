@@ -17,6 +17,7 @@ import com.airbnb.lottie.LottieAnimationView;
 import com.airbnb.lottie.LottieConfig;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.ptbas.controlcenter.create.AddGoodIssueActivity;
 import com.ptbas.controlcenter.create.AddReceivedOrder;
 
 import dev.shreyaspatil.MaterialDialog.BottomSheetMaterialDialog;
@@ -260,6 +261,84 @@ public class DialogInterface {
         mBottomSheetDialog.show();
     }
 
+    public void roNotActiveYet(Activity activity, String roUID){
+        Vibrator vibrator = (Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            vibrator.vibrate(VibrationEffect.createOneShot(100,
+                    VibrationEffect.DEFAULT_AMPLITUDE));
+        } else {
+            vibrator.vibrate(100);
+        }
+
+        BottomSheetMaterialDialog mBottomSheetDialog = new BottomSheetMaterialDialog.Builder(activity)
+                .setTitle("RO Belum Aktif")
+                .setAnimation(R.raw.lottie_attention)
+                .setMessage("Anda tidak dapat membuat Good Issue karena ID Received Order yang Anda pilih belum disahkan. Sahkan sekarang?")
+                .setCancelable(false)
+                .setPositiveButton("SAHKAN RO", R.drawable.ic_outline_check, new BottomSheetMaterialDialog.OnClickListener() {
+                    @Override
+                    public void onClick(dev.shreyaspatil.MaterialDialog.interfaces.DialogInterface dialogInterface, int which) {
+                        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+                        databaseReference.child("ReceivedOrders").child(roUID).child("roStatus").setValue(true);
+                        databaseReference.child("ReceivedOrders").child(roUID).child("roVerifiedBy").setValue(helper.getUserId());
+                        dialogInterface.dismiss();
+                    }
+
+                })
+                .setNegativeButton("LAIN KALI", R.drawable.ic_outline_close, new BottomSheetMaterialDialog.OnClickListener() {
+                    @Override
+                    public void onClick(dev.shreyaspatil.MaterialDialog.interfaces.DialogInterface dialogInterface, int which) {
+                        dialogInterface.dismiss();
+                        //activity.finish();
+                        //helper.refreshDashboard(activity.getApplicationContext());
+                    }
+
+                })
+                .build();
+
+        mBottomSheetDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
+        mBottomSheetDialog.show();
+    }
+
+    public void roNotExistsDialog(Activity activity){
+        Vibrator vibrator = (Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            vibrator.vibrate(VibrationEffect.createOneShot(100,
+                    VibrationEffect.DEFAULT_AMPLITUDE));
+        } else {
+            vibrator.vibrate(100);
+        }
+
+        BottomSheetMaterialDialog mBottomSheetDialog = new BottomSheetMaterialDialog.Builder(activity)
+                .setTitle("Tidak Ada Received Order")
+                .setAnimation(R.raw.lottie_attention)
+                .setMessage("Anda tidak dapat membuat Good Issue karena tidak memiliki Received Order yang aktif dan sah. Mau buat Received Order sekarang?")
+                .setCancelable(false)
+                .setPositiveButton("BUAT RO", R.drawable.ic_outline_add, new BottomSheetMaterialDialog.OnClickListener() {
+                    @Override
+                    public void onClick(dev.shreyaspatil.MaterialDialog.interfaces.DialogInterface dialogInterface, int which) {
+                        dialogInterface.dismiss();
+                        Intent intent=new Intent(activity, AddReceivedOrder.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                        activity.startActivity(intent);
+                    }
+
+                })
+                .setNegativeButton("TIDAK", R.drawable.ic_outline_close, new BottomSheetMaterialDialog.OnClickListener() {
+                    @Override
+                    public void onClick(dev.shreyaspatil.MaterialDialog.interfaces.DialogInterface dialogInterface, int which) {
+                        dialogInterface.dismiss();
+                        activity.finish();
+                        //helper.refreshDashboard(activity.getApplicationContext());
+                    }
+
+                })
+                .build();
+
+        mBottomSheetDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
+        mBottomSheetDialog.show();
+    }
+
     public void approveGiConfirmation(Context context, String giUID){
         BottomSheetMaterialDialog mBottomSheetDialog = new BottomSheetMaterialDialog.Builder((Activity) context)
                 .setTitle("Validasi Data")
@@ -269,9 +348,59 @@ public class DialogInterface {
                 .setPositiveButton("YA", R.drawable.ic_outline_check, new BottomSheetMaterialDialog.OnClickListener() {
                     @Override
                     public void onClick(dev.shreyaspatil.MaterialDialog.interfaces.DialogInterface dialogInterface, int which) {
-                        dialogInterface.dismiss();
                         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
                         databaseReference.child("GoodIssueData").child(giUID).child("giStatus").setValue(true);
+                        databaseReference.child("GoodIssueData").child(giUID).child("giVerifiedBy").setValue(helper.getUserId());
+                        dialogInterface.dismiss();
+                    }
+
+                })
+                .setNegativeButton("TIDAK", R.drawable.ic_outline_close, new BottomSheetMaterialDialog.OnClickListener() {
+                    @Override
+                    public void onClick(dev.shreyaspatil.MaterialDialog.interfaces.DialogInterface dialogInterface, int which) {
+                        dialogInterface.dismiss();
+                    }
+
+                })
+                .build();
+
+        mBottomSheetDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
+        mBottomSheetDialog.show();
+    }
+
+
+    public void changePoNumberCustomer(Context context, String roUID){
+        BottomSheetMaterialDialog mBottomSheetDialog = new BottomSheetMaterialDialog.Builder((Activity) context)
+                .setTitle("Ubah Nomor PO")
+                .setAnimation(R.raw.lottie_attention)
+                .setMessage("Untuk mengubah nomor PO, Anda harus memperbarui data nomor PO di Received Order terpilih. Perbarui sekarang?")
+                .setCancelable(true)
+                .setPositiveButton("YA", R.drawable.ic_outline_check, new BottomSheetMaterialDialog.OnClickListener() {
+                    @Override
+                    public void onClick(dev.shreyaspatil.MaterialDialog.interfaces.DialogInterface dialogInterface, int which) {
+
+
+
+
+
+
+
+
+
+
+                        //TODO ABLE TO UPDATE RO DETAIL
+
+
+
+
+
+
+
+
+
+
+
+
                     }
 
                 })

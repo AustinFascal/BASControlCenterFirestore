@@ -82,7 +82,7 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
     Helper helper = new Helper();
     List<String> vhlUIDList, matNameList, matTypeNameList, receiveOrderNumberList;
 
-    String giUIDVal;
+    String giUIDVal, giCreatedBy, giVerifiedBy;
 
     Boolean giStatus, giInvoiced;
 
@@ -152,6 +152,8 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
 
                     assert goodIssueModel != null;
                     giUIDVal = goodIssueModel.getGiUID();
+                    giCreatedBy = goodIssueModel.getGiCreatedBy();
+                    giVerifiedBy = goodIssueModel.getGiVerifiedBy();
                     String giDateCreated = goodIssueModel.getGiDateCreated();
                     String giTimeCreated = goodIssueModel.getGiTimeCreted();
                     roNumber = goodIssueModel.getGiRoUID();
@@ -179,6 +181,13 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
                         @Override
                         public void onCancelled(@NonNull DatabaseError error) {
 
+                        }
+                    });
+
+                    edtPoNumberCust.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            dialogInterface.changePoNumberCustomer(UpdateGoodIssueActivity.this, roNumber);
                         }
                     });
 
@@ -643,7 +652,7 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
 
                 String giVhlUID = Objects.requireNonNull(spinnerVhlUID.getText()).toString();
                 String giHeightCorrection = Objects.requireNonNull(edtHeightCorrection.getText()).toString();
-                String giCreatedBy = helper.getUserId();
+                //String giCreatedBy = helper.getUserId();
 
                 String giVhlLength = Objects.requireNonNull(edtVhlLength.getText()).toString();
                 String giVhlWidth = Objects.requireNonNull(edtVhlWidth.getText()).toString();
@@ -710,7 +719,7 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
                         &&!TextUtils.isEmpty(giVhlLength)&&!TextUtils.isEmpty(giVhlHeight)
                         &&!TextUtils.isEmpty(giHeightCorrection)){
                     DecimalFormat df = new DecimalFormat("0.00");
-                    insertData(giUIDVal, giCreatedBy, giRONumber, giPOCustomerNumber, giMatName, giMatType,
+                    insertData(giUIDVal, giCreatedBy, giVerifiedBy, giRONumber, giPOCustomerNumber, giMatName, giMatType,
                             giVhlUID, giDate, giTime,
                             Integer.parseInt(giVhlLength),
                             Integer.parseInt(giVhlWidth),
@@ -741,14 +750,14 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
         });
     }
 
-    private void insertData(String giUID, String giCreatedBy, String giRoUID,
+    private void insertData(String giUID, String giCreatedBy, String giVerifiedBy, String giRoUID,
                             String giPoCustNumber, String giMatName, String giMatType,
                             String vhlUID, String giDateCreated, String giTimeCreted,
                             int vhlLength, int vhlWidth, int vhlHeight,
                             int vhlHeightCorrection, int vhlHeightAfterCorrection,
                             float giVhlCubication, Boolean giStatus, Boolean giInvoiced) {
 
-        GoodIssueModel goodIssueModel = new GoodIssueModel(giUID, giCreatedBy, giRoUID, giPoCustNumber,
+        GoodIssueModel goodIssueModel = new GoodIssueModel(giUID, giCreatedBy, giVerifiedBy, giRoUID, giPoCustNumber,
                 giMatName, giMatType, vhlUID, giDateCreated, giTimeCreted, vhlLength,
                 vhlWidth, vhlHeight, vhlHeightCorrection, vhlHeightAfterCorrection, giVhlCubication, giStatus, giInvoiced);
 

@@ -341,6 +341,29 @@
 
         </androidx.cardview.widget.CardView>
 
+        <LinearLayout
+            android:gravity="center"
+            android:id="@+id/ll_no_data"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/cdv_filter"
+            android:orientation="vertical">
+            <com.airbnb.lottie.LottieAnimationView
+                app:lottie_autoPlay="true"
+                app:lottie_loop="true"
+                app:lottie_rawRes="@raw/lottie_data_not_found"
+                android:layout_width="200dp"
+                android:layout_height="200dp"/>
+            <TextView
+                android:layout_marginTop="10dp"
+                style="@style/TextAppearance.AppCompat.Title"
+                android:textStyle="bold"
+                android:textAlignment="center"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Data tidak ditemukan"/>
+        </LinearLayout>
         <androidx.core.widget.NestedScrollView
             android:id="@+id/nestedScrollView"
             android:layout_width="match_parent"

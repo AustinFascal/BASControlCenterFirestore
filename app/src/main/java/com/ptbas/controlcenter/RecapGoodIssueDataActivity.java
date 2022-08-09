@@ -19,12 +19,14 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
+import android.text.Html;
 import android.transition.AutoTransition;
 import android.transition.TransitionManager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -53,15 +55,17 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.ptbas.controlcenter.adapter.GIManagementAdapter;
-import com.ptbas.controlcenter.create.AddGoodIssueActivity;
+import com.ptbas.controlcenter.create.AddReceivedOrder;
 import com.ptbas.controlcenter.model.GoodIssueModel;
 import com.ptbas.controlcenter.model.ReceivedOrderModel;
+import com.ptbas.controlcenter.update.UpdateGoodIssueActivity;
 import com.ptbas.controlcenter.utils.LangUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
@@ -70,7 +74,8 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
 
     String dateStartVal = "", dateEndVal = "", rouidVal= "", pouidVal = "";
     Button btnSearchData, imgbtnExpandCollapseFilterLayout;
-    AutoCompleteTextView spinnerRoUID, spinnerPoUID;
+    AutoCompleteTextView spinnerRoUID;
+    TextInputEditText edtPoUID;
     TextInputEditText edtDateStart, edtDateEnd;
     DatePickerDialog datePicker;
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
@@ -94,10 +99,11 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
     ExtendedFloatingActionButton fabCreateGiRecap;
 
     DialogInterface dialogInterface = new DialogInterface();
-    String roPoCustNumber;
+    String roPoCustNumber, roUID;
 
     public String custNameVal = "";
 
+    List<String> matNameList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,24 +112,26 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
 
         context = this;
 
+        matNameList  = new ArrayList<>();
+
         cdvFilter = findViewById(R.id.cdv_filter);
         btnSearchData = findViewById(R.id.caridata);
         spinnerRoUID = findViewById(R.id.rouid);
-        spinnerPoUID = findViewById(R.id.pouid);
+        edtPoUID = findViewById(R.id.pouid);
         edtDateStart = findViewById(R.id.edt_gi_date_filter_start);
         edtDateEnd = findViewById(R.id.edt_gi_date_filter_end);
         rvGoodIssueList = findViewById(R.id.rv_good_issue_list);
         imgbtnExpandCollapseFilterLayout = findViewById(R.id.imgbtn_expand_collapse_filter_layout);
         llWrapFilterByDateRange = findViewById(R.id.ll_wrap_filter_by_date_range);
         llWrapFilterByRouid = findViewById(R.id.ll_wrap_filter_by_rouid);
-        llWrapFilterByPoCustNumb = findViewById(R.id.ll_wrap_filter_by_po_cust_numb);
+        //llWrapFilterByPoCustNumb = findViewById(R.id.ll_wrap_filter_by_po_cust_numb);
 
         llNoData = findViewById(R.id.ll_no_data);
         nestedScrollView = findViewById(R.id.nestedScrollView);
 
         btnGiSearchByDateReset = findViewById(R.id.btn_gi_search_date_reset);
         btnGiSearchByRoUIDReset = findViewById(R.id.btn_gi_search_rouid_reset);
-        btnGiSearchByPoUIDReset = findViewById(R.id.btn_gi_search_pouid_reset);
+        //btnGiSearchByPoUIDReset = findViewById(R.id.btn_gi_search_pouid_reset);
 
         fabCreateGiRecap = findViewById(R.id.fab_create_gi_recap);
 
@@ -227,7 +235,7 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
             }
         });
 
-        databaseReference.child("ReceivedOrders").addValueEventListener(new ValueEventListener() {
+        /*databaseReference.child("ReceivedOrders").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()){
@@ -249,21 +257,23 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError error) {
 
             }
-        });
+        });*/
 
-        spinnerPoUID.setOnItemClickListener((adapterView, view, i, l) -> {
-            btnGiSearchByPoUIDReset.setVisibility(View.VISIBLE);
-            spinnerRoUID.setText(null);
-            spinnerRoUID.clearFocus();
-            btnGiSearchByRoUIDReset.setVisibility(View.GONE);
+        /*spinnerPoUID.setOnItemClickListener((adapterView, view, i, l) -> {
+            //btnGiSearchByPoUIDReset.setVisibility(View.VISIBLE);
+            //spinnerRoUID.setText(null);
+            //spinnerRoUID.clearFocus();
+            //btnGiSearchByRoUIDReset.setVisibility(View.VISIBLE);
             spinnerPoUID.setError(null);
-        });
+
+            spinnerRoUID.setText(null);
+        });*/
 
         spinnerRoUID.setOnItemClickListener((adapterView, view, i, l) -> {
-            btnGiSearchByRoUIDReset.setVisibility(View.VISIBLE);
-            spinnerPoUID.setText(null);
-            spinnerPoUID.clearFocus();
-            btnGiSearchByPoUIDReset.setVisibility(View.GONE);
+            //btnGiSearchByRoUIDReset.setVisibility(View.VISIBLE);
+            //spinnerPoUID.setText(null);
+            //spinnerPoUID.clearFocus();
+            //btnGiSearchByPoUIDReset.setVisibility(View.GONE);
             spinnerRoUID.setError(null);
 
             DatabaseReference databaseReferencePO = FirebaseDatabase.getInstance().getReference("ReceivedOrders/"+ spinnerRoUID.getText().toString());
@@ -271,6 +281,7 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     roPoCustNumber = snapshot.child("roPoCustNumber").getValue(String.class);
+                    edtPoUID.setText(roPoCustNumber);
                 }
 
                 @Override
@@ -288,17 +299,18 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
                 edtDateStart.clearFocus();
                 edtDateEnd.clearFocus();
                 btnGiSearchByDateReset.setVisibility(View.GONE);
+                //matNameList.clear();
             }
         });
 
-        btnGiSearchByPoUIDReset.setOnClickListener(new View.OnClickListener() {
+        /*btnGiSearchByPoUIDReset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                spinnerPoUID.setText(null);
-                spinnerPoUID.clearFocus();
+                edtPoUID.setText(null);
+                edtPoUID.clearFocus();
                 btnGiSearchByPoUIDReset.setVisibility(View.GONE);
             }
-        });
+        });*/
 
         btnGiSearchByRoUIDReset.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -306,6 +318,7 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
                 spinnerRoUID.setText(null);
                 spinnerRoUID.clearFocus();
                 btnGiSearchByRoUIDReset.setVisibility(View.GONE);
+                //matNameList.clear();
             }
         });
 
@@ -314,6 +327,11 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
 
 
         btnSearchData.setOnClickListener(view -> {
+            View viewLayout = RecapGoodIssueDataActivity.this.getCurrentFocus();
+            if (viewLayout != null) {
+                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(viewLayout.getWindowToken(), 0);
+            }
             if (!Objects.requireNonNull(edtDateStart.getText()).toString().isEmpty()&&
                     !Objects.requireNonNull(edtDateEnd.getText()).toString().isEmpty()){
                 searchQuery();
@@ -326,11 +344,13 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
         fabCreateGiRecap.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //matNameList.clear();
                 /*Intent intent = new Intent(this, SecondActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putParcelableArrayList("mylist", arraylist);
                 intent.putExtras(bundle);
                 this.startActivity(intent);*/
+
 
                 if (ContextCompat.checkSelfPermission(context,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE)!=
@@ -339,8 +359,8 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
                             new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 10);
                 } else {
 
-
                     createPDF(Helper.getAppPath(context)+rouidVal+".pdf");
+
 
                     //Toast.makeText(context, String.valueOf(goodIssueModelArrayList.size()), Toast.LENGTH_SHORT).show();
                 }
@@ -350,7 +370,7 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
 
     /*public void print(View view) {
 
-*//*
+     *//*
         PdfDocument recapDocument = new PdfDocument();
         Paint paint = new Paint();
         PdfDocument.PageInfo pdfPageInfo = new PdfDocument.PageInfo.Builder(1200,2010)
@@ -360,7 +380,9 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
     private void createPDF(String dest){
 
 
-        Toast.makeText(context, dest, Toast.LENGTH_LONG).show();
+
+
+        //Toast.makeText(context, dest, Toast.LENGTH_LONG).show();
         if (new File(dest).exists()){
             new File(dest).delete();
         }
@@ -378,19 +400,21 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
             Font fontBold = new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.BOLD, BaseColor.BLACK);
             Font fontBigBold = new Font(Font.FontFamily.TIMES_ROMAN, 20, Font.BOLD, BaseColor.BLACK);
 
+
+
             Chunk title = new Chunk("RO-"+rouidVal, fontBigBold);
             Paragraph paragraphTitle = new Paragraph(title);
             paragraphTitle.setAlignment(Element.ALIGN_CENTER);
             paragraphTitle.setSpacingAfter(15);
             document.add(paragraphTitle);
 
-            Chunk poNumberVal = new Chunk("PO-"+goodIssueModelArrayList.get(0).getGiPoCustNumber(), fontNormal);
+            Chunk poNumberVal = new Chunk("PO-"+roPoCustNumber, fontNormal);
             Paragraph paragraphPONumber = new Paragraph(poNumberVal);
             paragraphPONumber.setAlignment(Element.ALIGN_LEFT);
             paragraphPONumber.setSpacingAfter(0);
             document.add(paragraphPONumber);
 
-            Chunk roMatNameType = new Chunk(goodIssueModelArrayList.get(0).getGiMatName()+" | "+goodIssueModelArrayList.get(0).getGiMatType(), fontNormal);
+            Chunk roMatNameType = new Chunk(matNameList +" | "+goodIssueModelArrayList.get(0).getGiMatType(), fontNormal);
             Paragraph paragraphROMatNameType = new Paragraph(roMatNameType);
             paragraphROMatNameType.setAlignment(Element.ALIGN_LEFT);
             paragraphROMatNameType.setSpacingAfter(0);
@@ -446,7 +470,7 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
             cell.setHorizontalAlignment(Element.ALIGN_CENTER);
             table.addCell(cell);
 
-            cell = new PdfPCell(new Phrase("M3", fontBold));
+            cell = new PdfPCell(new Phrase(String.valueOf(Html.fromHtml("M\u00B3")), fontBold));
             cell.setHorizontalAlignment(Element.ALIGN_CENTER);
             table.addCell(cell);
 
@@ -504,7 +528,7 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
 
     private void searchQuery(){
         rouidVal = spinnerRoUID.getText().toString();
-        pouidVal = spinnerPoUID.getText().toString();
+        pouidVal = edtPoUID.getText().toString();
 
         Query query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated").startAt(dateStartVal).endAt(dateEndVal);
         query.addValueEventListener(new ValueEventListener() {
@@ -515,13 +539,15 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
                     for (DataSnapshot item : snapshot.getChildren()) {
                         if (!rouidVal.isEmpty()){
                             if (Objects.requireNonNull(item.child("giRoUID").getValue()).toString().equals(rouidVal) &&
-                                    !roPoCustNumber.equals("-")) {
+                                    !pouidVal.equals("-")) {
                                 if (Objects.equals(item.child("giStatus").getValue(), true)) {
                                     GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
                                     goodIssueModelArrayList.add(goodIssueModel);
                                     fabCreateGiRecap.show();
                                     nestedScrollView.setVisibility(View.VISIBLE);
                                     llNoData.setVisibility(View.GONE);
+
+
 
                                     DatabaseReference databaseReferencePO = FirebaseDatabase.getInstance().getReference("ReceivedOrders/"+ spinnerRoUID.getText().toString());
                                     databaseReferencePO.addValueEventListener(new ValueEventListener() {
@@ -537,23 +563,47 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
                                     });
                                 }
 
+                                DatabaseReference databaseReferencePO2 = FirebaseDatabase.getInstance().getReference("ReceivedOrders/"+ rouidVal +"/OrderedItems");
+                                databaseReferencePO2.addValueEventListener(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                        matNameList.clear();
+                                        for (DataSnapshot dataSnapshot: snapshot.getChildren()){
+                                        String spinnerMaterialData = dataSnapshot.child("matName").getValue(String.class);
+                                        matNameList.add(spinnerMaterialData);
+                                        matNameList.remove("JASA ANGKUT");
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError error) {
+
+                                    }
+                                });
+
                             }
                         }
-                        if (!pouidVal.isEmpty()){
+                        /*if (!pouidVal.isEmpty()&&rouidVal.isEmpty()){
                             if (Objects.requireNonNull(item.child("giPoCustNumber").getValue()).toString().equals(pouidVal) &&
                                     !Objects.requireNonNull(item.child("giPoCustNumber").getValue()).toString().equals("-")) {
                                 if (Objects.equals(item.child("giStatus").getValue(), true)) {
                                     GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
+
+                                    ArrayList<GoodIssueModel> giPosGetROTemp = new ArrayList<>();
+                                    giPosGetROTemp.add(goodIssueModel);
                                     goodIssueModelArrayList.add(goodIssueModel);
                                     fabCreateGiRecap.show();
                                     nestedScrollView.setVisibility(View.VISIBLE);
                                     llNoData.setVisibility(View.GONE);
 
-                                    DatabaseReference databaseReferencePO = FirebaseDatabase.getInstance().getReference("ReceivedOrders/"+ spinnerRoUID.getText().toString());
+
+
+                                    DatabaseReference databaseReferencePO = FirebaseDatabase.getInstance().getReference("ReceivedOrders/"+ giPosGetROTemp.get(0).getGiRoUID());
                                     databaseReferencePO.addValueEventListener(new ValueEventListener() {
                                         @Override
                                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                                             custNameVal = snapshot.child("roCustName").getValue(String.class);
+                                            roUID = giPosGetROTemp.get(0).getGiRoUID();
                                         }
 
                                         @Override
@@ -563,7 +613,7 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
                                     });
                                 }
                             }
-                        }
+                        }*/
                     }
                     if (goodIssueModelArrayList.size()==0) {
                         fabCreateGiRecap.hide();
@@ -589,6 +639,8 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
         });
     }
 
+
+
     private void expandFilterViewValidation() {
         if (expandStatus){
             showHideFilterComponents(true);
@@ -607,29 +659,18 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
         if (expandStatus){
             if (firstViewData.getId()==R.id.ll_wrap_filter_by_date_range){
                 llWrapFilterByRouid.setVisibility(View.GONE);
-                llWrapFilterByPoCustNumb.setVisibility(View.GONE);
             }
             if (firstViewData.getId()==R.id.ll_wrap_filter_by_rouid){
                 llWrapFilterByDateRange.setVisibility(View.GONE);
-                llWrapFilterByPoCustNumb.setVisibility(View.GONE);
             }
-            if (firstViewData.getId()==R.id.ll_wrap_filter_by_po_cust_numb){
-                llWrapFilterByDateRange.setVisibility(View.GONE);
-                llWrapFilterByRouid.setVisibility(View.GONE);
-            }
+
 
         } else {
             if (firstViewData.getId()==R.id.ll_wrap_filter_by_date_range){
                 llWrapFilterByRouid.setVisibility(View.VISIBLE);
-                llWrapFilterByPoCustNumb.setVisibility(View.VISIBLE);
             }
             if (firstViewData.getId()==R.id.ll_wrap_filter_by_rouid){
                 llWrapFilterByDateRange.setVisibility(View.VISIBLE);
-                llWrapFilterByPoCustNumb.setVisibility(View.VISIBLE);
-            }
-            if (firstViewData.getId()==R.id.ll_wrap_filter_by_po_cust_numb){
-                llWrapFilterByDateRange.setVisibility(View.VISIBLE);
-                llWrapFilterByRouid.setVisibility(View.VISIBLE);
             }
         }
     }

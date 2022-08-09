@@ -88,7 +88,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/inputPoNumberCustomer"
-                    android:inputType="text"
+                    android:focusable="false"
+                    android:inputType="none"
                     android:maxLines="1"/>
             </com.google.android.material.textfield.TextInputLayout>
 

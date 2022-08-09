@@ -370,12 +370,12 @@ public class AddReceivedOrder extends AppCompatActivity {
                     if (poMonth==0||poYear==0){
                         edtPoNumberPtbas.setText(customerAlias+"-"+transportData.substring(0, 3) + "--");
                         if (!customerData.isEmpty() &&!Objects.requireNonNull(edtPoDate.getText()).toString().equals("")){
-                            edtPoNumberPtbas.setText(customerAlias+"-"+randomString+"-"+transportData.substring(0, 3)+"--");
+                            edtPoNumberPtbas.setText(customerAlias+" - "+randomString+"-"+transportData.substring(0, 3)+"--");
                         }
                     } else {
                         edtPoNumberPtbas.setText(customerAlias+"-"+transportData.substring(0, 3) + "-" + poMonth + "-" + poYear);
                         if (!customerData.isEmpty() &&!Objects.requireNonNull(edtPoDate.getText()).toString().equals("")){
-                            edtPoNumberPtbas.setText(customerAlias+"-"+randomString+"-"+transportData.substring(0, 3)+"-"+poMonth + "-" + poYear);
+                            edtPoNumberPtbas.setText(customerAlias+" - "+randomString+"-"+transportData.substring(0, 3)+"-"+poMonth + "-" + poYear);
                         }
                     }
 
