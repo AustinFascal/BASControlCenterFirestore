@@ -40,7 +40,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.ptbas.controlcenter.DialogInterface;
 import com.ptbas.controlcenter.DragLinearLayout;
 import com.ptbas.controlcenter.Helper;
 import com.ptbas.controlcenter.R;
@@ -89,7 +88,6 @@ public class GoodIssueManagementActivity extends AppCompatActivity {
 
     List<String> arrayListMaterialName, arrayListCompanyName;
 
-    DialogInterface dialogInterface = new DialogInterface();
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -100,7 +98,7 @@ public class GoodIssueManagementActivity extends AppCompatActivity {
         context = this;
 
         fabExpandMenu = findViewById(R.id.fab_expand_menu);
-        fabActionCreateGi = findViewById(R.id.fab_action_create_gi);
+        fabActionCreateGi = findViewById(R.id.fab_action_create_ro);
         fabActionRecapData = findViewById(R.id.fab_action_recap_data);
 
         cdvFilter = findViewById(R.id.cdv_filter);
@@ -780,7 +778,7 @@ public class GoodIssueManagementActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(@NonNull Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.gi_search_menu, menu);
+        inflater.inflate(R.menu.query_search_menu, menu);
 
         MenuItem.OnActionExpandListener onActionExpandListener = new MenuItem.OnActionExpandListener() {
             @Override
@@ -794,8 +792,8 @@ public class GoodIssueManagementActivity extends AppCompatActivity {
             }
         };
 
-        menu.findItem(R.id.search_gi_data).setOnActionExpandListener(onActionExpandListener);
-        SearchView searchView = (SearchView) menu.findItem(R.id.search_gi_data).getActionView();
+        menu.findItem(R.id.search_data).setOnActionExpandListener(onActionExpandListener);
+        SearchView searchView = (SearchView) menu.findItem(R.id.search_data).getActionView();
         searchView.setQueryHint("Kata Kunci");
         searchView.setInputType(InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
         searchView.setOnSearchClickListener(view -> {
@@ -841,7 +839,7 @@ public class GoodIssueManagementActivity extends AppCompatActivity {
     @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == R.id.filter_gi_data) {
+        if (item.getItemId() == R.id.filter_data) {
             imgbtnExpandCollapseFilterLayout.setVisibility(View.VISIBLE);
             TransitionManager.beginDelayedTransition(cdvFilter, new AutoTransition());
             if (cdvFilter.getVisibility() == View.GONE) {

@@ -176,7 +176,7 @@ public class RegisterActivity extends AppCompatActivity {
                     UserProfileChangeRequest profileChangeRequest = new UserProfileChangeRequest.Builder().setDisplayName(txtFullName).build();
                     firebaseUser.updateProfile(profileChangeRequest);
 
-                    UserModel userModel = new UserModel(txtDob, txtGender, txtMobile, txtAccessCode);
+                    UserModel userModel = new UserModel(txtFullName, txtDob, txtGender, txtMobile, txtAccessCode);
 
                     DatabaseReference referenceProfile = FirebaseDatabase.getInstance("https://bas-delivery-report-default-rtdb.asia-southeast1.firebasedatabase.app").getReference("RegisteredUser");
                     referenceProfile.child(Objects.requireNonNull(firebaseUser).getUid()).setValue(userModel).addOnCompleteListener(new OnCompleteListener<Void>() {

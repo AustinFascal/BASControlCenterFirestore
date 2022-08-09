@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".management.GoodIssueManagementActivity">
+    tools:context=".management.ReceivedOrderManagementActivity">
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -198,64 +198,6 @@
                                 android:layout_weight="1">
 
                                 <AutoCompleteTextView
-                                    android:id="@+id/spinner_invoiced_status"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:hint="Status Ditagihkan"
-                                    android:inputType="none" />
-                            </com.google.android.material.textfield.TextInputLayout>
-
-                            <ImageButton
-                                android:id="@+id/btn_gi_search_status_reset"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:layout_gravity="center_vertical"
-                                android:layout_marginTop="3dp"
-                                android:layout_marginBottom="1dp"
-                                android:layout_weight="1.3"
-                                android:background="@drawable/outline_box"
-                                android:scaleType="centerInside"
-                                android:src="@drawable/ic_outline_restore"
-                                android:visibility="gone" />
-
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:id="@+id/ll_wrap_filter_by_name_and_type"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:divider="@drawable/divider_transparent"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal"
-                            android:showDividers="middle"
-                            android:visibility="visible">
-
-                            <ImageView
-                                android:layout_width="24dp"
-                                android:layout_height="match_parent"
-                                android:src="@drawable/ic_outline_drag_indicator" />
-
-                            <com.google.android.material.textfield.TextInputLayout
-                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:layout_weight="1">
-
-                                <AutoCompleteTextView
-                                    android:id="@+id/spinner_mat_name"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:hint="Nama Material"
-                                    android:inputType="none" />
-                            </com.google.android.material.textfield.TextInputLayout>
-
-                            <com.google.android.material.textfield.TextInputLayout
-                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:layout_weight="1">
-
-                                <AutoCompleteTextView
                                     android:id="@+id/spinner_mat_type"
                                     android:layout_width="match_parent"
                                     android:layout_height="match_parent"
@@ -264,7 +206,7 @@
                             </com.google.android.material.textfield.TextInputLayout>
 
                             <ImageButton
-                                android:id="@+id/btn_gi_search_nametype_reset"
+                                android:id="@+id/btn_gi_search_status_reset"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:layout_gravity="center_vertical"
@@ -364,6 +306,7 @@
                 android:layout_height="wrap_content"
                 android:text="Data tidak ditemukan"/>
         </LinearLayout>
+
         <androidx.core.widget.NestedScrollView
             android:id="@+id/nestedScrollView"
             android:layout_width="match_parent"
@@ -371,7 +314,7 @@
             android:layout_below="@+id/cdv_filter">
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_good_issue_list"
+                android:id="@+id/rv_received_order_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingTop="10dp"
@@ -421,8 +364,8 @@
             android:layout_height="wrap_content"
             app:fab_colorNormal="@color/white"
             app:fab_colorPressed="@color/light_grey"
-            app:fab_icon="@drawable/ic_add_good_issue"
-            app:fab_title="Buat Good Issue" />
+            app:fab_icon="@drawable/ic_add_received_order"
+            app:fab_title="Buat Received Order" />
     </com.getbase.floatingactionbutton.FloatingActionsMenu>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

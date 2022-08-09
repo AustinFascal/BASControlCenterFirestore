@@ -54,24 +54,28 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.text.pdf.draw.LineSeparator;
 import com.ptbas.controlcenter.adapter.GIManagementAdapter;
-import com.ptbas.controlcenter.create.AddReceivedOrder;
+import com.ptbas.controlcenter.create.AddGoodIssueActivity;
 import com.ptbas.controlcenter.model.GoodIssueModel;
 import com.ptbas.controlcenter.model.ReceivedOrderModel;
-import com.ptbas.controlcenter.update.UpdateGoodIssueActivity;
 import com.ptbas.controlcenter.utils.LangUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 public class RecapGoodIssueDataActivity extends AppCompatActivity {
 
+    double matBuyPrice;
     String dateStartVal = "", dateEndVal = "", rouidVal= "", pouidVal = "";
     Button btnSearchData, imgbtnExpandCollapseFilterLayout;
     AutoCompleteTextView spinnerRoUID;
@@ -379,9 +383,6 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
 
     private void createPDF(String dest){
 
-
-
-
         //Toast.makeText(context, dest, Toast.LENGTH_LONG).show();
         if (new File(dest).exists()){
             new File(dest).delete();
@@ -396,84 +397,124 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
             document.addCreator("BAS Control Center");
             document.addCreationDate();
 
-            Font fontNormal = new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.NORMAL, BaseColor.BLACK);
-            Font fontBold = new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.BOLD, BaseColor.BLACK);
-            Font fontBigBold = new Font(Font.FontFamily.TIMES_ROMAN, 20, Font.BOLD, BaseColor.BLACK);
-
-
+            Font fontNormal = new Font(Font.FontFamily.TIMES_ROMAN, 10, Font.NORMAL, BaseColor.BLACK);
+            Font fontBold = new Font(Font.FontFamily.TIMES_ROMAN, 10, Font.BOLD, BaseColor.BLACK);
+            Font fontBigBold = new Font(Font.FontFamily.TIMES_ROMAN, 18, Font.BOLD, BaseColor.BLACK);
 
             Chunk title = new Chunk("RO-"+rouidVal, fontBigBold);
+            Chunk roMatNameType = new Chunk("Material: "+matNameList +" | "+goodIssueModelArrayList.get(0).getGiMatType(), fontNormal);
+            Chunk roCustName = new Chunk("Customer: "+custNameVal, fontNormal);
+
+
             Paragraph paragraphTitle = new Paragraph(title);
             paragraphTitle.setAlignment(Element.ALIGN_CENTER);
-            paragraphTitle.setSpacingAfter(15);
             document.add(paragraphTitle);
 
-            Chunk poNumberVal = new Chunk("PO-"+roPoCustNumber, fontNormal);
-            Paragraph paragraphPONumber = new Paragraph(poNumberVal);
+            Paragraph preface = new Paragraph();
+            preface.setAlignment(Element.ALIGN_CENTER);
+            preface.setSpacingAfter(15);
+            document.add(preface);
+            document.add(new LineSeparator());
+
+            String currentDate = new SimpleDateFormat("dd/MM/yyyy", Locale.US).format(new Date());
+
+            PdfPTable table1 = new PdfPTable(2);
+            table1.setWidthPercentage(100);
+
+            PdfPCell cell1;
+            cell1 = new PdfPCell(new Phrase("Nomor PO: "+roPoCustNumber, fontNormal));
+            cell1.setHorizontalAlignment(Element.ALIGN_LEFT);
+            cell1.setPadding(0);
+            cell1.setBorder(PdfPCell.NO_BORDER);
+            table1.addCell(cell1);
+
+            cell1 = new PdfPCell(new Phrase("Tanggal rekap dibuat: "+currentDate, fontNormal));
+            cell1.setHorizontalAlignment(Element.ALIGN_RIGHT);
+            cell1.setPadding(0);
+            cell1.setBorder(PdfPCell.NO_BORDER);
+            table1.addCell(cell1);
+
+            document.add(table1);
+
+
+           /* Paragraph paragraphPONumber = new Paragraph(poNumberVal);
             paragraphPONumber.setAlignment(Element.ALIGN_LEFT);
             paragraphPONumber.setSpacingAfter(0);
-            document.add(paragraphPONumber);
+            document.add(paragraphPONumber);*/
 
-            Chunk roMatNameType = new Chunk(matNameList +" | "+goodIssueModelArrayList.get(0).getGiMatType(), fontNormal);
             Paragraph paragraphROMatNameType = new Paragraph(roMatNameType);
             paragraphROMatNameType.setAlignment(Element.ALIGN_LEFT);
             paragraphROMatNameType.setSpacingAfter(0);
             document.add(paragraphROMatNameType);
 
-            //Toast.makeText(context, custNameVal, Toast.LENGTH_SHORT).show();
-            Chunk roCustName = new Chunk(custNameVal, fontNormal);
             Paragraph paragraphROCustName = new Paragraph(roCustName);
             paragraphROCustName.setAlignment(Element.ALIGN_LEFT);
-            paragraphROCustName.setSpacingAfter(15);
+            paragraphROCustName.setSpacingAfter(5);
             document.add(paragraphROCustName);
+            document.add(new LineSeparator());
 
+            Paragraph preface2 = new Paragraph();
+            preface2.setAlignment(Element.ALIGN_CENTER);
+            preface2.setSpacingAfter(10);
+            document.add(preface2);
 
 
             PdfPTable table = new PdfPTable(10);
             table.setWidthPercentage(100);
-            table.setWidths(new float[]{1,4,3,4,2,2,2,2,2,3});
+            table.setWidths(new float[]{2,4,3,4,2,2,2,2,2,3});
 
             PdfPCell cell;
             cell = new PdfPCell(new Phrase("No", fontBold));
             cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            cell.setBackgroundColor(BaseColor.YELLOW);
             table.addCell(cell);
 
             cell = new PdfPCell(new Phrase("Tanggal", fontBold));
             cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            cell.setBackgroundColor(BaseColor.YELLOW);
             table.addCell(cell);
 
             cell = new PdfPCell(new Phrase("ID", fontBold));
             cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            cell.setBackgroundColor(BaseColor.YELLOW);
             table.addCell(cell);
 
             cell = new PdfPCell(new Phrase("NOPOL", fontBold));
             cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            cell.setBackgroundColor(BaseColor.YELLOW);
             table.addCell(cell);
 
             cell = new PdfPCell(new Phrase("P", fontBold));
             cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            cell.setBackgroundColor(BaseColor.YELLOW);
             table.addCell(cell);
 
             cell = new PdfPCell(new Phrase("L", fontBold));
             cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            cell.setBackgroundColor(BaseColor.YELLOW);
             table.addCell(cell);
 
             cell = new PdfPCell(new Phrase("T", fontBold));
             cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            cell.setBackgroundColor(BaseColor.YELLOW);
             table.addCell(cell);
 
             cell = new PdfPCell(new Phrase("K", fontBold));
             cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            cell.setBackgroundColor(BaseColor.YELLOW);
             table.addCell(cell);
 
             cell = new PdfPCell(new Phrase("TK", fontBold));
             cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            cell.setBackgroundColor(BaseColor.YELLOW);
             table.addCell(cell);
 
             cell = new PdfPCell(new Phrase(String.valueOf(Html.fromHtml("M\u00B3")), fontBold));
             cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            cell.setBackgroundColor(BaseColor.YELLOW);
             table.addCell(cell);
 
+            float totalCubication = 0;
             for (int i = 0; i < goodIssueModelArrayList.size(); i++){
                 cell = new PdfPCell(new Phrase(String.valueOf(i+1), fontBold));
                 cell.setHorizontalAlignment(Element.ALIGN_CENTER);
@@ -514,9 +555,47 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
                 cell = new PdfPCell(new Phrase(goodIssueModelArrayList.get(i).getGiVhlCubication().toString(), fontNormal));
                 cell.setHorizontalAlignment(Element.ALIGN_CENTER);
                 table.addCell(cell);
+
+                totalCubication += goodIssueModelArrayList.get(i).getGiVhlCubication();
             }
 
+            PdfPTable table2 = new PdfPTable(2);
+            table2.setWidthPercentage(100);
+            table2.setWidths(new float[]{23,3});
+
+            PdfPCell cell2;
+            cell2 = new PdfPCell(new Phrase("Total", fontBold));
+            cell2.setHorizontalAlignment(Element.ALIGN_CENTER);
+            cell2.setBackgroundColor(BaseColor.YELLOW);
+            table2.addCell(cell2);
+
+            cell2 = new PdfPCell(new Phrase(String.valueOf(totalCubication), fontBold));
+            cell2.setHorizontalAlignment(Element.ALIGN_CENTER);
+            cell2.setBackgroundColor(BaseColor.YELLOW);
+            table2.addCell(cell2);
+
+
+
+            PdfPTable table3 = new PdfPTable(2);
+            table3.setWidthPercentage(100);
+            table3.setWidths(new float[]{5, 4});
+
+            PdfPCell cell3;
+            cell3 = new PdfPCell(new Phrase("Total IDR", fontBold));
+            cell3.setHorizontalAlignment(Element.ALIGN_CENTER);
+            cell3.setBackgroundColor(BaseColor.YELLOW);
+            table3.addCell(cell3);
+
+            DecimalFormat df = new DecimalFormat("0.00");
+            double totalIDR = matBuyPrice*totalCubication;
+
+            cell3 = new PdfPCell(new Phrase(currencyFormat(df.format(totalIDR)), fontNormal));
+            cell3.setHorizontalAlignment(Element.ALIGN_RIGHT);
+            table3.addCell(cell3);
+
             document.add(table);
+            document.add(table2);
+            document.add(table3);
             document.close();
             Helper.openFilePDF(context, new File(Helper.getAppPath(context)+rouidVal+".pdf"));
         } catch (DocumentException | FileNotFoundException e) {
@@ -525,10 +604,32 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
         }
     }
 
+    public static String currencyFormat(String amount) {
+        DecimalFormat formatter = new DecimalFormat("###,###,##0.00");
+        return formatter.format(Double.parseDouble(amount));
+    }
 
     private void searchQuery(){
         rouidVal = spinnerRoUID.getText().toString();
         pouidVal = edtPoUID.getText().toString();
+
+        DatabaseReference databaseReferencePO = FirebaseDatabase.getInstance().getReference("ReceivedOrders/"+ rouidVal +"/OrderedItems/0");
+        databaseReferencePO.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()){
+                    matBuyPrice = Objects.requireNonNull(snapshot.child("matBuyPrice").getValue(Double.class));
+
+                } else {
+                    Toast.makeText(RecapGoodIssueDataActivity.this, "Not exists", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
 
         Query query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated").startAt(dateStartVal).endAt(dateEndVal);
         query.addValueEventListener(new ValueEventListener() {
@@ -686,7 +787,7 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
     @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == R.id.filter_gi_data) {
+        if (item.getItemId() == R.id.filter_data) {
             imgbtnExpandCollapseFilterLayout.setVisibility(View.VISIBLE);
             TransitionManager.beginDelayedTransition(cdvFilter, new AutoTransition());
             if (cdvFilter.getVisibility() == View.GONE) {

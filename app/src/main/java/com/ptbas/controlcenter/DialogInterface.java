@@ -368,6 +368,35 @@ public class DialogInterface {
         mBottomSheetDialog.show();
     }
 
+    public void approveRoConfirmation(Context context, String roUID){
+        BottomSheetMaterialDialog mBottomSheetDialog = new BottomSheetMaterialDialog.Builder((Activity) context)
+                .setTitle("Validasi Data")
+                .setAnimation(R.raw.lottie_approval)
+                .setMessage("Apakah Anda yakin ingin mengesahkan data Received Order yang Anda pilih? Setelah disahkan, status tidak dapat dikembalikan.")
+                .setCancelable(true)
+                .setPositiveButton("YA", R.drawable.ic_outline_check, new BottomSheetMaterialDialog.OnClickListener() {
+                    @Override
+                    public void onClick(dev.shreyaspatil.MaterialDialog.interfaces.DialogInterface dialogInterface, int which) {
+                        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+                        databaseReference.child("ReceivedOrders").child(roUID).child("roStatus").setValue(true);
+                        databaseReference.child("ReceivedOrders").child(roUID).child("roVerifiedBy").setValue(helper.getUserId());
+                        dialogInterface.dismiss();
+                    }
+
+                })
+                .setNegativeButton("TIDAK", R.drawable.ic_outline_close, new BottomSheetMaterialDialog.OnClickListener() {
+                    @Override
+                    public void onClick(dev.shreyaspatil.MaterialDialog.interfaces.DialogInterface dialogInterface, int which) {
+                        dialogInterface.dismiss();
+                    }
+
+                })
+                .build();
+
+        mBottomSheetDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
+        mBottomSheetDialog.show();
+    }
+
 
     public void changePoNumberCustomer(Context context, String roUID){
         BottomSheetMaterialDialog mBottomSheetDialog = new BottomSheetMaterialDialog.Builder((Activity) context)
@@ -430,6 +459,34 @@ public class DialogInterface {
                         dialogInterface.dismiss();
                         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
                         databaseReference.child("GoodIssueData").child(giUID).removeValue();
+                    }
+
+                })
+                .setNegativeButton("TIDAK", R.drawable.ic_outline_close, new BottomSheetMaterialDialog.OnClickListener() {
+                    @Override
+                    public void onClick(dev.shreyaspatil.MaterialDialog.interfaces.DialogInterface dialogInterface, int which) {
+                        dialogInterface.dismiss();
+                    }
+
+                })
+                .build();
+
+        mBottomSheetDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
+        mBottomSheetDialog.show();
+    }
+
+    public void deleteRoConfirmation(Context context, String roUID){
+        BottomSheetMaterialDialog mBottomSheetDialog = new BottomSheetMaterialDialog.Builder((Activity) context)
+                .setTitle("Hapus Data")
+                .setAnimation(R.raw.lottie_delete)
+                .setMessage("Apakah Anda yakin ingin menghapus data Received Order yang Anda pilih? Setelah dihapus, data tidak dapat dikembalikan.")
+                .setCancelable(true)
+                .setPositiveButton("YA", R.drawable.ic_outline_check, new BottomSheetMaterialDialog.OnClickListener() {
+                    @Override
+                    public void onClick(dev.shreyaspatil.MaterialDialog.interfaces.DialogInterface dialogInterface, int which) {
+                        dialogInterface.dismiss();
+                        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+                        databaseReference.child("ReceivedOrders").child(roUID).removeValue();
                     }
 
                 })

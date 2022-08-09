@@ -5,13 +5,13 @@
     <item
         android:title="Cari Data"
         android:icon="@drawable/ic_outline_search"
-        android:id="@+id/search_gi_data"
+        android:id="@+id/search_data"
         app:showAsAction="always"
         app:actionViewClass="androidx.appcompat.widget.SearchView" />
     <item
         android:title="Filter Data"
         android:icon="@drawable/ic_outline_filter_alt"
-        android:id="@+id/filter_gi_data"
+        android:id="@+id/filter_data"
         app:showAsAction="always"/>
    <!-- <item
         android:title="Filter Data"

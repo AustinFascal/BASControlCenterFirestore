@@ -78,7 +78,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="48dp"
                             android:layout_marginBottom="4dp"
-                            android:src="@drawable/ic_add_purchase_order" />
+                            android:src="@drawable/ic_add_received_order" />
 
                         <TextView
                             android:layout_width="match_parent"

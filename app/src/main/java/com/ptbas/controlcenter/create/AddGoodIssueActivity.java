@@ -561,7 +561,7 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                 String giVhlUID = Objects.requireNonNull(spinnerVhlUID.getText()).toString();
                 String giHeightCorrection = Objects.requireNonNull(edtHeightCorrection.getText()).toString();
                 String giCreatedBy = helper.getUserId();
-                String giVerifiedBy = "";
+                String giVerifiedBy = null;
 
                 String giVhlLength = Objects.requireNonNull(edtVhlLength.getText()).toString();
                 String giVhlWidth = Objects.requireNonNull(edtVhlWidth.getText()).toString();

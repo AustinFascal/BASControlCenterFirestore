@@ -14,11 +14,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.ptbas.controlcenter.DialogInterface;
 import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.model.GoodIssueModel;
@@ -66,7 +61,7 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
 
         public ItemViewHolder(@NonNull View itemView) {
             super(itemView);
-            rlOpenGiDetail = itemView.findViewById(R.id.rl_open_gi_detail);
+            rlOpenGiDetail = itemView.findViewById(R.id.rl_open_ro_detail);
             llStatusApproved = itemView.findViewById(R.id.ll_status_approved);
             llStatusInvoiced = itemView.findViewById(R.id.ll_status_invoiced);
             llStatusPOAvailable = itemView.findViewById(R.id.ll_status_po_vailable);
@@ -89,7 +84,7 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
             String dateNTime = goodIssueModel.getGiDateCreated()+" | "+goodIssueModel.getGiTimeCreted();
             String giUID = "GI-"+goodIssueModel.getGiUID();
             String roUID = "RO-"+goodIssueModel.getGiRoUID();
-            String poCustNumb = "PO-"+goodIssueModel.getGiPoCustNumber();
+            String poCustNumb = "PO: "+goodIssueModel.getGiPoCustNumber();
 
             String matDetail = goodIssueModel.getGiMatType()+" | "+goodIssueModel.getGiMatName();
             String vhlDetail = "(P) "+goodIssueModel.getVhlLength().toString()+" (L) "+goodIssueModel.getVhlWidth().toString()+" (T) "+goodIssueModel.getVhlHeight().toString()+" | "+"(K) "+goodIssueModel.getVhlHeightCorrection().toString()+" (TK) "+goodIssueModel.getVhlHeightAfterCorrection().toString();
@@ -97,20 +92,6 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
             boolean giStatus = goodIssueModel.getGiStatus();
             boolean giInvoiced = goodIssueModel.getGiInvoiced();
 
-            /*DatabaseReference databaseReferencePO = FirebaseDatabase.getInstance().getReference("ReceivedOrders/"+ goodIssueModel.getGiRoUID());
-            databaseReferencePO.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    updatedCustNumb = snapshot.child("roPoCustNumber").getValue(String.class);
-
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-
-                }
-            });
-*/
             tvCubication.setText(Html.fromHtml(String.valueOf(df.format(cubication))+" m\u00B3"));
             tvGiDateTime.setText(dateNTime);
             tvGiUid.setText(giUID);
@@ -133,7 +114,7 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
                 llStatusInvoiced.setVisibility(View.GONE);
             }
 
-            if (tvPoCustNumber.getText().toString().equals("PO-")||tvPoCustNumber.getText().toString().equals("PO--")){
+            if (tvPoCustNumber.getText().toString().equals("PO: -")){
                 tvPoCustNumber.setVisibility(View.GONE);
                 llStatusPOAvailable.setVisibility(View.VISIBLE);
             } else {
@@ -154,7 +135,7 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
             btnApproveGi.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if (tvPoCustNumber.getText().toString().equals("PO--")){
+                    if (tvPoCustNumber.getText().toString().equals("PO: -")){
                         dialogInterface.noPoNumberInformation(context);
                     } else {
                         dialogInterface.approveGiConfirmation(context, goodIssueModel.getGiUID());

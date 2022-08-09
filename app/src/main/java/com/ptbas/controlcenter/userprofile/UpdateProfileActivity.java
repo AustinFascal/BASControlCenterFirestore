@@ -131,7 +131,7 @@ public class UpdateProfileActivity extends AppCompatActivity {
             textPhone = editTextUpdatePhone.getText().toString();
             textAccessCode = editTextUpdateAccessCode.getText().toString();
 
-            UserModel userModel = new UserModel(textDoB, textGender, textPhone, textAccessCode);
+            UserModel userModel = new UserModel(textFullName, textDoB, textGender, textPhone, textAccessCode);
 
             DatabaseReference referenceProfile = FirebaseDatabase.getInstance().getReference("RegisteredUser");
 
@@ -143,6 +143,7 @@ public class UpdateProfileActivity extends AppCompatActivity {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if (task.isSuccessful()){
+
                         UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder().setDisplayName(textFullName).build();
                         firebaseUser.updateProfile(profileUpdates);
 

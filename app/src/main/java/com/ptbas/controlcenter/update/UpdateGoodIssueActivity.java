@@ -6,6 +6,7 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.Html;
@@ -30,10 +31,13 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.dynamic.IFragmentWrapper;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -45,8 +49,11 @@ import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.management.GoodIssueManagementActivity;
 import com.ptbas.controlcenter.model.GoodIssueModel;
 import com.ptbas.controlcenter.model.ReceivedOrderModel;
+import com.ptbas.controlcenter.model.UserModel;
 import com.ptbas.controlcenter.model.VehicleModel;
+import com.ptbas.controlcenter.userprofile.UserProfileActivity;
 import com.ptbas.controlcenter.utils.LangUtils;
+import com.squareup.picasso.Picasso;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -60,7 +67,7 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
     String vhlData, matName, matType, roNumber;
     Integer giYear = 0, giMonth = 0, giDay = 0;
 
-    TextView tvHeightCorrection, tvVhlVolume;
+    TextView tvHeightCorrection, tvVhlVolume, tvGiCreatedBy, tvGiModifiedBy, tvGiInvoicedStatus;
     TextInputEditText edtGiDate, edtGiTime, edtPoNumberCust, edtVhlLength, edtVhlWidth, edtVhlHeight,
             edtHeightCorrection;
     AutoCompleteTextView spinnerRoNumber, spinnerMatName,
@@ -85,6 +92,8 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
     String giUIDVal, giCreatedBy, giVerifiedBy;
 
     Boolean giStatus, giInvoiced;
+
+    public FirebaseAuth authProfile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -134,9 +143,16 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
         tvHeightCorrection = findViewById(R.id.tv_vhl_height_correction);
         tvVhlVolume = findViewById(R.id.tv_vhl_volume);
 
+
+        tvGiCreatedBy = findViewById(R.id.tv_gi_created_by);
+        tvGiModifiedBy = findViewById(R.id.tv_gi_modified_by);
+        tvGiInvoicedStatus = findViewById(R.id.tv_gi_invoiced_status);
+
+
         fabSaveGIData = findViewById(R.id.fab_save_gi_data);
 
         tvVhlVolume.setText(Html.fromHtml("0 m\u00B3"));
+
 
 
 
@@ -190,6 +206,47 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
                             dialogInterface.changePoNumberCustomer(UpdateGoodIssueActivity.this, roNumber);
                         }
                     });
+
+
+
+                   // authProfile = FirebaseAuth.getInstance();
+                   // FirebaseUser firebaseUser = authProfile.getUid();
+
+                    DatabaseReference referenceProfile = FirebaseDatabase.getInstance("https://bas-delivery-report-default-rtdb.asia-southeast1.firebasedatabase.app").getReference("RegisteredUser");
+                    referenceProfile.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            //UserModel userModel = snapshot.getValue(UserModel.class);
+                            //Toast.makeText(UserProfileActivity.this, userDetails.phone, Toast.LENGTH_SHORT).show();
+                                tvGiCreatedBy.setText("Dibuat oleh: "+snapshot.child(giCreatedBy).child("fullName").getValue(String.class));
+
+                                if (giVerifiedBy != null){
+                                    tvGiModifiedBy.setText("Disetujui oleh: "+snapshot.child(giVerifiedBy).child("fullName").getValue(String.class));
+                                }
+
+                                if (Objects.equals(giVerifiedBy, "") || giVerifiedBy == null || giVerifiedBy.isEmpty()) {
+                                    tvGiModifiedBy.setText("Disetujui oleh: BELUM DISETUJUI");
+                                }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            Toast.makeText(UpdateGoodIssueActivity.this, "Terjadi kesalahan.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
+
+
+
+
+
+
+                    if (giInvoiced.equals(true)){
+                        tvGiInvoicedStatus.setText("Status Ditagihkan: SUDAH DITAGIHKAN");
+                    } else{
+                        tvGiInvoicedStatus.setText("Status Ditagihkan: BELUM DITAGIHKAN");
+                    }
+
 
                     edtGiDate.setText(giDateCreated);
                     edtGiTime.setText(giTimeCreated);
@@ -637,6 +694,8 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
 
             }
         });
+
+
 
         fabSaveGIData.setOnClickListener(new View.OnClickListener() {
             @Override
