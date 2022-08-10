@@ -58,6 +58,7 @@ import java.util.List;
 public class GoodIssueManagementActivity extends AppCompatActivity {
 
     String dateStart = "", dateEnd = "", searchTypeData="";
+    String monthStrVal, dayStrVal;
 
     LinearLayout llNoData;
     Context context;
@@ -263,38 +264,72 @@ public class GoodIssueManagementActivity extends AppCompatActivity {
         // HANDLE FILTER COMPONENTS WHEN ON CLICK
         edtGiDateFilterStart.setOnClickListener(view -> {
             final Calendar calendar = Calendar.getInstance();
-            int day = calendar.get(Calendar.DAY_OF_MONTH);
-            int month = calendar.get(Calendar.MONTH);
-            int year = calendar.get(Calendar.YEAR);
+            dayStrVal = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
+            monthStrVal = String.valueOf(calendar.get(Calendar.MONTH));
+            String yearStrVal = String.valueOf(calendar.get(Calendar.YEAR));
 
             datePicker = new DatePickerDialog(GoodIssueManagementActivity.this,
-                    (datePicker, year12, month12, dayOfMonth) -> {
-                        edtGiDateFilterStart.setText(dayOfMonth + "/" + (month12 + 1) + "/" + year12);
-                        dateStart = dayOfMonth + "/" + (month12 + 1) + "/" + year12;
+                    (datePicker, year, month, dayOfMonth) -> {
+                        int monthInt = month + 1;
+
+                        if(month < 10){
+                            monthStrVal = "0" + monthInt;
+                        } else {
+                            monthStrVal = String.valueOf(monthInt);
+                        }
+                        if(dayOfMonth < 10){
+                            dayStrVal = "0" + dayOfMonth;
+                        } else {
+                            dayStrVal = String.valueOf(dayOfMonth);
+                        }
+
+                        String finalDate = year + "-" +monthStrVal + "-" + dayStrVal;
+
+                        edtGiDateFilterStart.setText(finalDate);
+                        dateStart = finalDate;
+
                         showDataSearchByDateRange();
                         resetSearchByStatus();
                         resetSearchByCompany();
                         resetSearchByNameType();
                         btnGiSearchByDateReset.setVisibility(View.VISIBLE);
-                    }, year, month, day);
+                    }, Integer.parseInt(yearStrVal), Integer.parseInt(monthStrVal), Integer.parseInt(dayStrVal));
             datePicker.show();
         });
         edtGiDateFilterEnd.setOnClickListener(view -> {
             final Calendar calendar = Calendar.getInstance();
-            int day = calendar.get(Calendar.DAY_OF_MONTH);
-            int month = calendar.get(Calendar.MONTH);
-            int year = calendar.get(Calendar.YEAR);
+            dayStrVal = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
+            monthStrVal = String.valueOf(calendar.get(Calendar.MONTH));
+            String yearStrVal = String.valueOf(calendar.get(Calendar.YEAR));
 
             datePicker = new DatePickerDialog(GoodIssueManagementActivity.this,
-                    (datePicker, year1, month1, dayOfMonth) -> {
-                        edtGiDateFilterEnd.setText(dayOfMonth + "/" + (month1 + 1) + "/" + year1);
-                        dateEnd = dayOfMonth + "/" + (month1 + 1) + "/" + year1;
+                    (datePicker, year, month, dayOfMonth) -> {
+
+                        int monthInt = month + 1;
+
+                        if(month < 10){
+                            monthStrVal = "0" + monthInt;
+                        } else {
+                            monthStrVal = String.valueOf(monthInt);
+                        }
+                        if(dayOfMonth < 10){
+                            dayStrVal = "0" + dayOfMonth;
+                        } else {
+                            dayStrVal = String.valueOf(dayOfMonth);
+                        }
+
+                        String finalDate = year + "-" +monthStrVal + "-" + dayStrVal;
+
+                        edtGiDateFilterEnd.setText(finalDate);
+                        dateEnd = finalDate;
+
                         resetSearchByCompany();
                         resetSearchByNameType();
                         showDataSearchByDateRange();
                         btnGiSearchByDateReset.setVisibility(View.VISIBLE);
                         resetSearchByStatus();
-                    }, year, month, day);
+
+                    }, Integer.parseInt(yearStrVal), Integer.parseInt(monthStrVal), Integer.parseInt(dayStrVal));
             datePicker.show();
         });
 

@@ -197,14 +197,18 @@
                     </HorizontalScrollView>
 
                     <Button
+                        style="@style/MaterialDialog.NegativeButton"
                         android:id="@+id/btn_add_list"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:backgroundTint="@color/white"
                         android:drawableLeft="@drawable/ic_outline_add_circle"
                         android:text="TAMBAH ITEM"
+                        android:layout_gravity="center"
                         android:textAllCaps="true" />
+
+
+
 
                    <!-- <TextView
                         android:id="@+id/tv_sum_total"
@@ -214,7 +218,35 @@
                         android:text="SUM TOTAL" />-->
 
                 </LinearLayout>
+                <Button
+                    android:layout_gravity="center"
+                    android:visibility="gone"
+                    style="@style/MaterialDialog.PositiveButton"
+                    android:id="@+id/btn_lock_row"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:textColor="@color/white"
+                    android:drawableLeft="@drawable/ic_outline_lock"
+                    android:text="KUNCI ITEM"
+                    android:drawableTint="@color/white"
+                    android:drawableTintMode="src_in"
+                    android:textAllCaps="true" />
 
+                <Button
+                    android:layout_gravity="center"
+                    style="@style/MaterialDialog.PositiveButton"
+                    android:id="@+id/btn_unlock_row"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:textColor="@color/white"
+                    android:visibility="gone"
+                    android:drawableLeft="@drawable/ic_outline_lock_open"
+                    android:text="UBAH ITEM"
+                    android:drawableTint="@color/white"
+                    android:drawableTintMode="src_in"
+                    android:textAllCaps="true" />
             </LinearLayout>
         </ScrollView>
 

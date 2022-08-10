@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -14,12 +15,15 @@ import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Display;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -64,7 +68,8 @@ import java.util.Random;
 public class AddReceivedOrder extends AppCompatActivity {
 
     LinearLayout llList,llAddItem, llInputAllData;
-    Button btnAddRow;
+    String monthStrVal, dayStrVal;
+    Button btnAddRow, btnLockRow, btnUnlockRow;
     TextInputEditText edtPoDate, edtPoTOP, edtPoNumberCustomer, edtPoNumberPtbas;
     TextInputLayout wrapEdtPoNumberPtBas;
     AutoCompleteTextView spinnerPoTransportType, spinnerPoCustName, spinnerPoCurrency;
@@ -136,6 +141,8 @@ public class AddReceivedOrder extends AppCompatActivity {
         llList = findViewById(R.id.layout_list);
         llAddItem = findViewById(R.id.ll_add_item);
         btnAddRow = findViewById(R.id.btn_add_list);
+        btnLockRow = findViewById(R.id.btn_lock_row);
+        btnUnlockRow = findViewById(R.id.btn_unlock_row);
         edtPoNumberPtbas = findViewById(R.id.edt_po_number_ptbas);
         wrapEdtPoNumberPtBas = findViewById(R.id.wrap_edt_po_number_ptbas);
         edtPoDate = findViewById(R.id.edt_po_date);
@@ -223,27 +230,35 @@ public class AddReceivedOrder extends AppCompatActivity {
             }
         });
 
-        edtPoDate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                edtPoDate.setError(null);
-                final Calendar calendar = Calendar.getInstance();
-                int day = calendar.get(Calendar.DAY_OF_MONTH);
-                int month = calendar.get(Calendar.MONTH);
-                int year = calendar.get(Calendar.YEAR);
+        edtPoDate.setOnClickListener(view -> {
+            edtPoDate.setError(null);
+            final Calendar calendar = Calendar.getInstance();
+            dayStrVal = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
+            monthStrVal = String.valueOf(calendar.get(Calendar.MONTH));
+            String year = String.valueOf(calendar.get(Calendar.YEAR));
 
-                datePicker = new DatePickerDialog(AddReceivedOrder.this,
-                        new DatePickerDialog.OnDateSetListener() {
-                            @Override
-                            public void onDateSet(DatePicker datePicker, int year, int month, int dayOfMonth) {
-                                edtPoDate.setText(dayOfMonth + "/" +(month + 1) + "/" + year);
-                                poYear = year;
-                                poMonth = month + 1;
-                                poDay = dayOfMonth;
-                            }
-                        }, year, month, day);
-                datePicker.show();
-            }
+            datePicker = new DatePickerDialog(AddReceivedOrder.this,
+                    (datePicker, year1, month, dayOfMonth) -> {
+                        poYear = year1;
+                        poMonth = month + 1;
+                        poDay = dayOfMonth;
+
+                        if(month < 10){
+                            monthStrVal = "0" + poMonth;
+                        } else {
+                            monthStrVal = String.valueOf(poMonth);
+                        }
+                        if(dayOfMonth < 10){
+                            dayStrVal = "0" + poDay;
+                        } else {
+                            dayStrVal = String.valueOf(poDay);
+                        }
+
+                        String finalDate = poYear + "-" +monthStrVal + "-" + dayStrVal;
+
+                        edtPoDate.setText(finalDate);
+                    }, Integer.parseInt(year), Integer.parseInt(monthStrVal), Integer.parseInt(dayStrVal));
+            datePicker.show();
         });
 
         edtPoTOP.setOnClickListener(new View.OnClickListener() {
@@ -258,7 +273,7 @@ public class AddReceivedOrder extends AppCompatActivity {
                         new DatePickerDialog.OnDateSetListener() {
                             @Override
                             public void onDateSet(DatePicker datePicker, int year, int month, int dayOfMonth) {
-                                edtPoTOP.setText(dayOfMonth + "/" +(month + 1) + "/" + year);
+                                edtPoTOP.setText(year + "-" +(month + 1) + "-" + dayOfMonth);
                             }
                         }, year, month, day);
                 datePicker.show();
@@ -385,7 +400,32 @@ public class AddReceivedOrder extends AppCompatActivity {
         };
 
         runnable.run();
-        addView();
+        addViewInit();
+        //addView();
+
+        btnLockRow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                fabProceed.setVisibility(View.VISIBLE);
+                btnUnlockRow.setVisibility(View.VISIBLE);
+                btnLockRow.setVisibility(View.GONE);
+                llAddItem.setVisibility(View.GONE);
+                //llList.setVisibility(false);
+            }
+        });
+
+        btnUnlockRow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                fabProceed.setVisibility(View.GONE);
+                btnUnlockRow.setVisibility(View.GONE);
+                btnLockRow.setVisibility(View.VISIBLE);
+                llAddItem.setVisibility(View.VISIBLE);
+                //llList.setEnabled(true);
+            }
+        });
+
+        fabProceed.setVisibility(View.GONE);
 
         fabProceed.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -681,14 +721,31 @@ public class AddReceivedOrder extends AppCompatActivity {
             }
 
             productItemsArrayList.add(productItems);
+
+
         }
 
 
+
+
+
         if (productItemsArrayList.size()==0){
+            //btnAddRow.setVisibility(View.VISIBLE);
             result = false;
             Toast.makeText(this, "Tambahkan item terlebih dahulu.", Toast.LENGTH_SHORT).show();
         } else if (!result){
             Toast.makeText(this, "Masukkan semua detail item dengan benar.", Toast.LENGTH_SHORT).show();
+        } else{
+            if (llList.getChildCount()==1){
+                btnAddRow.setVisibility(View.GONE);
+                btnLockRow.setVisibility(View.VISIBLE);
+                //fabProceed.setVisibility(View.VISIBLE);
+            } else if (llList.getChildCount()<1){
+                btnAddRow.setVisibility(View.VISIBLE);
+                btnLockRow.setVisibility(View.GONE);
+                btnUnlockRow.setVisibility(View.GONE);
+                fabProceed.setVisibility(View.GONE);
+            }
         }
 
         return result;
@@ -727,6 +784,7 @@ public class AddReceivedOrder extends AppCompatActivity {
                     for (DataSnapshot dataSnapshot: snapshot.getChildren()){
                         String spinnerMaterialData = dataSnapshot.child("productName").getValue(String.class);
                         productName.add(spinnerMaterialData);
+                        productName.remove("JASA ANGKUT");
                     }
                     ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddReceivedOrder.this, R.layout.style_spinner, productName);
                     arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
@@ -742,6 +800,19 @@ public class AddReceivedOrder extends AppCompatActivity {
             }
         });
 
+        if (llList.getChildCount()==1){
+            btnAddRow.setVisibility(View.GONE);
+            btnLockRow.setVisibility(View.VISIBLE);
+            //fabProceed.setVisibility(View.VISIBLE);
+        } else if (llList.getChildCount()<1){
+            btnAddRow.setVisibility(View.VISIBLE);
+            btnLockRow.setVisibility(View.GONE);
+            btnUnlockRow.setVisibility(View.GONE);
+            fabProceed.setVisibility(View.GONE);
+        }
+
+
+
         spinnerMaterialName.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -750,6 +821,7 @@ public class AddReceivedOrder extends AppCompatActivity {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         ProductModel productModel = snapshot.getValue(ProductModel.class);
+
 
                         if (productModel!=null){
                             edtPoQuantity.setText(String.valueOf(0));
@@ -765,10 +837,12 @@ public class AddReceivedOrder extends AppCompatActivity {
                                         Double buyPrice = Double.valueOf(edtBuyPrice.getText().toString());
                                         totalSellPrice = quantity*salePrice;
                                         totalBuyPrice = quantity*buyPrice;
+
                                     } else {
                                         totalSellPrice = 0;
                                         totalBuyPrice = 0;
                                     }
+
 
                                     edtBuyPrice.setOnKeyListener(new View.OnKeyListener() {
                                         @Override
@@ -816,11 +890,104 @@ public class AddReceivedOrder extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 removeView(materialView);
+                btnAddRow.setVisibility(View.VISIBLE);
+                btnLockRow.setVisibility(View.GONE);
+                fabProceed.setVisibility(View.GONE);
             }
         });
 
         llList.addView(materialView);
     }
+
+    private void addViewInit() {
+        DecimalFormat df = new DecimalFormat("0.00");
+        View materialView = getLayoutInflater().inflate(R.layout.row_add_material, null, false);
+
+        productName  = new ArrayList<>();
+
+        AutoCompleteTextView spinnerMaterialName = materialView.findViewById(R.id.spinner_po_material_name);
+        TextInputEditText edtSalePrice = materialView.findViewById(R.id.edt_po_sale_price);
+        TextInputEditText edtBuyPrice = materialView.findViewById(R.id.edt_po_buy_price);
+        TextInputEditText edtPoQuantity = materialView.findViewById(R.id.edt_po_quantity);
+        TextInputEditText edtPoTotalSellPrice = materialView.findViewById(R.id.edt_po_total_sell_price);
+        TextInputEditText edtPoTotalBuyPrice = materialView.findViewById(R.id.edt_po_total_buy_price);
+        ImageView imgDeleteRow = materialView.findViewById(R.id.img_remove_row);
+        imgDeleteRow.setEnabled(false);
+        imgDeleteRow.setColorFilter(ContextCompat.getColor(this, R.color.light_grey));
+        spinnerMaterialName.setInputType(InputType.TYPE_NULL);
+        spinnerMaterialName.setFocusable(false);
+
+        spinnerMaterialName.setText("JASA ANGKUT");
+
+        DatabaseReference databaseReferenceJasaAngkut = FirebaseDatabase.getInstance().getReference("ProductData/jasaangkut");
+        databaseReferenceJasaAngkut.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                ProductModel productModel = snapshot.getValue(ProductModel.class);
+
+                if (productModel!=null){
+                    edtPoQuantity.setText(String.valueOf(0));
+                    edtBuyPrice.setText(String.valueOf(df.format(productModel.getPriceBuy())));
+                    edtSalePrice.setText(String.valueOf(df.format(productModel.getPriceSell())));
+
+                    final Handler handler = new Handler();
+                    Runnable runnable = new Runnable() {
+                        public void run() {
+                            if(!edtPoQuantity.getText().toString().equals("")){
+                                Double quantity = Double.valueOf(edtPoQuantity.getText().toString());
+                                Double salePrice = Double.valueOf(edtSalePrice.getText().toString());
+                                Double buyPrice = Double.valueOf(edtBuyPrice.getText().toString());
+                                totalSellPrice = quantity*salePrice;
+                                totalBuyPrice = quantity*buyPrice;
+
+                            } else {
+                                totalSellPrice = 0;
+                                totalBuyPrice = 0;
+                            }
+
+                            edtBuyPrice.setOnKeyListener(new View.OnKeyListener() {
+                                @Override
+                                public boolean onKey(View view, int i, KeyEvent keyEvent) {
+                                    if (edtBuyPrice.getText().toString().equals("")){
+                                        edtBuyPrice.setText("0");
+                                    }
+                                    return false;
+                                }
+                            });
+
+                            edtSalePrice.setOnKeyListener(new View.OnKeyListener() {
+                                @Override
+                                public boolean onKey(View view, int i, KeyEvent keyEvent) {
+                                    if (edtSalePrice.getText().toString().equals("")){
+                                        edtSalePrice.setText("0");
+                                    }
+                                    return false;
+                                }
+                            });
+
+                            edtPoTotalBuyPrice.setText(String.format("%.2f", totalBuyPrice));
+                            edtPoTotalSellPrice.setText(String.format("%.2f", totalSellPrice));
+                            handler.postDelayed(this, 500);
+
+                        }
+                    };
+
+                    runnable.run();
+
+                } else {
+                    Toast.makeText(AddReceivedOrder.this, "Null", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+        llList.addView(materialView);
+    }
+
 
     private void removeView(View v){
         llList.removeView(v);
@@ -834,7 +1001,6 @@ public class AddReceivedOrder extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         onBackPressed();
-        //dialogInterface.discardDialogConfirmation(AddReceivedOrder.this);
         return super.onOptionsItemSelected(item);
     }
 

@@ -61,9 +61,12 @@ import com.ptbas.controlcenter.model.GoodIssueModel;
 import com.ptbas.controlcenter.model.ReceivedOrderModel;
 import com.ptbas.controlcenter.utils.LangUtils;
 
+import org.intellij.lang.annotations.JdkConstants;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -73,10 +76,13 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
+import dev.shreyaspatil.MaterialDialog.model.TextAlignment;
+
 public class RecapGoodIssueDataActivity extends AppCompatActivity {
 
     double matBuyPrice;
-    String dateStartVal = "", dateEndVal = "", rouidVal= "", pouidVal = "";
+    String dateStartVal = "", dateEndVal = "", rouidVal= "", currencyVal = "", pouidVal = "";
+    String monthStrVal, dayStrVal;
     Button btnSearchData, imgbtnExpandCollapseFilterLayout;
     AutoCompleteTextView spinnerRoUID;
     TextInputEditText edtPoUID;
@@ -108,6 +114,11 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
     public String custNameVal = "";
 
     List<String> matNameList;
+
+    private static final Font fontNormal = new Font(Font.FontFamily.TIMES_ROMAN, 10, Font.NORMAL, BaseColor.BLACK);
+    private static final Font fontBold = new Font(Font.FontFamily.TIMES_ROMAN, 10, Font.BOLD, BaseColor.BLACK);
+    private static final Font fontBigBold = new Font(Font.FontFamily.TIMES_ROMAN, 18, Font.BOLD, BaseColor.BLACK);
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -177,31 +188,63 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
 
         edtDateStart.setOnClickListener(view -> {
             final Calendar calendar = Calendar.getInstance();
-            int day = calendar.get(Calendar.DAY_OF_MONTH);
-            int month = calendar.get(Calendar.MONTH);
-            int year = calendar.get(Calendar.YEAR);
+            dayStrVal = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
+            monthStrVal = String.valueOf(calendar.get(Calendar.MONTH));
+            String yearStrVal = String.valueOf(calendar.get(Calendar.YEAR));
 
             datePicker = new DatePickerDialog(RecapGoodIssueDataActivity.this,
-                    (datePicker, year12, month12, dayOfMonth) -> {
-                        edtDateStart.setText(dayOfMonth + "/" + (month12 + 1) + "/" + year12);
-                        dateStartVal = dayOfMonth + "/" + (month12 + 1) + "/" + year12;
+                    (datePicker, year, month, dayOfMonth) -> {
+                        int monthInt = month + 1;
+
+                        if(month < 10){
+                            monthStrVal = "0" + monthInt;
+                        } else {
+                            monthStrVal = String.valueOf(monthInt);
+                        }
+                        if(dayOfMonth < 10){
+                            dayStrVal = "0" + dayOfMonth;
+                        } else {
+                            dayStrVal = String.valueOf(dayOfMonth);
+                        }
+
+                        String finalDate = year + "-" +monthStrVal + "-" + dayStrVal;
+
+                        edtDateStart.setText(finalDate);
+                        dateStartVal = finalDate;
+
                         btnGiSearchByDateReset.setVisibility(View.VISIBLE);
-                    }, year, month, day);
+                    }, Integer.parseInt(yearStrVal), Integer.parseInt(monthStrVal), Integer.parseInt(dayStrVal));
             datePicker.show();
         });
 
         edtDateEnd.setOnClickListener(view -> {
             final Calendar calendar = Calendar.getInstance();
-            int day = calendar.get(Calendar.DAY_OF_MONTH);
-            int month = calendar.get(Calendar.MONTH);
-            int year = calendar.get(Calendar.YEAR);
+            dayStrVal = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
+            monthStrVal = String.valueOf(calendar.get(Calendar.MONTH));
+            String yearStrVal = String.valueOf(calendar.get(Calendar.YEAR));
 
             datePicker = new DatePickerDialog(RecapGoodIssueDataActivity.this,
-                    (datePicker, year12, month12, dayOfMonth) -> {
-                        edtDateEnd.setText(dayOfMonth + "/" + (month12 + 1) + "/" + year12);
-                        dateEndVal = dayOfMonth + "/" + (month12 + 1) + "/" + year12;
+                    (datePicker, year, month, dayOfMonth) -> {
+                        int monthInt = month + 1;
+
+                        if(month < 10){
+                            monthStrVal = "0" + monthInt;
+                        } else {
+                            monthStrVal = String.valueOf(monthInt);
+                        }
+                        if(dayOfMonth < 10){
+                            dayStrVal = "0" + dayOfMonth;
+                        } else {
+                            dayStrVal = String.valueOf(dayOfMonth);
+                        }
+
+                        String finalDate = year + "-" +monthStrVal + "-" + dayStrVal;
+
+                        edtDateEnd.setText(finalDate);
+                        dateEndVal = finalDate;
+
                         btnGiSearchByDateReset.setVisibility(View.VISIBLE);
-                    }, year, month, day);
+                    }, Integer.parseInt(yearStrVal), Integer.parseInt(monthStrVal), Integer.parseInt(dayStrVal));
             datePicker.show();
         });
 
@@ -295,26 +338,13 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
             });
         });
 
-        btnGiSearchByDateReset.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                edtDateStart.setText(null);
-                edtDateEnd.setText(null);
-                edtDateStart.clearFocus();
-                edtDateEnd.clearFocus();
-                btnGiSearchByDateReset.setVisibility(View.GONE);
-                //matNameList.clear();
-            }
+        btnGiSearchByDateReset.setOnClickListener(view -> {
+            edtDateStart.setText(null);
+            edtDateEnd.setText(null);
+            edtDateStart.clearFocus();
+            edtDateEnd.clearFocus();
+            btnGiSearchByDateReset.setVisibility(View.GONE);
         });
-
-        /*btnGiSearchByPoUIDReset.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                edtPoUID.setText(null);
-                edtPoUID.clearFocus();
-                btnGiSearchByPoUIDReset.setVisibility(View.GONE);
-            }
-        });*/
 
         btnGiSearchByRoUIDReset.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -322,13 +352,10 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
                 spinnerRoUID.setText(null);
                 spinnerRoUID.clearFocus();
                 btnGiSearchByRoUIDReset.setVisibility(View.GONE);
-                //matNameList.clear();
             }
         });
 
         fabCreateGiRecap.hide();
-
-
 
         btnSearchData.setOnClickListener(view -> {
             View viewLayout = RecapGoodIssueDataActivity.this.getCurrentFocus();
@@ -348,42 +375,20 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
         fabCreateGiRecap.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //matNameList.clear();
-                /*Intent intent = new Intent(this, SecondActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putParcelableArrayList("mylist", arraylist);
-                intent.putExtras(bundle);
-                this.startActivity(intent);*/
-
-
                 if (ContextCompat.checkSelfPermission(context,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE)!=
                         PackageManager.PERMISSION_GRANTED){
                     ActivityCompat.requestPermissions((Activity) context,
                             new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 10);
                 } else {
-
                     createPDF(Helper.getAppPath(context)+rouidVal+".pdf");
-
-
-                    //Toast.makeText(context, String.valueOf(goodIssueModelArrayList.size()), Toast.LENGTH_SHORT).show();
                 }
             }
         });
     }
 
-    /*public void print(View view) {
-
-     *//*
-        PdfDocument recapDocument = new PdfDocument();
-        Paint paint = new Paint();
-        PdfDocument.PageInfo pdfPageInfo = new PdfDocument.PageInfo.Builder(1200,2010)
-*//*
-    }*/
-
     private void createPDF(String dest){
 
-        //Toast.makeText(context, dest, Toast.LENGTH_LONG).show();
         if (new File(dest).exists()){
             new File(dest).delete();
         }
@@ -396,206 +401,8 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
             document.addAuthor("PT BAS");
             document.addCreator("BAS Control Center");
             document.addCreationDate();
-
-            Font fontNormal = new Font(Font.FontFamily.TIMES_ROMAN, 10, Font.NORMAL, BaseColor.BLACK);
-            Font fontBold = new Font(Font.FontFamily.TIMES_ROMAN, 10, Font.BOLD, BaseColor.BLACK);
-            Font fontBigBold = new Font(Font.FontFamily.TIMES_ROMAN, 18, Font.BOLD, BaseColor.BLACK);
-
-            Chunk title = new Chunk("RO-"+rouidVal, fontBigBold);
-            Chunk roMatNameType = new Chunk("Material: "+matNameList +" | "+goodIssueModelArrayList.get(0).getGiMatType(), fontNormal);
-            Chunk roCustName = new Chunk("Customer: "+custNameVal, fontNormal);
-
-
-            Paragraph paragraphTitle = new Paragraph(title);
-            paragraphTitle.setAlignment(Element.ALIGN_CENTER);
-            document.add(paragraphTitle);
-
-            Paragraph preface = new Paragraph();
-            preface.setAlignment(Element.ALIGN_CENTER);
-            preface.setSpacingAfter(15);
-            document.add(preface);
-            document.add(new LineSeparator());
-
-            String currentDate = new SimpleDateFormat("dd/MM/yyyy", Locale.US).format(new Date());
-
-            PdfPTable table1 = new PdfPTable(2);
-            table1.setWidthPercentage(100);
-
-            PdfPCell cell1;
-            cell1 = new PdfPCell(new Phrase("Nomor PO: "+roPoCustNumber, fontNormal));
-            cell1.setHorizontalAlignment(Element.ALIGN_LEFT);
-            cell1.setPadding(0);
-            cell1.setBorder(PdfPCell.NO_BORDER);
-            table1.addCell(cell1);
-
-            cell1 = new PdfPCell(new Phrase("Tanggal rekap dibuat: "+currentDate, fontNormal));
-            cell1.setHorizontalAlignment(Element.ALIGN_RIGHT);
-            cell1.setPadding(0);
-            cell1.setBorder(PdfPCell.NO_BORDER);
-            table1.addCell(cell1);
-
-            document.add(table1);
-
-
-           /* Paragraph paragraphPONumber = new Paragraph(poNumberVal);
-            paragraphPONumber.setAlignment(Element.ALIGN_LEFT);
-            paragraphPONumber.setSpacingAfter(0);
-            document.add(paragraphPONumber);*/
-
-            Paragraph paragraphROMatNameType = new Paragraph(roMatNameType);
-            paragraphROMatNameType.setAlignment(Element.ALIGN_LEFT);
-            paragraphROMatNameType.setSpacingAfter(0);
-            document.add(paragraphROMatNameType);
-
-            Paragraph paragraphROCustName = new Paragraph(roCustName);
-            paragraphROCustName.setAlignment(Element.ALIGN_LEFT);
-            paragraphROCustName.setSpacingAfter(5);
-            document.add(paragraphROCustName);
-            document.add(new LineSeparator());
-
-            Paragraph preface2 = new Paragraph();
-            preface2.setAlignment(Element.ALIGN_CENTER);
-            preface2.setSpacingAfter(10);
-            document.add(preface2);
-
-
-            PdfPTable table = new PdfPTable(10);
-            table.setWidthPercentage(100);
-            table.setWidths(new float[]{2,4,3,4,2,2,2,2,2,3});
-
-            PdfPCell cell;
-            cell = new PdfPCell(new Phrase("No", fontBold));
-            cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-            cell.setBackgroundColor(BaseColor.YELLOW);
-            table.addCell(cell);
-
-            cell = new PdfPCell(new Phrase("Tanggal", fontBold));
-            cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-            cell.setBackgroundColor(BaseColor.YELLOW);
-            table.addCell(cell);
-
-            cell = new PdfPCell(new Phrase("ID", fontBold));
-            cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-            cell.setBackgroundColor(BaseColor.YELLOW);
-            table.addCell(cell);
-
-            cell = new PdfPCell(new Phrase("NOPOL", fontBold));
-            cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-            cell.setBackgroundColor(BaseColor.YELLOW);
-            table.addCell(cell);
-
-            cell = new PdfPCell(new Phrase("P", fontBold));
-            cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-            cell.setBackgroundColor(BaseColor.YELLOW);
-            table.addCell(cell);
-
-            cell = new PdfPCell(new Phrase("L", fontBold));
-            cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-            cell.setBackgroundColor(BaseColor.YELLOW);
-            table.addCell(cell);
-
-            cell = new PdfPCell(new Phrase("T", fontBold));
-            cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-            cell.setBackgroundColor(BaseColor.YELLOW);
-            table.addCell(cell);
-
-            cell = new PdfPCell(new Phrase("K", fontBold));
-            cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-            cell.setBackgroundColor(BaseColor.YELLOW);
-            table.addCell(cell);
-
-            cell = new PdfPCell(new Phrase("TK", fontBold));
-            cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-            cell.setBackgroundColor(BaseColor.YELLOW);
-            table.addCell(cell);
-
-            cell = new PdfPCell(new Phrase(String.valueOf(Html.fromHtml("M\u00B3")), fontBold));
-            cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-            cell.setBackgroundColor(BaseColor.YELLOW);
-            table.addCell(cell);
-
-            float totalCubication = 0;
-            for (int i = 0; i < goodIssueModelArrayList.size(); i++){
-                cell = new PdfPCell(new Phrase(String.valueOf(i+1), fontBold));
-                cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-                table.addCell(cell);
-
-                cell = new PdfPCell(new Phrase(goodIssueModelArrayList.get(i).getGiDateCreated(), fontNormal));
-                cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-                table.addCell(cell);
-
-                cell = new PdfPCell(new Phrase(goodIssueModelArrayList.get(i).getGiUID().substring(0,5), fontNormal));
-                cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-                table.addCell(cell);
-
-                cell = new PdfPCell(new Phrase(goodIssueModelArrayList.get(i).getVhlUID(), fontNormal));
-                cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-                table.addCell(cell);
-
-                cell = new PdfPCell(new Phrase(goodIssueModelArrayList.get(i).getVhlLength().toString(), fontNormal));
-                cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-                table.addCell(cell);
-
-                cell = new PdfPCell(new Phrase(goodIssueModelArrayList.get(i).getVhlWidth().toString(), fontNormal));
-                cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-                table.addCell(cell);
-
-                cell = new PdfPCell(new Phrase(goodIssueModelArrayList.get(i).getVhlHeight().toString(), fontNormal));
-                cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-                table.addCell(cell);
-
-                cell = new PdfPCell(new Phrase(goodIssueModelArrayList.get(i).getVhlHeightCorrection().toString(), fontNormal));
-                cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-                table.addCell(cell);
-
-                cell = new PdfPCell(new Phrase(goodIssueModelArrayList.get(i).getVhlHeightAfterCorrection().toString(), fontNormal));
-                cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-                table.addCell(cell);
-
-                cell = new PdfPCell(new Phrase(goodIssueModelArrayList.get(i).getGiVhlCubication().toString(), fontNormal));
-                cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-                table.addCell(cell);
-
-                totalCubication += goodIssueModelArrayList.get(i).getGiVhlCubication();
-            }
-
-            PdfPTable table2 = new PdfPTable(2);
-            table2.setWidthPercentage(100);
-            table2.setWidths(new float[]{23,3});
-
-            PdfPCell cell2;
-            cell2 = new PdfPCell(new Phrase("Total", fontBold));
-            cell2.setHorizontalAlignment(Element.ALIGN_CENTER);
-            cell2.setBackgroundColor(BaseColor.YELLOW);
-            table2.addCell(cell2);
-
-            cell2 = new PdfPCell(new Phrase(String.valueOf(totalCubication), fontBold));
-            cell2.setHorizontalAlignment(Element.ALIGN_CENTER);
-            cell2.setBackgroundColor(BaseColor.YELLOW);
-            table2.addCell(cell2);
-
-
-
-            PdfPTable table3 = new PdfPTable(2);
-            table3.setWidthPercentage(100);
-            table3.setWidths(new float[]{5, 4});
-
-            PdfPCell cell3;
-            cell3 = new PdfPCell(new Phrase("Total IDR", fontBold));
-            cell3.setHorizontalAlignment(Element.ALIGN_CENTER);
-            cell3.setBackgroundColor(BaseColor.YELLOW);
-            table3.addCell(cell3);
-
-            DecimalFormat df = new DecimalFormat("0.00");
-            double totalIDR = matBuyPrice*totalCubication;
-
-            cell3 = new PdfPCell(new Phrase(currencyFormat(df.format(totalIDR)), fontNormal));
-            cell3.setHorizontalAlignment(Element.ALIGN_RIGHT);
-            table3.addCell(cell3);
-
-            document.add(table);
-            document.add(table2);
-            document.add(table3);
+            addTitlePage(document);
+            addContent(document);
             document.close();
             Helper.openFilePDF(context, new File(Helper.getAppPath(context)+rouidVal+".pdf"));
         } catch (DocumentException | FileNotFoundException e) {
@@ -603,6 +410,182 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
             Toast.makeText(context, e.toString(), Toast.LENGTH_LONG).show();
         }
     }
+
+    private void addTitlePage(Document document) throws DocumentException {
+        Paragraph preface = new Paragraph();
+        Chunk title = new Chunk("RO-"+rouidVal, fontBigBold);
+        Paragraph paragraphTitle = new Paragraph(title);
+        paragraphTitle.setAlignment(Element.ALIGN_CENTER);
+        document.add(paragraphTitle);
+        preface.setAlignment(Element.ALIGN_CENTER);
+        preface.setSpacingAfter(15);
+        document.add(preface);
+        document.add(new LineSeparator());
+    }
+
+    public static PdfPCell createTextCellNoBorderNormal(Paragraph paragraph, int alignment) throws DocumentException {
+        paragraph.setAlignment(alignment);
+        paragraph.setLeading(0, 1);
+        PdfPCell cell = new PdfPCell();
+        cell.addElement(paragraph);
+        cell.setHorizontalAlignment(alignment);
+        cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+        cell.setBorder(PdfPCell.NO_BORDER);
+        return cell;
+    }
+
+    public static PdfPCell createTextColumnHeader(Paragraph paragraph, int alignment) {
+        paragraph.setAlignment(alignment);
+        paragraph.setLeading(0, 1);
+        PdfPCell cell = new PdfPCell();
+        cell.addElement(paragraph);
+        cell.setHorizontalAlignment(alignment);
+        cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+        cell.setBackgroundColor(BaseColor.YELLOW);
+        return cell;
+    }
+
+    public static PdfPCell createTextNormalCell(Paragraph paragraph, int alignment) {
+        paragraph.setAlignment(alignment);
+        paragraph.setLeading(0, 1);
+        PdfPCell cell = new PdfPCell();
+        cell.addElement(paragraph);
+        cell.setHorizontalAlignment(alignment);
+        cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+        return cell;
+    }
+
+    private void addContent(Document document) throws DocumentException{
+        DecimalFormat df = new DecimalFormat("0.00");
+        String currentDate = new SimpleDateFormat("dd/MM/yyyy", Locale.US).format(new Date());
+
+        try {
+            Chunk roMatNameType = new Chunk("Material: "+matNameList +" | "+goodIssueModelArrayList.get(0).getGiMatType(), fontNormal);
+            Chunk roCustName = new Chunk("Customer: "+custNameVal, fontNormal);
+
+            Paragraph paragraphROMatNameType = new Paragraph(roMatNameType);
+            paragraphROMatNameType.setAlignment(Element.ALIGN_LEFT);
+            paragraphROMatNameType.setSpacingAfter(0);
+
+            Paragraph paragraphROCustName = new Paragraph(roCustName);
+            paragraphROCustName.setAlignment(Element.ALIGN_LEFT);
+            paragraphROCustName.setSpacingAfter(5);
+
+            Paragraph preface2 = new Paragraph();
+            preface2.setSpacingAfter(10);
+
+            PdfPTable table0 = new PdfPTable(2);
+            table0.setWidthPercentage(100);
+
+            PdfPTable table1 = new PdfPTable(10);
+            table1.setWidthPercentage(100);
+            table1.setWidths(new float[]{2,4,3,4,2,2,2,2,2,3});
+
+            PdfPTable table2 = new PdfPTable(2);
+            table2.setWidthPercentage(100);
+            table2.setWidths(new float[]{23,3});
+
+            PdfPTable table3 = new PdfPTable(2);
+            table3.setWidthPercentage(100);
+            table3.setWidths(new float[]{5, 4});
+
+            table0.addCell(createTextCellNoBorderNormal(
+                    new Paragraph("Nomor PO: "+roPoCustNumber, fontNormal),
+                    Element.ALIGN_LEFT));
+            table0.addCell(createTextCellNoBorderNormal(
+                    new Paragraph("Tanggal rekap dibuat: "+currentDate, fontNormal),
+                    Element.ALIGN_RIGHT));
+
+            table1.addCell(createTextColumnHeader(
+                    new Paragraph("No", fontBold), Element.ALIGN_CENTER));
+            table1.addCell(createTextColumnHeader(
+                    new Paragraph("Tanggal", fontBold), Element.ALIGN_CENTER));
+            table1.addCell(createTextColumnHeader(
+                    new Paragraph("ID", fontBold), Element.ALIGN_CENTER));
+            table1.addCell(createTextColumnHeader(
+                    new Paragraph("NOPOL", fontBold), Element.ALIGN_CENTER));
+            table1.addCell(createTextColumnHeader(
+                    new Paragraph("P", fontBold), Element.ALIGN_CENTER));
+            table1.addCell(createTextColumnHeader(
+                    new Paragraph("L", fontBold), Element.ALIGN_CENTER));
+            table1.addCell(createTextColumnHeader(
+                    new Paragraph("T", fontBold), Element.ALIGN_CENTER));
+            table1.addCell(createTextColumnHeader(
+                    new Paragraph("K", fontBold), Element.ALIGN_CENTER));
+            table1.addCell(createTextColumnHeader(
+                    new Paragraph("TK", fontBold), Element.ALIGN_CENTER));
+            table1.addCell(createTextColumnHeader(
+                    new Paragraph(String.valueOf(Html.fromHtml("M\u00B3")), fontBold), Element.ALIGN_CENTER));
+
+            float totalCubication = 0;
+            for (int i = 0; i < goodIssueModelArrayList.size(); i++){
+                table1.addCell(createTextNormalCell(
+                        new Paragraph(String.valueOf(i+1), fontNormal), Element.ALIGN_CENTER));
+                table1.addCell(createTextNormalCell(
+                        new Paragraph(goodIssueModelArrayList.get(i).getGiDateCreated(), fontNormal),
+                        Element.ALIGN_CENTER));
+                table1.addCell(createTextNormalCell(
+                        new Paragraph(goodIssueModelArrayList.get(i).getGiUID().substring(0,5), fontNormal),
+                        Element.ALIGN_CENTER));
+                table1.addCell(createTextNormalCell(
+                        new Paragraph(goodIssueModelArrayList.get(i).getVhlUID(), fontNormal),
+                        Element.ALIGN_CENTER));
+                table1.addCell(createTextNormalCell(
+                        new Paragraph(goodIssueModelArrayList.get(i).getVhlLength().toString(), fontNormal),
+                        Element.ALIGN_CENTER));
+                table1.addCell(createTextNormalCell(
+                        new Paragraph(goodIssueModelArrayList.get(i).getVhlWidth().toString(), fontNormal),
+                        Element.ALIGN_CENTER));
+                table1.addCell(createTextNormalCell(
+                        new Paragraph(goodIssueModelArrayList.get(i).getVhlHeight().toString(), fontNormal),
+                        Element.ALIGN_CENTER));
+                table1.addCell(createTextNormalCell(
+                        new Paragraph(goodIssueModelArrayList.get(i).getVhlHeightCorrection().toString(), fontNormal),
+                        Element.ALIGN_CENTER));
+                table1.addCell(createTextNormalCell(
+                        new Paragraph(goodIssueModelArrayList.get(i).getVhlHeightAfterCorrection().toString(), fontNormal),
+                        Element.ALIGN_CENTER));
+                table1.addCell(createTextNormalCell(
+                        new Paragraph(goodIssueModelArrayList.get(i).getGiVhlCubication().toString(), fontNormal),
+                        Element.ALIGN_CENTER));
+
+                totalCubication += goodIssueModelArrayList.get(i).getGiVhlCubication();
+            }
+
+            table2.addCell(createTextColumnHeader(
+                    new Paragraph("Total", fontBold),
+                    Element.ALIGN_CENTER));
+            table2.addCell(createTextNormalCell(
+                    new Paragraph(df.format(totalCubication), fontNormal),
+                    Element.ALIGN_CENTER));
+
+            double totalIDR = matBuyPrice*totalCubication;
+            table3.addCell(createTextColumnHeader(
+                    new Paragraph("Total Beli", fontBold),
+                    Element.ALIGN_CENTER));
+            table3.addCell(createTextNormalCell(
+                    new Paragraph(currencyVal+" "+currencyFormat(df.format(totalIDR)), fontNormal),
+                    Element.ALIGN_CENTER));
+
+            document.add(table0);
+            document.add(paragraphROMatNameType);
+            document.add(paragraphROCustName);
+            document.add(new LineSeparator());
+            document.add(preface2);
+            document.add(table1);
+            document.add(table2);
+            document.add(table3);
+        } catch (DocumentException e) {
+            e.printStackTrace();
+            Toast.makeText(context, e.toString(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    /*private static void addEmptyLine(Paragraph paragraph, int number) {
+        for (int i = 0; i < number; i++) {
+            paragraph.add(new Paragraph(" "));
+        }
+    }*/
 
     public static String currencyFormat(String amount) {
         DecimalFormat formatter = new DecimalFormat("###,###,##0.00");
@@ -613,13 +596,12 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
         rouidVal = spinnerRoUID.getText().toString();
         pouidVal = edtPoUID.getText().toString();
 
-        DatabaseReference databaseReferencePO = FirebaseDatabase.getInstance().getReference("ReceivedOrders/"+ rouidVal +"/OrderedItems/0");
+        DatabaseReference databaseReferencePO = FirebaseDatabase.getInstance().getReference("ReceivedOrders/"+ rouidVal +"/OrderedItems/1");
         databaseReferencePO.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()){
                     matBuyPrice = Objects.requireNonNull(snapshot.child("matBuyPrice").getValue(Double.class));
-
                 } else {
                     Toast.makeText(RecapGoodIssueDataActivity.this, "Not exists", Toast.LENGTH_SHORT).show();
                 }
@@ -648,13 +630,12 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
                                     nestedScrollView.setVisibility(View.VISIBLE);
                                     llNoData.setVisibility(View.GONE);
 
-
-
                                     DatabaseReference databaseReferencePO = FirebaseDatabase.getInstance().getReference("ReceivedOrders/"+ spinnerRoUID.getText().toString());
                                     databaseReferencePO.addValueEventListener(new ValueEventListener() {
                                         @Override
                                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                                             custNameVal = snapshot.child("roCustName").getValue(String.class);
+                                            currencyVal = snapshot.child("roCurrency").getValue(String.class);
                                         }
 
                                         @Override
@@ -670,9 +651,9 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
                                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                                         matNameList.clear();
                                         for (DataSnapshot dataSnapshot: snapshot.getChildren()){
-                                        String spinnerMaterialData = dataSnapshot.child("matName").getValue(String.class);
-                                        matNameList.add(spinnerMaterialData);
-                                        matNameList.remove("JASA ANGKUT");
+                                            String spinnerMaterialData = dataSnapshot.child("matName").getValue(String.class);
+                                            matNameList.add(spinnerMaterialData);
+                                            matNameList.remove("JASA ANGKUT");
                                         }
                                     }
 
@@ -684,49 +665,17 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
 
                             }
                         }
-                        /*if (!pouidVal.isEmpty()&&rouidVal.isEmpty()){
-                            if (Objects.requireNonNull(item.child("giPoCustNumber").getValue()).toString().equals(pouidVal) &&
-                                    !Objects.requireNonNull(item.child("giPoCustNumber").getValue()).toString().equals("-")) {
-                                if (Objects.equals(item.child("giStatus").getValue(), true)) {
-                                    GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
 
-                                    ArrayList<GoodIssueModel> giPosGetROTemp = new ArrayList<>();
-                                    giPosGetROTemp.add(goodIssueModel);
-                                    goodIssueModelArrayList.add(goodIssueModel);
-                                    fabCreateGiRecap.show();
-                                    nestedScrollView.setVisibility(View.VISIBLE);
-                                    llNoData.setVisibility(View.GONE);
-
-
-
-                                    DatabaseReference databaseReferencePO = FirebaseDatabase.getInstance().getReference("ReceivedOrders/"+ giPosGetROTemp.get(0).getGiRoUID());
-                                    databaseReferencePO.addValueEventListener(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                            custNameVal = snapshot.child("roCustName").getValue(String.class);
-                                            roUID = giPosGetROTemp.get(0).getGiRoUID();
-                                        }
-
-                                        @Override
-                                        public void onCancelled(@NonNull DatabaseError error) {
-
-                                        }
-                                    });
-                                }
-                            }
-                        }*/
                     }
                     if (goodIssueModelArrayList.size()==0) {
                         fabCreateGiRecap.hide();
                         nestedScrollView.setVisibility(View.GONE);
                         llNoData.setVisibility(View.VISIBLE);
-                        //Toast.makeText(context, "Data tidak ditemukan", Toast.LENGTH_SHORT).show();
                     }
                 } else  {
                     fabCreateGiRecap.hide();
                     nestedScrollView.setVisibility(View.GONE);
                     llNoData.setVisibility(View.VISIBLE);
-                    //Toast.makeText(context, "Data tidak ditemukan", Toast.LENGTH_SHORT).show();
                 }
                 giManagementAdapter = new GIManagementAdapter(context, goodIssueModelArrayList);
                 rvGoodIssueList.setAdapter(giManagementAdapter);

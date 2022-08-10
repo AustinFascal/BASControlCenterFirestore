@@ -46,6 +46,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.ptbas.controlcenter.DialogInterface;
 import com.ptbas.controlcenter.Helper;
 import com.ptbas.controlcenter.R;
+import com.ptbas.controlcenter.create.AddGoodIssueActivity;
 import com.ptbas.controlcenter.management.GoodIssueManagementActivity;
 import com.ptbas.controlcenter.model.GoodIssueModel;
 import com.ptbas.controlcenter.model.ReceivedOrderModel;
@@ -65,6 +66,7 @@ import java.util.Random;
 public class UpdateGoodIssueActivity extends AppCompatActivity {
 
     String vhlData, matName, matType, roNumber;
+    String monthStrVal, dayStrVal;
     Integer giYear = 0, giMonth = 0, giDay = 0;
 
     TextView tvHeightCorrection, tvVhlVolume, tvGiCreatedBy, tvGiModifiedBy, tvGiInvoicedStatus;
@@ -288,20 +290,34 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 final Calendar calendar = Calendar.getInstance();
-                int day = calendar.get(Calendar.DAY_OF_MONTH);
-                int month = calendar.get(Calendar.MONTH);
-                int year = calendar.get(Calendar.YEAR);
+                dayStrVal = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
+                monthStrVal = String.valueOf(calendar.get(Calendar.MONTH));
+                String year = String.valueOf(calendar.get(Calendar.YEAR));
 
                 datePicker = new DatePickerDialog(UpdateGoodIssueActivity.this,
                         new DatePickerDialog.OnDateSetListener() {
                             @Override
                             public void onDateSet(DatePicker datePicker, int year, int month, int dayOfMonth) {
-                                edtGiDate.setText(String.valueOf(dayOfMonth + "/" +(month + 1) + "/" + year));
                                 giYear = year;
                                 giMonth = month + 1;
                                 giDay = dayOfMonth;
+
+                                if(month < 10){
+                                    monthStrVal = "0" + giMonth;
+                                } else {
+                                    monthStrVal = String.valueOf(giMonth);
+                                }
+                                if(dayOfMonth < 10){
+                                    dayStrVal = "0" + giDay;
+                                } else {
+                                    dayStrVal = String.valueOf(giDay);
+                                }
+
+                                String finalDate = giYear + "-" +monthStrVal + "-" + dayStrVal;
+
+                                edtGiDate.setText(finalDate);
                             }
-                        }, year, month, day);
+                        }, Integer.parseInt(year), Integer.parseInt(monthStrVal), Integer.parseInt(dayStrVal));
                 datePicker.show();
 
                 edtGiDate.setError(null);
@@ -815,7 +831,24 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
                             int vhlLength, int vhlWidth, int vhlHeight,
                             int vhlHeightCorrection, int vhlHeightAfterCorrection,
                             float giVhlCubication, Boolean giStatus, Boolean giInvoiced) {
+        VehicleModel vehicleModel =
+                new VehicleModel(vhlUID, true, vhlLength, vhlWidth, vhlHeight,
+                        "", "", "", "");
 
+
+        DatabaseReference dbRefAddVehicle = FirebaseDatabase.getInstance().getReference("VehicleData");
+        dbRefAddVehicle.child(vhlUID).setValue(vehicleModel).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                //Toast.makeText(AddGoodIssueActivity.this, "Data ", Toast.LENGTH_SHORT).show();
+            } else {
+                try{
+                    throw Objects.requireNonNull(task.getException());
+                } catch (Exception e){
+                    Log.e(TAG, e.getMessage());
+                    Toast.makeText(UpdateGoodIssueActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
         GoodIssueModel goodIssueModel = new GoodIssueModel(giUID, giCreatedBy, giVerifiedBy, giRoUID, giPoCustNumber,
                 giMatName, giMatType, vhlUID, giDateCreated, giTimeCreted, vhlLength,
                 vhlWidth, vhlHeight, vhlHeightCorrection, vhlHeightAfterCorrection, giVhlCubication, giStatus, giInvoiced);

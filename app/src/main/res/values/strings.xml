@@ -25,7 +25,7 @@
 
 
     <string name="inputDateRequired">Tanggal<font color="#cc0029">*</font></string>
-    <string name="inputTimeRequired">Waktu<font color="#cc0029">*</font></string>
+    <string name="inputTimeRequired">Waktu</string>
     <string name="title_activity_main2">MainActivity2</string>
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
