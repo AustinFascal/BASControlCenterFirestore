@@ -23,6 +23,9 @@
     <string name="inputCustomerName">Pilih Customer<font color="#cc0029">*</font></string>
     <string name="inputCurrency">Mata Uang<font color="#cc0029">*</font></string>
 
+    <string name="showMore">Tampilkan lebih banyak</string>
+    <string name="showLess">Tampilkan lebih sedikit</string>
+
 
     <string name="inputDateRequired">Tanggal<font color="#cc0029">*</font></string>
     <string name="inputTimeRequired">Waktu</string>

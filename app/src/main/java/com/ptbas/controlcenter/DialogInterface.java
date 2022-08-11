@@ -87,23 +87,34 @@ public class DialogInterface {
         mBottomSheetDialog.show();
     }
 
-    public void noPoNumberInformation(Context context){
-        Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+    public void savedROInformation(Activity activity){
+        Vibrator vibrator = (Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             vibrator.vibrate(VibrationEffect.createOneShot(100,
                     VibrationEffect.DEFAULT_AMPLITUDE));
         } else {
             vibrator.vibrate(100);
         }
-        BottomSheetMaterialDialog mBottomSheetDialog = new BottomSheetMaterialDialog.Builder((Activity) context)
-                .setTitle("Perhatian!", TextAlignment.START)
-                .setAnimation(R.raw.lottie_attention)
-                .setMessage("Data Good Issue ini masih belum memiliki nomor PO. Mohon perbarui  data tersebut agar dapat melakukan validasi dan dapat muncul saat direkapitulasi.", TextAlignment.START)
-                .setCancelable(true)
-                .setPositiveButton("OKE", new BottomSheetMaterialDialog.OnClickListener() {
+
+        BottomSheetMaterialDialog mBottomSheetDialog = new BottomSheetMaterialDialog.Builder(activity)
+                .setTitle("Sukses!")
+                .setAnimation(R.raw.lottie_success_2)
+                .setMessage("Berhasil menambahkan data. Mau menambah data lagi?")
+                .setCancelable(false)
+                .setPositiveButton("TAMBAH LAGI", R.drawable.ic_outline_add, new BottomSheetMaterialDialog.OnClickListener() {
+                    @Override
+                    public void onClick(dev.shreyaspatil.MaterialDialog.interfaces.DialogInterface dialogInterface, int which) {
+                        Intent intent=new Intent(activity, AddReceivedOrder.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                        activity.startActivity(intent);
+                    }
+
+                })
+                .setNegativeButton("SELESAI", R.drawable.ic_outline_close, new BottomSheetMaterialDialog.OnClickListener() {
                     @Override
                     public void onClick(dev.shreyaspatil.MaterialDialog.interfaces.DialogInterface dialogInterface, int which) {
                         dialogInterface.dismiss();
+                        helper.refreshDashboard(activity.getApplicationContext());
                     }
 
                 })
@@ -174,6 +185,31 @@ public class DialogInterface {
         mBottomSheetDialog.show();
     }
 
+    public void noPoNumberInformation(Context context){
+        Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            vibrator.vibrate(VibrationEffect.createOneShot(100,
+                    VibrationEffect.DEFAULT_AMPLITUDE));
+        } else {
+            vibrator.vibrate(100);
+        }
+        BottomSheetMaterialDialog mBottomSheetDialog = new BottomSheetMaterialDialog.Builder((Activity) context)
+                .setTitle("Perhatian!", TextAlignment.START)
+                .setAnimation(R.raw.lottie_attention)
+                .setMessage("Data Good Issue ini masih belum memiliki nomor PO. Mohon perbarui  data tersebut agar dapat melakukan validasi dan dapat muncul saat direkapitulasi.", TextAlignment.START)
+                .setCancelable(true)
+                .setPositiveButton("OKE", new BottomSheetMaterialDialog.OnClickListener() {
+                    @Override
+                    public void onClick(dev.shreyaspatil.MaterialDialog.interfaces.DialogInterface dialogInterface, int which) {
+                        dialogInterface.dismiss();
+                    }
+
+                })
+                .build();
+
+        mBottomSheetDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
+        mBottomSheetDialog.show();
+    }
 
     public void dataCannotBeChangedInformation(Activity activity){
         Vibrator vibrator = (Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE);
@@ -223,44 +259,6 @@ public class DialogInterface {
         mBottomSheetDialog.show();
     }
 
-
-    public void savedROInformation(Activity activity){
-        Vibrator vibrator = (Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            vibrator.vibrate(VibrationEffect.createOneShot(100,
-                    VibrationEffect.DEFAULT_AMPLITUDE));
-        } else {
-            vibrator.vibrate(100);
-        }
-
-        BottomSheetMaterialDialog mBottomSheetDialog = new BottomSheetMaterialDialog.Builder(activity)
-                .setTitle("Sukses!")
-                .setAnimation(R.raw.lottie_success_2)
-                .setMessage("Berhasil menambahkan data. Mau menambah data lagi?")
-                .setCancelable(false)
-                .setPositiveButton("TAMBAH LAGI", R.drawable.ic_outline_add, new BottomSheetMaterialDialog.OnClickListener() {
-                    @Override
-                    public void onClick(dev.shreyaspatil.MaterialDialog.interfaces.DialogInterface dialogInterface, int which) {
-                        Intent intent=new Intent(activity, AddReceivedOrder.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                        activity.startActivity(intent);
-                    }
-
-                })
-                .setNegativeButton("SELESAI", R.drawable.ic_outline_close, new BottomSheetMaterialDialog.OnClickListener() {
-                    @Override
-                    public void onClick(dev.shreyaspatil.MaterialDialog.interfaces.DialogInterface dialogInterface, int which) {
-                        dialogInterface.dismiss();
-                        helper.refreshDashboard(activity.getApplicationContext());
-                    }
-
-                })
-                .build();
-
-        mBottomSheetDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
-        mBottomSheetDialog.show();
-    }
-
     public void roNotActiveYet(Activity activity, String roUID){
         Vibrator vibrator = (Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -278,6 +276,8 @@ public class DialogInterface {
                 .setPositiveButton("SAHKAN RO", R.drawable.ic_outline_check, new BottomSheetMaterialDialog.OnClickListener() {
                     @Override
                     public void onClick(dev.shreyaspatil.MaterialDialog.interfaces.DialogInterface dialogInterface, int which) {
+
+                        // TODO DETECT USER MODEL - IF SUPER ADMIN, ABLE TO VERIFY
                         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
                         databaseReference.child("ReceivedOrders").child(roUID).child("roStatus").setValue(true);
                         databaseReference.child("ReceivedOrders").child(roUID).child("roVerifiedBy").setValue(helper.getUserId());
@@ -340,6 +340,14 @@ public class DialogInterface {
     }
 
     public void approveGiConfirmation(Context context, String giUID){
+        Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            vibrator.vibrate(VibrationEffect.createOneShot(100,
+                    VibrationEffect.DEFAULT_AMPLITUDE));
+        } else {
+            vibrator.vibrate(100);
+        }
+
         BottomSheetMaterialDialog mBottomSheetDialog = new BottomSheetMaterialDialog.Builder((Activity) context)
                 .setTitle("Validasi Data")
                 .setAnimation(R.raw.lottie_approval)
@@ -369,6 +377,13 @@ public class DialogInterface {
     }
 
     public void approveRoConfirmation(Context context, String roUID){
+        Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            vibrator.vibrate(VibrationEffect.createOneShot(100,
+                    VibrationEffect.DEFAULT_AMPLITUDE));
+        } else {
+            vibrator.vibrate(100);
+        }
         BottomSheetMaterialDialog mBottomSheetDialog = new BottomSheetMaterialDialog.Builder((Activity) context)
                 .setTitle("Validasi Data")
                 .setAnimation(R.raw.lottie_approval)
@@ -397,8 +412,14 @@ public class DialogInterface {
         mBottomSheetDialog.show();
     }
 
-
     public void changePoNumberCustomer(Context context, String roUID){
+        Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            vibrator.vibrate(VibrationEffect.createOneShot(100,
+                    VibrationEffect.DEFAULT_AMPLITUDE));
+        } else {
+            vibrator.vibrate(100);
+        }
         BottomSheetMaterialDialog mBottomSheetDialog = new BottomSheetMaterialDialog.Builder((Activity) context)
                 .setTitle("Ubah Nomor PO")
                 .setAnimation(R.raw.lottie_attention)
@@ -446,8 +467,14 @@ public class DialogInterface {
         mBottomSheetDialog.show();
     }
 
-
     public void deleteGiConfirmation(Context context, String giUID){
+        Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            vibrator.vibrate(VibrationEffect.createOneShot(100,
+                    VibrationEffect.DEFAULT_AMPLITUDE));
+        } else {
+            vibrator.vibrate(100);
+        }
         BottomSheetMaterialDialog mBottomSheetDialog = new BottomSheetMaterialDialog.Builder((Activity) context)
                 .setTitle("Hapus Data")
                 .setAnimation(R.raw.lottie_delete)
@@ -476,6 +503,13 @@ public class DialogInterface {
     }
 
     public void deleteRoConfirmation(Context context, String roUID){
+        Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            vibrator.vibrate(VibrationEffect.createOneShot(100,
+                    VibrationEffect.DEFAULT_AMPLITUDE));
+        } else {
+            vibrator.vibrate(100);
+        }
         BottomSheetMaterialDialog mBottomSheetDialog = new BottomSheetMaterialDialog.Builder((Activity) context)
                 .setTitle("Hapus Data")
                 .setAnimation(R.raw.lottie_delete)

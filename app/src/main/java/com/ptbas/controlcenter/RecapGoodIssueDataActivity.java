@@ -50,23 +50,18 @@ import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.text.pdf.draw.LineSeparator;
 import com.ptbas.controlcenter.adapter.GIManagementAdapter;
-import com.ptbas.controlcenter.create.AddGoodIssueActivity;
 import com.ptbas.controlcenter.model.GoodIssueModel;
-import com.ptbas.controlcenter.model.ReceivedOrderModel;
 import com.ptbas.controlcenter.utils.LangUtils;
 
-import org.intellij.lang.annotations.JdkConstants;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -76,21 +71,19 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-import dev.shreyaspatil.MaterialDialog.model.TextAlignment;
-
 public class RecapGoodIssueDataActivity extends AppCompatActivity {
 
     double matBuyPrice;
-    String dateStartVal = "", dateEndVal = "", rouidVal= "", currencyVal = "", pouidVal = "";
-    String monthStrVal, dayStrVal;
+    String dateStartVal = "", dateEndVal = "", rouidVal= "", currencyVal = "", pouidVal = "",
+            monthStrVal, dayStrVal, roPoCustNumber;
+    public String custNameVal = "";
+
     Button btnSearchData, imgbtnExpandCollapseFilterLayout;
     AutoCompleteTextView spinnerRoUID;
-    TextInputEditText edtPoUID;
-    TextInputEditText edtDateStart, edtDateEnd;
+    TextInputEditText edtPoUID, edtDateStart, edtDateEnd;
     DatePickerDialog datePicker;
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
     ArrayList<GoodIssueModel> goodIssueModelArrayList = new ArrayList<>();
-    ArrayList<ReceivedOrderModel> receivedOrderModelArrayList = new ArrayList<>();
     GIManagementAdapter giManagementAdapter;
     RecyclerView rvGoodIssueList;
     Context context;
@@ -100,20 +93,15 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
     View firstViewData;
     NestedScrollView nestedScrollView;
 
-    List<String> arrayListRoUID, arrayListPoUID;
+    List<String> arrayListRoUID, arrayListPoUID, matNameList;
 
-    LinearLayout llWrapFilterByDateRange, llWrapFilterByRouid, llWrapFilterByPoCustNumb, llNoData;
+    LinearLayout llWrapFilterByDateRange, llWrapFilterByRouid, llNoData;
 
-    ImageButton btnGiSearchByDateReset, btnGiSearchByRoUIDReset, btnGiSearchByPoUIDReset;
+    ImageButton btnGiSearchByDateReset, btnGiSearchByRoUIDReset;
 
     ExtendedFloatingActionButton fabCreateGiRecap;
 
     DialogInterface dialogInterface = new DialogInterface();
-    String roPoCustNumber, roUID;
-
-    public String custNameVal = "";
-
-    List<String> matNameList;
 
     private static final Font fontNormal = new Font(Font.FontFamily.TIMES_ROMAN, 10, Font.NORMAL, BaseColor.BLACK);
     private static final Font fontBold = new Font(Font.FontFamily.TIMES_ROMAN, 10, Font.BOLD, BaseColor.BLACK);
@@ -139,15 +127,12 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
         imgbtnExpandCollapseFilterLayout = findViewById(R.id.imgbtn_expand_collapse_filter_layout);
         llWrapFilterByDateRange = findViewById(R.id.ll_wrap_filter_by_date_range);
         llWrapFilterByRouid = findViewById(R.id.ll_wrap_filter_by_rouid);
-        //llWrapFilterByPoCustNumb = findViewById(R.id.ll_wrap_filter_by_po_cust_numb);
 
         llNoData = findViewById(R.id.ll_no_data);
         nestedScrollView = findViewById(R.id.nestedScrollView);
 
         btnGiSearchByDateReset = findViewById(R.id.btn_gi_search_date_reset);
         btnGiSearchByRoUIDReset = findViewById(R.id.btn_gi_search_rouid_reset);
-        //btnGiSearchByPoUIDReset = findViewById(R.id.btn_gi_search_pouid_reset);
-
         fabCreateGiRecap = findViewById(R.id.fab_create_gi_recap);
 
         ActionBar actionBar = getSupportActionBar();
@@ -260,6 +245,7 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
 
         arrayListRoUID = new ArrayList<>();
         arrayListPoUID = new ArrayList<>();
+
         databaseReference.child("ReceivedOrders").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -282,45 +268,7 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
             }
         });
 
-        /*databaseReference.child("ReceivedOrders").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()){
-                    for (DataSnapshot dataSnapshot: snapshot.getChildren()){
-                        String spinnerPoUIDVal = dataSnapshot.child("roPoCustNumber").getValue(String.class);
-                        if (!spinnerPoUIDVal.equals("-")){
-                            arrayListPoUID.add(spinnerPoUIDVal);
-                        }
-                    }
-                    ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(RecapGoodIssueDataActivity.this, R.layout.style_spinner, arrayListPoUID);
-                    arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
-                    spinnerPoUID.setAdapter(arrayAdapter);
-                } else {
-                    Toast.makeText(RecapGoodIssueDataActivity.this, "Not exists", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });*/
-
-        /*spinnerPoUID.setOnItemClickListener((adapterView, view, i, l) -> {
-            //btnGiSearchByPoUIDReset.setVisibility(View.VISIBLE);
-            //spinnerRoUID.setText(null);
-            //spinnerRoUID.clearFocus();
-            //btnGiSearchByRoUIDReset.setVisibility(View.VISIBLE);
-            spinnerPoUID.setError(null);
-
-            spinnerRoUID.setText(null);
-        });*/
-
         spinnerRoUID.setOnItemClickListener((adapterView, view, i, l) -> {
-            //btnGiSearchByRoUIDReset.setVisibility(View.VISIBLE);
-            //spinnerPoUID.setText(null);
-            //spinnerPoUID.clearFocus();
-            //btnGiSearchByPoUIDReset.setVisibility(View.GONE);
             spinnerRoUID.setError(null);
 
             DatabaseReference databaseReferencePO = FirebaseDatabase.getInstance().getReference("ReceivedOrders/"+ spinnerRoUID.getText().toString());
@@ -346,13 +294,10 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
             btnGiSearchByDateReset.setVisibility(View.GONE);
         });
 
-        btnGiSearchByRoUIDReset.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                spinnerRoUID.setText(null);
-                spinnerRoUID.clearFocus();
-                btnGiSearchByRoUIDReset.setVisibility(View.GONE);
-            }
+        btnGiSearchByRoUIDReset.setOnClickListener(view -> {
+            spinnerRoUID.setText(null);
+            spinnerRoUID.clearFocus();
+            btnGiSearchByRoUIDReset.setVisibility(View.GONE);
         });
 
         fabCreateGiRecap.hide();
@@ -372,17 +317,14 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
             }
         });
 
-        fabCreateGiRecap.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (ContextCompat.checkSelfPermission(context,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE)!=
-                        PackageManager.PERMISSION_GRANTED){
-                    ActivityCompat.requestPermissions((Activity) context,
-                            new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 10);
-                } else {
-                    createPDF(Helper.getAppPath(context)+rouidVal+".pdf");
-                }
+        fabCreateGiRecap.setOnClickListener(view -> {
+            if (ContextCompat.checkSelfPermission(context,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE)!=
+                    PackageManager.PERMISSION_GRANTED){
+                ActivityCompat.requestPermissions((Activity) context,
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 10);
+            } else {
+                createPDF(Helper.getAppPath(context)+rouidVal+".pdf");
             }
         });
     }
@@ -390,7 +332,7 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
     private void createPDF(String dest){
 
         if (new File(dest).exists()){
-            new File(dest).delete();
+            new File(dest).deleteOnExit();
         }
 
         try {
@@ -460,8 +402,13 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
         String currentDate = new SimpleDateFormat("dd/MM/yyyy", Locale.US).format(new Date());
 
         try {
-            Chunk roMatNameType = new Chunk("Material: "+matNameList +" | "+goodIssueModelArrayList.get(0).getGiMatType(), fontNormal);
-            Chunk roCustName = new Chunk("Customer: "+custNameVal, fontNormal);
+            String roMatNameTypeStrVal = "Material: "+matNameList +" | "+goodIssueModelArrayList.get(0).getGiMatType();
+            String roCustNameStrVal = "Customer: "+custNameVal;
+            String roPoCustNumberStrVal = "Nomor PO: "+roPoCustNumber;
+            String roRecapDateCreatedStrVal = "Tanggal rekap dibuat: "+currentDate;
+
+            Chunk roMatNameType = new Chunk(roMatNameTypeStrVal, fontNormal);
+            Chunk roCustName = new Chunk(roCustNameStrVal, fontNormal);
 
             Paragraph paragraphROMatNameType = new Paragraph(roMatNameType);
             paragraphROMatNameType.setAlignment(Element.ALIGN_LEFT);
@@ -490,10 +437,10 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
             table3.setWidths(new float[]{5, 4});
 
             table0.addCell(createTextCellNoBorderNormal(
-                    new Paragraph("Nomor PO: "+roPoCustNumber, fontNormal),
+                    new Paragraph(roPoCustNumberStrVal, fontNormal),
                     Element.ALIGN_LEFT));
             table0.addCell(createTextCellNoBorderNormal(
-                    new Paragraph("Tanggal rekap dibuat: "+currentDate, fontNormal),
+                    new Paragraph(roRecapDateCreatedStrVal, fontNormal),
                     Element.ALIGN_RIGHT));
 
             table1.addCell(createTextColumnHeader(
@@ -519,53 +466,53 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
 
             float totalCubication = 0;
             for (int i = 0; i < goodIssueModelArrayList.size(); i++){
+                String rowNumberStrVal = String.valueOf(i+1);
+                String rowDateStrVal = goodIssueModelArrayList.get(i).getGiDateCreated();
+                String rowIDStrVal = goodIssueModelArrayList.get(i).getGiUID().substring(0,5);
+                String rowVhlUIDStrVal = goodIssueModelArrayList.get(i).getVhlUID();
+                String rowVhLengthStrVal = goodIssueModelArrayList.get(i).getVhlLength().toString();
+                String rowVhWidthStrVal = goodIssueModelArrayList.get(i).getVhlWidth().toString();
+                String rowVhHeightStrVal = goodIssueModelArrayList.get(i).getVhlHeight().toString();
+                String rowVhHeightCorrectionStrVal = goodIssueModelArrayList.get(i).getVhlHeightCorrection().toString();
+                String rowVhHeightAfterCorrectionStrVal = goodIssueModelArrayList.get(i).getVhlHeightAfterCorrection().toString();
+                String vhlCubicationStrVal = df.format(goodIssueModelArrayList.get(i).getGiVhlCubication());
+
                 table1.addCell(createTextNormalCell(
-                        new Paragraph(String.valueOf(i+1), fontNormal), Element.ALIGN_CENTER));
+                        new Paragraph(rowNumberStrVal, fontNormal), Element.ALIGN_CENTER));
                 table1.addCell(createTextNormalCell(
-                        new Paragraph(goodIssueModelArrayList.get(i).getGiDateCreated(), fontNormal),
-                        Element.ALIGN_CENTER));
+                        new Paragraph(rowDateStrVal, fontNormal), Element.ALIGN_CENTER));
                 table1.addCell(createTextNormalCell(
-                        new Paragraph(goodIssueModelArrayList.get(i).getGiUID().substring(0,5), fontNormal),
-                        Element.ALIGN_CENTER));
+                        new Paragraph(rowIDStrVal, fontNormal), Element.ALIGN_CENTER));
                 table1.addCell(createTextNormalCell(
-                        new Paragraph(goodIssueModelArrayList.get(i).getVhlUID(), fontNormal),
-                        Element.ALIGN_CENTER));
+                        new Paragraph(rowVhlUIDStrVal, fontNormal), Element.ALIGN_CENTER));
                 table1.addCell(createTextNormalCell(
-                        new Paragraph(goodIssueModelArrayList.get(i).getVhlLength().toString(), fontNormal),
-                        Element.ALIGN_CENTER));
+                        new Paragraph(rowVhLengthStrVal, fontNormal), Element.ALIGN_CENTER));
                 table1.addCell(createTextNormalCell(
-                        new Paragraph(goodIssueModelArrayList.get(i).getVhlWidth().toString(), fontNormal),
-                        Element.ALIGN_CENTER));
+                        new Paragraph(rowVhWidthStrVal, fontNormal), Element.ALIGN_CENTER));
                 table1.addCell(createTextNormalCell(
-                        new Paragraph(goodIssueModelArrayList.get(i).getVhlHeight().toString(), fontNormal),
-                        Element.ALIGN_CENTER));
+                        new Paragraph(rowVhHeightStrVal, fontNormal), Element.ALIGN_CENTER));
                 table1.addCell(createTextNormalCell(
-                        new Paragraph(goodIssueModelArrayList.get(i).getVhlHeightCorrection().toString(), fontNormal),
-                        Element.ALIGN_CENTER));
+                        new Paragraph(rowVhHeightCorrectionStrVal, fontNormal), Element.ALIGN_CENTER));
                 table1.addCell(createTextNormalCell(
-                        new Paragraph(goodIssueModelArrayList.get(i).getVhlHeightAfterCorrection().toString(), fontNormal),
-                        Element.ALIGN_CENTER));
+                        new Paragraph(rowVhHeightAfterCorrectionStrVal, fontNormal), Element.ALIGN_CENTER));
                 table1.addCell(createTextNormalCell(
-                        new Paragraph(goodIssueModelArrayList.get(i).getGiVhlCubication().toString(), fontNormal),
-                        Element.ALIGN_CENTER));
+                        new Paragraph(vhlCubicationStrVal, fontNormal), Element.ALIGN_CENTER));
 
                 totalCubication += goodIssueModelArrayList.get(i).getGiVhlCubication();
             }
 
-            table2.addCell(createTextColumnHeader(
-                    new Paragraph("Total", fontBold),
-                    Element.ALIGN_CENTER));
-            table2.addCell(createTextNormalCell(
-                    new Paragraph(df.format(totalCubication), fontNormal),
-                    Element.ALIGN_CENTER));
-
+            String totalCubicationStrVal = df.format(totalCubication);
             double totalIDR = matBuyPrice*totalCubication;
+            String totalIDRStrVal = currencyVal+" "+currencyFormat(df.format(totalIDR));
+
+            table2.addCell(createTextColumnHeader(
+                    new Paragraph("Total", fontBold), Element.ALIGN_CENTER));
+            table2.addCell(createTextNormalCell(
+                    new Paragraph(totalCubicationStrVal, fontNormal), Element.ALIGN_CENTER));
             table3.addCell(createTextColumnHeader(
-                    new Paragraph("Total Beli", fontBold),
-                    Element.ALIGN_CENTER));
+                    new Paragraph("Total Biaya Beli", fontBold), Element.ALIGN_CENTER));
             table3.addCell(createTextNormalCell(
-                    new Paragraph(currencyVal+" "+currencyFormat(df.format(totalIDR)), fontNormal),
-                    Element.ALIGN_CENTER));
+                    new Paragraph(totalIDRStrVal, fontNormal), Element.ALIGN_CENTER));
 
             document.add(table0);
             document.add(paragraphROMatNameType);
@@ -581,12 +528,6 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
         }
     }
 
-    /*private static void addEmptyLine(Paragraph paragraph, int number) {
-        for (int i = 0; i < number; i++) {
-            paragraph.add(new Paragraph(" "));
-        }
-    }*/
-
     public static String currencyFormat(String amount) {
         DecimalFormat formatter = new DecimalFormat("###,###,##0.00");
         return formatter.format(Double.parseDouble(amount));
@@ -594,7 +535,7 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
 
     private void searchQuery(){
         rouidVal = spinnerRoUID.getText().toString();
-        pouidVal = edtPoUID.getText().toString();
+        pouidVal = Objects.requireNonNull(edtPoUID.getText()).toString();
 
         DatabaseReference databaseReferencePO = FirebaseDatabase.getInstance().getReference("ReceivedOrders/"+ rouidVal +"/OrderedItems/1");
         databaseReferencePO.addValueEventListener(new ValueEventListener() {
@@ -689,18 +630,16 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
         });
     }
 
-
-
     private void expandFilterViewValidation() {
         if (expandStatus){
             showHideFilterComponents(true);
             expandStatus=false;
-            imgbtnExpandCollapseFilterLayout.setText("Tampilkan lebih banyak");
+            imgbtnExpandCollapseFilterLayout.setText(R.string.showMore);
             imgbtnExpandCollapseFilterLayout.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_outline_keyboard_arrow_down, 0);
         } else {
             showHideFilterComponents(false);
             expandStatus=true;
-            imgbtnExpandCollapseFilterLayout.setText("Tampilkan lebih sedikit");
+            imgbtnExpandCollapseFilterLayout.setText(R.string.showLess);
             imgbtnExpandCollapseFilterLayout.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_outline_keyboard_arrow_up, 0);
         }
     }
@@ -713,8 +652,6 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
             if (firstViewData.getId()==R.id.ll_wrap_filter_by_rouid){
                 llWrapFilterByDateRange.setVisibility(View.GONE);
             }
-
-
         } else {
             if (firstViewData.getId()==R.id.ll_wrap_filter_by_date_range){
                 llWrapFilterByRouid.setVisibility(View.VISIBLE);
