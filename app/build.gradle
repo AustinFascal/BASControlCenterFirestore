@@ -11,7 +11,7 @@ android {
         minSdk 19
         targetSdk 29
         versionCode 1
-        versionName "1.0"
+        versionName "1.1.12"
         multiDexEnabled = true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -36,6 +36,7 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: '*.jar')
     implementation 'androidx.core:core-ktx:1.8.0'
+    implementation 'io.github.ParkSangGwon:tedpermission-normal:3.3.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib:1.6.21"
     implementation 'dev.shreyaspatil.MaterialDialog:MaterialDialog:2.2.3'
     implementation 'com.airbnb.android:lottie:4.2.2'

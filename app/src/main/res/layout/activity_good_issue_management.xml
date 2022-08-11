@@ -11,6 +11,7 @@
         <androidx.cardview.widget.CardView
             android:layout_marginTop="-8dp"
             android:id="@+id/cdv_filter"
+            style="@style/Widget.MaterialComponents.CardView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:cardCornerRadius="8dp"

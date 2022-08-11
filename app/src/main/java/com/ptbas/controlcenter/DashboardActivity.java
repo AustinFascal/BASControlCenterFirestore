@@ -14,11 +14,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Color;
@@ -47,6 +50,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.gun0912.tedpermission.PermissionListener;
+import com.gun0912.tedpermission.normal.TedPermission;
 import com.ptbas.controlcenter.adapter.MainFeaturesMenuAdapter;
 import com.ptbas.controlcenter.adapter.StatisticsAdapter;
 import com.ptbas.controlcenter.create.AddCustomerActivity;
@@ -61,6 +66,7 @@ import com.ptbas.controlcenter.userprofile.UserProfileActivity;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class DashboardActivity extends AppCompatActivity {
 
@@ -141,6 +147,24 @@ public class DashboardActivity extends AppCompatActivity {
                 break;
         }
 
+        PermissionListener permissionlistener = new PermissionListener() {
+            @Override
+            public void onPermissionGranted() {
+                //Toast.makeText(DashboardActivity.this, "Permission Granted", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onPermissionDenied(List<String> deniedPermissions) {
+                // Toast.makeText(DashboardActivity.this, "Permission Denied\n" + deniedPermissions.toString(), Toast.LENGTH_SHORT).show();
+            }
+        };
+
+        TedPermission.create()
+                .setPermissionListener(permissionlistener)
+                .setDeniedMessage("Jika Anda menolak perizinan yang dibutuhkan, Anda tidak dapat menggunakan layanan ini.\n\nSilakan aktifkan perizinan di [Pengaturan] > [Perizinan]")
+                .setPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.VIBRATE, Manifest.permission.ACCESS_NETWORK_STATE)
+                .check();
+
         // HANDLING USER ACCOUNT
         authProfile = FirebaseAuth.getInstance();
         FirebaseUser firebaseUser = authProfile.getCurrentUser();
@@ -183,6 +207,10 @@ public class DashboardActivity extends AppCompatActivity {
                             }
                         });
                         break;
+                    case BottomSheetBehavior.STATE_HALF_EXPANDED:
+                    case BottomSheetBehavior.STATE_HIDDEN:
+                    case BottomSheetBehavior.STATE_SETTLING:
+                        break;
                 }
             }
 
@@ -192,30 +220,21 @@ public class DashboardActivity extends AppCompatActivity {
             }
         });
 
-        llAddVehicleFromBottomSheet.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(DashboardActivity.this, AddVehicleActivity.class);
-                startActivity(intent);
-            }
+        llAddVehicleFromBottomSheet.setOnClickListener(view -> {
+            Intent intent = new Intent(DashboardActivity.this, AddVehicleActivity.class);
+            startActivity(intent);
         });
 
-        llAddCustomerFromBottomSheet.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(DashboardActivity.this, AddCustomerActivity.class);
-                startActivity(intent);
-            }
+        llAddCustomerFromBottomSheet.setOnClickListener(view -> {
+            Intent intent = new Intent(DashboardActivity.this, AddCustomerActivity.class);
+            startActivity(intent);
         });
 
         title.setText(R.string.app_name);
 
-        imageViewProfilePic.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(DashboardActivity.this, UserProfileActivity.class);
-                startActivity(intent);
-            }
+        imageViewProfilePic.setOnClickListener(view -> {
+            Intent intent = new Intent(DashboardActivity.this, UserProfileActivity.class);
+            startActivity(intent);
         });
 
         crdviewWrapShortcuts.setVisibility(View.VISIBLE);
@@ -265,12 +284,7 @@ public class DashboardActivity extends AppCompatActivity {
         rvMainFeatures.setLayoutManager(gridLayoutManager);
 
         // REFRESH DASHBOARD'S CONTENTS
-        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                helper.refreshDashboard(DashboardActivity.this);
-            }
-        });
+        swipeContainer.setOnRefreshListener(() -> helper.refreshDashboard(DashboardActivity.this));
 
         // SUM VEHICLE
         databaseReference.child("VehicleData").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -315,20 +329,8 @@ public class DashboardActivity extends AppCompatActivity {
         databaseReference.child("GoodIssueData").orderByChild("giInvoiced").equalTo(false).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                /*int countFinal = Integer.parseInt(String.valueOf(dataSnapshot.getChildrenCount()));
-                getActivefinalCountActiveGoodIssueDataToInvoicedCount(String.valueOf(countFinal));*/
-                databaseReference.child("GoodIssueData").orderByChild("giStatus").equalTo(true).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        int countFinal = Integer.parseInt(String.valueOf(dataSnapshot.getChildrenCount()));
-                        getActivefinalCountActiveGoodIssueDataToInvoicedCount(String.valueOf(countFinal));
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
-                    }
-                });
+                int countFinal = Integer.parseInt(String.valueOf(dataSnapshot.getChildrenCount()));
+                getActivefinalCountActiveGoodIssueDataToInvoicedCount(String.valueOf(countFinal));
             }
 
             @Override
@@ -336,6 +338,7 @@ public class DashboardActivity extends AppCompatActivity {
 
             }
         });
+
         // SUM RECEIVED ORDER - NEED APPROVAL
         databaseReference.child("ReceivedOrders").orderByChild("roStatus").equalTo(false).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -364,15 +367,12 @@ public class DashboardActivity extends AppCompatActivity {
         });
 
         // HAMBURGER MENU CLICK LISTENER
-        imgbtnMenu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                final Dialog dialog = new Dialog(DashboardActivity.this);
-                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                dialog.setContentView(R.layout.dialog_dashboard_option);
-                dialog.show();
-            }
+        imgbtnMenu.setOnClickListener(view -> {
+            final Dialog dialog = new Dialog(DashboardActivity.this);
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            dialog.setContentView(R.layout.dialog_dashboard_option);
+            dialog.show();
         });
     }
 
@@ -482,37 +482,37 @@ public class DashboardActivity extends AppCompatActivity {
 
         MainFeatureModel ob1 = new MainFeatureModel();
         ob1.setHeader("Manajemen Pengguna");
-        ob1.setDesc("Atur rincian data pengguna aplikasi");
+        //ob1.setDesc("Atur rincian data pengguna aplikasi");
         ob1.setImgName(R.drawable.ic_manage_user);
         holder.add(ob1);
 
         MainFeatureModel ob2 = new MainFeatureModel();
         ob2.setHeader("Manajemen Armada");
-        ob2.setDesc("Atur rincian data armada/kendaraan");
+        //ob2.setDesc("Atur rincian data armada/kendaraan");
         ob2.setImgName(R.drawable.ic_manage_vehicle);
         holder.add(ob2);
 
         MainFeatureModel ob3 = new MainFeatureModel();
         ob3.setHeader("Manajemen Received Order");
-        ob3.setDesc("Atur rincian data purchase order");
+        //ob3.setDesc("Atur rincian data purchase order");
         ob3.setImgName(R.drawable.ic_purchase_order);
         holder.add(ob3);
 
         MainFeatureModel ob4 = new MainFeatureModel();
         ob4.setHeader("Manajemen Good Issue");
-        ob4.setDesc("Atur rincian data good issue");
+        //ob4.setDesc("Atur rincian data good issue");
         ob4.setImgName(R.drawable.ic_good_issue);
         holder.add(ob4);
 
         MainFeatureModel ob5 = new MainFeatureModel();
         ob5.setHeader("Manajemen Customer");
-        ob5.setDesc("Atur rincian data customer");
+        //ob5.setDesc("Atur rincian data customer");
         ob5.setImgName(R.drawable.ic_manage_customers);
         holder.add(ob5);
 
         MainFeatureModel ob6 = new MainFeatureModel();
         ob6.setHeader("Manajemen Invoice");
-        ob6.setDesc("Atur data invoice transaksi");
+        //ob6.setDesc("Atur data invoice transaksi");
         ob6.setImgName(R.drawable.ic_invoice);
         holder.add(ob6);
 
@@ -573,6 +573,7 @@ public class DashboardActivity extends AppCompatActivity {
         win.setAttributes(winParams);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void haveNetworkConnection() {
         boolean haveConnectedWifi = false;
         boolean haveConnectedMobile = false;
@@ -608,79 +609,75 @@ public class DashboardActivity extends AppCompatActivity {
 
         }
 
-        nestedscrollview.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
-            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-            @SuppressLint("ResourceAsColor")
-            @Override
-            public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+        nestedscrollview.setOnScrollChangeListener((NestedScrollView.OnScrollChangeListener) (v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
 
-                if (scrollY > 50) {
-                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            if (scrollY > 50) {
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
 
-                    int nightModeFlags =
-                            DashboardActivity.this.getResources().getConfiguration().uiMode &
-                                    Configuration.UI_MODE_NIGHT_MASK;
-                    switch (nightModeFlags) {
-                        case Configuration.UI_MODE_NIGHT_YES:
-                            llTopView.setBackgroundColor(ContextCompat.getColor(DashboardActivity.this, android.R.color.black));
-                            llTopView.setElevation(20);
-                            title.setTextColor(ContextCompat.getColor(DashboardActivity.this, R.color.white));
-                            imgbtnMenu.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(DashboardActivity.this, R.color.white)));
+                int nightModeFlags =
+                        DashboardActivity.this.getResources().getConfiguration().uiMode &
+                                Configuration.UI_MODE_NIGHT_MASK;
+                switch (nightModeFlags) {
+                    case Configuration.UI_MODE_NIGHT_YES:
+                        llTopView.setBackgroundColor(ContextCompat.getColor(DashboardActivity.this, android.R.color.black));
+                        llTopView.setElevation(20);
+                        title.setTextColor(ContextCompat.getColor(DashboardActivity.this, R.color.white));
+                        imgbtnMenu.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(DashboardActivity.this, R.color.white)));
 
-                            if (Build.VERSION.SDK_INT >= 21) {
-                                //Window window = getWindow();
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                    getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);//  set status text dark
-                                }
-                                getWindow().setStatusBarColor(ContextCompat.getColor(DashboardActivity.this, R.color.black));// set status background white
+                        if (Build.VERSION.SDK_INT >= 21) {
+                            //Window window = getWindow();
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);//  set status text dark
                             }
-                            break;
-                        case Configuration.UI_MODE_NIGHT_NO:
-                        case Configuration.UI_MODE_NIGHT_UNDEFINED:
-                            llTopView.setBackgroundColor(ContextCompat.getColor(DashboardActivity.this, android.R.color.white));
-                            llTopView.setElevation(20);
-                            title.setTextColor(ContextCompat.getColor(DashboardActivity.this, R.color.black));
-                            imgbtnMenu.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(DashboardActivity.this, R.color.black)));
+                            getWindow().setStatusBarColor(ContextCompat.getColor(DashboardActivity.this, R.color.black));// set status background white
+                        }
+                        break;
+                    case Configuration.UI_MODE_NIGHT_NO:
+                    case Configuration.UI_MODE_NIGHT_UNDEFINED:
+                        llTopView.setBackgroundColor(ContextCompat.getColor(DashboardActivity.this, android.R.color.white));
+                        llTopView.setElevation(20);
+                        title.setTextColor(ContextCompat.getColor(DashboardActivity.this, R.color.black));
+                        imgbtnMenu.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(DashboardActivity.this, R.color.black)));
 
-                            if (Build.VERSION.SDK_INT >= 21) {
-                                //Window window = getWindow();
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                    getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);//  set status text dark
-                                }
-                                getWindow().setStatusBarColor(ContextCompat.getColor(DashboardActivity.this, R.color.white));// set status background white
+                        if (Build.VERSION.SDK_INT >= 21) {
+                            //Window window = getWindow();
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);//  set status text dark
                             }
-                            break;
-                    }
-
-
-                }
-                if (scrollY < 300) {
-                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-                }
-                if (scrollY < 50) {
-                    title.setTextColor(ContextCompat.getColor(DashboardActivity.this, R.color.white));
-                    imgbtnMenu.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(DashboardActivity.this, R.color.white)));
-                    llTopView.setBackgroundColor(ContextCompat.getColor(DashboardActivity.this, android.R.color.transparent));
-                    llTopView.setElevation(0);
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR);//  set status text dark
-                    }
-                    getWindow().setStatusBarColor(ContextCompat.getColor(DashboardActivity.this, android.R.color.transparent));// set status background white
-
+                            getWindow().setStatusBarColor(ContextCompat.getColor(DashboardActivity.this, R.color.white));// set status background white
+                        }
+                        break;
                 }
 
-                /*if (scrollY == 0) {
-                    Toast.makeText(DashboardActivity.this, "reached top", Toast.LENGTH_SHORT).show();
-                }
 
-                if (scrollY == ( v.getMeasuredHeight() - v.getChildAt(0).getMeasuredHeight() )) {
-                    Toast.makeText(DashboardActivity.this, "Bottom Scroll", Toast.LENGTH_SHORT).show();
-                }*/
             }
+            if (scrollY < 300) {
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+            }
+            if (scrollY < 50) {
+                title.setTextColor(ContextCompat.getColor(DashboardActivity.this, R.color.white));
+                imgbtnMenu.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(DashboardActivity.this, R.color.white)));
+                llTopView.setBackgroundColor(ContextCompat.getColor(DashboardActivity.this, android.R.color.transparent));
+                llTopView.setElevation(0);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR);//  set status text dark
+                }
+                getWindow().setStatusBarColor(ContextCompat.getColor(DashboardActivity.this, android.R.color.transparent));// set status background white
+
+            }
+
+            /*if (scrollY == 0) {
+                Toast.makeText(DashboardActivity.this, "reached top", Toast.LENGTH_SHORT).show();
+            }
+
+            if (scrollY == ( v.getMeasuredHeight() - v.getChildAt(0).getMeasuredHeight() )) {
+                Toast.makeText(DashboardActivity.this, "Bottom Scroll", Toast.LENGTH_SHORT).show();
+            }*/
         });
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onResume() {
         super.onResume();

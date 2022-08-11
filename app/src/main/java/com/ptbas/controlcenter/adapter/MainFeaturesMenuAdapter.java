@@ -45,7 +45,7 @@ public class MainFeaturesMenuAdapter extends RecyclerView.Adapter<MainFeatureVie
 
         holder.img.setImageResource(mainFeatureData.get(position).getImgName());
         holder.tv1.setText(mainFeatureData.get(position).getHeader());
-        holder.tv2.setText(mainFeatureData.get(position).getDesc());
+        //holder.tv2.setText(mainFeatureData.get(position).getDesc());
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -2,10 +2,6 @@ package com.ptbas.controlcenter.create;
 
 import static android.content.ContentValues.TAG;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.res.Configuration;
@@ -16,22 +12,19 @@ import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.DatePicker;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.database.DataSnapshot;
@@ -45,7 +38,6 @@ import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.model.GoodIssueModel;
 import com.ptbas.controlcenter.model.ReceivedOrderModel;
 import com.ptbas.controlcenter.model.VehicleModel;
-import com.ptbas.controlcenter.update.UpdateGoodIssueActivity;
 import com.ptbas.controlcenter.utils.LangUtils;
 
 import java.text.DecimalFormat;
@@ -67,7 +59,6 @@ public class AddGoodIssueActivity extends AppCompatActivity {
     AutoCompleteTextView spinnerRoNumber, spinnerMatName,
             spinnerMatType, spinnerVhlUID;
 
-    //LinearLayout llHeightCorrectionFeature;
     DatePickerDialog datePicker;
     TimePickerDialog timePicker;
     RadioGroup radioGroupOperation;
@@ -173,23 +164,17 @@ public class AddGoodIssueActivity extends AppCompatActivity {
             edtGiDate.setError(null);
         });
 
-        edtGiTime.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Calendar mcurrentTime = Calendar.getInstance();
-                int hour = mcurrentTime.get(Calendar.HOUR_OF_DAY);
-                int minute = mcurrentTime.get(Calendar.MINUTE);
+        edtGiTime.setOnClickListener(view -> {
+            Calendar mcurrentTime = Calendar.getInstance();
+            int hour = mcurrentTime.get(Calendar.HOUR_OF_DAY);
+            int minute = mcurrentTime.get(Calendar.MINUTE);
 
-                timePicker = new TimePickerDialog(AddGoodIssueActivity.this,
-                        new TimePickerDialog.OnTimeSetListener() {
-                            @Override
-                            public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
-                                edtGiTime.setText(String.valueOf(selectedHour+":"+selectedMinute));
-                            }
-                        }, hour, minute, true);
-                timePicker.show();
-                edtGiTime.setError(null);
-            }
+            timePicker = new TimePickerDialog(AddGoodIssueActivity.this,
+                    (timePicker, selectedHour, selectedMinute) ->
+                            edtGiTime.setText(String.valueOf(selectedHour+":"+selectedMinute)),
+                    hour, minute, true);
+            timePicker.show();
+            edtGiTime.setError(null);
         });
 
         edtHeightCorrection.addTextChangedListener(new TextWatcher() {
@@ -210,115 +195,91 @@ public class AddGoodIssueActivity extends AppCompatActivity {
             }
         });
 
-        edtVhlLength.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View view, int i, KeyEvent keyEvent) {
-                processCountVolume(edtVhlLength);
-                return false;
-            }
+        edtVhlLength.setOnKeyListener((view, i, keyEvent) -> {
+            processCountVolume(edtVhlLength);
+            return false;
         });
 
-        edtVhlWidth.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View view, int i, KeyEvent keyEvent) {
-                processCountVolume(edtVhlWidth);
-                return false;
-            }
+        edtVhlWidth.setOnKeyListener((view, i, keyEvent) -> {
+            processCountVolume(edtVhlWidth);
+            return false;
         });
 
-        edtVhlHeight.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View view, int i, KeyEvent keyEvent) {
-                processCountVolume(edtVhlHeight);
-                return false;
-            }
+        edtVhlHeight.setOnKeyListener((view, i, keyEvent) -> {
+            processCountVolume(edtVhlHeight);
+            return false;
         });
 
-        radioGroupOperation.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup radioGroup, int i) {
-                DecimalFormat df = new DecimalFormat("0.00");
-                int selectedStatusId = radioGroupOperation.getCheckedRadioButtonId();
-                radioOperationSelected = findViewById(selectedStatusId);
-                String radioOperation = radioOperationSelected.getText().toString();
+        radioGroupOperation.setOnCheckedChangeListener((radioGroup, i) -> {
+            DecimalFormat df1 = new DecimalFormat("0.00");
+            int selectedStatusId = radioGroupOperation.getCheckedRadioButtonId();
+            radioOperationSelected = findViewById(selectedStatusId);
+            String radioOperation = radioOperationSelected.getText().toString();
 
-                if (!edtHeightCorrection.getText().toString().isEmpty()){
-                    float finalVolume;
-                    int finalHeightCorrection;
-                    if (radioOperation.equals("+")){
-                        finalVolume =
-                                (Float.parseFloat(edtVhlLength.getText().toString()) * Float.parseFloat(edtVhlWidth.getText().toString()) * (Float.parseFloat(edtVhlHeight.getText().toString()) + Float.parseFloat(edtHeightCorrection.getText().toString()))) / 1000000;
-                        finalHeightCorrection = Integer.parseInt(edtVhlHeight.getText().toString()) + Integer.parseInt(edtHeightCorrection.getText().toString());
-                    } else{
-                        finalVolume =
-                                (Float.parseFloat(edtVhlLength.getText().toString()) * Float.parseFloat(edtVhlWidth.getText().toString()) * (Float.parseFloat(edtVhlHeight.getText().toString()) - Float.parseFloat(edtHeightCorrection.getText().toString()))) / 1000000;
-                        finalHeightCorrection = Integer.parseInt(edtVhlHeight.getText().toString()) - Integer.parseInt(edtHeightCorrection.getText().toString());
-                    }
-                    tvVhlVolume.setText(Html.fromHtml(String.valueOf(df.format(finalVolume))+" m\u00B3"));
-                    tvHeightCorrection.setText(Html.fromHtml("Tinggi Hasil Koreksi (TK): "+finalHeightCorrection)+" cm");
+            if (!edtHeightCorrection.getText().toString().isEmpty()){
+                float finalVolume;
+                int finalHeightCorrection;
+                if (radioOperation.equals("+")){
+                    finalVolume =
+                            (Float.parseFloat(edtVhlLength.getText().toString()) * Float.parseFloat(edtVhlWidth.getText().toString()) * (Float.parseFloat(edtVhlHeight.getText().toString()) + Float.parseFloat(edtHeightCorrection.getText().toString()))) / 1000000;
+                    finalHeightCorrection = Integer.parseInt(edtVhlHeight.getText().toString()) + Integer.parseInt(edtHeightCorrection.getText().toString());
+                } else{
+                    finalVolume =
+                            (Float.parseFloat(edtVhlLength.getText().toString()) * Float.parseFloat(edtVhlWidth.getText().toString()) * (Float.parseFloat(edtVhlHeight.getText().toString()) - Float.parseFloat(edtHeightCorrection.getText().toString()))) / 1000000;
+                    finalHeightCorrection = Integer.parseInt(edtVhlHeight.getText().toString()) - Integer.parseInt(edtHeightCorrection.getText().toString());
                 }
-
+                tvVhlVolume.setText(Html.fromHtml(String.valueOf(df1.format(finalVolume))+" m\u00B3"));
+                tvHeightCorrection.setText(Html.fromHtml("Tinggi Hasil Koreksi (TK): "+finalHeightCorrection)+" cm");
             }
+
         });
 
-        edtHeightCorrection.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View view, int i, KeyEvent keyEvent) {
-                if (edtHeightCorrection.getText().toString().equals("")){
-                    edtHeightCorrection.setText("0");
-                }
-                return false;
-            }
-        });
-
-
-
-        spinnerVhlUID.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                String selectedSpinnerVhlRegistNumber = (String) adapterView.getItemAtPosition(position);
-                vhlData = selectedSpinnerVhlRegistNumber;
-                spinnerVhlUID.setError(null);
-                //llHeightCorrectionFeature.setVisibility(View.VISIBLE);
+        edtHeightCorrection.setOnKeyListener((view, i, keyEvent) -> {
+            if (edtHeightCorrection.getText().toString().equals("")){
                 edtHeightCorrection.setText("0");
-
-                radioGroupOperation.check(R.id.radio_minus_operation);
-
-                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("VehicleData/"+vhlData);
-                databaseReference.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        DecimalFormat df = new DecimalFormat("0.00");
-                        VehicleModel vehicleModel = snapshot.getValue(VehicleModel.class);
-
-                        if (vehicleModel!=null){
-                            edtVhlLength.setText(String.valueOf(vehicleModel.getVhlLength()));
-                            edtVhlWidth.setText(String.valueOf(vehicleModel.getVhlWidth()));
-                            edtVhlHeight.setText(String.valueOf(vehicleModel.getVhlHeight()));
-                            tvHeightCorrection.setText(Html.fromHtml("Tinggi Hasil Koreksi (TK): "+ vehicleModel.getVhlHeight() +" cm"));
-
-                            float finalVolumeDefault =
-                                    (Float.parseFloat(edtVhlLength.getText().toString())*
-                                            Float.parseFloat(edtVhlWidth.getText().toString())*
-                                            Float.parseFloat(edtVhlHeight.getText().toString()))/1000000;
-                            tvVhlVolume.setText(Html.fromHtml(String.valueOf(df.format(finalVolumeDefault))+" m\u00B3"));
-
-                        } else {
-                            Toast.makeText(AddGoodIssueActivity.this, "Null", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
-                    }
-                });
             }
+            return false;
         });
 
+        spinnerVhlUID.setOnItemClickListener((adapterView, view, position, l) -> {
+            String selectedSpinnerVhlRegistNumber = (String) adapterView.getItemAtPosition(position);
+            vhlData = selectedSpinnerVhlRegistNumber;
+            spinnerVhlUID.setError(null);
+            //llHeightCorrectionFeature.setVisibility(View.VISIBLE);
+            edtHeightCorrection.setText("0");
 
+            radioGroupOperation.check(R.id.radio_minus_operation);
 
+            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("VehicleData/"+vhlData);
+            databaseReference.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    DecimalFormat df12 = new DecimalFormat("0.00");
+                    VehicleModel vehicleModel = snapshot.getValue(VehicleModel.class);
 
+                    if (vehicleModel!=null){
+                        edtVhlLength.setText(String.valueOf(vehicleModel.getVhlLength()));
+                        edtVhlWidth.setText(String.valueOf(vehicleModel.getVhlWidth()));
+                        edtVhlHeight.setText(String.valueOf(vehicleModel.getVhlHeight()));
+                        tvHeightCorrection.setText(Html.fromHtml("Tinggi Hasil Koreksi (TK): "+ vehicleModel.getVhlHeight() +" cm"));
+
+                        float finalVolumeDefault1 =
+                                (Float.parseFloat(edtVhlLength.getText().toString())*
+                                        Float.parseFloat(edtVhlWidth.getText().toString())*
+                                        Float.parseFloat(edtVhlHeight.getText().toString()))/1000000;
+                        tvVhlVolume.setText(Html.fromHtml(String.valueOf(df12.format(finalVolumeDefault1))+" m\u00B3"));
+
+                    } else {
+                        Toast.makeText(AddGoodIssueActivity.this, "Null", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+        });
 
         spinnerRoNumber.setOnItemClickListener((adapterView, view, position, l) -> {
             String selectedSpinnerPoPtBasNumber = (String) adapterView.getItemAtPosition(position);
@@ -343,12 +304,9 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                                 matType = "BORONG";
 
                             }
-                            edtPoNumberCust.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    dialogInterface.changePoNumberCustomer(AddGoodIssueActivity.this, roNumber);
-                                }
-                            });
+                            edtPoNumberCust.setOnClickListener(view1 ->
+                                    dialogInterface.changePoNumberCustomer(
+                                            AddGoodIssueActivity.this, roNumber));
                         } else {
                             Toast.makeText(AddGoodIssueActivity.this, "Null", Toast.LENGTH_SHORT).show();
                         }
@@ -389,46 +347,27 @@ public class AddGoodIssueActivity extends AppCompatActivity {
             });
         });
 
-        spinnerMatName.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                String selectedSpinnerMaterialName = (String) adapterView.getItemAtPosition(position);
-                matName = selectedSpinnerMaterialName;
-                spinnerMatName.setError(null);
-            }
+        spinnerMatName.setOnItemClickListener((adapterView, view, position, l) -> {
+            String selectedSpinnerMaterialName = (String) adapterView.getItemAtPosition(position);
+            matName = selectedSpinnerMaterialName;
+            spinnerMatName.setError(null);
         });
 
-        spinnerMatName.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View view, int i, KeyEvent keyEvent) {
-                spinnerMatName.setError(null);
-                spinnerMatName.clearFocus();
-                return false;
-            }
+        spinnerMatName.setOnKeyListener((view, i, keyEvent) -> {
+            spinnerMatName.setError(null);
+            spinnerMatName.clearFocus();
+            return false;
         });
 
-        spinnerMatName.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean b) {
-                spinnerMatName.setText(matName);
-            }
+        spinnerMatName.setOnFocusChangeListener((view, b) -> spinnerMatName.setText(matName));
+
+        spinnerMatType.setOnItemClickListener((adapterView, view, position, l) -> {
+            String selectedSpinnerTransportType = (String) adapterView.getItemAtPosition(position);
+            matType = selectedSpinnerTransportType;
+            spinnerMatType.setError(null);
         });
 
-        spinnerMatType.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                String selectedSpinnerTransportType = (String) adapterView.getItemAtPosition(position);
-                matType = selectedSpinnerTransportType;
-                spinnerMatType.setError(null);
-            }
-        });
-
-        spinnerMatType.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean b) {
-                spinnerMatType.setText(matType);
-            }
-        });
+        spinnerMatType.setOnFocusChangeListener((view, b) -> spinnerMatType.setText(matType));
 
         databaseReference.child("ReceivedOrders").addValueEventListener(new ValueEventListener() {
             @Override
@@ -445,8 +384,6 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                     spinnerRoNumber.setAdapter(arrayAdapter);
                 } else {
                     dialogInterface.roNotExistsDialog(AddGoodIssueActivity.this);
-
-                    //Toast.makeText(AddGoodIssueActivity.this, "Not exists", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -478,34 +415,6 @@ public class AddGoodIssueActivity extends AppCompatActivity {
             }
         });
 
-        /*databaseReference.child("MaterialData").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()){
-                    for (DataSnapshot dataSnapshot: snapshot.getChildren()){
-                        String spinnerMaterialData = dataSnapshot.child("name").getValue(String.class);
-                        materialName.add(spinnerMaterialData);
-                    }
-                    ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddGoodIssueActivity.this, R.layout.style_spinner, materialName);
-                    arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
-                    spinnerGiProductName.setAdapter(arrayAdapter);
-                } else {
-                    Toast.makeText(AddGoodIssueActivity.this, "Not exists", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });*/
-
-
-
-
-
-
-
         databaseReference.child("TransportTypeData").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -528,115 +437,104 @@ public class AddGoodIssueActivity extends AppCompatActivity {
             }
         });
 
-        fabSaveGIData.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String giDate = Objects.requireNonNull(edtGiDate.getText()).toString();
-                String giTime = Objects.requireNonNull(edtGiTime.getText()).toString();
+        fabSaveGIData.setOnClickListener(view -> {
+            String giDate = Objects.requireNonNull(edtGiDate.getText()).toString();
+            String giTime = Objects.requireNonNull(edtGiTime.getText()).toString();
 
-                String giRONumber = Objects.requireNonNull(spinnerRoNumber.getText()).toString();
-                String giPOCustomerNumber = Objects.requireNonNull(edtPoNumberCust.getText()).toString();
+            String giRONumber = Objects.requireNonNull(spinnerRoNumber.getText()).toString();
+            String giPOCustomerNumber = Objects.requireNonNull(edtPoNumberCust.getText()).toString();
 
-                String giMatName = Objects.requireNonNull(spinnerMatName.getText()).toString();
-                String giMatType = Objects.requireNonNull(spinnerMatType.getText()).toString();
+            String giMatName = Objects.requireNonNull(spinnerMatName.getText()).toString();
+            String giMatType = Objects.requireNonNull(spinnerMatType.getText()).toString();
 
-                String giVhlUID = Objects.requireNonNull(spinnerVhlUID.getText()).toString();
-                String giHeightCorrection = Objects.requireNonNull(edtHeightCorrection.getText()).toString();
-                String giCreatedBy = helper.getUserId();
-                String giVerifiedBy = null;
+            String giVhlUID = Objects.requireNonNull(spinnerVhlUID.getText()).toString();
+            String giHeightCorrection = Objects.requireNonNull(edtHeightCorrection.getText()).toString();
+            String giCreatedBy = helper.getUserId();
+            String giVerifiedBy = null;
 
-                String giVhlLength = Objects.requireNonNull(edtVhlLength.getText()).toString();
-                String giVhlWidth = Objects.requireNonNull(edtVhlWidth.getText()).toString();
-                String giVhlHeight = Objects.requireNonNull(edtVhlHeight.getText()).toString();
-                String giVhlCubication = tvVhlVolume.getText().toString();
+            String giVhlLength = Objects.requireNonNull(edtVhlLength.getText()).toString();
+            String giVhlWidth = Objects.requireNonNull(edtVhlWidth.getText()).toString();
+            String giVhlHeight = Objects.requireNonNull(edtVhlHeight.getText()).toString();
+            String giVhlCubication = tvVhlVolume.getText().toString();
 
-                int selectedStatusId = radioGroupOperation.getCheckedRadioButtonId();
-                radioOperationSelected = findViewById(selectedStatusId);
-                String radioOperation = radioOperationSelected.getText().toString();
+            int selectedStatusId = radioGroupOperation.getCheckedRadioButtonId();
+            radioOperationSelected = findViewById(selectedStatusId);
+            String radioOperation = radioOperationSelected.getText().toString();
 
-                //boolean giStatus = false;
-                //String giInputDateCreated = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
-
-                if (TextUtils.isEmpty(giDate)){
-                    edtGiDate.setError("Mohon masukkan tanggal pembuatan");
-                    edtGiDate.requestFocus();
-                }
-                if (TextUtils.isEmpty(giTime)){
-                    edtGiTime.setText("-");
-                    /*edtGiTime.setError("Mohon masukkan waktu pembuatan");
-                    edtGiTime.requestFocus();*/
-                }
-                if (TextUtils.isEmpty(giRONumber)){
-                    spinnerRoNumber.setError("Mohon masukkan nomor RO");
-                    spinnerRoNumber.requestFocus();
-                }
-                if (TextUtils.isEmpty(giPOCustomerNumber)){
-                    edtPoNumberCust.setError("Mohon masukkan nomor PO customer");
-                    edtPoNumberCust.requestFocus();
-                }
-                if (TextUtils.isEmpty(giMatName)){
-                    spinnerMatName.setError("Mohon masukkan nama material");
-                    spinnerMatName.requestFocus();
-                }
-                if (TextUtils.isEmpty(giMatType)){
-                    spinnerMatType.setError("Mohon masukkan jenis transport");
-                    spinnerMatType.requestFocus();
-                }
-                if (TextUtils.isEmpty(giVhlUID)){
-                    spinnerVhlUID.setError("Mohon masukkan NOPOL kendaraan");
-                    spinnerVhlUID.requestFocus();
-                }
-
-                if (TextUtils.isEmpty(giVhlLength)||giVhlLength.equals("0")){
-                    edtVhlLength.setError("Mohon masukkan lebar kendaraan");
-                    edtVhlLength.requestFocus();
-                }
-                if (TextUtils.isEmpty(giVhlWidth)||giVhlWidth.equals("0")){
-                    edtVhlWidth.setError("Mohon masukkan lebar kendaraan");
-                    edtVhlWidth.requestFocus();
-                }
-                if (TextUtils.isEmpty(giVhlHeight)||giVhlHeight.equals("0")){
-                    edtVhlHeight.setError("Mohon masukkan lebar kendaraan");
-                    edtVhlHeight.requestFocus();
-                }
-                if (edtHeightCorrection.getText().toString().isEmpty()){
-                    giHeightCorrection.equals(0);
-                    edtHeightCorrection.setText("0");
-                }
-
-                if (!TextUtils.isEmpty(giDate)
-                        &&!TextUtils.isEmpty(giRONumber)&&!TextUtils.isEmpty(giPOCustomerNumber)
-                        &&!TextUtils.isEmpty(giMatName)&&!TextUtils.isEmpty(giMatType)
-                        &&!TextUtils.isEmpty(giVhlUID)&&!TextUtils.isEmpty(giVhlWidth)
-                        &&!TextUtils.isEmpty(giVhlLength)&&!TextUtils.isEmpty(giVhlHeight)
-                        &&!TextUtils.isEmpty(giHeightCorrection))
-
-                    for(int i = 0; i<matNameList.size(); i++){
-                        if (!spinnerMatName.getText().toString().equals(matNameList.get(i).toString())){
-                            spinnerMatName.setError("Nama material tidak ditemukan");
-                            spinnerMatName.requestFocus();
-                        } else{
-                            spinnerMatName.setError(null);
-                            spinnerMatName.clearFocus();
-                            String giUID = "";
-                            giUID = getRandomString(5)+"-"+ matType.substring(0, 3)+"-"+giDay.toString()+"-"+giMonth.toString()+"-"+giYear.toString();
-
-                            DecimalFormat df = new DecimalFormat("0.00");
-                            insertData(giUID, giCreatedBy, giVerifiedBy, giRONumber, giPOCustomerNumber, giMatName, giMatType,
-                                    giVhlUID, giDate, giTime,
-                                    Integer.parseInt(giVhlLength),
-                                    Integer.parseInt(giVhlWidth),
-                                    Integer.parseInt(giVhlHeight),
-                                    Integer.parseInt(radioOperation+giHeightCorrection.replaceAll("[^0-9]", "")),
-                                    Integer.parseInt(tvHeightCorrection.getText().toString().replaceAll("[^0-9]", "")),
-                                    Float.parseFloat(df.format(Float.parseFloat(giVhlCubication.replaceAll("[^0-9.]", "")))),
-                                    false, false);
-                        }
-                    }
-
-
-
+            if (TextUtils.isEmpty(giDate)){
+                edtGiDate.setError("Mohon masukkan tanggal pembuatan");
+                edtGiDate.requestFocus();
             }
+            if (TextUtils.isEmpty(giTime)){
+                edtGiTime.setText("-");
+            }
+            if (TextUtils.isEmpty(giRONumber)){
+                spinnerRoNumber.setError("Mohon masukkan nomor RO");
+                spinnerRoNumber.requestFocus();
+            }
+            if (TextUtils.isEmpty(giPOCustomerNumber)){
+                edtPoNumberCust.setError("Mohon masukkan nomor PO customer");
+                edtPoNumberCust.requestFocus();
+            }
+            if (TextUtils.isEmpty(giMatName)){
+                spinnerMatName.setError("Mohon masukkan nama material");
+                spinnerMatName.requestFocus();
+            }
+            if (TextUtils.isEmpty(giMatType)){
+                spinnerMatType.setError("Mohon masukkan jenis transport");
+                spinnerMatType.requestFocus();
+            }
+            if (TextUtils.isEmpty(giVhlUID)){
+                spinnerVhlUID.setError("Mohon masukkan NOPOL kendaraan");
+                spinnerVhlUID.requestFocus();
+            }
+
+            if (TextUtils.isEmpty(giVhlLength)||giVhlLength.equals("0")){
+                edtVhlLength.setError("Mohon masukkan lebar kendaraan");
+                edtVhlLength.requestFocus();
+            }
+            if (TextUtils.isEmpty(giVhlWidth)||giVhlWidth.equals("0")){
+                edtVhlWidth.setError("Mohon masukkan lebar kendaraan");
+                edtVhlWidth.requestFocus();
+            }
+            if (TextUtils.isEmpty(giVhlHeight)||giVhlHeight.equals("0")){
+                edtVhlHeight.setError("Mohon masukkan lebar kendaraan");
+                edtVhlHeight.requestFocus();
+            }
+            if (edtHeightCorrection.getText().toString().isEmpty()){
+                giHeightCorrection.equals(0);
+                edtHeightCorrection.setText("0");
+            }
+
+            if (!TextUtils.isEmpty(giDate)
+                    &&!TextUtils.isEmpty(giRONumber)&&!TextUtils.isEmpty(giPOCustomerNumber)
+                    &&!TextUtils.isEmpty(giMatName)&&!TextUtils.isEmpty(giMatType)
+                    &&!TextUtils.isEmpty(giVhlUID)&&!TextUtils.isEmpty(giVhlWidth)
+                    &&!TextUtils.isEmpty(giVhlLength)&&!TextUtils.isEmpty(giVhlHeight)
+                    &&!TextUtils.isEmpty(giHeightCorrection))
+
+                for(int i = 0; i<matNameList.size(); i++){
+                    if (!spinnerMatName.getText().toString().equals(matNameList.get(i))){
+                        spinnerMatName.setError("Nama material tidak ditemukan");
+                        spinnerMatName.requestFocus();
+                    } else{
+                        spinnerMatName.setError(null);
+                        spinnerMatName.clearFocus();
+                        String giUID = "";
+                        giUID = getRandomString(5)+"-"+ matType.substring(0, 3)+"-"+giDay.toString()+"-"+giMonth.toString()+"-"+giYear.toString();
+
+                        DecimalFormat df13 = new DecimalFormat("0.00");
+                        insertData(giUID, giCreatedBy, giVerifiedBy, giRONumber, giPOCustomerNumber, giMatName, giMatType,
+                                giVhlUID, giDate, giTime,
+                                Integer.parseInt(giVhlLength),
+                                Integer.parseInt(giVhlWidth),
+                                Integer.parseInt(giVhlHeight),
+                                Integer.parseInt(radioOperation+giHeightCorrection.replaceAll("[^0-9]", "")),
+                                Integer.parseInt(tvHeightCorrection.getText().toString().replaceAll("[^0-9]", "")),
+                                Float.parseFloat(df13.format(Float.parseFloat(giVhlCubication.replaceAll("[^0-9.]", "")))),
+                                false, false);
+                    }
+                }
         });
     }
 
@@ -678,18 +576,15 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                     Toast.makeText(AddGoodIssueActivity.this, "Terjadi kesalahan pembuatan UID, coba tutup dan buka kembali aplikasi", Toast.LENGTH_SHORT).show();
                 } else {
                     DatabaseReference refGI = FirebaseDatabase.getInstance("https://bas-delivery-report-default-rtdb.asia-southeast1.firebasedatabase.app").getReference("GoodIssueData");
-                    refGI.child(giUID).setValue(goodIssueModel).addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if (task.isSuccessful()) {
-                                dialogInterface.savedInformationFromManagement(AddGoodIssueActivity.this);
-                            } else {
-                                try{
-                                    throw task.getException();
-                                } catch (Exception e){
-                                    Log.e(TAG, e.getMessage());
-                                    Toast.makeText(AddGoodIssueActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-                                }
+                    refGI.child(giUID).setValue(goodIssueModel).addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            dialogInterface.savedInformationFromManagement(AddGoodIssueActivity.this);
+                        } else {
+                            try{
+                                throw task.getException();
+                            } catch (Exception e){
+                                Log.e(TAG, e.getMessage());
+                                Toast.makeText(AddGoodIssueActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                             }
                         }
                     });
@@ -743,7 +638,7 @@ public class AddGoodIssueActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(@NonNull Menu menu) {
         return super.onCreateOptionsMenu(menu);
     }
 

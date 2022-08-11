@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -56,8 +57,8 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
         TextView tvCubication, tvGiDateTime, tvGiUid, tvRoUid, tvGiMatDetail, tvGiVhlDetail,
                 tvVhlUid, tvPoCustNumber;
         Button btnDeleteGi, btnApproveGi;
+        ImageView ivShowDetail;
         RelativeLayout rlOpenGiDetail;
-        String updatedCustNumb;
 
         public ItemViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -75,6 +76,7 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
             tvVhlUid = itemView.findViewById(R.id.tv_vhl_uid);
             btnDeleteGi = itemView.findViewById(R.id.btn_delete_gi);
             btnApproveGi = itemView.findViewById(R.id.btn_approve_gi);
+            ivShowDetail = itemView.findViewById(R.id.iv_show_detail);
         }
 
         public void viewBind(GoodIssueModel goodIssueModel) {
@@ -92,7 +94,7 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
             boolean giStatus = goodIssueModel.getGiStatus();
             boolean giInvoiced = goodIssueModel.getGiInvoiced();
 
-            tvCubication.setText(Html.fromHtml(String.valueOf(df.format(cubication))+" m\u00B3"));
+            tvCubication.setText(Html.fromHtml(df.format(cubication) +" m\u00B3"));
             tvGiDateTime.setText(dateNTime);
             tvGiUid.setText(giUID);
             tvRoUid.setText(roUID);
@@ -122,33 +124,30 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
                 llStatusPOAvailable.setVisibility(View.GONE);
             }
 
-            rlOpenGiDetail.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    String giUID=goodIssueModel.getGiUID();
-                    Intent i = new Intent(context, UpdateGoodIssueActivity.class);
-                    i.putExtra("key",giUID);
-                    context.startActivity(i);
+            rlOpenGiDetail.setOnClickListener(view -> {
+                String giUID1 =goodIssueModel.getGiUID();
+                Intent i = new Intent(context, UpdateGoodIssueActivity.class);
+                i.putExtra("key", giUID1);
+                context.startActivity(i);
+            });
+
+            ivShowDetail.setOnClickListener(view -> {
+                String giUID1 =goodIssueModel.getGiUID();
+                Intent i = new Intent(context, UpdateGoodIssueActivity.class);
+                i.putExtra("key", giUID1);
+                context.startActivity(i);
+            });
+
+            btnApproveGi.setOnClickListener(view -> {
+                if (tvPoCustNumber.getText().toString().equals("PO: -")){
+                    dialogInterface.noPoNumberInformation(context);
+                } else {
+                    dialogInterface.approveGiConfirmation(context, goodIssueModel.getGiUID());
                 }
             });
 
-            btnApproveGi.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (tvPoCustNumber.getText().toString().equals("PO: -")){
-                        dialogInterface.noPoNumberInformation(context);
-                    } else {
-                        dialogInterface.approveGiConfirmation(context, goodIssueModel.getGiUID());
-                    }
-                }
-            });
-
-            btnDeleteGi.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    dialogInterface.deleteGiConfirmation(context, goodIssueModel.getGiUID());
-                }
-            });
+            btnDeleteGi.setOnClickListener(view ->
+                    dialogInterface.deleteGiConfirmation(context, goodIssueModel.getGiUID()));
         }
     }
 }

@@ -6,62 +6,47 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
-import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.DatePicker;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.gms.dynamic.IFragmentWrapper;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.ptbas.controlcenter.DialogInterface;
-import com.ptbas.controlcenter.Helper;
 import com.ptbas.controlcenter.R;
-import com.ptbas.controlcenter.create.AddGoodIssueActivity;
-import com.ptbas.controlcenter.management.GoodIssueManagementActivity;
 import com.ptbas.controlcenter.model.GoodIssueModel;
 import com.ptbas.controlcenter.model.ReceivedOrderModel;
-import com.ptbas.controlcenter.model.UserModel;
 import com.ptbas.controlcenter.model.VehicleModel;
-import com.ptbas.controlcenter.userprofile.UserProfileActivity;
 import com.ptbas.controlcenter.utils.LangUtils;
-import com.squareup.picasso.Picasso;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
-import java.util.Random;
 
 public class UpdateGoodIssueActivity extends AppCompatActivity {
 
@@ -83,12 +68,12 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
 
     FloatingActionButton fabSaveGIData;
 
-    private static final String ALLOWED_CHARACTERS ="0123456789QWERTYUIOPASDFGHJKLZXCVBNM";
+    //private static final String ALLOWED_CHARACTERS ="0123456789QWERTYUIOPASDFGHJKLZXCVBNM";
 
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
 
     DialogInterface dialogInterface = new DialogInterface();
-    Helper helper = new Helper();
+    //Helper helper = new Helper();
     List<String> vhlUIDList, matNameList, matTypeNameList, receiveOrderNumberList;
 
     String giUIDVal, giCreatedBy, giVerifiedBy;
@@ -286,61 +271,52 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
 
 
 
-        edtGiDate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                final Calendar calendar = Calendar.getInstance();
-                dayStrVal = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
-                monthStrVal = String.valueOf(calendar.get(Calendar.MONTH));
-                String year = String.valueOf(calendar.get(Calendar.YEAR));
+        edtGiDate.setOnClickListener(view -> {
+            final Calendar calendar = Calendar.getInstance();
+            dayStrVal = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
+            monthStrVal = String.valueOf(calendar.get(Calendar.MONTH));
+            String year = String.valueOf(calendar.get(Calendar.YEAR));
 
-                datePicker = new DatePickerDialog(UpdateGoodIssueActivity.this,
-                        new DatePickerDialog.OnDateSetListener() {
-                            @Override
-                            public void onDateSet(DatePicker datePicker, int year, int month, int dayOfMonth) {
-                                giYear = year;
-                                giMonth = month + 1;
-                                giDay = dayOfMonth;
+            datePicker = new DatePickerDialog(UpdateGoodIssueActivity.this,
+                    new DatePickerDialog.OnDateSetListener() {
+                        @Override
+                        public void onDateSet(DatePicker datePicker, int year, int month, int dayOfMonth) {
+                            giYear = year;
+                            giMonth = month + 1;
+                            giDay = dayOfMonth;
 
-                                if(month < 10){
-                                    monthStrVal = "0" + giMonth;
-                                } else {
-                                    monthStrVal = String.valueOf(giMonth);
-                                }
-                                if(dayOfMonth < 10){
-                                    dayStrVal = "0" + giDay;
-                                } else {
-                                    dayStrVal = String.valueOf(giDay);
-                                }
-
-                                String finalDate = giYear + "-" +monthStrVal + "-" + dayStrVal;
-
-                                edtGiDate.setText(finalDate);
+                            if(month < 10){
+                                monthStrVal = "0" + giMonth;
+                            } else {
+                                monthStrVal = String.valueOf(giMonth);
                             }
-                        }, Integer.parseInt(year), Integer.parseInt(monthStrVal), Integer.parseInt(dayStrVal));
-                datePicker.show();
+                            if(dayOfMonth < 10){
+                                dayStrVal = "0" + giDay;
+                            } else {
+                                dayStrVal = String.valueOf(giDay);
+                            }
 
-                edtGiDate.setError(null);
-            }
+                            String finalDate = giYear + "-" +monthStrVal + "-" + dayStrVal;
+
+                            edtGiDate.setText(finalDate);
+                        }
+                    }, Integer.parseInt(year), Integer.parseInt(monthStrVal), Integer.parseInt(dayStrVal));
+            datePicker.show();
+
+            edtGiDate.setError(null);
         });
 
-        edtGiTime.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Calendar mcurrentTime = Calendar.getInstance();
-                int hour = mcurrentTime.get(Calendar.HOUR_OF_DAY);
-                int minute = mcurrentTime.get(Calendar.MINUTE);
+        edtGiTime.setOnClickListener(view -> {
+            Calendar mcurrentTime = Calendar.getInstance();
+            int hour = mcurrentTime.get(Calendar.HOUR_OF_DAY);
+            int minute = mcurrentTime.get(Calendar.MINUTE);
 
-                timePicker = new TimePickerDialog(UpdateGoodIssueActivity.this,
-                        new TimePickerDialog.OnTimeSetListener() {
-                            @Override
-                            public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
-                                edtGiTime.setText(String.valueOf(selectedHour+":"+selectedMinute));
-                            }
-                        }, hour, minute, true);
-                timePicker.show();
-                edtGiTime.setError(null);
-            }
+            timePicker = new TimePickerDialog(UpdateGoodIssueActivity.this,
+                    (timePicker, selectedHour, selectedMinute) ->
+                            edtGiTime.setText(String.valueOf(selectedHour+":"+selectedMinute)),
+                    hour, minute, true);
+            timePicker.show();
+            edtGiTime.setError(null);
         });
 
         edtHeightCorrection.addTextChangedListener(new TextWatcher() {
@@ -389,235 +365,182 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
             }
         });
 
-        edtVhlLength.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View view, int i, KeyEvent keyEvent) {
-                processCountVolume(edtVhlLength);
-                return false;
-            }
+        edtVhlLength.setOnKeyListener((view, i, keyEvent) -> {
+            processCountVolume(edtVhlLength);
+            return false;
         });
 
-        edtVhlWidth.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View view, int i, KeyEvent keyEvent) {
-                processCountVolume(edtVhlWidth);
-                return false;
-            }
+        edtVhlWidth.setOnKeyListener((view, i, keyEvent) -> {
+            processCountVolume(edtVhlWidth);
+            return false;
         });
 
-        edtVhlHeight.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View view, int i, KeyEvent keyEvent) {
-                processCountVolume(edtVhlHeight);
-                return false;
-            }
+        edtVhlHeight.setOnKeyListener((view, i, keyEvent) -> {
+            processCountVolume(edtVhlHeight);
+            return false;
         });
 
-        radioGroupOperation.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup radioGroup, int i) {
-                DecimalFormat df = new DecimalFormat("0.00");
-                int selectedStatusId = radioGroupOperation.getCheckedRadioButtonId();
-                radioOperationSelected = findViewById(selectedStatusId);
-                String radioOperation = radioOperationSelected.getText().toString();
+        radioGroupOperation.setOnCheckedChangeListener((radioGroup, i) -> {
+            DecimalFormat df = new DecimalFormat("0.00");
+            int selectedStatusId = radioGroupOperation.getCheckedRadioButtonId();
+            radioOperationSelected = findViewById(selectedStatusId);
+            String radioOperation = radioOperationSelected.getText().toString();
 
-                if (!edtHeightCorrection.getText().toString().isEmpty()){
-                    float finalVolume;
-                    int finalHeightCorrection;
-                    if (radioOperation.equals("+")){
-                        finalVolume =
-                                (Float.parseFloat(edtVhlLength.getText().toString()) * Float.parseFloat(edtVhlWidth.getText().toString()) * (Float.parseFloat(edtVhlHeight.getText().toString()) + Float.parseFloat(edtHeightCorrection.getText().toString()))) / 1000000;
-                        finalHeightCorrection = Integer.parseInt(edtVhlHeight.getText().toString()) + Integer.parseInt(edtHeightCorrection.getText().toString());
-                    } else{
-                        finalVolume =
-                                (Float.parseFloat(edtVhlLength.getText().toString()) * Float.parseFloat(edtVhlWidth.getText().toString()) * (Float.parseFloat(edtVhlHeight.getText().toString()) - Float.parseFloat(edtHeightCorrection.getText().toString()))) / 1000000;
-                        finalHeightCorrection = Integer.parseInt(edtVhlHeight.getText().toString()) - Integer.parseInt(edtHeightCorrection.getText().toString());
-                    }
-                    tvVhlVolume.setText(Html.fromHtml(String.valueOf(df.format(finalVolume))+" m\u00B3"));
-                    tvHeightCorrection.setText(Html.fromHtml("Tinggi Hasil Koreksi (TK): "+finalHeightCorrection)+" cm");
+            if (!edtHeightCorrection.getText().toString().isEmpty()){
+                float finalVolume;
+                int finalHeightCorrection;
+                if (radioOperation.equals("+")){
+                    finalVolume =
+                            (Float.parseFloat(edtVhlLength.getText().toString()) * Float.parseFloat(edtVhlWidth.getText().toString()) * (Float.parseFloat(edtVhlHeight.getText().toString()) + Float.parseFloat(edtHeightCorrection.getText().toString()))) / 1000000;
+                    finalHeightCorrection = Integer.parseInt(edtVhlHeight.getText().toString()) + Integer.parseInt(edtHeightCorrection.getText().toString());
+                } else{
+                    finalVolume =
+                            (Float.parseFloat(edtVhlLength.getText().toString()) * Float.parseFloat(edtVhlWidth.getText().toString()) * (Float.parseFloat(edtVhlHeight.getText().toString()) - Float.parseFloat(edtHeightCorrection.getText().toString()))) / 1000000;
+                    finalHeightCorrection = Integer.parseInt(edtVhlHeight.getText().toString()) - Integer.parseInt(edtHeightCorrection.getText().toString());
                 }
-
+                tvVhlVolume.setText(Html.fromHtml(String.valueOf(df.format(finalVolume))+" m\u00B3"));
+                tvHeightCorrection.setText(Html.fromHtml("Tinggi Hasil Koreksi (TK): "+finalHeightCorrection)+" cm");
             }
+
         });
 
-        edtHeightCorrection.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View view, int i, KeyEvent keyEvent) {
-                if (edtHeightCorrection.getText().toString().equals("")){
-                    edtHeightCorrection.setText("0");
-                }
-                return false;
-            }
-        });
-
-
-
-
-
-        spinnerVhlUID.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                String selectedSpinnerVhlRegistNumber = (String) adapterView.getItemAtPosition(position);
-                vhlData = selectedSpinnerVhlRegistNumber;
-                spinnerVhlUID.setError(null);
-                //llHeightCorrectionFeature.setVisibility(View.VISIBLE);
+        edtHeightCorrection.setOnKeyListener((view, i, keyEvent) -> {
+            if (edtHeightCorrection.getText().toString().equals("")){
                 edtHeightCorrection.setText("0");
+            }
+            return false;
+        });
 
-                radioGroupOperation.check(R.id.radio_minus_operation);
+        spinnerVhlUID.setOnItemClickListener((adapterView, view, position, l) -> {
+            String selectedSpinnerVhlRegistNumber = (String) adapterView.getItemAtPosition(position);
+            vhlData = selectedSpinnerVhlRegistNumber;
+            spinnerVhlUID.setError(null);
+            //llHeightCorrectionFeature.setVisibility(View.VISIBLE);
+            edtHeightCorrection.setText("0");
 
-                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("VehicleData/"+vhlData);
-                databaseReference.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        DecimalFormat df = new DecimalFormat("0.00");
-                        VehicleModel vehicleModel = snapshot.getValue(VehicleModel.class);
+            radioGroupOperation.check(R.id.radio_minus_operation);
 
-                        if (vehicleModel!=null){
-                            edtVhlLength.setText(String.valueOf(vehicleModel.getVhlLength()));
-                            edtVhlWidth.setText(String.valueOf(vehicleModel.getVhlWidth()));
-                            edtVhlHeight.setText(String.valueOf(vehicleModel.getVhlHeight()));
-                            tvHeightCorrection.setText(Html.fromHtml("Tinggi Hasil Koreksi (TK): "+ vehicleModel.getVhlHeight() +" cm"));
+            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("VehicleData/"+vhlData);
+            databaseReference.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    DecimalFormat df = new DecimalFormat("0.00");
+                    VehicleModel vehicleModel = snapshot.getValue(VehicleModel.class);
 
-                            float finalVolumeDefault =
-                                    (Float.parseFloat(edtVhlLength.getText().toString())*
-                                            Float.parseFloat(edtVhlWidth.getText().toString())*
-                                            Float.parseFloat(edtVhlHeight.getText().toString()))/1000000;
-                            tvVhlVolume.setText(Html.fromHtml(String.valueOf(df.format(finalVolumeDefault))+" m\u00B3"));
+                    if (vehicleModel!=null){
+                        edtVhlLength.setText(String.valueOf(vehicleModel.getVhlLength()));
+                        edtVhlWidth.setText(String.valueOf(vehicleModel.getVhlWidth()));
+                        edtVhlHeight.setText(String.valueOf(vehicleModel.getVhlHeight()));
+                        tvHeightCorrection.setText(Html.fromHtml("Tinggi Hasil Koreksi (TK): "+ vehicleModel.getVhlHeight() +" cm"));
 
-                        } else {
-                            Toast.makeText(UpdateGoodIssueActivity.this, "Null", Toast.LENGTH_SHORT).show();
+                        float finalVolumeDefault =
+                                (Float.parseFloat(edtVhlLength.getText().toString())*
+                                        Float.parseFloat(edtVhlWidth.getText().toString())*
+                                        Float.parseFloat(edtVhlHeight.getText().toString()))/1000000;
+                        tvVhlVolume.setText(Html.fromHtml(String.valueOf(df.format(finalVolumeDefault))+" m\u00B3"));
+
+                    } else {
+                        Toast.makeText(UpdateGoodIssueActivity.this, "Null", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+        });
+
+        spinnerRoNumber.setOnItemClickListener((adapterView, view, position, l) -> {
+            String selectedSpinnerPoPtBasNumber = (String) adapterView.getItemAtPosition(position);
+            roNumber = selectedSpinnerPoPtBasNumber;
+            spinnerRoNumber.setError(null);
+            edtPoNumberCust.setError(null);
+            matNameList.clear();
+            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("ReceivedOrders/"+ roNumber);
+            databaseReference.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    ReceivedOrderModel receivedOrderModel = snapshot.getValue(ReceivedOrderModel.class);
+
+                    if (receivedOrderModel !=null){
+                        edtPoNumberCust.setText(String.valueOf(receivedOrderModel.getRoPoCustNumber()));
+                        if (receivedOrderModel.getRoMatType().contains("CUR")){
+                            spinnerMatType.setText("CURAH");
+                            matType = "CURAH";
+                        } else{
+                            spinnerMatType.setText("BORONG");
+                            matType = "BORONG";
+
                         }
+                    } else {
+                        Toast.makeText(UpdateGoodIssueActivity.this, "Null", Toast.LENGTH_SHORT).show();
                     }
+                }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
 
-                    }
-                });
-            }
-        });
+                }
+            });
 
-        spinnerRoNumber.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                String selectedSpinnerPoPtBasNumber = (String) adapterView.getItemAtPosition(position);
-                roNumber = selectedSpinnerPoPtBasNumber;
-                spinnerRoNumber.setError(null);
-                edtPoNumberCust.setError(null);
-                matNameList.clear();
-                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("ReceivedOrders/"+ roNumber);
-                databaseReference.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        ReceivedOrderModel receivedOrderModel = snapshot.getValue(ReceivedOrderModel.class);
 
-                        if (receivedOrderModel !=null){
-                            edtPoNumberCust.setText(String.valueOf(receivedOrderModel.getRoPoCustNumber()));
-                            if (receivedOrderModel.getRoMatType().contains("CUR")){
-                                spinnerMatType.setText("CURAH");
-                                matType = "CURAH";
-                            } else{
-                                spinnerMatType.setText("BORONG");
-                                matType = "BORONG";
-
-                            }
-                        } else {
-                            Toast.makeText(UpdateGoodIssueActivity.this, "Null", Toast.LENGTH_SHORT).show();
+            DatabaseReference databaseReferencePO = FirebaseDatabase.getInstance().getReference("ReceivedOrders/"+ roNumber +"/OrderedItems");
+            databaseReferencePO.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.exists()){
+                        for (DataSnapshot dataSnapshot: snapshot.getChildren()){
+                            String spinnerMaterialData = dataSnapshot.child("matName").getValue(String.class);
+                            matNameList.add(spinnerMaterialData);
+                            matNameList.remove("JASA ANGKUT");
                         }
+                        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(UpdateGoodIssueActivity.this, R.layout.style_spinner, matNameList);
+                        arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
+                        spinnerMatName.setAdapter(arrayAdapter);
+                    } else {
+                        Toast.makeText(UpdateGoodIssueActivity.this, "Not exists", Toast.LENGTH_SHORT).show();
                     }
+                }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
 
-                    }
-                });
-
-
-                DatabaseReference databaseReferencePO = FirebaseDatabase.getInstance().getReference("ReceivedOrders/"+ roNumber +"/OrderedItems");
-                databaseReferencePO.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if (snapshot.exists()){
-                            for (DataSnapshot dataSnapshot: snapshot.getChildren()){
-                                String spinnerMaterialData = dataSnapshot.child("matName").getValue(String.class);
-                                matNameList.add(spinnerMaterialData);
-                                matNameList.remove("JASA ANGKUT");
-                            }
-                            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(UpdateGoodIssueActivity.this, R.layout.style_spinner, matNameList);
-                            arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
-                            spinnerMatName.setAdapter(arrayAdapter);
-                        } else {
-                            Toast.makeText(UpdateGoodIssueActivity.this, "Not exists", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
-                    }
-                });
-            }
+                }
+            });
         });
 
-        spinnerMatName.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                /*String selectedSpinnerMaterialName = (String) adapterView.getItemAtPosition(position);
-                matName = selectedSpinnerMaterialName;
-                spinnerMatName.setError(null);*/
+        spinnerMatName.setOnItemClickListener((adapterView, view, position, l) -> {
+            /*String selectedSpinnerMaterialName = (String) adapterView.getItemAtPosition(position);
+            matName = selectedSpinnerMaterialName;
+            spinnerMatName.setError(null);*/
 
-                Toast.makeText(UpdateGoodIssueActivity.this, "Anda tidak dapat merubah data ini", Toast.LENGTH_SHORT).show();
-            }
+            Toast.makeText(UpdateGoodIssueActivity.this, "Anda tidak dapat merubah data ini", Toast.LENGTH_SHORT).show();
         });
 
-        spinnerMatName.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dialogInterface.dataCannotBeChangedInformation(UpdateGoodIssueActivity.this);
-            }
+        spinnerMatName.setOnClickListener(view ->
+                dialogInterface.dataCannotBeChangedInformation(UpdateGoodIssueActivity.this));
+
+        spinnerMatName.setOnKeyListener((view, i, keyEvent) -> {
+            spinnerMatName.setError(null);
+            spinnerMatName.clearFocus();
+            return false;
         });
 
-        spinnerMatName.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View view, int i, KeyEvent keyEvent) {
-                spinnerMatName.setError(null);
-                spinnerMatName.clearFocus();
-                return false;
-            }
+        spinnerMatName.setOnFocusChangeListener((view, b) -> spinnerMatName.setText(matName));
+
+        spinnerMatType.setOnClickListener(view -> dialogInterface.dataCannotBeChangedInformation(UpdateGoodIssueActivity.this));
+
+        spinnerMatType.setOnItemClickListener((adapterView, view, position, l) -> {
+            /*String selectedSpinnerTransportType = (String) adapterView.getItemAtPosition(position);
+            matType = selectedSpinnerTransportType;
+            spinnerMatType.setError(null);*/
+
+            Toast.makeText(UpdateGoodIssueActivity.this, "Anda tidak dapat merubah data ini", Toast.LENGTH_SHORT).show();
+
         });
 
-        spinnerMatName.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean b) {
-                spinnerMatName.setText(matName);
-            }
-        });
-
-        spinnerMatType.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dialogInterface.dataCannotBeChangedInformation(UpdateGoodIssueActivity.this);
-            }
-        });
-
-        spinnerMatType.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                /*String selectedSpinnerTransportType = (String) adapterView.getItemAtPosition(position);
-                matType = selectedSpinnerTransportType;
-                spinnerMatType.setError(null);*/
-
-                Toast.makeText(UpdateGoodIssueActivity.this, "Anda tidak dapat merubah data ini", Toast.LENGTH_SHORT).show();
-
-            }
-        });
-
-        spinnerMatType.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean b) {
-                spinnerMatType.setText(matType);
-            }
-        });
+        spinnerMatType.setOnFocusChangeListener((view, b) -> spinnerMatType.setText(matType));
 
         databaseReference.child("ReceivedOrders").addValueEventListener(new ValueEventListener() {
             @Override
@@ -713,115 +636,112 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
 
 
 
-        fabSaveGIData.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String giDate = Objects.requireNonNull(edtGiDate.getText()).toString();
-                String giTime = Objects.requireNonNull(edtGiTime.getText()).toString();
+        fabSaveGIData.setOnClickListener(view -> {
+            String giDate = Objects.requireNonNull(edtGiDate.getText()).toString();
+            String giTime = Objects.requireNonNull(edtGiTime.getText()).toString();
 
-                String giRONumber = Objects.requireNonNull(spinnerRoNumber.getText()).toString();
-                String giPOCustomerNumber = Objects.requireNonNull(edtPoNumberCust.getText()).toString();
+            String giRONumber = Objects.requireNonNull(spinnerRoNumber.getText()).toString();
+            String giPOCustomerNumber = Objects.requireNonNull(edtPoNumberCust.getText()).toString();
 
-                String giMatName = Objects.requireNonNull(spinnerMatName.getText()).toString();
-                String giMatType = Objects.requireNonNull(spinnerMatType.getText()).toString();
+            String giMatName = Objects.requireNonNull(spinnerMatName.getText()).toString();
+            String giMatType = Objects.requireNonNull(spinnerMatType.getText()).toString();
 
-                String giVhlUID = Objects.requireNonNull(spinnerVhlUID.getText()).toString();
-                String giHeightCorrection = Objects.requireNonNull(edtHeightCorrection.getText()).toString();
-                //String giCreatedBy = helper.getUserId();
+            String giVhlUID = Objects.requireNonNull(spinnerVhlUID.getText()).toString();
+            String giHeightCorrection = Objects.requireNonNull(edtHeightCorrection.getText()).toString();
+            //String giCreatedBy = helper.getUserId();
 
-                String giVhlLength = Objects.requireNonNull(edtVhlLength.getText()).toString();
-                String giVhlWidth = Objects.requireNonNull(edtVhlWidth.getText()).toString();
-                String giVhlHeight = Objects.requireNonNull(edtVhlHeight.getText()).toString();
-                String giVhlCubication = tvVhlVolume.getText().toString();
+            String giVhlLength = Objects.requireNonNull(edtVhlLength.getText()).toString();
+            String giVhlWidth = Objects.requireNonNull(edtVhlWidth.getText()).toString();
+            String giVhlHeight = Objects.requireNonNull(edtVhlHeight.getText()).toString();
+            String giVhlCubication = tvVhlVolume.getText().toString();
 
-                int selectedStatusId = radioGroupOperation.getCheckedRadioButtonId();
-                radioOperationSelected = findViewById(selectedStatusId);
-                String radioOperation = radioOperationSelected.getText().toString();
+            int selectedStatusId = radioGroupOperation.getCheckedRadioButtonId();
+            radioOperationSelected = findViewById(selectedStatusId);
+            String radioOperation = radioOperationSelected.getText().toString();
 
-                //boolean giStatus = false;
-                //String giInputDateCreated = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
+            //boolean giStatus = false;
+            //String giInputDateCreated = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
 
-                if (TextUtils.isEmpty(giDate)){
-                    edtGiDate.setError("Mohon masukkan tanggal pembuatan");
-                    edtGiDate.requestFocus();
-                }
-                if (TextUtils.isEmpty(giTime)){
-                    edtGiTime.setError("Mohon masukkan waktu pembuatan");
-                    edtGiTime.requestFocus();
-                }
-                if (TextUtils.isEmpty(giRONumber)){
-                    spinnerRoNumber.setError("Mohon masukkan nomor RO");
-                    spinnerRoNumber.requestFocus();
-                }
-                if (TextUtils.isEmpty(giPOCustomerNumber)){
-                    edtPoNumberCust.setError("Mohon masukkan nomor PO customer");
-                    edtPoNumberCust.requestFocus();
-                }
-                if (TextUtils.isEmpty(giMatName)){
-                    spinnerMatName.setError("Mohon masukkan nama material");
-                    spinnerMatName.requestFocus();
-                }
-                if (TextUtils.isEmpty(giMatType)){
-                    spinnerMatType.setError("Mohon masukkan jenis transport");
-                    spinnerMatType.requestFocus();
-                }
-                if (TextUtils.isEmpty(giVhlUID)){
-                    spinnerVhlUID.setError("Mohon masukkan NOPOL kendaraan");
-                    spinnerVhlUID.requestFocus();
-                }
+            if (TextUtils.isEmpty(giDate)){
+                edtGiDate.setError("Mohon masukkan tanggal pembuatan");
+                edtGiDate.requestFocus();
+            }
+            if (TextUtils.isEmpty(giTime)){
+                edtGiTime.setError("Mohon masukkan waktu pembuatan");
+                edtGiTime.requestFocus();
+            }
+            if (TextUtils.isEmpty(giRONumber)){
+                spinnerRoNumber.setError("Mohon masukkan nomor RO");
+                spinnerRoNumber.requestFocus();
+            }
+            if (TextUtils.isEmpty(giPOCustomerNumber)){
+                edtPoNumberCust.setError("Mohon masukkan nomor PO customer");
+                edtPoNumberCust.requestFocus();
+            }
+            if (TextUtils.isEmpty(giMatName)){
+                spinnerMatName.setError("Mohon masukkan nama material");
+                spinnerMatName.requestFocus();
+            }
+            if (TextUtils.isEmpty(giMatType)){
+                spinnerMatType.setError("Mohon masukkan jenis transport");
+                spinnerMatType.requestFocus();
+            }
+            if (TextUtils.isEmpty(giVhlUID)){
+                spinnerVhlUID.setError("Mohon masukkan NOPOL kendaraan");
+                spinnerVhlUID.requestFocus();
+            }
 
-                if (TextUtils.isEmpty(giVhlLength)||giVhlLength.equals("0")){
-                    edtVhlLength.setError("Mohon masukkan lebar kendaraan");
-                    edtVhlLength.requestFocus();
-                }
-                if (TextUtils.isEmpty(giVhlWidth)||giVhlWidth.equals("0")){
-                    edtVhlWidth.setError("Mohon masukkan lebar kendaraan");
-                    edtVhlWidth.requestFocus();
-                }
-                if (TextUtils.isEmpty(giVhlHeight)||giVhlHeight.equals("0")){
-                    edtVhlHeight.setError("Mohon masukkan lebar kendaraan");
-                    edtVhlHeight.requestFocus();
-                }
-                if (edtHeightCorrection.getText().toString().isEmpty()){
-                    giHeightCorrection.equals(0);
-                    edtHeightCorrection.setText("0");
-                }
+            if (TextUtils.isEmpty(giVhlLength)||giVhlLength.equals("0")){
+                edtVhlLength.setError("Mohon masukkan lebar kendaraan");
+                edtVhlLength.requestFocus();
+            }
+            if (TextUtils.isEmpty(giVhlWidth)||giVhlWidth.equals("0")){
+                edtVhlWidth.setError("Mohon masukkan lebar kendaraan");
+                edtVhlWidth.requestFocus();
+            }
+            if (TextUtils.isEmpty(giVhlHeight)||giVhlHeight.equals("0")){
+                edtVhlHeight.setError("Mohon masukkan lebar kendaraan");
+                edtVhlHeight.requestFocus();
+            }
+            if (edtHeightCorrection.getText().toString().isEmpty()){
+                giHeightCorrection.equals(0);
+                edtHeightCorrection.setText("0");
+            }
 
-                if (!TextUtils.isEmpty(giDate)&&!TextUtils.isEmpty(giTime)
-                        &&!TextUtils.isEmpty(giRONumber)&&!TextUtils.isEmpty(giPOCustomerNumber)
-                        &&!TextUtils.isEmpty(giMatName)&&!TextUtils.isEmpty(giMatType)
-                        &&!TextUtils.isEmpty(giVhlUID)&&!TextUtils.isEmpty(giVhlWidth)
-                        &&!TextUtils.isEmpty(giVhlLength)&&!TextUtils.isEmpty(giVhlHeight)
-                        &&!TextUtils.isEmpty(giHeightCorrection)){
-                    DecimalFormat df = new DecimalFormat("0.00");
-                    insertData(giUIDVal, giCreatedBy, giVerifiedBy, giRONumber, giPOCustomerNumber, giMatName, giMatType,
-                            giVhlUID, giDate, giTime,
-                            Integer.parseInt(giVhlLength),
-                            Integer.parseInt(giVhlWidth),
-                            Integer.parseInt(giVhlHeight),
-                            Integer.parseInt(radioOperation+giHeightCorrection.replaceAll("[^0-9]", "")),
-                            Integer.parseInt(tvHeightCorrection.getText().toString().replaceAll("[^0-9]", "")),
-                            Float.parseFloat(df.format(Float.parseFloat(giVhlCubication.replaceAll("[^0-9.]", "")))),
-                            giStatus, giInvoiced);
-
-                }
-
-                    /*for(int i = 0; i<matNameList.size(); i++){
-                        if (!spinnerMatName.getText().toString().equals(matNameList.get(i).toString())){
-                            spinnerMatName.setError("Nama material tidak ditemukan");
-                            spinnerMatName.requestFocus();
-                        } else{
-                            spinnerMatName.setError(null);
-                            spinnerMatName.clearFocus();
-                            //String giUID = giUIDVal;
-                            //giUID = getRandomString(5)+"-"+ matType.substring(0, 3)+"-"+giDay.toString()+"-"+giMonth.toString()+"-"+giYear.toString();
-
-                        }
-                    }*/
-
-
+            if (!TextUtils.isEmpty(giDate)&&!TextUtils.isEmpty(giTime)
+                    &&!TextUtils.isEmpty(giRONumber)&&!TextUtils.isEmpty(giPOCustomerNumber)
+                    &&!TextUtils.isEmpty(giMatName)&&!TextUtils.isEmpty(giMatType)
+                    &&!TextUtils.isEmpty(giVhlUID)&&!TextUtils.isEmpty(giVhlWidth)
+                    &&!TextUtils.isEmpty(giVhlLength)&&!TextUtils.isEmpty(giVhlHeight)
+                    &&!TextUtils.isEmpty(giHeightCorrection)){
+                DecimalFormat df = new DecimalFormat("0.00");
+                insertData(giUIDVal, giCreatedBy, giVerifiedBy, giRONumber, giPOCustomerNumber, giMatName, giMatType,
+                        giVhlUID, giDate, giTime,
+                        Integer.parseInt(giVhlLength),
+                        Integer.parseInt(giVhlWidth),
+                        Integer.parseInt(giVhlHeight),
+                        Integer.parseInt(radioOperation+giHeightCorrection.replaceAll("[^0-9]", "")),
+                        Integer.parseInt(tvHeightCorrection.getText().toString().replaceAll("[^0-9]", "")),
+                        Float.parseFloat(df.format(Float.parseFloat(giVhlCubication.replaceAll("[^0-9.]", "")))),
+                        giStatus, giInvoiced);
 
             }
+
+                /*for(int i = 0; i<matNameList.size(); i++){
+                    if (!spinnerMatName.getText().toString().equals(matNameList.get(i).toString())){
+                        spinnerMatName.setError("Nama material tidak ditemukan");
+                        spinnerMatName.requestFocus();
+                    } else{
+                        spinnerMatName.setError(null);
+                        spinnerMatName.clearFocus();
+                        //String giUID = giUIDVal;
+                        //giUID = getRandomString(5)+"-"+ matType.substring(0, 3)+"-"+giDay.toString()+"-"+giMonth.toString()+"-"+giYear.toString();
+
+                    }
+                }*/
+
+
+
         });
     }
 
@@ -859,18 +779,15 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot snapshot) {
 
                 DatabaseReference refGI = FirebaseDatabase.getInstance("https://bas-delivery-report-default-rtdb.asia-southeast1.firebasedatabase.app").getReference("GoodIssueData");
-                refGI.child(giUID).setValue(goodIssueModel).addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            dialogInterface.updatedInformation(UpdateGoodIssueActivity.this);
-                        } else {
-                            try{
-                                throw task.getException();
-                            } catch (Exception e){
-                                Log.e(TAG, e.getMessage());
-                                Toast.makeText(UpdateGoodIssueActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-                            }
+                refGI.child(giUID).setValue(goodIssueModel).addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        dialogInterface.updatedInformation(UpdateGoodIssueActivity.this);
+                    } else {
+                        try{
+                            throw task.getException();
+                        } catch (Exception e){
+                            Log.e(TAG, e.getMessage());
+                            Toast.makeText(UpdateGoodIssueActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -914,17 +831,17 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
         }
     }
 
-    private static String getRandomString(final int sizeOfRandomString)
+    /*private static String getRandomString(final int sizeOfRandomString)
     {
         final Random random=new Random();
         final StringBuilder sb=new StringBuilder(sizeOfRandomString);
         for(int i=0;i<sizeOfRandomString;++i)
             sb.append(ALLOWED_CHARACTERS.charAt(random.nextInt(ALLOWED_CHARACTERS.length())));
         return sb.toString();
-    }
+    }*/
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(@NonNull Menu menu) {
         return super.onCreateOptionsMenu(menu);
     }
 

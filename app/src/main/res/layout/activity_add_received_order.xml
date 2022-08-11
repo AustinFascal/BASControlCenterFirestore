@@ -17,7 +17,7 @@
         android:layout_marginTop="24dp"
         android:layout_marginEnd="24dp"
         android:layout_marginBottom="24dp"
-        android:contentDescription="Proceed"
+        android:contentDescription="@string/default_content_description"
         android:src="@drawable/ic_outline_check"
         android:tintMode="@color/white"
         app:backgroundTint="@color/pure_orange" />

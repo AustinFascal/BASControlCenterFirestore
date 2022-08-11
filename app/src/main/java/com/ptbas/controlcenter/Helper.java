@@ -51,6 +51,8 @@ public class Helper {
     }
 
     public static void openFilePDF(Context context, File url){
+        Toast.makeText(context, "Berhasil menyimpan data rekap menjadi PDF di "+url, Toast.LENGTH_LONG).show();
+
         Uri uri = FileProvider.getUriForFile(
                 context,
                 context.getApplicationContext().getPackageName() + ".fileprovider",
@@ -64,6 +66,7 @@ public class Helper {
                 PackageManager.MATCH_DEFAULT_ONLY
         );
 
+
         for (ResolveInfo resolveInfo : resolveInfoList){
             String name = resolveInfo.activityInfo.packageName;
             context.grantUriPermission(name, uri,
@@ -73,7 +76,6 @@ public class Helper {
         if (url.exists()) {
             intent.setDataAndType(uri, "application/pdf");
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-
 
             try {
                 context.startActivity(intent);

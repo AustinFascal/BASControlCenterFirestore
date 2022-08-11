@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.VibrationEffect;
@@ -25,7 +26,10 @@ import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
+import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -38,6 +42,8 @@ import com.ptbas.controlcenter.Helper;
 import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.adapter.GIManagementAdapter;
 import com.ptbas.controlcenter.adapter.ROManagementAdapter;
+import com.ptbas.controlcenter.create.AddGoodIssueActivity;
+import com.ptbas.controlcenter.create.AddReceivedOrder;
 import com.ptbas.controlcenter.model.GoodIssueModel;
 import com.ptbas.controlcenter.model.ReceivedOrderModel;
 
@@ -73,6 +79,9 @@ public class ReceivedOrderManagementActivity extends AppCompatActivity {
     Boolean expandStatus = true, firstViewDataFirstTimeStatus = true;
     View firstViewData;
 
+    FloatingActionsMenu fabExpandMenu;
+    FloatingActionButton fabActionCreateRo, fabActionArchivedData;
+
     List<String> arrayListMaterialType, arrayListCompanyName;
 
     AutoCompleteTextView spinnerApprovalStatus, spinnerSearchType,
@@ -84,6 +93,10 @@ public class ReceivedOrderManagementActivity extends AppCompatActivity {
         setContentView(R.layout.activity_received_order_management);
 
         context = this;
+
+        fabExpandMenu = findViewById(R.id.fab_expand_menu);
+        fabActionCreateRo = findViewById(R.id.fab_action_create_ro);
+        fabActionArchivedData = findViewById(R.id.fab_action_archived_data);
 
         cdvFilter = findViewById(R.id.cdv_filter);
         nestedScrollView = findViewById(R.id.nestedScrollView);
@@ -175,6 +188,14 @@ public class ReceivedOrderManagementActivity extends AppCompatActivity {
 
             TransitionManager.beginDelayedTransition(cdvFilter, new AutoTransition());
         });
+
+        fabActionCreateRo.setOnClickListener(view -> {
+            Intent intent = new Intent(ReceivedOrderManagementActivity.this, AddReceivedOrder.class);
+            startActivity(intent);
+        });
+
+        fabActionArchivedData.setOnClickListener(view ->
+                Toast.makeText(context, "Coming soon", Toast.LENGTH_SHORT).show());
     }
 
     private void expandFilterViewValidation() {

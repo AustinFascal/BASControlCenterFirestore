@@ -36,14 +36,14 @@
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
-            <TextView
+           <!-- <TextView
                 android:id="@+id/tv_main_feature_2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Lorem ipsum dolor sit amet"
                 android:textAlignment="center"
                 android:ellipsize="end"
-                android:maxLines="2"/>
+                android:maxLines="2"/>-->
         </LinearLayout>
     </RelativeLayout>
 </androidx.cardview.widget.CardView>

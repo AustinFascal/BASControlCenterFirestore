@@ -50,7 +50,7 @@
                             android:id="@+id/spinner_search_type"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="Cari Berdasarkan"
+                            android:hint="@string/search_by"
                             android:inputType="none" />
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -65,21 +65,8 @@
                         android:background="@drawable/outline_box"
                         android:scaleType="centerInside"
                         android:src="@drawable/ic_outline_restore"
-                        android:visibility="gone" />
-
-                    <!--
-                                        <androidx.appcompat.widget.SearchView
-                                            android:layout_marginTop="2dp"
-                                            android:layout_marginBottom="2dp"
-                                            android:animateLayoutChanges="true"
-                                            android:padding="0dp"
-                                            android:layoutDirection="rtl"
-                                            android:background="@drawable/outline_box"
-                                            android:id="@+id/edt_keyword_search_gi"
-                                            android:layout_width="match_parent"
-                                            android:layout_height="match_parent"
-                                            android:inputType="text" />
-                    -->
+                        android:visibility="gone"
+                        android:contentDescription="@string/default_content_description" />
 
                 </LinearLayout>
 
@@ -351,13 +338,13 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
         <com.getbase.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab_action_recap_data"
+            android:id="@+id/fab_action_archived_data"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:fab_colorNormal="@color/white"
             app:fab_colorPressed="@color/light_grey"
             app:fab_icon="@drawable/ic_recap_data"
-            app:fab_title="Buat Rekap Data Valid" />
+            app:fab_title="Data RO Diarsipkan" />
         <com.getbase.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab_action_create_ro"
             android:layout_width="wrap_content"

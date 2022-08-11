@@ -54,6 +54,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class GoodIssueManagementActivity extends AppCompatActivity {
 
@@ -191,6 +192,7 @@ public class GoodIssueManagementActivity extends AppCompatActivity {
                     for (DataSnapshot dataSnapshot: snapshot.getChildren()){
                         String spinnerMaterialName = dataSnapshot.child("productName").getValue(String.class);
                         arrayListMaterialName.add(spinnerMaterialName);
+                        arrayListMaterialName.remove("JASA ANGKUT");
                     }
                     ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(GoodIssueManagementActivity.this, R.layout.style_spinner, arrayListMaterialName);
                     arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
@@ -414,9 +416,7 @@ public class GoodIssueManagementActivity extends AppCompatActivity {
             showDataSearchByCompanyID(companyID);
         });
 
-        btnGiSearchByTypeReset.setOnClickListener(view -> {
-            resetSearchByType();
-        });
+        btnGiSearchByTypeReset.setOnClickListener(view -> resetSearchByType());
         btnGiSearchByDateReset.setOnClickListener(view -> {
             resetSearchByDate();
             showDataDefaultQuery();
@@ -450,12 +450,12 @@ public class GoodIssueManagementActivity extends AppCompatActivity {
         if (expandStatus){
             showHideFilterComponents(true);
             expandStatus=false;
-            imgbtnExpandCollapseFilterLayout.setText("Tampilkan lebih banyak");
+            imgbtnExpandCollapseFilterLayout.setText(R.string.showMore);
             imgbtnExpandCollapseFilterLayout.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_outline_keyboard_arrow_down, 0);
         } else {
             showHideFilterComponents(false);
             expandStatus=true;
-            imgbtnExpandCollapseFilterLayout.setText("Tampilkan lebih sedikit");
+            imgbtnExpandCollapseFilterLayout.setText(R.string.showLess);
             imgbtnExpandCollapseFilterLayout.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_outline_keyboard_arrow_up, 0);
         }
     }
@@ -548,9 +548,16 @@ public class GoodIssueManagementActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 goodIssueModelArrayList.clear();
-                for (DataSnapshot item : snapshot.getChildren()){
-                    GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
-                    goodIssueModelArrayList.add(goodIssueModel);
+                if (snapshot.exists()){
+                    for (DataSnapshot item : snapshot.getChildren()){
+                        GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
+                        goodIssueModelArrayList.add(goodIssueModel);
+                    }
+                    llNoData.setVisibility(View.GONE);
+                    nestedScrollView.setVisibility(View.VISIBLE);
+                } else {
+                    llNoData.setVisibility(View.VISIBLE);
+                    nestedScrollView.setVisibility(View.GONE);
                 }
                 Collections.reverse(goodIssueModelArrayList);
                 giManagementAdapter = new GIManagementAdapter(context, goodIssueModelArrayList);
@@ -570,9 +577,16 @@ public class GoodIssueManagementActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 goodIssueModelArrayList.clear();
-                for (DataSnapshot item : snapshot.getChildren()){
-                    GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
-                    goodIssueModelArrayList.add(goodIssueModel);
+                if  (snapshot.exists()){
+                    for (DataSnapshot item : snapshot.getChildren()){
+                        GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
+                        goodIssueModelArrayList.add(goodIssueModel);
+                    }
+                    llNoData.setVisibility(View.GONE);
+                    nestedScrollView.setVisibility(View.VISIBLE);
+                } else {
+                    llNoData.setVisibility(View.VISIBLE);
+                    nestedScrollView.setVisibility(View.GONE);
                 }
                 Collections.reverse(goodIssueModelArrayList);
                 giManagementAdapter = new GIManagementAdapter(context, goodIssueModelArrayList);
@@ -594,9 +608,16 @@ public class GoodIssueManagementActivity extends AppCompatActivity {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     goodIssueModelArrayList.clear();
-                    for (DataSnapshot item : snapshot.getChildren()){
-                        GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
-                        goodIssueModelArrayList.add(goodIssueModel);
+                    if  (snapshot.exists()){
+                        for (DataSnapshot item : snapshot.getChildren()){
+                            GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
+                            goodIssueModelArrayList.add(goodIssueModel);
+                        }
+                        llNoData.setVisibility(View.GONE);
+                        nestedScrollView.setVisibility(View.VISIBLE);
+                    } else {
+                        llNoData.setVisibility(View.VISIBLE);
+                        nestedScrollView.setVisibility(View.GONE);
                     }
                     Collections.reverse(goodIssueModelArrayList);
                     giManagementAdapter = new GIManagementAdapter(context, goodIssueModelArrayList);
@@ -613,9 +634,15 @@ public class GoodIssueManagementActivity extends AppCompatActivity {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     goodIssueModelArrayList.clear();
-                    for (DataSnapshot item : snapshot.getChildren()){
-                        GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
-                        goodIssueModelArrayList.add(goodIssueModel);
+                    if  (snapshot.exists()){
+                        for (DataSnapshot item : snapshot.getChildren()){
+                            GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
+                            goodIssueModelArrayList.add(goodIssueModel);
+                        }llNoData.setVisibility(View.GONE);
+                        nestedScrollView.setVisibility(View.VISIBLE);
+                    } else {
+                        llNoData.setVisibility(View.VISIBLE);
+                        nestedScrollView.setVisibility(View.GONE);
                     }
                     Collections.reverse(goodIssueModelArrayList);
                     giManagementAdapter = new GIManagementAdapter(context, goodIssueModelArrayList);
@@ -679,13 +706,18 @@ public class GoodIssueManagementActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 goodIssueModelArrayList.clear();
-                for (DataSnapshot item : snapshot.getChildren()){
-                    GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
-                    goodIssueModelArrayList.add(goodIssueModel);
-
+                if  (snapshot.exists()) {
+                    for (DataSnapshot item : snapshot.getChildren()) {
+                        GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
+                        goodIssueModelArrayList.add(goodIssueModel);
+                    }
+                    llNoData.setVisibility(View.GONE);
+                    nestedScrollView.setVisibility(View.VISIBLE);
+                }else{
+                    llNoData.setVisibility(View.VISIBLE);
+                    nestedScrollView.setVisibility(View.GONE);
                 }
-                llNoData.setVisibility(View.GONE);
-                nestedScrollView.setVisibility(View.VISIBLE);
+
 
                 Collections.reverse(goodIssueModelArrayList);
                 giManagementAdapter = new GIManagementAdapter(context, goodIssueModelArrayList);
@@ -709,9 +741,9 @@ public class GoodIssueManagementActivity extends AppCompatActivity {
                     for (DataSnapshot item : snapshot.getChildren()){
                         GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
                         goodIssueModelArrayList.add(goodIssueModel);
-                        llNoData.setVisibility(View.GONE);
-                        nestedScrollView.setVisibility(View.VISIBLE);
                     }
+                    llNoData.setVisibility(View.GONE);
+                    nestedScrollView.setVisibility(View.VISIBLE);
                 } else {
                     llNoData.setVisibility(View.VISIBLE);
                     nestedScrollView.setVisibility(View.GONE);
@@ -731,15 +763,19 @@ public class GoodIssueManagementActivity extends AppCompatActivity {
 
     private void showListener(DataSnapshot snapshot) {
         goodIssueModelArrayList.clear();
-        for (DataSnapshot item: snapshot.getChildren()){
-            GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
-            goodIssueModelArrayList.add(goodIssueModel);
-
+        if (snapshot.exists()) {
+            for (DataSnapshot item : snapshot.getChildren()) {
+                GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
+                goodIssueModelArrayList.add(goodIssueModel);
+            }
+            llNoData.setVisibility(View.GONE);
+            nestedScrollView.setVisibility(View.VISIBLE);
+        } else{
+            llNoData.setVisibility(View.VISIBLE);
+            nestedScrollView.setVisibility(View.GONE);
         }
 
         if (snapshot.getChildrenCount()==0){
-            //TODO Make bottomsheet or embedded label with lottie
-            Toast.makeText(context, "Data tidak ditemukan", Toast.LENGTH_SHORT).show();
             llNoData.setVisibility(View.VISIBLE);
             nestedScrollView.setVisibility(View.GONE);
         } else {
@@ -751,7 +787,6 @@ public class GoodIssueManagementActivity extends AppCompatActivity {
         rvGoodIssueList.setAdapter(giManagementAdapter);
     }
 
-
     private void showDataDefaultQuery() {
         Query query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated");
         query.addValueEventListener(new ValueEventListener() {
@@ -760,12 +795,13 @@ public class GoodIssueManagementActivity extends AppCompatActivity {
                 goodIssueModelArrayList.clear();
                 if (snapshot.exists()){
                     for (DataSnapshot item : snapshot.getChildren()){
-                        GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
-                        goodIssueModelArrayList.add(goodIssueModel);
+                        if (Objects.equals(item.child("giInvoiced").getValue(), false)) {
+                            GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
+                            goodIssueModelArrayList.add(goodIssueModel);
+                        }
                     }
                     llNoData.setVisibility(View.GONE);
                     nestedScrollView.setVisibility(View.VISIBLE);
-
                 } else {
                     llNoData.setVisibility(View.VISIBLE);
                     nestedScrollView.setVisibility(View.GONE);
@@ -781,33 +817,6 @@ public class GoodIssueManagementActivity extends AppCompatActivity {
 
             }
         });
-
-
-       /* databaseReference.child("GoodIssueData").orderByChild("giDateCreated").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                goodIssueModelArrayList.clear();
-                for (DataSnapshot item : snapshot.getChildren()){
-                    if (item.child("giPoCustNumber").getValue().toString().equals("-")){
-                        GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
-                        goodIssueModelArrayList.add(goodIssueModel);
-                    } else {
-                        GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
-                        goodIssueModelArrayList.add(goodIssueModel);
-                    }
-                }
-
-                Collections.reverse(goodIssueModelArrayList);
-                giManagementAdapter = new GIManagementAdapter(context, goodIssueModelArrayList);
-                rvGoodIssueList.setAdapter(giManagementAdapter);
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });*/
     }
 
     @Override

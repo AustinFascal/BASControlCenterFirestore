@@ -42,4 +42,18 @@
     <string name="inactive">Tidak Aktif</string>
     <string name="active">Aktif</string>
     <string name="other_detail">Detail Lainnya (opsional)</string>
+    <string name="dash">-</string>
+
+    <string name="title_vhl_height_correction">Koreksi Tinggi (K)</string>
+    <string name="plus">+</string>
+    <string name="title_final_height_result">Tinggi Hasil Koreksi (TK): 0 cm</string>
+    <string name="default_content_description">Desc</string>
+    <string name="cubication">Kubikasi</string>
+    <string name="default_cubic_unit_value">0 m³</string>
+    <string name="default_height_val">200</string>
+    <string name="default_width_val">250</string>
+    <string name="default_length_val">650</string>
+    <string name="zero_value">0</string>
+    <string name="default_currency">IDR</string>
+    <string name="search_by">Cari Berdasarkan</string>
 </resources>

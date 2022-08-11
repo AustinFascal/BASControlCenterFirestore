@@ -22,6 +22,7 @@ import android.os.Vibrator;
 import android.text.Html;
 import android.transition.AutoTransition;
 import android.transition.TransitionManager;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -34,6 +35,8 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.database.DataSnapshot;
@@ -114,6 +117,8 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
         setContentView(R.layout.activity_recap_good_issue_data);
 
         context = this;
+
+
 
         matNameList  = new ArrayList<>();
 
@@ -258,7 +263,7 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
                     arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
                     spinnerRoUID.setAdapter(arrayAdapter);
                 } else {
-                    Toast.makeText(RecapGoodIssueDataActivity.this, "Not exists", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(RecapGoodIssueDataActivity.this, "Data RO tidak ditemukan", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -402,7 +407,8 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
         String currentDate = new SimpleDateFormat("dd/MM/yyyy", Locale.US).format(new Date());
 
         try {
-            String roMatNameTypeStrVal = "Material: "+matNameList +" | "+goodIssueModelArrayList.get(0).getGiMatType();
+            String roMatNameTypeStrVal = "Material: "+matNameList +" | "+
+                    goodIssueModelArrayList.get(0).getGiMatType();
             String roCustNameStrVal = "Customer: "+custNameVal;
             String roPoCustNumberStrVal = "Nomor PO: "+roPoCustNumber;
             String roRecapDateCreatedStrVal = "Tanggal rekap dibuat: "+currentDate;
@@ -499,6 +505,21 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
                         new Paragraph(vhlCubicationStrVal, fontNormal), Element.ALIGN_CENTER));
 
                 totalCubication += goodIssueModelArrayList.get(i).getGiVhlCubication();
+
+
+
+
+
+
+                // TODO FOR INVOICE WHEN FEW ITEMS HAS BEEN SELECTED
+                /*DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference("GoodIssueData").child(goodIssueModelArrayList.get(i).getGiUID());
+                rootRef.child("giInvoiced").setValue(true);*/
+                // SET VALUE TOTAL SELL
+
+
+
+
+
             }
 
             String totalCubicationStrVal = df.format(totalCubication);
@@ -543,8 +564,6 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()){
                     matBuyPrice = Objects.requireNonNull(snapshot.child("matBuyPrice").getValue(Double.class));
-                } else {
-                    Toast.makeText(RecapGoodIssueDataActivity.this, "Not exists", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -595,6 +614,28 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
                                             String spinnerMaterialData = dataSnapshot.child("matName").getValue(String.class);
                                             matNameList.add(spinnerMaterialData);
                                             matNameList.remove("JASA ANGKUT");
+
+
+
+
+
+
+
+                                            // TODO ADD THIS LINE OF CODE TO SHOW DATA IN ADD INVOICE
+                                            for (int i = 0; i < rvGoodIssueList.getChildCount(); i++) {
+                                                rvGoodIssueList.getChildAt(i).findViewById(R.id.btn_delete_gi).setVisibility(View.GONE);
+
+                                                View rlOpenRoDetail = rvGoodIssueList.getChildAt(i).findViewById(R.id.rl_open_ro_detail);
+                                                View ivShowDetail = rvGoodIssueList.getChildAt(i).findViewById(R.id.iv_show_detail);
+                                                rlOpenRoDetail.setOnClickListener(view1 -> {});
+                                                ivShowDetail.setVisibility(View.GONE);
+                                            }
+
+
+
+
+
+
                                         }
                                     }
 
@@ -603,7 +644,6 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
 
                                     }
                                 });
-
                             }
                         }
 
@@ -620,6 +660,7 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
                 }
                 giManagementAdapter = new GIManagementAdapter(context, goodIssueModelArrayList);
                 rvGoodIssueList.setAdapter(giManagementAdapter);
+
 
             }
 

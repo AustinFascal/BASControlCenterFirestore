@@ -25,7 +25,8 @@
                 android:layout_height="wrap_content"
                 android:divider="@drawable/divider_transparent"
                 android:orientation="horizontal"
-                android:showDividers="middle">
+                android:showDividers="middle"
+                android:baselineAligned="false">
 
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -54,7 +55,7 @@
                         android:id="@+id/edt_gi_time"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="-"
+                        android:text="@string/dash"
                         android:focusable="false"
                         android:hint="@string/inputTimeRequired"
                         android:inputType="none" />
@@ -99,7 +100,8 @@
                 android:layout_height="wrap_content"
                 android:divider="@drawable/divider_transparent"
                 android:orientation="horizontal"
-                android:showDividers="middle">
+                android:showDividers="middle"
+                android:baselineAligned="false">
 
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
@@ -190,19 +192,17 @@
                                 android:id="@+id/edt_vhl_height_correction"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:hint="Koreksi Tinggi (K)"
+                                android:hint="@string/title_vhl_height_correction"
                                 android:inputType="number"
                                 android:maxLength="2"
-                                android:text="0" />
+                                android:text="@string/zero_value" />
                         </com.google.android.material.textfield.TextInputLayout>
 
                         <RadioGroup
                             android:id="@+id/radio_group_operation"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:layout_below="@id/textView_register_gender"
                             android:layout_marginTop="5dp"
-                            android:layout_toEndOf="@id/imageViewGender"
                             android:layout_weight="2"
                             android:background="@drawable/outline_box"
                             android:orientation="horizontal"
@@ -217,7 +217,7 @@
                                 android:layout_gravity="center_vertical"
                                 android:layout_weight="1"
                                 android:checked="true"
-                                android:text="-"
+                                android:text="@string/dash"
                                 android:textSize="16sp"
                                 android:textStyle="bold" />
 
@@ -228,7 +228,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center_vertical"
                                 android:layout_weight="1"
-                                android:text="+"
+                                android:text="@string/plus"
                                 android:textSize="16sp"
                                 android:textStyle="bold" />
 
@@ -245,21 +245,15 @@
 
                         <TextView
                             android:id="@+id/tv_vhl_height_correction"
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
                             android:layout_height="match_parent"
                             android:layout_weight="1"
                             android:ellipsize="end"
                             android:gravity="center_vertical"
-                            android:text="Tinggi Hasil Koreksi (TK): 0 cm"
+                            android:text="@string/title_final_height_result"
                             android:textSize="16sp"
                             android:textStyle="bold" />
 
-                        <ImageButton
-                            android:layout_width="32dp"
-                            android:layout_height="32dp"
-                            android:backgroundTint="@color/white"
-                            android:src="@drawable/ic_outline_info"
-                            android:textAlignment="textEnd" />
                     </LinearLayout>
 
                 </LinearLayout>
@@ -286,7 +280,7 @@
                             android:hint="@string/inputVhlLength"
                             android:inputType="number"
                             android:maxLength="3"
-                            android:text="650" />
+                            android:text="@string/default_length_val" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <com.google.android.material.textfield.TextInputLayout
@@ -303,7 +297,7 @@
                             android:hint="@string/inputVhlWidth"
                             android:inputType="number"
                             android:maxLength="3"
-                            android:text="250" />
+                            android:text="@string/default_width_val" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <com.google.android.material.textfield.TextInputLayout
@@ -320,7 +314,7 @@
                             android:hint="@string/inputVhlHeight"
                             android:inputType="number"
                             android:maxLength="3"
-                            android:text="200" />
+                            android:text="@string/default_height_val" />
                     </com.google.android.material.textfield.TextInputLayout>
                 </LinearLayout>
 
@@ -509,7 +503,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
 
-                        <ImageButton
+                       <!-- <ImageButton
                             android:layout_width="32dp"
                             android:layout_height="32dp"
                             android:layout_alignParentTop="true"
@@ -519,7 +513,7 @@
                             android:backgroundTint="@color/white"
                             android:src="@drawable/ic_outline_info"
                             app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
+                            app:layout_constraintTop_toTopOf="parent" />-->
 
                         <androidx.appcompat.widget.LinearLayoutCompat
                             android:layout_width="match_parent"
@@ -537,8 +531,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:ellipsize="end"
-                                android:gravity="center_vertical"
-                                android:text="0 m³"
+                                android:text="@string/default_cubic_unit_value"
                                 android:textAlignment="center"
                                 android:textSize="10pt"
                                 android:textStyle="bold" />
@@ -548,8 +541,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:ellipsize="end"
-                                android:gravity="center_vertical"
-                                android:text="Kubikasi"
+                                android:text="@string/cubication"
                                 android:textAlignment="center" />
 
                         </androidx.appcompat.widget.LinearLayoutCompat>
@@ -569,7 +561,7 @@
         android:layout_marginTop="24dp"
         android:layout_marginEnd="24dp"
         android:layout_marginBottom="24dp"
-        android:contentDescription="Save"
+        android:contentDescription="@string/default_content_description"
         android:src="@drawable/ic_outline_save_black"
         app:backgroundTint="@color/pure_orange" />
 </RelativeLayout>

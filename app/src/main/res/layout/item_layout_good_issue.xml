@@ -5,6 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     app:cardCornerRadius="6dp"
     app:cardElevation="2dp"
+    style="@style/Widget.MaterialComponents.CardView"
     android:layout_marginHorizontal="8dp"
     android:layout_marginVertical="4dp"
     app:cardPreventCornerOverlap="false">
@@ -77,6 +78,7 @@
                     android:ellipsize="end"
                     android:maxLines="1"
                     android:text="Jenis Material | Nama Material" />
+
                 <TextView
                     android:id="@+id/tv_po_cust_number"
                     android:layout_width="wrap_content"
@@ -108,7 +110,6 @@
                     android:textStyle="bold" />
 
 
-
                 <TextView
                     android:id="@+id/tv_gi_vhl_detail"
                     android:layout_width="wrap_content"
@@ -117,26 +118,30 @@
                     android:maxLines="2"
                     android:text="(P) 200 (L) 200 (T) 190 | (C) -20 (FT) 170"
                     android:textSize="12sp" />
+
                 <LinearLayout
                     android:id="@+id/ll_wrap_gi_status"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
                     android:orientation="horizontal"
-                    android:paddingVertical="4dp">
+                    android:paddingVertical="4dp"
+                    android:weightSum="3">
 
                     <LinearLayout
                         android:id="@+id/ll_status_approved"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:background="@drawable/pill_green"
                         android:paddingHorizontal="8dp"
                         android:paddingVertical="2dp">
 
                         <TextView
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="VALID"
+                            android:textAlignment="center"
                             android:textSize="11sp"
                             android:textStyle="bold" />
                     </LinearLayout>
@@ -146,26 +151,51 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="4dp"
+                        android:layout_weight="1"
                         android:background="@drawable/pill_green"
                         android:paddingHorizontal="8dp"
-                        android:paddingVertical="2dp">
+                        android:paddingVertical="2dp"
+                        android:visibility="gone">
 
                         <TextView
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="DITAGIHKAN"
+                            android:text="INVOICED"
+                            android:textAlignment="center"
+                            android:textSize="11sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/ll_status_archived"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/pill_green"
+                        android:paddingHorizontal="8dp"
+                        android:paddingVertical="2dp"
+                        android:visibility="gone">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="ARCHIVED"
+                            android:textAlignment="center"
                             android:textSize="11sp"
                             android:textStyle="bold" />
                     </LinearLayout>
 
                 </LinearLayout>
+
                 <LinearLayout
                     android:id="@+id/ll_status_po_vailable"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@drawable/pill_red"
                     android:paddingHorizontal="8dp"
-                    android:paddingVertical="2dp">
+                    android:paddingVertical="2dp"
+                    android:textAlignment="center">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -178,15 +208,15 @@
             </LinearLayout>
 
             <ImageView
-                style="@style/Widget.Design.FloatingActionButton"
                 android:id="@+id/iv_show_detail"
+                style="@style/Widget.Design.FloatingActionButton"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentEnd="true"
                 android:layout_marginTop="12dp"
-                app:tint="@color/white"
-                android:src="@drawable/ic_outline_navigate_next" />
+                android:src="@drawable/ic_outline_navigate_next"
+                app:tint="@color/white" />
         </RelativeLayout>
         <LinearLayout
             android:layout_width="match_parent"
@@ -203,6 +233,7 @@
                 android:layout_marginEnd="4dp"
                 android:drawableLeft="@drawable/ic_outline_delete_forever"
                 android:text="HAPUS"
+                android:textStyle="bold"
                 android:textAllCaps="true" />
             <Button
                 style="@style/MaterialDialog.NegativeButton"
@@ -212,6 +243,7 @@
                 android:layout_weight="1"
                 android:drawableLeft="@drawable/ic_outline_check"
                 android:text="SAHKAN"
+                android:textStyle="bold"
                 android:textAllCaps="true" />
         </LinearLayout>
     </LinearLayout>
