@@ -1,8 +1,6 @@
 package com.ptbas.controlcenter.adapter;
 
 import android.content.Context;
-import android.content.Intent;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,9 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.ptbas.controlcenter.DialogInterface;
 import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.model.ReceivedOrderModel;
-import com.ptbas.controlcenter.update.UpdateGoodIssueActivity;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public class ROManagementAdapter extends RecyclerView.Adapter<ROManagementAdapter.ItemViewHolder> {
@@ -54,8 +50,8 @@ public class ROManagementAdapter extends RecyclerView.Adapter<ROManagementAdapte
 
     public class ItemViewHolder extends RecyclerView.ViewHolder {
         LinearLayout llStatusApproved, llStatusPOAvailable;
-        TextView tvGiDateTime, tvRoUid, tvPoCustNumber;
-        Button btnDeleteGi, btnApproveGi;
+        TextView tvRoDateTime, tvRoUid, tvPoCustNumber;
+        Button btnDeleteRo, btnApproveRo;
         RelativeLayout rlOpenRoDetail;
         ImageView ivShowDetail;
 
@@ -65,11 +61,11 @@ public class ROManagementAdapter extends RecyclerView.Adapter<ROManagementAdapte
             rlOpenRoDetail = itemView.findViewById(R.id.rl_open_ro_detail);
             llStatusApproved = itemView.findViewById(R.id.ll_status_approved);
             llStatusPOAvailable = itemView.findViewById(R.id.ll_status_po_vailable);
-            tvGiDateTime = itemView.findViewById(R.id.tv_gi_date_time);
+            tvRoDateTime = itemView.findViewById(R.id.tv_ro_date_time);
             tvRoUid = itemView.findViewById(R.id.tv_ro_uid);
             tvPoCustNumber = itemView.findViewById(R.id.tv_po_cust_number);
-            btnDeleteGi = itemView.findViewById(R.id.btn_delete_gi);
-            btnApproveGi = itemView.findViewById(R.id.btn_approve_gi);
+            btnDeleteRo = itemView.findViewById(R.id.btn_delete_ro);
+            btnApproveRo = itemView.findViewById(R.id.btn_approve_ro);
         }
 
         public void viewBind(ReceivedOrderModel receivedOrderModel) {
@@ -79,15 +75,15 @@ public class ROManagementAdapter extends RecyclerView.Adapter<ROManagementAdapte
             String poCustNumb = "PO: "+receivedOrderModel.getRoPoCustNumber();
             boolean giStatus = receivedOrderModel.getRoStatus();
 
-            tvGiDateTime.setText(dateNTime);
+            tvRoDateTime.setText(dateNTime);
             tvRoUid.setText(roUID);
             tvPoCustNumber.setText(poCustNumb);
             if (giStatus){
                 llStatusApproved.setVisibility(View.VISIBLE);
-                btnApproveGi.setVisibility(View.GONE);
+                btnApproveRo.setVisibility(View.GONE);
             } else {
                 llStatusApproved.setVisibility(View.GONE);
-                btnApproveGi.setVisibility(View.VISIBLE);
+                btnApproveRo.setVisibility(View.VISIBLE);
             }
             if (tvPoCustNumber.getText().toString().equals("PO: -")){
                 tvPoCustNumber.setVisibility(View.GONE);
@@ -104,15 +100,15 @@ public class ROManagementAdapter extends RecyclerView.Adapter<ROManagementAdapte
                 context.startActivity(i);*/
             });
 
-            btnApproveGi.setOnClickListener(view -> {
+            btnApproveRo.setOnClickListener(view -> {
                 if (tvPoCustNumber.getText().toString().equals("PO: -")){
-                    dialogInterface.noPoNumberInformation(context);
+                    dialogInterface.noRoPoNumberInformation(context, receivedOrderModel.getRoUID());
                 } else {
                     dialogInterface.approveRoConfirmation(context, receivedOrderModel.getRoUID());
                 }
             });
 
-            btnDeleteGi.setOnClickListener(view ->
+            btnDeleteRo.setOnClickListener(view ->
                     dialogInterface.deleteRoConfirmation(context, receivedOrderModel.getRoUID()));
         }
     }

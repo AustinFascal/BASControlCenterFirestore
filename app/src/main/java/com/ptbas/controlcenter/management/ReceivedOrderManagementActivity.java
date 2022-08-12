@@ -37,6 +37,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.ptbas.controlcenter.DialogInterface;
 import com.ptbas.controlcenter.DragLinearLayout;
 import com.ptbas.controlcenter.Helper;
 import com.ptbas.controlcenter.R;
@@ -83,6 +84,9 @@ public class ReceivedOrderManagementActivity extends AppCompatActivity {
     FloatingActionButton fabActionCreateRo, fabActionArchivedData;
 
     List<String> arrayListMaterialType, arrayListCompanyName;
+
+    DialogInterface dialogInterface = new DialogInterface();
+
 
     AutoCompleteTextView spinnerApprovalStatus, spinnerSearchType,
             spinnerMaterialType, spinnerCompanyName;
@@ -257,6 +261,7 @@ public class ReceivedOrderManagementActivity extends AppCompatActivity {
                     nestedScrollView.setVisibility(View.VISIBLE);
 
                 } else {
+                    //dialogInterface.roNotExistsDialog(ReceivedOrderManagementActivity.this);
                     llNoData.setVisibility(View.VISIBLE);
                     nestedScrollView.setVisibility(View.GONE);
                 }

@@ -7,10 +7,19 @@ import android.os.Build;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.widget.ImageView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.ptbas.controlcenter.adapter.ROManagementAdapter;
 import com.ptbas.controlcenter.create.AddReceivedOrder;
+
+import java.util.Objects;
 
 import dev.shreyaspatil.MaterialDialog.BottomSheetMaterialDialog;
 import dev.shreyaspatil.MaterialDialog.model.TextAlignment;
@@ -146,9 +155,52 @@ public class DialogInterface {
         BottomSheetMaterialDialog mBottomSheetDialog = new BottomSheetMaterialDialog.Builder((Activity) context)
                 .setTitle("Perhatian!", TextAlignment.START)
                 .setAnimation(R.raw.lottie_attention)
-                .setMessage("Data Good Issue ini masih belum memiliki nomor PO. Mohon perbarui  data tersebut agar dapat melakukan validasi dan dapat muncul saat direkapitulasi.", TextAlignment.START)
+                .setMessage("Data Good Issue ini masih belum memiliki nomor PO. Mohon perbarui data tersebut agar dapat melakukan validasi dan dapat muncul saat direkapitulasi.", TextAlignment.START)
                 .setCancelable(true)
                 .setPositiveButton("OKE", (dialogInterface, which) -> dialogInterface.dismiss())
+                .build();
+
+        mBottomSheetDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
+        mBottomSheetDialog.show();
+    }
+
+    public void noRoPoNumberInformation(Context context, String roUIDVal) {
+        Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            vibrator.vibrate(VibrationEffect.createOneShot(100,
+                    VibrationEffect.DEFAULT_AMPLITUDE));
+        } else {
+            vibrator.vibrate(100);
+        }
+        BottomSheetMaterialDialog mBottomSheetDialog = new BottomSheetMaterialDialog.Builder((Activity) context)
+                .setTitle("Perhatian!", TextAlignment.START)
+                .setAnimation(R.raw.lottie_attention)
+                .setMessage("Data Received Order ini masih belum memiliki nomor PO. Mohon perbarui data tersebut agar dapat melakukan validasi dan dapat muncul saat menambahkan Good Issue.", TextAlignment.START)
+                .setCancelable(true)
+                .setPositiveButton("TAMBAHKAN NOMOR PO", R.drawable.ic_outline_add, (dialogInterface, which) -> {
+                    dialogInterface.dismiss();
+                })
+                .setNegativeButton("SAHKAN TANPA NOMOR PO", R.drawable.ic_outline_check, (dialogInterface, which) -> {
+                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("ReceivedOrders");
+                    ValueEventListener valueEventListener = new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            for(DataSnapshot ds : dataSnapshot.getChildren()) {
+                                String key = ds.getKey();
+                                String roUID = dataSnapshot.child(key).child("roUID").getValue(String.class);
+                                if (Objects.equals(roUID, roUIDVal)) {
+                                    databaseReference.child(key).child("roStatus").setValue(true);
+                                    databaseReference.child(key).child("roVerifiedBy").setValue(helper.getUserId());
+                                    dialogInterface.dismiss();
+                                }
+                            }
+                        }
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {}
+                    };
+                    databaseReference.addListenerForSingleValueEvent(valueEventListener);
+
+                })
                 .build();
 
         mBottomSheetDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
@@ -191,7 +243,7 @@ public class DialogInterface {
         mBottomSheetDialog.show();
     }
 
-    public void roNotActiveYet(Activity activity, String roUID) {
+    public void roNotActiveYet(Activity activity, String roUIDVal) {
         Vibrator vibrator = (Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             vibrator.vibrate(VibrationEffect.createOneShot(100,
@@ -207,11 +259,24 @@ public class DialogInterface {
                 .setCancelable(false)
                 .setPositiveButton("SAHKAN RO", R.drawable.ic_outline_check, (dialogInterface, which) -> {
 
-                    // TODO DETECT USER MODEL - IF SUPER ADMIN, ABLE TO VERIFY
-                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-                    databaseReference.child("ReceivedOrders").child(roUID).child("roStatus").setValue(true);
-                    databaseReference.child("ReceivedOrders").child(roUID).child("roVerifiedBy").setValue(helper.getUserId());
-                    dialogInterface.dismiss();
+                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("ReceivedOrders");
+                    ValueEventListener valueEventListener = new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            for(DataSnapshot ds : dataSnapshot.getChildren()) {
+                                String key = ds.getKey();
+                                String roUID = dataSnapshot.child(key).child("roUID").getValue(String.class);
+                                if (Objects.equals(roUID, roUIDVal)) {
+                                    databaseReference.child(key).child("roStatus").setValue(true);
+                                    databaseReference.child(key).child("roVerifiedBy").setValue(helper.getUserId());
+                                    dialogInterface.dismiss();
+                                }
+                            }
+                        }
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {}
+                    };
+                    databaseReference.addListenerForSingleValueEvent(valueEventListener);
                 })
                 .setNegativeButton("LAIN KALI", R.drawable.ic_outline_close, (dialogInterface, which) -> dialogInterface.dismiss())
                 .build();
@@ -277,7 +342,7 @@ public class DialogInterface {
         mBottomSheetDialog.show();
     }
 
-    public void approveRoConfirmation(Context context, String roUID) {
+    public void approveRoConfirmation(Context context, String roUIDVal) {
         Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             vibrator.vibrate(VibrationEffect.createOneShot(100,
@@ -291,10 +356,25 @@ public class DialogInterface {
                 .setMessage("Apakah Anda yakin ingin mengesahkan data Received Order yang Anda pilih? Setelah disahkan, status tidak dapat dikembalikan.")
                 .setCancelable(true)
                 .setPositiveButton("YA", R.drawable.ic_outline_check, (dialogInterface, which) -> {
-                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-                    databaseReference.child("ReceivedOrders").child(roUID).child("roStatus").setValue(true);
-                    databaseReference.child("ReceivedOrders").child(roUID).child("roVerifiedBy").setValue(helper.getUserId());
-                    dialogInterface.dismiss();
+                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("ReceivedOrders");
+                    ValueEventListener valueEventListener = new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            for(DataSnapshot ds : dataSnapshot.getChildren()) {
+                                String key = ds.getKey();
+                                String roUID = dataSnapshot.child(key).child("roUID").getValue(String.class);
+                                if (Objects.equals(roUID, roUIDVal)) {
+                                    databaseReference.child(key).child("roStatus").setValue(true);
+                                    databaseReference.child(key).child("roVerifiedBy").setValue(helper.getUserId());
+                                    dialogInterface.dismiss();
+                                }
+                            }
+                        }
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {}
+                    };
+                    databaseReference.addListenerForSingleValueEvent(valueEventListener);
+
                 })
                 .setNegativeButton("TIDAK", R.drawable.ic_outline_close, (dialogInterface, which) -> dialogInterface.dismiss())
                 .build();
@@ -303,7 +383,7 @@ public class DialogInterface {
         mBottomSheetDialog.show();
     }
 
-    public void changePoNumberCustomer(Context context, String roUID) {
+    public void changePoNumberCustomer(Context context, String roUIDVal) {
         BottomSheetMaterialDialog mBottomSheetDialog = new BottomSheetMaterialDialog.Builder((Activity) context)
                 .setTitle("Ubah Nomor PO")
                 .setAnimation(R.raw.lottie_attention)
@@ -341,16 +421,31 @@ public class DialogInterface {
         mBottomSheetDialog.show();
     }
 
-    public void deleteRoConfirmation(Context context, String roUID) {
+    public void deleteRoConfirmation(Context context, String roUIDVal) {
         BottomSheetMaterialDialog mBottomSheetDialog = new BottomSheetMaterialDialog.Builder((Activity) context)
                 .setTitle("Hapus Data")
                 .setAnimation(R.raw.lottie_delete)
                 .setMessage("Apakah Anda yakin ingin menghapus data Received Order yang Anda pilih? Setelah dihapus, data tidak dapat dikembalikan.")
                 .setCancelable(true)
                 .setPositiveButton("YA", R.drawable.ic_outline_check, (dialogInterface, which) -> {
-                    dialogInterface.dismiss();
-                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-                    databaseReference.child("ReceivedOrders").child(roUID).removeValue();
+                    // TODO DETECT USER MODEL - IF SUPER ADMIN, ABLE TO VERIFY
+                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("ReceivedOrders");
+                    ValueEventListener valueEventListener = new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            for(DataSnapshot ds : dataSnapshot.getChildren()) {
+                                String key = ds.getKey();
+                                String roUID = dataSnapshot.child(key).child("roUID").getValue(String.class);
+                                if (Objects.equals(roUID, roUIDVal)) {
+                                    databaseReference.child(key).removeValue();
+                                    dialogInterface.dismiss();
+                                }
+                            }
+                        }
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {}
+                    };
+                    databaseReference.addListenerForSingleValueEvent(valueEventListener);
                 })
                 .setNegativeButton("TIDAK", R.drawable.ic_outline_close, (dialogInterface, which) -> dialogInterface.dismiss())
                 .build();

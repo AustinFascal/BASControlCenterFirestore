@@ -61,14 +61,14 @@ import java.util.Random;
 
 public class AddReceivedOrder extends AppCompatActivity {
 
-    LinearLayout llList,llAddItem, llInputAllData;
+    LinearLayout llList,llAddItem, llInputAllData, llPoNumberAvailability;
     String monthStrVal, dayStrVal;
-    Button btnAddRow, btnLockRow, btnUnlockRow;
+    Button btnAddRow, btnLockRow, btnUnlockRow, btnNoPoNumber, btnPoNumberAvailable;
     TextInputEditText edtPoDate, edtPoTOP, edtPoNumberCustomer, edtPoNumberPtbas;
-    TextInputLayout wrapEdtPoNumberPtBas;
+    TextInputLayout wrapEdtPoNumberPtBas, txtInputEdtPoNumberCustomer;
     AutoCompleteTextView spinnerPoTransportType, spinnerPoCustName, spinnerPoCurrency;
     List<String> productName, transportTypeName, customerName, currencyName;
-    String transportData = "", customerData = "", customerAlias="", randomString="NULL", currencyData="";
+    String transportData = "", customerData = "", customerID ="", randomString="NULL", currencyData="";
     Integer poYear = 0, poMonth = 0, poDay = 0;
 
     double totalSellPrice = 0, totalBuyPrice = 0;
@@ -132,6 +132,8 @@ public class AddReceivedOrder extends AppCompatActivity {
                 break;
         }
 
+
+
         llInputAllData = findViewById(R.id.ll_input_all_data);
         llList = findViewById(R.id.layout_list);
         llAddItem = findViewById(R.id.ll_add_item);
@@ -155,6 +157,27 @@ public class AddReceivedOrder extends AppCompatActivity {
         fabActionSaveToPdf = findViewById(R.id.fab_action_save_to_pdf);
 
         fabExpandMenu.setVisibility(View.GONE);
+
+        txtInputEdtPoNumberCustomer = findViewById(R.id.txt_input_edt_po_number_customer);
+        //llPoNumberAvailability = findViewById(R.id.ll_po_number_availability);
+        //btnNoPoNumber = findViewById(R.id.btn_no_po_number);
+        btnPoNumberAvailable = findViewById(R.id.btn_po_number_available);
+
+        txtInputEdtPoNumberCustomer.setVisibility(View.GONE);
+
+       /* btnNoPoNumber.setOnClickListener(view -> {
+            edtPoNumberCustomer.setText(R.string.dash);
+            edtPoNumberCustomer.setInputType(InputType.TYPE_NULL);
+            txtInputEdtPoNumberCustomer.setVisibility(View.VISIBLE);
+            llPoNumberAvailability.setVisibility(View.GONE);
+        });*/
+
+        btnPoNumberAvailable.setOnClickListener(view -> {
+            edtPoNumberCustomer.setText("");
+            btnPoNumberAvailable.setVisibility(View.GONE);
+            txtInputEdtPoNumberCustomer.setVisibility(View.VISIBLE);
+            //llPoNumberAvailability.setVisibility(View.GONE);
+        });
 
         spinnerPoCurrency.setText(R.string.default_currency);
 
@@ -239,14 +262,14 @@ public class AddReceivedOrder extends AppCompatActivity {
                         poDay = dayOfMonth;
 
                         if(month < 10){
-                            monthStrVal = "0" + poMonth;
+                            monthStrVal = "0" + (month+1);
                         } else {
-                            monthStrVal = String.valueOf(poMonth);
+                            monthStrVal = String.valueOf(month+1);
                         }
                         if(dayOfMonth < 10){
-                            dayStrVal = "0" + poDay;
+                            dayStrVal = "0" + dayOfMonth;
                         } else {
-                            dayStrVal = String.valueOf(poDay);
+                            dayStrVal = String.valueOf(dayOfMonth);
                         }
 
                         String finalDate = poYear + "-" +monthStrVal + "-" + dayStrVal;
@@ -281,7 +304,8 @@ public class AddReceivedOrder extends AppCompatActivity {
             String selectedSpinnerCustomerName = (String) adapterView.getItemAtPosition(position);
             customerData = selectedSpinnerCustomerName;
             spinnerPoCustName.setError(null);
-            customerAlias = selectedSpinnerCustomerName.replaceAll("[^0-9]", "");
+            String[] custID =  selectedSpinnerCustomerName.split("-");
+            customerID = custID[0];
             randomString = getRandomString(5);
         });
 
@@ -307,20 +331,20 @@ public class AddReceivedOrder extends AppCompatActivity {
             public void run() {
                 if (transportData.isEmpty()){
                     if (poMonth==0||poYear==0){
-                        edtPoNumberPtbas.setText(customerAlias+"-"+transportData+"--");
+                        edtPoNumberPtbas.setText(customerID +"- "+transportData+" - ");
                     } else {
-                        edtPoNumberPtbas.setText(customerAlias+"-"+transportData+"-"+poMonth + "-" + poYear);
+                        edtPoNumberPtbas.setText(customerID +"- "+transportData+" - "+poYear+monthStrVal);
                     }
                 } else {
                     if (poMonth==0||poYear==0){
-                        edtPoNumberPtbas.setText(customerAlias+"-"+transportData.substring(0, 3) + "--");
+                        edtPoNumberPtbas.setText(customerID +"- "+transportData.substring(0, 3) + " - ");
                         if (!customerData.isEmpty() &&!Objects.requireNonNull(edtPoDate.getText()).toString().equals("")){
-                            edtPoNumberPtbas.setText(customerAlias+" - "+randomString+"-"+transportData.substring(0, 3)+"--");
+                            edtPoNumberPtbas.setText(randomString+" - "+customerID +"- "+transportData.substring(0, 3)+" - ");
                         }
                     } else {
-                        edtPoNumberPtbas.setText(customerAlias+"-"+transportData.substring(0, 3) + "-" + poMonth + "-" + poYear);
+                        edtPoNumberPtbas.setText(customerID +"- "+transportData.substring(0, 3) + " - " + poYear+monthStrVal);
                         if (!customerData.isEmpty() &&!Objects.requireNonNull(edtPoDate.getText()).toString().equals("")){
-                            edtPoNumberPtbas.setText(customerAlias+" - "+randomString+"-"+transportData.substring(0, 3)+"-"+poMonth + "-" + poYear);
+                            edtPoNumberPtbas.setText(randomString+" - "+ customerID +"- "+transportData.substring(0, 3)+" - "+poYear+monthStrVal);
                         }
                     }
 
@@ -369,6 +393,11 @@ public class AddReceivedOrder extends AppCompatActivity {
                 roTOP = "-";
             } else {
                 roTOP = Objects.requireNonNull(edtPoTOP.getText()).toString();
+            }
+
+            if (edtPoNumberCustomer.getText().toString().equals("")) {
+                edtPoNumberCustomer.setText("-");
+                roPoCustNumber = "-";
             }
 
             if (TextUtils.isEmpty(roMatType)) {
@@ -510,9 +539,8 @@ public class AddReceivedOrder extends AppCompatActivity {
                 previewProductItemAdapter = new PreviewProductItemAdapter(this, getList());
                 rvItems.setAdapter(previewProductItemAdapter);
 
-                DatabaseReference ref1 = FirebaseDatabase.getInstance().getReference("ReceivedOrders" + "/" + roUID);
-                DatabaseReference ref2 = FirebaseDatabase.getInstance().getReference("ReceivedOrders" + "/" +
-                        roUID + "/" + "OrderedItems");
+                DatabaseReference ref1 = FirebaseDatabase.getInstance().getReference("ReceivedOrders");
+                DatabaseReference ref2 = FirebaseDatabase.getInstance().getReference("ReceivedOrders");
 
                 // Create PO object
                 ReceivedOrderModel receivedOrderModel = new ReceivedOrderModel(
@@ -522,17 +550,19 @@ public class AddReceivedOrder extends AppCompatActivity {
 
                 fabActionSaveCloud.setOnClickListener(view -> {
                     if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED){
-                        ref1.setValue(receivedOrderModel).addOnCompleteListener(task -> {
-                            if(task.isSuccessful())
-                            {
-                                ref2.setValue(productItemsArrayList).addOnCompleteListener(task1 -> {
-                                    if(task1.isSuccessful())
-                                    {
-                                        dialogInterface.savedROInformation(AddReceivedOrder.this);
-                                    }
-                                });
+                        String key = ref1.push().getKey();
+                        ref1.child(key).setValue(receivedOrderModel).addOnCompleteListener(task -> {
+                            /*if(task.isSuccessful())
+                            {*/
 
-                            }
+                            ref1.child(key).child("OrderedItems").setValue(productItemsArrayList).addOnCompleteListener(task1 -> {
+                                if(task1.isSuccessful())
+                                {
+                                    dialogInterface.savedROInformation(AddReceivedOrder.this);
+                                }
+                            });
+
+                            //}
                         });
                     }
                 });
@@ -726,31 +756,39 @@ public class AddReceivedOrder extends AppCompatActivity {
                             Runnable runnable = new Runnable() {
                                 public void run() {
                                     if(!edtPoQuantity.getText().toString().equals("")){
-                                        Double quantity = Double.valueOf(edtPoQuantity.getText().toString());
-                                        Double salePrice = Double.valueOf(edtSalePrice.getText().toString());
-                                        Double buyPrice = Double.valueOf(edtBuyPrice.getText().toString());
-                                        totalSellPrice = quantity*salePrice;
-                                        totalBuyPrice = quantity*buyPrice;
+                                        double quantity = Double.parseDouble(edtPoQuantity.getText().toString());
+                                        if (edtBuyPrice.getText().toString().equals("")){
+                                            totalBuyPrice = quantity*0;
+                                        } else {
+                                            double buyPrice = Double.parseDouble(edtBuyPrice.getText().toString());
+                                            totalBuyPrice = quantity*buyPrice;
+                                        }
+
+                                        if (edtSalePrice.getText().toString().equals("")){
+                                            totalSellPrice = quantity*0;
+                                        } else {
+                                            double salePrice = Double.parseDouble(edtSalePrice.getText().toString());
+                                            totalSellPrice = quantity*salePrice;
+                                        }
 
                                     } else {
                                         totalSellPrice = 0;
                                         totalBuyPrice = 0;
                                     }
 
-
-                                    edtBuyPrice.setOnKeyListener((view1, i1, keyEvent) -> {
+                                   /* edtBuyPrice.setOnKeyListener((view1, i1, keyEvent) -> {
                                         if (edtBuyPrice.getText().toString().equals("")){
-                                            edtBuyPrice.setText("0");
+                                            edtBuyPrice.setText("");
                                         }
                                         return false;
                                     });
 
                                     edtSalePrice.setOnKeyListener((view12, i12, keyEvent) -> {
                                         if (edtSalePrice.getText().toString().equals("")){
-                                            edtSalePrice.setText("0");
+                                            edtSalePrice.setText("");
                                         }
                                         return false;
-                                    });
+                                    });*/
 
                                     edtPoTotalBuyPrice.setText(String.format("%.2f", totalBuyPrice));
                                     edtPoTotalSellPrice.setText(String.format("%.2f", totalSellPrice));
@@ -819,30 +857,39 @@ public class AddReceivedOrder extends AppCompatActivity {
                     Runnable runnable = new Runnable() {
                         public void run() {
                             if(!edtPoQuantity.getText().toString().equals("")){
-                                Double quantity = Double.valueOf(edtPoQuantity.getText().toString());
-                                Double salePrice = Double.valueOf(edtSalePrice.getText().toString());
-                                Double buyPrice = Double.valueOf(edtBuyPrice.getText().toString());
-                                totalSellPrice = quantity*salePrice;
-                                totalBuyPrice = quantity*buyPrice;
+                                double quantity = Double.parseDouble(edtPoQuantity.getText().toString());
+                                if (edtBuyPrice.getText().toString().equals("")){
+                                    totalBuyPrice = quantity*0;
+                                } else {
+                                    double buyPrice = Double.parseDouble(edtBuyPrice.getText().toString());
+                                    totalBuyPrice = quantity*buyPrice;
+                                }
+
+                                if (edtSalePrice.getText().toString().equals("")){
+                                    totalSellPrice = quantity*0;
+                                } else {
+                                    double salePrice = Double.parseDouble(edtSalePrice.getText().toString());
+                                    totalSellPrice = quantity*salePrice;
+                                }
 
                             } else {
                                 totalSellPrice = 0;
                                 totalBuyPrice = 0;
                             }
 
-                            edtBuyPrice.setOnKeyListener((view, i, keyEvent) -> {
+                            /*edtBuyPrice.setOnKeyListener((view, i, keyEvent) -> {
                                 if (edtBuyPrice.getText().toString().equals("")){
-                                    edtBuyPrice.setText("0");
+                                    edtBuyPrice.setText("");
                                 }
                                 return false;
                             });
 
                             edtSalePrice.setOnKeyListener((view, i, keyEvent) -> {
                                 if (edtSalePrice.getText().toString().equals("")){
-                                    edtSalePrice.setText("0");
+                                    edtSalePrice.setText("");
                                 }
                                 return false;
-                            });
+                            });*/
 
                             edtPoTotalBuyPrice.setText(String.format("%.2f", totalBuyPrice));
                             edtPoTotalSellPrice.setText(String.format("%.2f", totalSellPrice));
@@ -866,7 +913,6 @@ public class AddReceivedOrder extends AppCompatActivity {
 
         llList.addView(materialView);
     }
-
 
     private void removeView(View v){
         llList.removeView(v);

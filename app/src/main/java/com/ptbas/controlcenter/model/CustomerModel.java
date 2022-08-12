@@ -2,14 +2,15 @@ package com.ptbas.controlcenter.model;
 
 public class CustomerModel {
 
-    String custUID, custName, custAddress, custNPWP, custPhone;
+    String custUID, custName, custAlias, custAddress, custNPWP, custPhone;
 
     public CustomerModel() {
     }
 
-    public CustomerModel(String custUID, String custName, String custAddress, String custNPWP, String custPhone) {
+    public CustomerModel(String custUID, String custName, String custAlias, String custAddress, String custNPWP, String custPhone) {
         this.custUID = custUID;
         this.custName = custName;
+        this.custAlias = custAlias;
         this.custAddress = custAddress;
         this.custNPWP = custNPWP;
         this.custPhone = custPhone;
@@ -29,6 +30,14 @@ public class CustomerModel {
 
     public void setCustName(String custName) {
         this.custName = custName;
+    }
+
+    public String getCustAlias() {
+        return custAlias;
+    }
+
+    public void setCustAlias(String custAlias) {
+        this.custAlias = custAlias;
     }
 
     public String getCustAddress() {

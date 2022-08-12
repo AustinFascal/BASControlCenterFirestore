@@ -67,7 +67,7 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
             llStatusInvoiced = itemView.findViewById(R.id.ll_status_invoiced);
             llStatusPOAvailable = itemView.findViewById(R.id.ll_status_po_vailable);
             tvCubication = itemView.findViewById(R.id.tv_cubication);
-            tvGiDateTime = itemView.findViewById(R.id.tv_gi_date_time);
+            tvGiDateTime = itemView.findViewById(R.id.tv_ro_date_time);
             tvGiUid = itemView.findViewById(R.id.tv_gi_uid);
             tvRoUid = itemView.findViewById(R.id.tv_ro_uid);
             tvPoCustNumber = itemView.findViewById(R.id.tv_po_cust_number);

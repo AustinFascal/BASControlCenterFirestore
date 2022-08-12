@@ -5,6 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     app:cardCornerRadius="6dp"
     app:cardElevation="2dp"
+    style="@style/Widget.MaterialComponents.CardView"
     android:layout_marginHorizontal="8dp"
     android:layout_marginVertical="4dp"
     app:cardPreventCornerOverlap="false">
@@ -31,7 +32,7 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/tv_gi_date_time"
+                    android:id="@+id/tv_ro_date_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
@@ -125,7 +126,7 @@
             <Button
                 android:tag="DeleteGI"
                 style="@style/MaterialDialog.NegativeButton"
-                android:id="@+id/btn_delete_gi"
+                android:id="@+id/btn_delete_ro"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
@@ -135,7 +136,7 @@
                 android:textAllCaps="true" />
             <Button
                 style="@style/MaterialDialog.NegativeButton"
-                android:id="@+id/btn_approve_gi"
+                android:id="@+id/btn_approve_ro"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"

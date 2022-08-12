@@ -51,21 +51,46 @@
                         android:hint="Pilih Jenis Badan Usaha"
                         android:inputType="textCapCharacters" />
                 </com.google.android.material.textfield.TextInputLayout>
-                <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:startIconDrawable="@drawable/ic_outline_person">
+                    android:divider="@drawable/divider_transparent"
+                    android:orientation="horizontal"
+                    android:showDividers="middle">
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/edt_customer_name"
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZ "
-                        android:hint="Nama Customer"
-                        android:inputType="textCapCharacters" />
-                </com.google.android.material.textfield.TextInputLayout>
+                        android:layout_weight="1"
+                        android:maxLines="1"
+                        app:startIconDrawable="@drawable/ic_outline_person">
 
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edt_customer_name"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZ "
+                            android:hint="Nama Customer"
+                            android:inputType="textCapCharacters" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_weight="1.8"
+                        android:maxLines="1"
+                        android:layout_height="wrap_content">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edt_customer_alias"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZ "
+                            android:hint="Alias (auto)"
+                            android:inputType="none"
+                            android:focusable="false"/>
+                    </com.google.android.material.textfield.TextInputLayout>
+                </LinearLayout>
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"

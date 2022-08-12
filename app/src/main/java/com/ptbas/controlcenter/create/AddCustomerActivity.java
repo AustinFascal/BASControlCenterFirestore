@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -38,7 +39,7 @@ import java.util.Random;
 public class AddCustomerActivity extends AppCompatActivity {
 
     private static final CharSequence ALLOWED_CHARACTERS = "1234567890";
-    TextInputEditText edtCustomerName, edtCustomerAddress, edtCustomerNpwp, edtCustomerPhone;
+    TextInputEditText edtCustomerName, edtCustomerAlias, edtCustomerAddress, edtCustomerNpwp, edtCustomerPhone;
     AutoCompleteTextView spinnerCustType;
     FloatingActionButton fabProceed;
     DialogInterface dialogInterface = new DialogInterface();
@@ -77,6 +78,7 @@ public class AddCustomerActivity extends AppCompatActivity {
         }
 
         edtCustomerName = findViewById(R.id.edt_customer_name);
+        edtCustomerAlias = findViewById(R.id.edt_customer_alias);
         edtCustomerAddress = findViewById(R.id.edt_customer_address);
         edtCustomerNpwp = findViewById(R.id.edt_customer_npwp);
         edtCustomerPhone = findViewById(R.id.edt_customer_phone);
@@ -124,71 +126,76 @@ public class AddCustomerActivity extends AppCompatActivity {
             }
         });
 
-        fabProceed.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String custType = "";
-                String custName = Objects.requireNonNull(edtCustomerName.getText()).toString();
-                String custAddress = Objects.requireNonNull(edtCustomerAddress.getText()).toString();
-                String custNPWP = Objects.requireNonNull(edtCustomerNpwp.getText()).toString();
-                String custPhone = "-";
-
-                if (spinnerCustType.getText().toString().equals("")) {
-                    spinnerCustType.setError("Mohon masukkan nama customer");
-                    spinnerCustType.requestFocus();
-                } else{
-                    custType = selectedCustType.substring(0, 2);
-                }
-
-                if (TextUtils.isEmpty(custType)) {
-                    spinnerCustType.setError("Mohon masukkan nama customer");
-                    spinnerCustType.requestFocus();
-                }
-
-                if (TextUtils.isEmpty(custName)) {
-                    edtCustomerName.setError("Mohon masukkan nama customer");
-                    edtCustomerName.requestFocus();
-                }
-
-                if (TextUtils.isEmpty(custAddress)) {
-                    edtCustomerAddress.setError("Mohon masukkan alamat customer");
-                    edtCustomerAddress.requestFocus();
-                }
-
-                if (TextUtils.isEmpty(custNPWP)) {
-                    edtCustomerNpwp.setError("Mohon masukkan NPWP customer");
-                    edtCustomerNpwp.requestFocus();
-                }
-
-                if (TextUtils.isEmpty(custPhone)){
-                    custPhone = "-";
-                } else{
-                    custPhone = Objects.requireNonNull(edtCustomerPhone.getText()).toString();
-                }
-
-                if (!TextUtils.isEmpty(custType)&&!TextUtils.isEmpty(custName)&&!TextUtils.isEmpty(custAddress)&&!TextUtils.isEmpty(custNPWP)){
-                    insertData(custType, custName, custAddress, custNPWP, custPhone);
-                }
-
+        final Handler handler = new Handler();
+        Runnable runnable = new Runnable() {
+            public void run() {
+                String str = Objects.requireNonNull(edtCustomerName.getText()).toString();
+                String result = str.replaceAll("\\B.|\\P{L}", "").toUpperCase();
+                edtCustomerAlias.setText(result);
+                handler.postDelayed(this, 100);
             }
+        };
+        runnable.run();
+
+        fabProceed.setOnClickListener(view -> {
+            String custType = "";
+            String custName = Objects.requireNonNull(edtCustomerName.getText()).toString();
+            String custAlias = Objects.requireNonNull(edtCustomerAlias.getText()).toString();
+            String custAddress = Objects.requireNonNull(edtCustomerAddress.getText()).toString();
+            String custNPWP = Objects.requireNonNull(edtCustomerNpwp.getText()).toString();
+            String custPhone = "-";
+
+            if (spinnerCustType.getText().toString().equals("")) {
+                spinnerCustType.setError("Mohon masukkan nama customer");
+                spinnerCustType.requestFocus();
+            } else{
+                custType = selectedCustType.substring(0, 2);
+            }
+
+            if (TextUtils.isEmpty(custType)) {
+                spinnerCustType.setError("Mohon masukkan nama customer");
+                spinnerCustType.requestFocus();
+            }
+
+            if (TextUtils.isEmpty(custName)) {
+                edtCustomerName.setError("Mohon masukkan nama customer");
+                edtCustomerName.requestFocus();
+            }
+
+            if (TextUtils.isEmpty(custAddress)) {
+                edtCustomerAddress.setError("Mohon masukkan alamat customer");
+                edtCustomerAddress.requestFocus();
+            }
+
+            if (TextUtils.isEmpty(custNPWP)) {
+                edtCustomerNpwp.setError("Mohon masukkan NPWP customer");
+                edtCustomerNpwp.requestFocus();
+            }
+
+            if (TextUtils.isEmpty(custPhone)){
+                custPhone = "-";
+            } else{
+                custPhone = Objects.requireNonNull(edtCustomerPhone.getText()).toString();
+            }
+
+            if (!TextUtils.isEmpty(custType)&&!TextUtils.isEmpty(custName)&&!TextUtils.isEmpty(custAddress)&&!TextUtils.isEmpty(custNPWP)){
+                insertData(custType, custName, custAlias, custAddress, custNPWP, custPhone);
+            }
+
         });
     }
 
-    private void insertData(String custType, String custName, String custAddress, String custNPWP, String custPhone) {
-        String custUID = "10"+getRandomUID(6);
+    private void insertData(String custType, String custName, String custAlias, String custAddress, String custNPWP, String custPhone) {
+        String custUID = custAlias + " " + getRandomUID(4);
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("CustomerData");
-        CustomerModel customerModel = new CustomerModel(custUID, custName+", "+custType, custAddress, custNPWP, custPhone);
+        CustomerModel customerModel = new CustomerModel(custUID, custName+", "+custType, custAlias, custAddress, custNPWP, custPhone);
 
-        ref.child(custUID).setValue(customerModel).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task)
+        ref.push().setValue(customerModel).addOnCompleteListener(task -> {
+            if(task.isSuccessful())
             {
-                if(task.isSuccessful())
-                {
-                    dialogInterface.savedInformation(AddCustomerActivity.this);
-                } else {
-                    Toast.makeText(AddCustomerActivity.this, "Terjadi Kesalahan", Toast.LENGTH_SHORT).show();
-                }
+                dialogInterface.savedInformation(AddCustomerActivity.this);
+            } else {
+                Toast.makeText(AddCustomerActivity.this, "Terjadi Kesalahan", Toast.LENGTH_SHORT).show();
             }
         });
     }

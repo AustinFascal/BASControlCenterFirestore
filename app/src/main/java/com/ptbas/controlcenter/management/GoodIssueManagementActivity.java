@@ -90,6 +90,8 @@ public class GoodIssueManagementActivity extends AppCompatActivity {
 
     List<String> arrayListMaterialName, arrayListCompanyName;
 
+    String[] searchTypeValue = {"giUID", "giRoUID", "giPoCustNumber", "vhlUID"};
+
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -168,7 +170,6 @@ public class GoodIssueManagementActivity extends AppCompatActivity {
         String[] approvalStatus = {"Valid", "Belum Valid"};
         String[] invoicedStatus = {"Sudah", "Belum"};
         String[] searchType = {"ID Good Issue", "ID Received Order", "Nomor PO Customer", "NOPOL Kendaraan"};
-        String[] searchTypeValue = {"giUID", "giRoUID", "giPoCustNumber", "vhlUID"};
         String[] materialType = {"CURAH", "BORONG"};
         ArrayList<String> arrayListApprovalStatus = new ArrayList<>(Arrays.asList(approvalStatus));
         ArrayList<String> arrayListInvoicedStatus = new ArrayList<>(Arrays.asList(invoicedStatus));
@@ -701,7 +702,7 @@ public class GoodIssueManagementActivity extends AppCompatActivity {
     }
 
     private void showDataSearchByType(String newText, String searchTypeData) {
-        Query query = databaseReference.child("GoodIssueData").orderByChild(searchTypeData).startAt(newText).endAt(newText+"\uf8ff");
+        Query query = databaseReference.child("GoodIssueData").orderByChild(searchTypeData);
         query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -709,8 +710,33 @@ public class GoodIssueManagementActivity extends AppCompatActivity {
                 if  (snapshot.exists()) {
                     for (DataSnapshot item : snapshot.getChildren()) {
                         GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
-                        goodIssueModelArrayList.add(goodIssueModel);
+
+                        if (searchTypeData.equals(searchTypeValue[0])){
+                            if(goodIssueModel.getGiUID().contains(newText)) {
+                                goodIssueModelArrayList.add(goodIssueModel);
+                            }
+                        }
+
+                        if (searchTypeData.equals(searchTypeValue[1])){
+                            if(goodIssueModel.getGiRoUID().contains(newText)) {
+                                goodIssueModelArrayList.add(goodIssueModel);
+                            }
+                        }
+
+                        if (searchTypeData.equals(searchTypeValue[2])){
+                            if(goodIssueModel.getGiPoCustNumber().contains(newText)) {
+                                goodIssueModelArrayList.add(goodIssueModel);
+                            }
+                        }
+
+                        if (searchTypeData.equals(searchTypeValue[3])){
+                            if(goodIssueModel.getVhlUID().contains(newText)) {
+                                goodIssueModelArrayList.add(goodIssueModel);
+                            }
+                        }
+
                     }
+
                     llNoData.setVisibility(View.GONE);
                     nestedScrollView.setVisibility(View.VISIBLE);
                 }else{
