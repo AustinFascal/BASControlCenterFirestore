@@ -59,6 +59,8 @@ import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.text.pdf.draw.LineSeparator;
 import com.ptbas.controlcenter.adapter.GIManagementAdapter;
 import com.ptbas.controlcenter.model.GoodIssueModel;
+import com.ptbas.controlcenter.model.ReceivedOrderModel;
+import com.ptbas.controlcenter.update.UpdateGoodIssueActivity;
 import com.ptbas.controlcenter.utils.LangUtils;
 
 
@@ -276,7 +278,33 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
         spinnerRoUID.setOnItemClickListener((adapterView, view, i, l) -> {
             spinnerRoUID.setError(null);
 
-            DatabaseReference databaseReferencePO = FirebaseDatabase.getInstance().getReference("ReceivedOrders/"+ spinnerRoUID.getText().toString());
+            DatabaseReference databaseReferencePO = FirebaseDatabase.getInstance().getReference("ReceivedOrders");
+            databaseReferencePO.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.exists()){
+                        for (DataSnapshot dataSnapshot: snapshot.getChildren()){
+                            String key = dataSnapshot.getKey();
+                            assert key != null;
+                            String roUID = snapshot.child(key).child("roUID").getValue(String.class);
+                            ReceivedOrderModel receivedOrderModel = snapshot.child(key).getValue(ReceivedOrderModel.class);
+                            if (Objects.equals(roUID, spinnerRoUID.getText().toString())) {
+                                roPoCustNumber = receivedOrderModel.getRoPoCustNumber();
+                                edtPoUID.setText(roPoCustNumber);
+                            }
+                        }
+
+
+
+                    } else {
+                        //dialogInterface.roNotExistsDialog(AddGoodIssueActivity.this);
+                    }
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {}
+            });
+
+           /* DatabaseReference databaseReferencePO = FirebaseDatabase.getInstance().getReference("ReceivedOrders/"+ spinnerRoUID.getText().toString());
             databaseReferencePO.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -288,7 +316,7 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
                 public void onCancelled(@NonNull DatabaseError error) {
 
                 }
-            });
+            });*/
         });
 
         btnGiSearchByDateReset.setOnClickListener(view -> {

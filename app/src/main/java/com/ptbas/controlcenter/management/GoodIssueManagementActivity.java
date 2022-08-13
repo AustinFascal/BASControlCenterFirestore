@@ -758,18 +758,25 @@ public class GoodIssueManagementActivity extends AppCompatActivity {
     }
 
     private void showDataSearchByCompanyID(String selectedCompanyID) {
-        Query query = databaseReference.child("GoodIssueData").orderByChild("giRoUID").startAt(selectedCompanyID).endAt(selectedCompanyID+"-\uf8ff");
+
+        Query query = databaseReference.child("GoodIssueData").orderByChild("giRoUID");
         query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 goodIssueModelArrayList.clear();
-                if  (snapshot.exists()){
+                if (snapshot.exists()){
                     for (DataSnapshot item : snapshot.getChildren()){
-                        GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
-                        goodIssueModelArrayList.add(goodIssueModel);
+                        if (item.child("giRoUID").getValue(String.class).contains(selectedCompanyID)){
+                            llNoData.setVisibility(View.GONE);
+                            nestedScrollView.setVisibility(View.VISIBLE);
+                            GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
+                            goodIssueModelArrayList.add(goodIssueModel);
+                        } else {
+                            llNoData.setVisibility(View.VISIBLE);
+                            nestedScrollView.setVisibility(View.GONE);
+                        }
                     }
-                    llNoData.setVisibility(View.GONE);
-                    nestedScrollView.setVisibility(View.VISIBLE);
+
                 } else {
                     llNoData.setVisibility(View.VISIBLE);
                     nestedScrollView.setVisibility(View.GONE);

@@ -552,17 +552,12 @@ public class AddReceivedOrder extends AppCompatActivity {
                     if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED){
                         String key = ref1.push().getKey();
                         ref1.child(key).setValue(receivedOrderModel).addOnCompleteListener(task -> {
-                            /*if(task.isSuccessful())
-                            {*/
-
                             ref1.child(key).child("OrderedItems").setValue(productItemsArrayList).addOnCompleteListener(task1 -> {
                                 if(task1.isSuccessful())
                                 {
                                     dialogInterface.savedROInformation(AddReceivedOrder.this);
                                 }
                             });
-
-                            //}
                         });
                     }
                 });

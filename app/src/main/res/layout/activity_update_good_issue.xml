@@ -19,39 +19,44 @@
             android:orientation="vertical"
             android:padding="24dp"
             android:showDividers="middle">
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
+
                 <TextView
                     android:id="@+id/tv_gi_created_by"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:maxLines="2"
                     android:ellipsize="end"
-                    android:text="Dibuat oleh: null"/>
+                    android:maxLines="2"
+                    android:text="Dibuat oleh: null" />
+
                 <TextView
                     android:id="@+id/tv_gi_modified_by"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:maxLines="2"
                     android:ellipsize="end"
-                    android:text="Disetujui oleh: Belum disetujui"/>
+                    android:maxLines="2"
+                    android:text="Disetujui oleh: Belum disetujui" />
+
                 <TextView
                     android:id="@+id/tv_gi_invoiced_status"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:maxLines="2"
                     android:ellipsize="end"
-                    android:text="Status Ditagihkan: null"/>
+                    android:maxLines="2"
+                    android:text="Status Ditagihkan: null" />
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:baselineAligned="false"
                 android:divider="@drawable/divider_transparent"
                 android:orientation="horizontal"
-                android:showDividers="middle"
-                android:baselineAligned="false">
+                android:showDividers="middle">
 
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -88,10 +93,9 @@
             </LinearLayout>
 
             <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:prefixText="RO-"
                 app:startIconDrawable="@drawable/ic_outline_receipt">
 
                 <AutoCompleteTextView
@@ -99,8 +103,13 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890/"
+                    android:ellipsize="end"
+                    android:focusable="false"
+                    android:imeOptions="actionNext"
                     android:hint="@string/inputPoNumberPtBas"
-                    android:inputType="textFilter|textCapCharacters" />
+                    android:inputType="text"
+                    android:singleLine="true"
+                    android:maxLines="1" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -113,9 +122,9 @@
                     android:id="@+id/edt_po_number_cust"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:focusable="false"
                     android:hint="@string/inputPoNumberCustomer"
                     android:inputType="none"
-                    android:focusable="false"
                     android:maxLines="1" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -138,8 +147,11 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:focusable="false"
+                        android:inputType="text"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:imeOptions="actionNext"
                         android:hint="@string/inputPoProductName"
-                        android:inputType="none"
                         android:maxLines="1" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -156,7 +168,10 @@
                         android:layout_height="wrap_content"
                         android:focusable="false"
                         android:hint="@string/inputPoProductType"
-                        android:inputType="none"
+                        android:inputType="text"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:imeOptions="actionNext"
                         android:maxLines="1" />
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
