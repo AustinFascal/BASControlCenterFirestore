@@ -6,8 +6,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
+import androidx.core.view.ViewCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -74,13 +76,13 @@ public class DashboardActivity extends AppCompatActivity {
 
     CoordinatorLayout constraintLayout;
     ConstraintLayout bottomSheet;
-    LinearLayout linearLayout, llAddGi, llShowOthers, llAddRo, llAddInvoice, llTopView, llWrapShortcuts;
+    LinearLayout linearLayout, llAddGi, llShowOthers, llAddRo, llAddInvoice, llTopView, llWrapShortcuts, llWrapProfilePic;
     TextView title, tvShowAllShortcuts;
     RecyclerView rvMainFeatures, rvStatistics;
     NestedScrollView nestedscrollview;
     CardView crdviewWrapInternetError, crdviewWrapShortcuts;
     ImageView imageViewProfilePic;
-    ImageButton imgbtnMenu;
+    //ImageButton imgbtnMenu;
 
     FirebaseAuth authProfile;
     String finalCountVehicle, finalCountUser, finalCountActiveReceivedOrderData, finalCountActiveGoodIssueDataToInvoiced, finalCountActiveGoodIssueData, finalCountCustomer;
@@ -100,12 +102,14 @@ public class DashboardActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
 
+
+        llWrapProfilePic = findViewById(R.id.wrap_profile_pic);
         bottomSheet = findViewById(R.id.bottomSheetPODetails);
         linearLayout = findViewById(R.id.linearLayoutWashboard);
         nestedscrollview = findViewById(R.id.nestedscrollview);
         llTopView = findViewById(R.id.ll_top_view);
         title = findViewById(R.id.title);
-        imgbtnMenu = findViewById(R.id.imgbtn_menu);
+        //imgbtnMenu = findViewById(R.id.imgbtn_menu);
         imageViewProfilePic = findViewById(R.id.imgbtn_profile);
         swipeContainer = findViewById(R.id.swipeContainerDashboard);
         crdviewWrapShortcuts = findViewById(R.id.crdview_wrap_shortcuts);
@@ -233,8 +237,18 @@ public class DashboardActivity extends AppCompatActivity {
         title.setText(R.string.app_name);
 
         imageViewProfilePic.setOnClickListener(view -> {
+            /*Intent intent = new Intent(DashboardActivity.this, UserProfileActivity.class);
+            startActivity(intent);*/
+
+            // on image click we are opening new activity
+            // and adding animation between this two activities.
             Intent intent = new Intent(DashboardActivity.this, UserProfileActivity.class);
-            startActivity(intent);
+            // below method is used to make scene transition
+            // and adding fade animation in it.
+            ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                    DashboardActivity.this, llWrapProfilePic, ViewCompat.getTransitionName(llWrapProfilePic));
+            // starting our activity with below method.
+            startActivity(intent, options.toBundle());
         });
 
         crdviewWrapShortcuts.setVisibility(View.VISIBLE);
@@ -243,8 +257,8 @@ public class DashboardActivity extends AppCompatActivity {
 
         // FADE TRANSITION FOR DASHBOARD ACTIVITY
         Fade fade = new Fade();
-        View decor = getWindow().getDecorView();
-        fade.excludeTarget(decor.findViewById(androidx.appcompat.R.id.action_bar_container), true);
+        //View decor = getWindow().getDecorView();
+        //fade.excludeTarget(decor.findViewById(androidx.appcompat.R.id.action_bar_container), true);
         fade.excludeTarget(android.R.id.statusBarBackground, true);
         fade.excludeTarget(android.R.id.navigationBarBackground, true);
 
@@ -367,13 +381,13 @@ public class DashboardActivity extends AppCompatActivity {
         });
 
         // HAMBURGER MENU CLICK LISTENER
-        imgbtnMenu.setOnClickListener(view -> {
+        /*imgbtnMenu.setOnClickListener(view -> {
             final Dialog dialog = new Dialog(DashboardActivity.this);
             dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             dialog.setContentView(R.layout.dialog_dashboard_option);
             dialog.show();
-        });
+        });*/
     }
 
 
@@ -622,7 +636,7 @@ public class DashboardActivity extends AppCompatActivity {
                         llTopView.setBackgroundColor(ContextCompat.getColor(DashboardActivity.this, android.R.color.black));
                         llTopView.setElevation(20);
                         title.setTextColor(ContextCompat.getColor(DashboardActivity.this, R.color.white));
-                        imgbtnMenu.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(DashboardActivity.this, R.color.white)));
+                        //imgbtnMenu.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(DashboardActivity.this, R.color.white)));
 
                         if (Build.VERSION.SDK_INT >= 21) {
                             //Window window = getWindow();
@@ -637,7 +651,7 @@ public class DashboardActivity extends AppCompatActivity {
                         llTopView.setBackgroundColor(ContextCompat.getColor(DashboardActivity.this, android.R.color.white));
                         llTopView.setElevation(20);
                         title.setTextColor(ContextCompat.getColor(DashboardActivity.this, R.color.black));
-                        imgbtnMenu.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(DashboardActivity.this, R.color.black)));
+                        //imgbtnMenu.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(DashboardActivity.this, R.color.black)));
 
                         if (Build.VERSION.SDK_INT >= 21) {
                             //Window window = getWindow();
@@ -656,7 +670,7 @@ public class DashboardActivity extends AppCompatActivity {
             }
             if (scrollY < 50) {
                 title.setTextColor(ContextCompat.getColor(DashboardActivity.this, R.color.white));
-                imgbtnMenu.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(DashboardActivity.this, R.color.white)));
+                //imgbtnMenu.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(DashboardActivity.this, R.color.white)));
                 llTopView.setBackgroundColor(ContextCompat.getColor(DashboardActivity.this, android.R.color.transparent));
                 llTopView.setElevation(0);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

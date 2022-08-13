@@ -1,6 +1,7 @@
 package com.ptbas.controlcenter.userprofile;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -11,7 +12,9 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.transition.Fade;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -43,6 +46,7 @@ public class UserProfileActivity extends AppCompatActivity {
 
     private int intResume = 0;
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -104,6 +108,21 @@ public class UserProfileActivity extends AppCompatActivity {
             progressBar.setVisibility(View.VISIBLE);
             showUserProfile(firebaseUser);
         }
+
+
+        Fade fade = new Fade();
+        // View decor = getWindow().getDecorView();
+
+        // here also we are excluding status bar,
+        // action bar and navigation bar from animation.
+        //fade.excludeTarget(decor.findViewById(androidx.appcompat.R.id.action_bar_container), true);
+        fade.excludeTarget(android.R.id.statusBarBackground, true);
+        fade.excludeTarget(android.R.id.navigationBarBackground, true);
+
+        // below methods are used for adding
+        // enter and exit transition.
+        getWindow().setEnterTransition(fade);
+        getWindow().setExitTransition(fade);
 
 
     }
@@ -204,6 +223,11 @@ public class UserProfileActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
+
+    @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
 
@@ -231,7 +255,8 @@ public class UserProfileActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         } else {
-            finish();
+            onBackPressed();
+            //finish();
             //Toast.makeText(this, "Terjadi kesalahan", Toast.LENGTH_SHORT).show();
         }
 
