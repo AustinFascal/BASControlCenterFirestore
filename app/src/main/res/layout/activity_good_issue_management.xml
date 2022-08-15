@@ -29,60 +29,7 @@
                 android:paddingTop="18dp"
                 android:showDividers="middle">
 
-                <LinearLayout
-                    android:id="@+id/wrap_search_by_spinner"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:divider="@drawable/divider_transparent"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:paddingBottom="16dp"
-                    android:showDividers="middle"
-                    android:visibility="gone">
 
-                    <com.google.android.material.textfield.TextInputLayout
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        app:placeholderText="Pilih Kategori">
-
-                        <AutoCompleteTextView
-                            android:id="@+id/spinner_search_type"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Cari Berdasarkan"
-                            android:inputType="none" />
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <ImageButton
-                        android:id="@+id/btn_gi_search_by_type_reset"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginTop="3dp"
-                        android:layout_marginBottom="1dp"
-                        android:layout_weight="3.8"
-                        android:background="@drawable/outline_box"
-                        android:scaleType="centerInside"
-                        android:src="@drawable/ic_outline_restore"
-                        android:visibility="gone" />
-
-                    <!--
-                                        <androidx.appcompat.widget.SearchView
-                                            android:layout_marginTop="2dp"
-                                            android:layout_marginBottom="2dp"
-                                            android:animateLayoutChanges="true"
-                                            android:padding="0dp"
-                                            android:layoutDirection="rtl"
-                                            android:background="@drawable/outline_box"
-                                            android:id="@+id/edt_keyword_search_gi"
-                                            android:layout_width="match_parent"
-                                            android:layout_height="match_parent"
-                                            android:inputType="text" />
-                    -->
-
-                </LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/wrap_filter"
@@ -279,6 +226,7 @@
 
                         </LinearLayout>
 
+<!--
                         <LinearLayout
                             android:id="@+id/ll_wrap_filter_by_company"
                             android:layout_width="match_parent"
@@ -324,10 +272,64 @@
                                 android:visibility="gone" />
 
                         </LinearLayout>
+-->
 
                     </com.ptbas.controlcenter.DragLinearLayout>
                 </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/wrap_search_by_spinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:divider="@drawable/divider_transparent"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingBottom="16dp"
+                    android:showDividers="middle"
+                    android:visibility="gone">
 
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        app:placeholderText="Pilih Kategori">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/spinner_search_type"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="Cari Berdasarkan"
+                            android:inputType="none" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <ImageButton
+                        android:id="@+id/btn_gi_search_by_type_reset"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginTop="3dp"
+                        android:layout_marginBottom="1dp"
+                        android:layout_weight="3.8"
+                        android:background="@drawable/outline_box"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_outline_restore"
+                        android:visibility="gone" />
+
+                    <!--
+                                        <androidx.appcompat.widget.SearchView
+                                            android:layout_marginTop="2dp"
+                                            android:layout_marginBottom="2dp"
+                                            android:animateLayoutChanges="true"
+                                            android:padding="0dp"
+                                            android:layoutDirection="rtl"
+                                            android:background="@drawable/outline_box"
+                                            android:id="@+id/edt_keyword_search_gi"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="match_parent"
+                                            android:inputType="text" />
+                    -->
+
+                </LinearLayout>
                 <Button
                     android:id="@+id/imgbtn_expand_collapse_filter_layout"
                     style="@style/MaterialDialog.NegativeButton"

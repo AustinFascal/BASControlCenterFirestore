@@ -59,6 +59,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.text.pdf.draw.LineSeparator;
 import com.ptbas.controlcenter.adapter.GIManagementAdapter;
 import com.ptbas.controlcenter.model.GoodIssueModel;
+import com.ptbas.controlcenter.model.ProductItems;
 import com.ptbas.controlcenter.model.ReceivedOrderModel;
 import com.ptbas.controlcenter.update.UpdateGoodIssueActivity;
 import com.ptbas.controlcenter.utils.LangUtils;
@@ -586,7 +587,23 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
         rouidVal = spinnerRoUID.getText().toString();
         pouidVal = Objects.requireNonNull(edtPoUID.getText()).toString();
 
-        DatabaseReference databaseReferencePO = FirebaseDatabase.getInstance().getReference("ReceivedOrders/"+ rouidVal +"/OrderedItems/1");
+        databaseReference.child("ReceivedOrders").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()){
+                    for (DataSnapshot dataSnapshot: snapshot.getChildren()){
+                        String key = dataSnapshot.getKey();
+                        assert key != null;
+                        ProductItems productItems = snapshot.child(key).child("OrderedItems/1").getValue(ProductItems.class);
+                        matBuyPrice = Objects.requireNonNull(productItems.getMatBuyPrice().doubleValue());
+                    }
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {}
+        });
+
+        /*DatabaseReference databaseReferencePO = FirebaseDatabase.getInstance().getReference("ReceivedOrders");
         databaseReferencePO.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -599,7 +616,7 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError error) {
 
             }
-        });
+        });*/
 
         Query query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated").startAt(dateStartVal).endAt(dateEndVal);
         query.addValueEventListener(new ValueEventListener() {
@@ -646,9 +663,6 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
 
 
 
-
-
-
                                             // TODO ADD THIS LINE OF CODE TO SHOW DATA IN ADD INVOICE
                                             for (int i = 0; i < rvGoodIssueList.getChildCount(); i++) {
                                                 rvGoodIssueList.getChildAt(i).findViewById(R.id.btn_delete_gi).setVisibility(View.GONE);
@@ -658,8 +672,6 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
                                                 rlOpenRoDetail.setOnClickListener(view1 -> {});
                                                 ivShowDetail.setVisibility(View.GONE);
                                             }
-
-
 
 
 

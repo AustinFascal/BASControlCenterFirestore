@@ -120,6 +120,27 @@
                     android:textSize="12sp" />
 
                 <LinearLayout
+                    android:id="@+id/ll_ro_needs_update"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_weight="1"
+                    android:visibility="gone"
+                    android:background="@drawable/pill_red"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="2dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="NOMOR RO PERLU DIPERBARUI"
+                        android:textAlignment="center"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+
+                <LinearLayout
                     android:id="@+id/ll_wrap_gi_status"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

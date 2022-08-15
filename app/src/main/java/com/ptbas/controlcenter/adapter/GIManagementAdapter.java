@@ -11,23 +11,34 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.ptbas.controlcenter.DialogInterface;
 import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.model.GoodIssueModel;
+import com.ptbas.controlcenter.model.ReceivedOrderModel;
 import com.ptbas.controlcenter.update.UpdateGoodIssueActivity;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapter.ItemViewHolder> {
 
     Context context;
     ArrayList<GoodIssueModel> goodIssueModelArrayList;
     DialogInterface dialogInterface;
+
+
 
     public GIManagementAdapter(Context context, ArrayList<GoodIssueModel> goodIssueModelArrayList) {
         this.context = context;
@@ -38,6 +49,7 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
     @Override
     public GIManagementAdapter.ItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_layout_good_issue, parent, false);
+
         return new ItemViewHolder(itemView);
     }
 
@@ -53,12 +65,14 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
 
 
     public class ItemViewHolder extends RecyclerView.ViewHolder {
-        LinearLayout llStatusApproved, llStatusInvoiced, llStatusPOAvailable;
+        LinearLayout llStatusApproved, llStatusInvoiced, llStatusPOAvailable, llRoNeedsUpdate;
         TextView tvCubication, tvGiDateTime, tvGiUid, tvRoUid, tvGiMatDetail, tvGiVhlDetail,
                 tvVhlUid, tvPoCustNumber;
         Button btnDeleteGi, btnApproveGi;
         ImageView ivShowDetail;
         RelativeLayout rlOpenGiDetail;
+
+
 
         public ItemViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -66,6 +80,7 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
             llStatusApproved = itemView.findViewById(R.id.ll_status_approved);
             llStatusInvoiced = itemView.findViewById(R.id.ll_status_invoiced);
             llStatusPOAvailable = itemView.findViewById(R.id.ll_status_po_vailable);
+            llRoNeedsUpdate = itemView.findViewById(R.id.ll_ro_needs_update);
             tvCubication = itemView.findViewById(R.id.tv_cubication);
             tvGiDateTime = itemView.findViewById(R.id.tv_ro_date_time);
             tvGiUid = itemView.findViewById(R.id.tv_gi_uid);
@@ -77,9 +92,14 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
             btnDeleteGi = itemView.findViewById(R.id.btn_delete_gi);
             btnApproveGi = itemView.findViewById(R.id.btn_approve_gi);
             ivShowDetail = itemView.findViewById(R.id.iv_show_detail);
+
+
         }
 
+
+
         public void viewBind(GoodIssueModel goodIssueModel) {
+
             dialogInterface = new DialogInterface();
             DecimalFormat df = new DecimalFormat("0.00");
             float cubication = goodIssueModel.getGiVhlCubication();
@@ -102,6 +122,7 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
             tvGiMatDetail.setText(matDetail);
             tvGiVhlDetail.setText(vhlDetail);
             tvVhlUid.setText(vhlUID);
+
             if (giStatus){
                 llStatusApproved.setVisibility(View.VISIBLE);
                 btnApproveGi.setVisibility(View.GONE);

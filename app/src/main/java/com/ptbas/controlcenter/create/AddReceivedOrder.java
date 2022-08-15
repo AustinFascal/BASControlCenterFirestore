@@ -309,12 +309,7 @@ public class AddReceivedOrder extends AppCompatActivity {
             randomString = getRandomString(5);
         });
 
-        spinnerPoCustName.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean b) {
-                spinnerPoCustName.setText(customerData);
-            }
-        });
+        spinnerPoCustName.setOnFocusChangeListener((view, b) -> spinnerPoCustName.setText(customerData));
 
         spinnerPoCurrency.setOnItemClickListener((adapterView, view, i, l) -> {
             String selectedCurrency = (String) adapterView.getItemAtPosition(i);
@@ -329,7 +324,18 @@ public class AddReceivedOrder extends AppCompatActivity {
         final Handler handler = new Handler();
         Runnable runnable = new Runnable() {
             public void run() {
-                if (transportData.isEmpty()){
+                if (transportData.isEmpty() || poMonth==0 || poYear==0 || customerID.isEmpty() || spinnerPoCurrency.getText().toString().isEmpty()){
+                    edtPoNumberPtbas.setText("");
+                } else{
+                    String poNumberCustomer = Objects.requireNonNull(edtPoNumberCustomer.getText()).toString();
+                    if (poNumberCustomer.isEmpty() || poNumberCustomer.equals("-")){
+                        edtPoNumberPtbas.setText(customerID +"- "+transportData.substring(0, 3)+" - "+randomString+" "+poYear+monthStrVal);
+                    } else {
+                        edtPoNumberPtbas.setText(customerID +"- "+transportData.substring(0, 3)+" - "+poNumberCustomer);
+                    }
+
+                }
+                /*if (transportData.isEmpty()){
                     if (poMonth==0||poYear==0){
                         edtPoNumberPtbas.setText(customerID +"- "+transportData+" - ");
                     } else {
@@ -343,12 +349,18 @@ public class AddReceivedOrder extends AppCompatActivity {
                         }
                     } else {
                         edtPoNumberPtbas.setText(customerID +"- "+transportData.substring(0, 3) + " - " + poYear+monthStrVal);
-                        if (!customerData.isEmpty() &&!Objects.requireNonNull(edtPoDate.getText()).toString().equals("")){
-                            edtPoNumberPtbas.setText(randomString+" - "+ customerID +"- "+transportData.substring(0, 3)+" - "+poYear+monthStrVal);
+                        if (customerData.isEmpty() &&!Objects.requireNonNull(edtPoDate.getText()).toString().equals("")){
+                            if (customerData.equals("-") || edtPoNumberCustomer.getText().toString().equals("-")){
+                                edtPoNumberPtbas.setText(randomString+" - "+ customerID +"- "+transportData.substring(0, 3)+" - "+poYear+monthStrVal);
+                            }
+                        }
+                        if (!customerData.isEmpty() && !edtPoNumberCustomer.getText().toString().equals("-")){
+                            String poNumberCustomer = Objects.requireNonNull(edtPoNumberCustomer.getText()).toString();
+                            edtPoNumberPtbas.setText(randomString+" - "+ customerID +"- "+transportData.substring(0, 3)+" - "+poNumberCustomer);
                         }
                     }
 
-                }
+                }*/
                 handler.postDelayed(this, 500);
             }
         };
@@ -416,7 +428,7 @@ public class AddReceivedOrder extends AppCompatActivity {
             }
 
             if (!TextUtils.isEmpty(roDateCreated)&&!TextUtils.isEmpty(roMatType)&&!TextUtils.isEmpty(roCurrency)&&
-                    !TextUtils.isEmpty(roCustName)){
+                    !TextUtils.isEmpty(roCustName)&&!TextUtils.isEmpty(roUID)){
                 insertData(roUID, roCreatedBy, roDateCreated, roTOP, roMatType, roCurrency, roPoCustNumber,
                         roCustName, false);
             }
