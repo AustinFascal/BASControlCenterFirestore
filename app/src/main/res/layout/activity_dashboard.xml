@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@drawable/bg"
-    android:id="@+id/constraintLayout">
+    android:id="@+id/coordinatorLayout">
 
     <LinearLayout
         android:id="@+id/ll_top_view"

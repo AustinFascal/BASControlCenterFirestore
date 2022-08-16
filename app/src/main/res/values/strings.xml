@@ -22,6 +22,7 @@
     <string name="inputPoProductType">Jenis<font color="#cc0029">*</font></string>
     <string name="inputCustomerName">Pilih Customer<font color="#cc0029">*</font></string>
     <string name="inputCurrency">Mata Uang<font color="#cc0029">*</font></string>
+    <string name="inputRoType">Pilih Jenis RO<font color="#cc0029">*</font></string>
 
     <string name="showMore">Tampilkan lebih banyak</string>
     <string name="showLess">Tampilkan lebih sedikit</string>

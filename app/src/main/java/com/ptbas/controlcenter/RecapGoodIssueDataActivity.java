@@ -629,25 +629,27 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
                             if (Objects.requireNonNull(item.child("giRoUID").getValue()).toString().equals(rouidVal) &&
                                     !pouidVal.equals("-")) {
                                 if (Objects.equals(item.child("giStatus").getValue(), true)) {
-                                    GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
-                                    goodIssueModelArrayList.add(goodIssueModel);
-                                    fabCreateGiRecap.show();
-                                    nestedScrollView.setVisibility(View.VISIBLE);
-                                    llNoData.setVisibility(View.GONE);
+                                    if (Objects.equals(item.child("giInvoiced").getValue(), false)) {
+                                        GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
+                                        goodIssueModelArrayList.add(goodIssueModel);
+                                        fabCreateGiRecap.show();
+                                        nestedScrollView.setVisibility(View.VISIBLE);
+                                        llNoData.setVisibility(View.GONE);
 
-                                    DatabaseReference databaseReferencePO = FirebaseDatabase.getInstance().getReference("ReceivedOrders/"+ spinnerRoUID.getText().toString());
-                                    databaseReferencePO.addValueEventListener(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                            custNameVal = snapshot.child("roCustName").getValue(String.class);
-                                            currencyVal = snapshot.child("roCurrency").getValue(String.class);
-                                        }
+                                        DatabaseReference databaseReferencePO = FirebaseDatabase.getInstance().getReference("ReceivedOrders/"+ spinnerRoUID.getText().toString());
+                                        databaseReferencePO.addValueEventListener(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                custNameVal = snapshot.child("roCustName").getValue(String.class);
+                                                currencyVal = snapshot.child("roCurrency").getValue(String.class);
+                                            }
 
-                                        @Override
-                                        public void onCancelled(@NonNull DatabaseError error) {
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError error) {
 
-                                        }
-                                    });
+                                            }
+                                        });
+                                    }
                                 }
 
                                 DatabaseReference databaseReferencePO2 = FirebaseDatabase.getInstance().getReference("ReceivedOrders/"+ rouidVal +"/OrderedItems");

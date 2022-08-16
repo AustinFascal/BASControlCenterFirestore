@@ -2,10 +2,12 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/swipeContainer"
+    android:id="@+id/coordinatorLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".create.AddReceivedOrder">
+
+
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_save_po_data"
@@ -21,6 +23,9 @@
         android:src="@drawable/ic_outline_check"
         android:tintMode="@color/white"
         app:backgroundTint="@color/pure_orange" />
+
+
+
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -40,6 +45,8 @@
                 android:orientation="vertical"
                 android:padding="24dp"
                 android:showDividers="middle">
+
+
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -185,6 +192,21 @@
                         android:inputType="none" />
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:startIconDrawable="@drawable/ic_outline_menu">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/spinner_ro_type"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/inputRoType"
+                        android:focusable="false"
+                        android:inputType="none" />
+                </com.google.android.material.textfield.TextInputLayout>
+
                 <LinearLayout
                     android:id="@+id/ll_add_item"
                     android:layout_width="match_parent"
@@ -195,6 +217,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:background="@color/light_grey" />
+
+
 
                     <TextView
                         android:layout_width="match_parent"

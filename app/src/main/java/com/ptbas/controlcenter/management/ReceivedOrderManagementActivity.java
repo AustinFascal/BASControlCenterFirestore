@@ -5,10 +5,13 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.cardview.widget.CardView;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -25,11 +28,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -55,6 +60,10 @@ import java.util.List;
 public class ReceivedOrderManagementActivity extends AppCompatActivity {
 
     String dateStart = "", dateEnd = "", searchTypeData="";
+
+    private static final int LAUNCH_SECOND_ACTIVITY = 0;
+
+    int countData=0;
 
     LinearLayout llNoData;
     Context context;
@@ -91,6 +100,8 @@ public class ReceivedOrderManagementActivity extends AppCompatActivity {
     AutoCompleteTextView spinnerApprovalStatus, spinnerSearchType,
             spinnerMaterialType, spinnerCompanyName;
 
+    CoordinatorLayout coordinatorLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -98,6 +109,7 @@ public class ReceivedOrderManagementActivity extends AppCompatActivity {
 
         context = this;
 
+        coordinatorLayout = findViewById(R.id.coordinatorLayout);
         fabExpandMenu = findViewById(R.id.fab_expand_menu);
         fabActionCreateRo = findViewById(R.id.fab_action_create_ro);
         fabActionArchivedData = findViewById(R.id.fab_action_archived_data);
@@ -182,6 +194,7 @@ public class ReceivedOrderManagementActivity extends AppCompatActivity {
         // SHOW DATA FROM DEFAULT QUERY
         showDataDefaultQuery();
 
+
         imgbtnExpandCollapseFilterLayout.setOnClickListener(view -> {
             if (firstViewDataFirstTimeStatus){
                 view = View.inflate(context, R.layout.activity_good_issue_management, null);
@@ -194,8 +207,12 @@ public class ReceivedOrderManagementActivity extends AppCompatActivity {
         });
 
         fabActionCreateRo.setOnClickListener(view -> {
-            Intent intent = new Intent(ReceivedOrderManagementActivity.this, AddReceivedOrder.class);
-            startActivity(intent);
+            //int LAUNCH_SECOND_ACTIVITY = 1;
+            Intent i = new Intent(this, AddReceivedOrder.class);
+            startActivityForResult(i, LAUNCH_SECOND_ACTIVITY);
+            fabExpandMenu.collapse();
+            /*Intent intent = new Intent(ReceivedOrderManagementActivity.this, AddReceivedOrder.class);
+            startActivity(intent);*/
         });
 
         fabActionArchivedData.setOnClickListener(view ->
@@ -247,11 +264,14 @@ public class ReceivedOrderManagementActivity extends AppCompatActivity {
     }
 
     private void showDataDefaultQuery() {
+
         Query query = databaseReference.child("ReceivedOrders").orderByChild("roDateCreated");
         query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+
                 receivedOrderModelArrayList.clear();
+
                 if (snapshot.exists()){
                     for (DataSnapshot item : snapshot.getChildren()){
                         ReceivedOrderModel receivedOrderModel = item.getValue(ReceivedOrderModel.class);
@@ -269,6 +289,9 @@ public class ReceivedOrderManagementActivity extends AppCompatActivity {
                 Collections.reverse(receivedOrderModelArrayList);
                 roManagementAdapter = new ROManagementAdapter(context, receivedOrderModelArrayList);
                 rvReceivedOrderList.setAdapter(roManagementAdapter);
+
+
+
             }
 
             @Override
@@ -417,8 +440,40 @@ public class ReceivedOrderManagementActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
         showDataDefaultQuery();
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == LAUNCH_SECOND_ACTIVITY) {
+            if(resultCode == Activity.RESULT_OK){
+                String returnString = data.getStringExtra("addedStatus");
+                String activityType = data.getStringExtra("activityType");
+                if (returnString.equals("true")&&activityType.equals("RO")){
+                    Snackbar.make(coordinatorLayout, "Berhasil! Mau menambah data lagi?", Snackbar.LENGTH_LONG)
+                            .setTextColor(getResources().getColor(R.color.dark_green))
+                            .setBackgroundTint(getResources().getColor(R.color.pure_green))
+                            .setAction("TAMBAH LAGI", view1 -> {
+                               /* Intent intent = new Intent(ReceivedOrderManagementActivity.this, AddReceivedOrder.class);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                                startActivity(intent);*/
+                                Intent i = new Intent(this, AddReceivedOrder.class);
+                                startActivityForResult(i, LAUNCH_SECOND_ACTIVITY);
+                            })
+                            .setActionTextColor(getResources().getColor(R.color.black))
+                            .show();
+                }
+                //String result=data.getStringExtra("result");
+
+            }
+            if (resultCode == Activity.RESULT_CANCELED) {
+                // Write your code if there's no result
+            }
+        }
+    } //onActivityResult
 
     @Override
     public void onBackPressed() {

@@ -2,15 +2,22 @@ package com.ptbas.controlcenter.create;
 
 import static android.content.ContentValues.TAG;
 
+import static com.gun0912.tedpermission.provider.TedPermissionProvider.context;
+
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,6 +36,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -36,6 +44,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.database.DataSnapshot;
@@ -47,13 +56,19 @@ import com.ptbas.controlcenter.DialogInterface;
 import com.ptbas.controlcenter.Helper;
 import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.adapter.PreviewProductItemAdapter;
+import com.ptbas.controlcenter.management.ReceivedOrderManagementActivity;
 import com.ptbas.controlcenter.model.ProductItems;
 import com.ptbas.controlcenter.model.ProductModel;
 import com.ptbas.controlcenter.model.ReceivedOrderModel;
 import com.ptbas.controlcenter.utils.LangUtils;
+import com.skydoves.powermenu.MenuAnimation;
+import com.skydoves.powermenu.OnMenuItemClickListener;
+import com.skydoves.powermenu.PowerMenu;
+import com.skydoves.powermenu.PowerMenuItem;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
@@ -61,12 +76,13 @@ import java.util.Random;
 
 public class AddReceivedOrder extends AppCompatActivity {
 
+    CoordinatorLayout coordinatorLayout;
     LinearLayout llList,llAddItem, llInputAllData, llPoNumberAvailability;
     String monthStrVal, dayStrVal;
     Button btnAddRow, btnLockRow, btnUnlockRow, btnNoPoNumber, btnPoNumberAvailable;
     TextInputEditText edtPoDate, edtPoTOP, edtPoNumberCustomer, edtPoNumberPtbas;
     TextInputLayout wrapEdtPoNumberPtBas, txtInputEdtPoNumberCustomer;
-    AutoCompleteTextView spinnerPoTransportType, spinnerPoCustName, spinnerPoCurrency;
+    AutoCompleteTextView spinnerPoTransportType, spinnerPoCustName, spinnerPoCurrency, spinnerRoType;
     List<String> productName, transportTypeName, customerName, currencyName;
     String transportData = "", customerData = "", customerID ="", randomString="NULL", currencyData="";
     Integer poYear = 0, poMonth = 0, poDay = 0;
@@ -90,7 +106,12 @@ public class AddReceivedOrder extends AppCompatActivity {
     DialogInterface dialogInterface = new DialogInterface();
     Helper helper = new Helper();
 
+    Button btnChooseRoType;
+
     PreviewProductItemAdapter previewProductItemAdapter;
+
+    String[] roType = {"JASA ANGKUT + MATERIAL", "MATERIAL SAJA", "JASA ANGKUT SAJA"};
+    ArrayList<String> arrayListRoType = new ArrayList<>(Arrays.asList(roType));
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,6 +119,18 @@ public class AddReceivedOrder extends AppCompatActivity {
         setContentView(R.layout.activity_add_received_order);
 
         LangUtils.setLocale(this, "en");
+
+        ArrayAdapter<String> arrayAdapterRoType = new ArrayAdapter<>(this, R.layout.style_spinner, arrayListRoType);
+
+        spinnerRoType = findViewById(R.id.spinner_ro_type);
+        spinnerRoType.setAdapter(arrayAdapterRoType);
+
+        spinnerRoType.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                //spinnerRoType.setText(adapterView.indexOfChild(i));
+            }
+        });
 
         bottomSheet = findViewById(R.id.bottomSheetPODetails);
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
@@ -133,7 +166,7 @@ public class AddReceivedOrder extends AppCompatActivity {
         }
 
 
-
+        coordinatorLayout = findViewById(R.id.coordinatorLayout);
         llInputAllData = findViewById(R.id.ll_input_all_data);
         llList = findViewById(R.id.layout_list);
         llAddItem = findViewById(R.id.ll_add_item);
@@ -463,7 +496,25 @@ public class AddReceivedOrder extends AppCompatActivity {
 
     }
 
+    private OnMenuItemClickListener<PowerMenuItem> onMenuItemClickListener = new OnMenuItemClickListener<PowerMenuItem>() {
+        @Override
+        public void onItemClick(int position, PowerMenuItem item) {
+            if (item.getTitle().toString().equals("JASA ANGKUT SAJA")){
+                Toast.makeText(AddReceivedOrder.this, "Jasa Angkut saja", Toast.LENGTH_SHORT).show();
+            }
+
+            if (item.getTitle().toString().equals("JASA ANGKUT DAN MATERIAL")){
+                Toast.makeText(AddReceivedOrder.this, "Jasa Angkut + Material", Toast.LENGTH_SHORT).show();
+            }
+
+            if (item.getTitle().toString().equals("MATERIAL SAJA")){
+                Toast.makeText(AddReceivedOrder.this, "Material Saja", Toast.LENGTH_SHORT).show();
+            }
+        }
+    };
+
     private void bottomSheetExpanded() {
+        llInputAllData.setVisibility(View.INVISIBLE);
         fabProceed.setVisibility(View.GONE);
         fabExpandMenu.setVisibility(View.VISIBLE);
         View viewLayout = AddReceivedOrder.this.getCurrentFocus();
@@ -474,6 +525,7 @@ public class AddReceivedOrder extends AppCompatActivity {
     }
 
     private void bottomSheetCollapsed() {
+        llInputAllData.setVisibility(View.VISIBLE);
         fabProceed.setVisibility(View.VISIBLE);
         fabExpandMenu.setVisibility(View.GONE);
         fabExpandMenu.collapse();
@@ -563,14 +615,23 @@ public class AddReceivedOrder extends AppCompatActivity {
                 fabActionSaveCloud.setOnClickListener(view -> {
                     if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED){
                         String key = ref1.push().getKey();
-                        ref1.child(key).setValue(receivedOrderModel).addOnCompleteListener(task -> {
-                            ref1.child(key).child("OrderedItems").setValue(productItemsArrayList).addOnCompleteListener(task1 -> {
-                                if(task1.isSuccessful())
-                                {
-                                    dialogInterface.savedROInformation(AddReceivedOrder.this);
-                                }
-                            });
-                        });
+                        ref1.child(key).setValue(receivedOrderModel).addOnCompleteListener  (task ->
+                                ref2.child(key).child("OrderedItems").setValue(productItemsArrayList).addOnCompleteListener(task1 -> {
+                                    if(task1.isSuccessful())
+                                    {
+                                        Intent intent = new Intent();
+                                        intent.putExtra("addedStatus", "true");
+                                        intent.putExtra("activityType", "RO");
+                                        setResult(RESULT_OK, intent);
+                                        finish();
+                                        /*bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+                                        fabExpandMenu.collapse();
+                                        llInputAllData.setVisibility(View.INVISIBLE);*/
+
+
+                                        //dialogInterface.savedROInformation(AddReceivedOrder.this);
+                                    }
+                                }));
                     }
                 });
 

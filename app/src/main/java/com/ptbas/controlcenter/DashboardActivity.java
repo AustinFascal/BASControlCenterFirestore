@@ -19,15 +19,10 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
-import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -38,13 +33,13 @@ import android.transition.Fade;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -61,6 +56,7 @@ import com.ptbas.controlcenter.create.AddGoodIssueActivity;
 import com.ptbas.controlcenter.create.AddInvoiceActivity;
 import com.ptbas.controlcenter.create.AddReceivedOrder;
 import com.ptbas.controlcenter.create.AddVehicleActivity;
+import com.ptbas.controlcenter.management.ReceivedOrderManagementActivity;
 import com.ptbas.controlcenter.model.MainFeatureModel;
 import com.ptbas.controlcenter.model.StatisticsModel;
 import com.ptbas.controlcenter.model.UserModel;
@@ -74,7 +70,10 @@ public class DashboardActivity extends AppCompatActivity {
 
     public SwipeRefreshLayout swipeContainer;
 
-    CoordinatorLayout constraintLayout;
+    private static final int LAUNCH_SECOND_ACTIVITY = 0;
+
+
+    CoordinatorLayout coordinatorLayout;
     ConstraintLayout bottomSheet;
     LinearLayout linearLayout, llAddGi, llShowOthers, llAddRo, llAddInvoice, llTopView, llWrapShortcuts, llWrapProfilePic;
     TextView title, tvShowAllShortcuts;
@@ -116,7 +115,7 @@ public class DashboardActivity extends AppCompatActivity {
         llWrapShortcuts = findViewById(R.id.ll_wrap_shortcuts);
         rvMainFeatures = findViewById(R.id.rv_main_features);
         rvStatistics = findViewById(R.id.rv_statistics);
-        constraintLayout = findViewById(R.id.constraintLayout);
+        coordinatorLayout = findViewById(R.id.coordinatorLayout);
 
         llAddGi =  findViewById(R.id.ll_add_gi);
         llShowOthers = findViewById(R.id.ll_show_other);
@@ -268,8 +267,8 @@ public class DashboardActivity extends AppCompatActivity {
 
         // DASHBOARD'S SHORTCUTS CLICK LISTENER
         llAddRo.setOnClickListener(view -> {
-            Intent intent = new Intent(DashboardActivity.this, AddReceivedOrder.class);
-            startActivity(intent);
+            Intent i = new Intent(this, AddReceivedOrder.class);
+            startActivityForResult(i, LAUNCH_SECOND_ACTIVITY);
         });
         llAddGi.setOnClickListener(view -> {
             Intent intent = new Intent(DashboardActivity.this, AddGoodIssueActivity.class);
@@ -689,6 +688,35 @@ public class DashboardActivity extends AppCompatActivity {
             }*/
         });
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == LAUNCH_SECOND_ACTIVITY) {
+            if(resultCode == Activity.RESULT_OK){
+                String returnString = data.getStringExtra("addedStatus");
+                String activityType = data.getStringExtra("activityType");
+                if (returnString.equals("true")&&activityType.equals("RO")){
+                    Snackbar.make(coordinatorLayout, "Berhasil! Mau menambah data lagi?", Snackbar.LENGTH_LONG)
+                            .setTextColor(getResources().getColor(R.color.dark_green))
+                            .setBackgroundTint(getResources().getColor(R.color.pure_green))
+                            .setAction("TAMBAH LAGI", view1 -> {
+                                Intent i = new Intent(this, AddReceivedOrder.class);
+                                startActivityForResult(i, LAUNCH_SECOND_ACTIVITY);
+
+                            })
+                            .setActionTextColor(getResources().getColor(R.color.black))
+                            .show();
+                }
+                //String result=data.getStringExtra("result");
+
+            }
+            if (resultCode == Activity.RESULT_CANCELED) {
+                // Write your code if there's no result
+            }
+        }
+    } //onActivityResult
 
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
