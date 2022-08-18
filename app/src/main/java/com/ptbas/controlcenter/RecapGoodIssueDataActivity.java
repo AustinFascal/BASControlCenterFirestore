@@ -22,7 +22,6 @@ import android.os.Vibrator;
 import android.text.Html;
 import android.transition.AutoTransition;
 import android.transition.TransitionManager;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -35,8 +34,6 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.getbase.floatingactionbutton.FloatingActionButton;
-import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.database.DataSnapshot;
@@ -61,7 +58,6 @@ import com.ptbas.controlcenter.adapter.GIManagementAdapter;
 import com.ptbas.controlcenter.model.GoodIssueModel;
 import com.ptbas.controlcenter.model.ProductItems;
 import com.ptbas.controlcenter.model.ReceivedOrderModel;
-import com.ptbas.controlcenter.update.UpdateGoodIssueActivity;
 import com.ptbas.controlcenter.utils.LangUtils;
 
 
@@ -595,7 +591,16 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
                         String key = dataSnapshot.getKey();
                         assert key != null;
                         ProductItems productItems = snapshot.child(key).child("OrderedItems/1").getValue(ProductItems.class);
-                        matBuyPrice = Objects.requireNonNull(productItems.getMatBuyPrice().doubleValue());
+                        matBuyPrice = Objects.requireNonNull(productItems).getMatBuyPrice();
+
+                        custNameVal = snapshot.child(key).child("roCustName").getValue(String.class);
+                        currencyVal = snapshot.child(key).child("roCurrency").getValue(String.class);
+
+                        String spinnerMaterialData = snapshot.child(key).child("OrderedItems/1").child("matName").getValue(String.class);
+                        matNameList.add(spinnerMaterialData);
+                        matNameList.remove("JASA ANGKUT");
+
+
                     }
                 }
             }
@@ -603,20 +608,6 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError error) {}
         });
 
-        /*DatabaseReference databaseReferencePO = FirebaseDatabase.getInstance().getReference("ReceivedOrders");
-        databaseReferencePO.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()){
-                    matBuyPrice = Objects.requireNonNull(snapshot.child("matBuyPrice").getValue(Double.class));
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });*/
 
         Query query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated").startAt(dateStartVal).endAt(dateEndVal);
         query.addValueEventListener(new ValueEventListener() {
@@ -636,22 +627,9 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
                                         nestedScrollView.setVisibility(View.VISIBLE);
                                         llNoData.setVisibility(View.GONE);
 
-                                        DatabaseReference databaseReferencePO = FirebaseDatabase.getInstance().getReference("ReceivedOrders/"+ spinnerRoUID.getText().toString());
-                                        databaseReferencePO.addValueEventListener(new ValueEventListener() {
-                                            @Override
-                                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                                custNameVal = snapshot.child("roCustName").getValue(String.class);
-                                                currencyVal = snapshot.child("roCurrency").getValue(String.class);
-                                            }
 
-                                            @Override
-                                            public void onCancelled(@NonNull DatabaseError error) {
-
-                                            }
-                                        });
                                     }
                                 }
-
                                 DatabaseReference databaseReferencePO2 = FirebaseDatabase.getInstance().getReference("ReceivedOrders/"+ rouidVal +"/OrderedItems");
                                 databaseReferencePO2.addValueEventListener(new ValueEventListener() {
                                     @Override
@@ -687,6 +665,7 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
                                     }
                                 });
                             }
+
                         }
 
                     }
@@ -695,11 +674,13 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
                         nestedScrollView.setVisibility(View.GONE);
                         llNoData.setVisibility(View.VISIBLE);
                     }
+
                 } else  {
                     fabCreateGiRecap.hide();
                     nestedScrollView.setVisibility(View.GONE);
                     llNoData.setVisibility(View.VISIBLE);
                 }
+
                 giManagementAdapter = new GIManagementAdapter(context, goodIssueModelArrayList);
                 rvGoodIssueList.setAdapter(giManagementAdapter);
 
@@ -711,6 +692,7 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
 
             }
         });
+
     }
 
     private void expandFilterViewValidation() {
@@ -756,7 +738,7 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
     @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == R.id.filter_data) {
+        if (item.getItemId() == R.id.filter_data_recap) {
             imgbtnExpandCollapseFilterLayout.setVisibility(View.VISIBLE);
             TransitionManager.beginDelayedTransition(cdvFilter, new AutoTransition());
             if (cdvFilter.getVisibility() == View.GONE) {

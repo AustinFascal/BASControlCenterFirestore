@@ -7,8 +7,6 @@
     android:layout_height="match_parent"
     tools:context=".create.AddReceivedOrder">
 
-
-
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_save_po_data"
         android:layout_width="wrap_content"
@@ -23,9 +21,6 @@
         android:src="@drawable/ic_outline_check"
         android:tintMode="@color/white"
         app:backgroundTint="@color/pure_orange" />
-
-
-
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"

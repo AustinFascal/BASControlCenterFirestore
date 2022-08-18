@@ -10,7 +10,7 @@
         app:actionViewClass="androidx.appcompat.widget.SearchView" />
     <item
         android:title="Filter Data"
-        android:icon="@drawable/ic_outline_filter_alt"
+        android:icon="@drawable/ic_outline_filter_alt_off"
         android:id="@+id/filter_data"
         app:showAsAction="always"/>
    <!-- <item

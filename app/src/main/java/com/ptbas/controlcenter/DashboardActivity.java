@@ -30,6 +30,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.transition.Fade;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -291,10 +292,25 @@ public class DashboardActivity extends AppCompatActivity {
         runnable.run();
 
         // ADAPTER FOR MAIN FEATURES
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int width = displayMetrics.widthPixels;
+        if (width<=1080){
+            RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 2);
+            rvMainFeatures.setLayoutManager(mLayoutManager);
+        }
+        if (width>1080&&width<1366){
+            RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 4);
+            rvMainFeatures.setLayoutManager(mLayoutManager);
+        }
+        if (width>=1366){
+            RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 6);
+            rvMainFeatures.setLayoutManager(mLayoutManager);
+        }
         mainFeaturesMenuAdapter = new MainFeaturesMenuAdapter(dataQueue(),getApplicationContext());
         rvMainFeatures.setAdapter(mainFeaturesMenuAdapter);
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
-        rvMainFeatures.setLayoutManager(gridLayoutManager);
+        /*GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
+        rvMainFeatures.setLayoutManager(gridLayoutManager);*/
 
         // REFRESH DASHBOARD'S CONTENTS
         swipeContainer.setOnRefreshListener(() -> helper.refreshDashboard(DashboardActivity.this));

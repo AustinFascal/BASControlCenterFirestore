@@ -24,22 +24,14 @@
     <string name="inputCurrency">Mata Uang<font color="#cc0029">*</font></string>
     <string name="inputRoType">Pilih Jenis RO<font color="#cc0029">*</font></string>
 
-    <string name="showMore">Tampilkan lebih banyak</string>
-    <string name="showLess">Tampilkan lebih sedikit</string>
+    <string name="showMore">Tampilkan Filter</string>
+    <string name="showLess">Sembunyikan Filter</string>
 
 
     <string name="inputDateRequired">Tanggal<font color="#cc0029">*</font></string>
     <string name="inputTimeRequired">Waktu</string>
-    <string name="title_activity_main2">MainActivity2</string>
     <!-- Strings used for fragments for navigation -->
-    <string name="first_fragment_label">First Fragment</string>
-    <string name="second_fragment_label">Second Fragment</string>
-    <string name="next">Next</string>
-    <string name="previous">Previous</string>
 
-    <string name="hello_first_fragment">Hello first fragment</string>
-    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
-    <string name="title_activity_add_invoice">AddInvoiceActivity</string>
     <string name="inactive">Tidak Aktif</string>
     <string name="active">Aktif</string>
     <string name="other_detail">Detail Lainnya (opsional)</string>

@@ -8,7 +8,6 @@ import androidx.cardview.widget.CardView;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -28,7 +27,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -46,11 +44,8 @@ import com.ptbas.controlcenter.DialogInterface;
 import com.ptbas.controlcenter.DragLinearLayout;
 import com.ptbas.controlcenter.Helper;
 import com.ptbas.controlcenter.R;
-import com.ptbas.controlcenter.adapter.GIManagementAdapter;
 import com.ptbas.controlcenter.adapter.ROManagementAdapter;
-import com.ptbas.controlcenter.create.AddGoodIssueActivity;
 import com.ptbas.controlcenter.create.AddReceivedOrder;
-import com.ptbas.controlcenter.model.GoodIssueModel;
 import com.ptbas.controlcenter.model.ReceivedOrderModel;
 
 import java.util.ArrayList;
@@ -419,7 +414,7 @@ public class ReceivedOrderManagementActivity extends AppCompatActivity {
     @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == R.id.filter_data) {
+        if (item.getItemId() == R.id.filter_data_recap) {
             imgbtnExpandCollapseFilterLayout.setVisibility(View.VISIBLE);
             TransitionManager.beginDelayedTransition(cdvFilter, new AutoTransition());
             if (cdvFilter.getVisibility() == View.GONE) {
