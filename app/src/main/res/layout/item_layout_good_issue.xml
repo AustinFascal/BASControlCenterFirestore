@@ -250,7 +250,7 @@
                 android:id="@+id/btn_delete_gi"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="2"
+                android:layout_weight="1"
                 android:layout_marginEnd="4dp"
                 android:drawableLeft="@drawable/ic_outline_delete_forever"
                 android:text="HAPUS"
@@ -263,7 +263,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:drawableLeft="@drawable/ic_outline_check"
-                android:text="SAHKAN"
+                android:text="VALID"
                 android:textStyle="bold"
                 android:textAllCaps="true" />
         </LinearLayout>

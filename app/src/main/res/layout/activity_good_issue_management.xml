@@ -16,7 +16,7 @@
             android:layout_height="wrap_content"
             app:cardCornerRadius="8dp"
             app:cardElevation="8dp"
-            android:visibility="gone"
+            android:visibility="visible"
             app:cardPreventCornerOverlap="false">
 
             <LinearLayout
@@ -27,9 +27,8 @@
                 android:orientation="vertical"
                 android:paddingHorizontal="12dp"
                 android:paddingTop="18dp"
+                android:paddingBottom="12dp"
                 android:showDividers="middle">
-
-
 
                 <LinearLayout
                     android:id="@+id/wrap_filter"
@@ -110,6 +109,135 @@
 
                         </LinearLayout>
 
+                        <!--<LinearLayout
+                            android:id="@+id/ll_wrap_filter_by_name_and_type"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:divider="@drawable/divider_transparent"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:showDividers="middle"
+                            android:visibility="visible">
+
+                            <ImageView
+                                android:layout_width="24dp"
+                                android:layout_height="match_parent"
+                                android:src="@drawable/ic_outline_drag_indicator" />
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1">
+
+                                <AutoCompleteTextView
+                                    android:id="@+id/spinner_mat_name"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:hint="Nama Material"
+                                    android:inputType="none" />
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                            &lt;!&ndash; <com.google.android.material.textfield.TextInputLayout
+                                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+                                 android:layout_width="match_parent"
+                                 android:layout_height="match_parent"
+                                 android:layout_weight="1">
+
+                                 <AutoCompleteTextView
+                                     android:id="@+id/spinner_mat_type"
+                                     android:layout_width="match_parent"
+                                     android:layout_height="match_parent"
+                                     android:hint="Tipe Material"
+                                     android:inputType="none" />
+                             </com.google.android.material.textfield.TextInputLayout>
+ &ndash;&gt;
+                            <ImageButton
+                                android:id="@+id/btn_gi_search_nametype_reset"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center_vertical"
+                                android:layout_marginTop="3dp"
+                                android:layout_marginBottom="1dp"
+                                android:layout_weight="1.3"
+                                android:background="@drawable/outline_box"
+                                android:scaleType="centerInside"
+                                android:src="@drawable/ic_outline_restore"
+                                android:visibility="gone" />
+
+                        </LinearLayout>-->
+
+                        <LinearLayout
+                            android:id="@+id/ll_wrap_filter_chip_group"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+                            <ImageView
+                                android:layout_width="24dp"
+                                android:layout_height="match_parent"
+                                android:src="@drawable/ic_outline_drag_indicator" />
+                            <HorizontalScrollView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="10dp">
+                                <com.google.android.material.chip.ChipGroup
+                                    android:id="@+id/chip_group_filter_query"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    app:singleLine="true"
+                                    app:singleSelection="true"
+                                    app:chipSpacingHorizontal="8dp">
+                                    <com.google.android.material.chip.Chip
+                                        android:id="@+id/chip_filter_all"
+                                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                                        android:checked="true"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="SEMUA"/>
+                                    <com.google.android.material.chip.Chip
+                                        android:id="@+id/chip_filter_status_valid"
+                                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="VALID"/>
+                                    <com.google.android.material.chip.Chip
+                                        android:id="@+id/chip_filter_status_invalid"
+                                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="BELUM VALID"/>
+                                    <com.google.android.material.chip.Chip
+                                        android:id="@+id/chip_filter_status_invoiced"
+                                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="SUDAH DITAGIHKAN"/>
+                                    <com.google.android.material.chip.Chip
+                                        android:id="@+id/chip_filter_status_not_yet_invoiced"
+                                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="BELUM DITAGIHKAN"/>
+                                    <com.google.android.material.chip.Chip
+                                        android:id="@+id/chip_filter_status_transport_type_curah"
+                                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="CURAH"/>
+                                    <com.google.android.material.chip.Chip
+                                        android:id="@+id/chip_filter_status_transport_type_borong"
+                                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="BORONG"/>
+
+                                </com.google.android.material.chip.ChipGroup>
+                            </HorizontalScrollView>
+
+                        </LinearLayout>
+
+<!--
                         <LinearLayout
                             android:id="@+id/ll_wrap_filter_by_status"
                             android:layout_width="match_parent"
@@ -167,115 +295,12 @@
                                 android:visibility="gone" />
 
                         </LinearLayout>
-
-                        <LinearLayout
-                            android:id="@+id/ll_wrap_filter_by_name_and_type"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:divider="@drawable/divider_transparent"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal"
-                            android:showDividers="middle"
-                            android:visibility="visible">
-
-                            <ImageView
-                                android:layout_width="24dp"
-                                android:layout_height="match_parent"
-                                android:src="@drawable/ic_outline_drag_indicator" />
-
-                            <com.google.android.material.textfield.TextInputLayout
-                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:layout_weight="1">
-
-                                <AutoCompleteTextView
-                                    android:id="@+id/spinner_mat_name"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:hint="Nama Material"
-                                    android:inputType="none" />
-                            </com.google.android.material.textfield.TextInputLayout>
-
-                            <com.google.android.material.textfield.TextInputLayout
-                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:layout_weight="1">
-
-                                <AutoCompleteTextView
-                                    android:id="@+id/spinner_mat_type"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:hint="Tipe Material"
-                                    android:inputType="none" />
-                            </com.google.android.material.textfield.TextInputLayout>
-
-                            <ImageButton
-                                android:id="@+id/btn_gi_search_nametype_reset"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:layout_gravity="center_vertical"
-                                android:layout_marginTop="3dp"
-                                android:layout_marginBottom="1dp"
-                                android:layout_weight="1.3"
-                                android:background="@drawable/outline_box"
-                                android:scaleType="centerInside"
-                                android:src="@drawable/ic_outline_restore"
-                                android:visibility="gone" />
-
-                        </LinearLayout>
-
-<!--
-                        <LinearLayout
-                            android:id="@+id/ll_wrap_filter_by_company"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:divider="@drawable/divider_transparent"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal"
-                            android:showDividers="middle"
-                            android:visibility="visible">
-
-                            <ImageView
-                                android:layout_width="24dp"
-                                android:layout_height="match_parent"
-                                android:src="@drawable/ic_outline_drag_indicator" />
-
-                            <com.google.android.material.textfield.TextInputLayout
-                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:layout_weight="1">
-
-                                <AutoCompleteTextView
-                                    android:id="@+id/spinner_company_name"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:hint="Perusahaan"
-                                    android:digits="QWERTYUIOPASDFGHJKLZXCVBNM1234567890-, "
-                                    android:inputType="textFilter|textCapCharacters" />
-                            </com.google.android.material.textfield.TextInputLayout>
-
-
-                            <ImageButton
-                                android:id="@+id/btn_gi_search_company_reset"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:layout_gravity="center_vertical"
-                                android:layout_marginTop="3dp"
-                                android:layout_marginBottom="1dp"
-                                android:layout_weight="1.3"
-                                android:background="@drawable/outline_box"
-                                android:scaleType="centerInside"
-                                android:src="@drawable/ic_outline_restore"
-                                android:visibility="gone" />
-
-                        </LinearLayout>
 -->
+
 
                     </com.ptbas.controlcenter.DragLinearLayout>
                 </LinearLayout>
+
                 <LinearLayout
                     android:id="@+id/wrap_search_by_spinner"
                     android:layout_width="match_parent"
@@ -330,7 +355,7 @@
                     -->
 
                 </LinearLayout>
-                <Button
+                <!--<Button
                     android:id="@+id/imgbtn_expand_collapse_filter_layout"
                     style="@style/MaterialDialog.NegativeButton"
                     android:layout_width="wrap_content"
@@ -338,7 +363,7 @@
                     android:drawableEnd="@drawable/ic_outline_keyboard_arrow_up"
                     android:paddingTop="4dp"
                     android:text="Tampilkan lebih sedikit"
-                    android:visibility="gone" />
+                    android:visibility="gone" />-->
 
             </LinearLayout>
 
@@ -367,6 +392,7 @@
                 android:layout_height="wrap_content"
                 android:text="Data tidak ditemukan"/>
         </LinearLayout>
+
         <androidx.core.widget.NestedScrollView
             android:id="@+id/nestedScrollView"
             android:layout_width="match_parent"

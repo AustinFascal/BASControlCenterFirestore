@@ -22,17 +22,20 @@
         <entry key="..\:/Android/Projects/CMH/BASReportProject/app/src/main/res/layout/activity_add_purchase_order.xml" value="0.2" />
         <entry key="..\:/Android/Projects/CMH/BASReportProject/app/src/main/res/layout/activity_add_vehicle.xml" value="0.2" />
         <entry key="..\:/Android/Projects/CMH/BASReportProject/app/src/main/res/layout/activity_change_password.xml" value="0.264" />
-        <entry key="..\:/Android/Projects/CMH/BASReportProject/app/src/main/res/layout/activity_dashboard.xml" value="0.176" />
+        <entry key="..\:/Android/Projects/CMH/BASReportProject/app/src/main/res/layout/activity_dashboard.xml" value="0.2" />
         <entry key="..\:/Android/Projects/CMH/BASReportProject/app/src/main/res/layout/activity_forgot_password.xml" value="0.264" />
+        <entry key="..\:/Android/Projects/CMH/BASReportProject/app/src/main/res/layout/activity_good_issue_management.xml" value="0.264" />
         <entry key="..\:/Android/Projects/CMH/BASReportProject/app/src/main/res/layout/activity_login.xml" value="0.176" />
         <entry key="..\:/Android/Projects/CMH/BASReportProject/app/src/main/res/layout/activity_main.xml" value="0.25" />
         <entry key="..\:/Android/Projects/CMH/BASReportProject/app/src/main/res/layout/activity_register.xml" value="0.20742753623188406" />
         <entry key="..\:/Android/Projects/CMH/BASReportProject/app/src/main/res/layout/activity_update_email.xml" value="0.20742753623188406" />
+        <entry key="..\:/Android/Projects/CMH/BASReportProject/app/src/main/res/layout/activity_update_good_issue.xml" value="0.12082066869300911" />
         <entry key="..\:/Android/Projects/CMH/BASReportProject/app/src/main/res/layout/activity_update_profile.xml" value="0.136" />
         <entry key="..\:/Android/Projects/CMH/BASReportProject/app/src/main/res/layout/activity_upload_profile_pic.xml" value="0.20742753623188406" />
         <entry key="..\:/Android/Projects/CMH/BASReportProject/app/src/main/res/layout/activity_user_profile.xml" value="0.10894020130254589" />
         <entry key="..\:/Android/Projects/CMH/BASReportProject/app/src/main/res/layout/cardview_main_feature.xml" value="0.2" />
         <entry key="..\:/Android/Projects/CMH/BASReportProject/app/src/main/res/layout/cardview_statistic.xml" value="0.25" />
+        <entry key="..\:/Android/Projects/CMH/BASReportProject/app/src/main/res/layout/item_layout_good_issue.xml" value="0.12082066869300911" />
         <entry key="..\:/Android/Projects/CMH/BASReportProject/app/src/main/res/layout/row_add_material.xml" value="0.2" />
         <entry key="..\:/Android/Projects/CMH/BASReportProject/app/src/main/res/layout/style_spinner.xml" value="0.2" />
         <entry key="..\:/Android/Projects/CMH/BASReportProject/app/src/main/res/menu/common_menu.xml" value="0.4" />
@@ -58,7 +61,7 @@
         <entry key="..\:/Users/CMH/Documents/GitHub/BASReportProject/app/src/main/res/layout/activity_add_invoice.xml" value="0.25" />
         <entry key="..\:/Users/CMH/Documents/GitHub/BASReportProject/app/src/main/res/layout/activity_add_purchase_order.xml" value="0.2" />
         <entry key="..\:/Users/CMH/Documents/GitHub/BASReportProject/app/src/main/res/layout/activity_add_receive_order.xml" value="0.25" />
-        <entry key="..\:/Users/CMH/Documents/GitHub/BASReportProject/app/src/main/res/layout/activity_add_received_order.xml" value="0.264" />
+        <entry key="..\:/Users/CMH/Documents/GitHub/BASReportProject/app/src/main/res/layout/activity_add_received_order.xml" value="0.176" />
         <entry key="..\:/Users/CMH/Documents/GitHub/BASReportProject/app/src/main/res/layout/activity_add_vehicle.xml" value="0.176" />
         <entry key="..\:/Users/CMH/Documents/GitHub/BASReportProject/app/src/main/res/layout/activity_all_shortcuts.xml" value="0.264" />
         <entry key="..\:/Users/CMH/Documents/GitHub/BASReportProject/app/src/main/res/layout/activity_dashboard.xml" value="0.2" />
@@ -72,20 +75,14 @@
         <entry key="..\:/Users/CMH/Documents/GitHub/BASReportProject/app/src/main/res/layout/bottom_sheet_good_issue_management.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/CMH/Documents/GitHub/BASReportProject/app/src/main/res/layout/bottom_sheet_purchase_order_details.xml" value="0.176" />
         <entry key="..\:/Users/CMH/Documents/GitHub/BASReportProject/app/src/main/res/layout/bottom_sheet_show_all_shortcuts.xml" value="0.22395833333333334" />
-        <entry key="..\:/Users/CMH/Documents/GitHub/BASReportProject/app/src/main/res/layout/cardview_main_feature.xml" value="0.16621376811594202" />
         <entry key="..\:/Users/CMH/Documents/GitHub/BASReportProject/app/src/main/res/layout/dialog_dashboard_option.xml" value="0.264" />
-        <entry key="..\:/Users/CMH/Documents/GitHub/BASReportProject/app/src/main/res/layout/item_layout_good_issue.xml" value="0.264" />
+        <entry key="..\:/Users/CMH/Documents/GitHub/BASReportProject/app/src/main/res/layout/item_layout_good_issue.xml" value="0.2" />
         <entry key="..\:/Users/CMH/Documents/GitHub/BASReportProject/app/src/main/res/layout/item_layout_received_order.xml" value="0.264" />
         <entry key="..\:/Users/CMH/Documents/GitHub/BASReportProject/app/src/main/res/layout/product_item_layout_preview.xml" value="0.20427350427350427" />
         <entry key="..\:/Users/CMH/Documents/GitHub/BASReportProject/app/src/main/res/layout/row_add_material.xml" value="0.264" />
-        <entry key="..\:/Users/CMH/Documents/GitHub/BASReportProject/app/src/main/res/menu/delete.xml" value="0.21927083333333333" />
         <entry key="..\:/Users/CMH/Documents/GitHub/BASReportProject/app/src/main/res/menu/gi_search_menu.xml" value="0.21822916666666667" />
         <entry key="..\:/Users/CMH/Documents/GitHub/BASReportProject/app/src/main/res/menu/recap_gi_menu.xml" value="0.21927083333333333" />
         <entry key="..\:/Users/CMH/Documents/GitHub/BASReportProject/app/src/main/res/xml/provider_paths.xml" value="0.1743659420289855" />
-        <entry key="..\:/Users/CMH/StudioProjects/BASReportProject/app/src/main/res/layout/activity_add_received_order.xml" value="0.4" />
-        <entry key="..\:/Users/CMH/StudioProjects/BASReportProject/app/src/main/res/layout/activity_dashboard.xml" value="0.16576086956521738" />
-        <entry key="..\:/Users/CMH/StudioProjects/BASReportProject/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.1885" />
-        <entry key="..\:/Users/CMH/StudioProjects/BASReportProject/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.1" />
       </map>
     </option>
   </component>
