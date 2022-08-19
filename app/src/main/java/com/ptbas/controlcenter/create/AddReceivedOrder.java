@@ -2,22 +2,16 @@ package com.ptbas.controlcenter.create;
 
 import static android.content.ContentValues.TAG;
 
-import static com.gun0912.tedpermission.provider.TedPermissionProvider.context;
-
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.graphics.Color;
-import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -42,9 +36,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.database.DataSnapshot;
@@ -52,24 +47,24 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.ptbas.controlcenter.DialogInterface;
 import com.ptbas.controlcenter.Helper;
 import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.adapter.PreviewProductItemAdapter;
-import com.ptbas.controlcenter.management.ReceivedOrderManagementActivity;
 import com.ptbas.controlcenter.model.ProductItems;
 import com.ptbas.controlcenter.model.ProductModel;
 import com.ptbas.controlcenter.model.ReceivedOrderModel;
 import com.ptbas.controlcenter.utils.LangUtils;
-import com.skydoves.powermenu.MenuAnimation;
 import com.skydoves.powermenu.OnMenuItemClickListener;
-import com.skydoves.powermenu.PowerMenu;
 import com.skydoves.powermenu.PowerMenuItem;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
@@ -112,6 +107,8 @@ public class AddReceivedOrder extends AppCompatActivity {
 
     String[] roType = {"JASA ANGKUT + MATERIAL", "MATERIAL SAJA", "JASA ANGKUT SAJA"};
     ArrayList<String> arrayListRoType = new ArrayList<>(Arrays.asList(roType));
+
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -603,8 +600,8 @@ public class AddReceivedOrder extends AppCompatActivity {
                 previewProductItemAdapter = new PreviewProductItemAdapter(this, getList());
                 rvItems.setAdapter(previewProductItemAdapter);
 
-                DatabaseReference ref1 = FirebaseDatabase.getInstance().getReference("ReceivedOrders");
-                DatabaseReference ref2 = FirebaseDatabase.getInstance().getReference("ReceivedOrders");
+               // DatabaseReference ref1 = FirebaseDatabase.getInstance().getReference("ReceivedOrders");
+                //DatabaseReference ref2 = FirebaseDatabase.getInstance().getReference("ReceivedOrders");
 
                 // Create PO object
                 ReceivedOrderModel receivedOrderModel = new ReceivedOrderModel(
@@ -612,9 +609,46 @@ public class AddReceivedOrder extends AppCompatActivity {
                         roPoCustNumber, roCustName, poSubTotalBuy, poSubTotalSell, poVAT,
                         poTotalSellFinal, poEstProfit, roSatus);
 
+                //HashMap<ProductItems, Integer> productItems = convertArrayListToHashMap(productItemsArrayList);
+
+                DocumentReference refRO = db.collection("ReceivedOrderData").document();
+                String refRODocID = refRO.getId();
                 fabActionSaveCloud.setOnClickListener(view -> {
                     if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED){
-                        String key = ref1.push().getKey();
+                        refRO.set(receivedOrderModel)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void unused) {
+                                        /*refRO.collection("OrderedItems").document().set(productItemsArrayList)
+                                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                    @Override
+                                                    public void onSuccess(Void unused) {
+                                                        Intent intent = new Intent();
+                                                        intent.putExtra("addedStatus", "true");
+                                                        intent.putExtra("activityType", "RO");
+                                                        setResult(RESULT_OK, intent);
+                                                        finish();
+                                                    }
+                                                })
+                                                .addOnFailureListener(new OnFailureListener() {
+                                                    @Override
+                                                    public void onFailure(@NonNull Exception e) {
+                                                        Toast.makeText(AddReceivedOrder.this, "FAILED", Toast.LENGTH_SHORT).show();
+                                                    }
+                                                });*/
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Toast.makeText(AddReceivedOrder.this, "FAILED", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+
+
+
+
+                        /*String key = ref1.push().getKey();
                         ref1.child(key).setValue(receivedOrderModel).addOnCompleteListener  (task ->
                                 ref2.child(key).child("OrderedItems").setValue(productItemsArrayList).addOnCompleteListener(task1 -> {
                                     if(task1.isSuccessful())
@@ -624,14 +658,14 @@ public class AddReceivedOrder extends AppCompatActivity {
                                         intent.putExtra("activityType", "RO");
                                         setResult(RESULT_OK, intent);
                                         finish();
-                                        /*bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+                                        *//*bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
                                         fabExpandMenu.collapse();
-                                        llInputAllData.setVisibility(View.INVISIBLE);*/
+                                        llInputAllData.setVisibility(View.INVISIBLE);*//*
 
 
                                         //dialogInterface.savedROInformation(AddReceivedOrder.this);
                                     }
-                                }));
+                                }));*/
                     }
                 });
 
@@ -643,6 +677,15 @@ public class AddReceivedOrder extends AppCompatActivity {
 
 
     }
+
+    /*private HashMap<ProductItems, Integer> convertArrayListToHashMap(ArrayList<ProductItems> productItemsArrayList) {
+        HashMap<ProductItems, Integer> hashMap = new HashMap<>();
+        for (ProductItems productItems : productItemsArrayList) {
+            hashMap.put(productItems);
+        }
+
+        return hashMap;
+    }*/
 
 
     public static String currencyFormat(String amount) {
