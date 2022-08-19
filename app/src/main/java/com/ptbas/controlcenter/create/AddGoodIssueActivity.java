@@ -4,9 +4,14 @@ import static android.content.ContentValues.TAG;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
@@ -14,8 +19,10 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -32,9 +39,13 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.ptbas.controlcenter.DialogInterface;
 import com.ptbas.controlcenter.Helper;
 import com.ptbas.controlcenter.R;
+import com.ptbas.controlcenter.adapter.ROManagementAdapter;
+import com.ptbas.controlcenter.management.ReceivedOrderManagementActivity;
 import com.ptbas.controlcenter.model.GoodIssueModel;
 import com.ptbas.controlcenter.model.ProductItems;
 import com.ptbas.controlcenter.model.ReceivedOrderModel;
@@ -44,9 +55,12 @@ import com.ptbas.controlcenter.utils.LangUtils;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
+
+import dev.shreyaspatil.MaterialDialog.BottomSheetMaterialDialog;
 
 public class AddGoodIssueActivity extends AppCompatActivity {
 
@@ -74,6 +88,8 @@ public class AddGoodIssueActivity extends AppCompatActivity {
     DialogInterface dialogInterface = new DialogInterface();
     Helper helper = new Helper();
     List<String> vhlUIDList, matNameList, matTypeNameList, receiveOrderNumberList;
+
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -285,6 +301,17 @@ public class AddGoodIssueActivity extends AppCompatActivity {
         spinnerRoNumber.setOnItemClickListener((adapterView, view, position, l) -> {
             String selectedSpinnerPoPtBasNumber = (String) adapterView.getItemAtPosition(position);
 
+            /*db.collection("ReceivedOrderData").orderBy("roDateCreated")
+                    .addSnapshotListener((value, error) -> {
+
+                        if (!value.isEmpty()){
+                            for (DocumentSnapshot d : value.getDocuments()) {
+                                ReceivedOrderModel receivedOrderModel = d.toObject(ReceivedOrderModel.class);
+                            }
+                        } else{
+                        }
+                    });*/
+
             databaseReference.child("ReceivedOrders").addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -315,7 +342,7 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                                         Toast.makeText(AddGoodIssueActivity.this, "Null", Toast.LENGTH_SHORT).show();
                                     }
                                 } else {
-                                    dialogInterface.roNotActiveYet(AddGoodIssueActivity.this, roNumber);
+                                    //dialogInterface.roNotActiveYet(AddGoodIssueActivity.this, roNumber);
 
                                 }
                             }
@@ -376,7 +403,28 @@ public class AddGoodIssueActivity extends AppCompatActivity {
 
         spinnerMatType.setOnFocusChangeListener((view, b) -> spinnerMatType.setText(matType));
 
-        databaseReference.child("ReceivedOrders").addValueEventListener(new ValueEventListener() {
+        db.collection("ReceivedOrderData").whereEqualTo("roStatus", true)
+                .addSnapshotListener((value, error) -> {
+                    receiveOrderNumberList.clear();
+                    if (value != null) {
+                        if (!value.isEmpty()) {
+                            for (DocumentSnapshot d : value.getDocuments()) {
+                                String spinnerPurchaseOrders = Objects.requireNonNull(d.get("roUID")).toString();
+                                receiveOrderNumberList.add(spinnerPurchaseOrders);
+                            }
+                            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddGoodIssueActivity.this, R.layout.style_spinner, receiveOrderNumberList);
+                            arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
+                            spinnerRoNumber.setAdapter(arrayAdapter);
+                        } else {
+                            if(!this.isFinishing()) {
+                                dialogInterface.roNotExistsDialog(AddGoodIssueActivity.this);
+                            }
+                        }
+                    }
+
+                });
+
+        /*databaseReference.child("ReceivedOrders").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 receiveOrderNumberList.clear();
@@ -397,7 +445,7 @@ public class AddGoodIssueActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError error) {
 
             }
-        });
+        });*/
 
         databaseReference.child("VehicleData").addValueEventListener(new ValueEventListener() {
             @Override

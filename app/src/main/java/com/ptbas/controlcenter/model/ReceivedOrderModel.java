@@ -1,20 +1,25 @@
 package com.ptbas.controlcenter.model;
 
+import java.util.List;
+import java.util.Map;
+
 public class ReceivedOrderModel {
 
-    String roUID, roCreatedBy, roDateCreated, roTOP, roMatType, roCurrency, roPoCustNumber,
+    String roDocumentID, roUID, roCreatedBy, roDateCreated, roTOP, roMatType, roCurrency, roPoCustNumber,
             roCustName;
     Double roSubTotalBuy, roSubTotalSell, roVATPPN, roTotalSellFinal, roEstProfit;
     Boolean roStatus;
+    Map<String, List<ProductItems>> roOrderedItems;
 
     public ReceivedOrderModel() {
     }
 
-    public ReceivedOrderModel(String roUID, String roCreatedBy, String roDateCreated, String roTOP,
+    public ReceivedOrderModel(String roDocumentID, String roUID, String roCreatedBy, String roDateCreated, String roTOP,
                               String roMatType, String roCurrency, String roPoCustNumber,
                               String roCustName, Double roSubTotalBuy, Double roSubTotalSell,
                               Double roVATPPN, Double roTotalSellFinal, Double roEstProfit,
-                              Boolean roStatus) {
+                              Boolean roStatus, Map<String, List<ProductItems>> roOrderedItems) {
+        this.roDocumentID = roDocumentID;
         this.roUID = roUID;
         this.roCreatedBy = roCreatedBy;
         this.roDateCreated = roDateCreated;
@@ -29,6 +34,7 @@ public class ReceivedOrderModel {
         this.roTotalSellFinal = roTotalSellFinal;
         this.roEstProfit = roEstProfit;
         this.roStatus = roStatus;
+        this.roOrderedItems = roOrderedItems;
     }
 
     public String getRoUID() {
@@ -141,6 +147,18 @@ public class ReceivedOrderModel {
 
     public void setRoStatus(Boolean roStatus) {
         this.roStatus = roStatus;
+    }
+
+    public String getRoDocumentID() {
+        return roDocumentID;
+    }
+
+    public void setRoDocumentID(String roDocumentID) {
+        this.roDocumentID = roDocumentID;
+    }
+
+    public Map<String, List<ProductItems>> getRoOrderedItems() {
+        return roOrderedItems;
     }
 }
 

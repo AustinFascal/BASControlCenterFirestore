@@ -25,7 +25,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.ptbas.controlcenter.adapter.ROManagementAdapter;
 import com.ptbas.controlcenter.management.GoodIssueManagementActivity;
+import com.ptbas.controlcenter.management.ReceivedOrderManagementActivity;
 import com.ptbas.controlcenter.model.UserModel;
 import com.ptbas.controlcenter.userprofile.UserProfileActivity;
 import com.squareup.picasso.Picasso;
@@ -94,6 +96,12 @@ public class Helper {
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NO_ANIMATION);
         context.startActivity(intent);
     }
+
+    /*public void refreshRoManagementActivity(Context context){
+        Intent intent=new Intent(context, ReceivedOrderManagementActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        context.startActivity(intent);
+    }*/
 
     public String getUserId(){
         authProfile = FirebaseAuth.getInstance();

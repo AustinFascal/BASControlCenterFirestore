@@ -6,19 +6,35 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.ptbas.controlcenter.adapter.ROManagementAdapter;
 import com.ptbas.controlcenter.create.AddReceivedOrder;
+import com.ptbas.controlcenter.management.ReceivedOrderManagementActivity;
+import com.ptbas.controlcenter.model.ReceivedOrderModel;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 import dev.shreyaspatil.MaterialDialog.BottomSheetMaterialDialog;
@@ -164,7 +180,10 @@ public class DialogInterface {
         mBottomSheetDialog.show();
     }
 
-    public void noRoPoNumberInformation(Context context, String roUIDVal) {
+    public void noRoPoNumberInformation(Context context, String roDocumentId) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference refRO = db.collection("ReceivedOrderData");
+
         Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             vibrator.vibrate(VibrationEffect.createOneShot(100,
@@ -181,7 +200,22 @@ public class DialogInterface {
                     dialogInterface.dismiss();
                 })
                 .setNegativeButton("SAHKAN TANPA NOMOR PO", R.drawable.ic_outline_check, (dialogInterface, which) -> {
-                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("ReceivedOrders");
+                    refRO.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (task.isSuccessful()){
+                                for(DocumentSnapshot documentSnapshot : task.getResult()){
+                                    String getDocumentID = documentSnapshot.getId();
+                                    if (getDocumentID.equals(roDocumentId)){
+                                        db.collection("ReceivedOrderData").document(roDocumentId).update("roStatus", true);
+                                        db.collection("ReceivedOrderData").document(roDocumentId).update("roVerifiedBy", helper.getUserId());
+                                        dialogInterface.dismiss();
+                                    }
+                                }
+                            }
+                        }
+                    });
+                    /*DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("ReceivedOrders");
                     ValueEventListener valueEventListener = new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
@@ -198,7 +232,7 @@ public class DialogInterface {
                         @Override
                         public void onCancelled(@NonNull DatabaseError error) {}
                     };
-                    databaseReference.addListenerForSingleValueEvent(valueEventListener);
+                    databaseReference.addListenerForSingleValueEvent(valueEventListener);*/
 
                 })
                 .build();
@@ -297,12 +331,11 @@ public class DialogInterface {
         BottomSheetMaterialDialog mBottomSheetDialog = new BottomSheetMaterialDialog.Builder(activity)
                 .setTitle("Tidak Ada Received Order")
                 .setAnimation(R.raw.lottie_attention)
-                .setMessage("Anda tidak dapat membuat Good Issue karena tidak memiliki Received Order yang aktif dan sah. Mau buat Received Order sekarang?")
+                .setMessage("Anda tidak dapat membuat Good Issue karena tidak memiliki Received Order yang aktif dan sah. Validasi atau tambah Received Order sekarang?")
                 .setCancelable(false)
-                .setPositiveButton("BUAT RO", R.drawable.ic_outline_add, (dialogInterface, which) -> {
+                .setPositiveButton("YA", R.drawable.ic_outline_add, (dialogInterface, which) -> {
                     dialogInterface.dismiss();
-                    Intent intent = new Intent(activity, AddReceivedOrder.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                    Intent intent = new Intent(activity, ReceivedOrderManagementActivity.class);
                     activity.startActivity(intent);
                 })
                 .setNegativeButton("TIDAK", R.drawable.ic_outline_close, (dialogInterface, which) -> {
@@ -342,7 +375,10 @@ public class DialogInterface {
         mBottomSheetDialog.show();
     }
 
-    public void approveRoConfirmation(Context context, String roUIDVal) {
+    public void approveRoConfirmation(Context context, String roDocumentId) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference refRO = db.collection("ReceivedOrderData");
+
         Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             vibrator.vibrate(VibrationEffect.createOneShot(100,
@@ -356,7 +392,23 @@ public class DialogInterface {
                 .setMessage("Apakah Anda yakin ingin mengesahkan data Received Order yang Anda pilih? Setelah disahkan, status tidak dapat dikembalikan.")
                 .setCancelable(true)
                 .setPositiveButton("YA", R.drawable.ic_outline_check, (dialogInterface, which) -> {
-                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("ReceivedOrders");
+                    refRO.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (task.isSuccessful()){
+                                for(DocumentSnapshot documentSnapshot : task.getResult()){
+                                    String getDocumentID = documentSnapshot.getId();
+                                    if (getDocumentID.equals(roDocumentId)){
+                                        db.collection("ReceivedOrderData").document(roDocumentId).update("roStatus", true);
+                                        db.collection("ReceivedOrderData").document(roDocumentId).update("roVerifiedBy", helper.getUserId());
+                                        dialogInterface.dismiss();
+                                    }
+                                }
+                            }
+                        }
+                    });
+
+                    /*DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("ReceivedOrders");
                     ValueEventListener valueEventListener = new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
@@ -373,7 +425,7 @@ public class DialogInterface {
                         @Override
                         public void onCancelled(@NonNull DatabaseError error) {}
                     };
-                    databaseReference.addListenerForSingleValueEvent(valueEventListener);
+                    databaseReference.addListenerForSingleValueEvent(valueEventListener);*/
 
                 })
                 .setNegativeButton("TIDAK", R.drawable.ic_outline_close, (dialogInterface, which) -> dialogInterface.dismiss())
@@ -441,14 +493,32 @@ public class DialogInterface {
         mBottomSheetDialog.show();
     }
 
-    public void deleteRoConfirmation(Context context, String roUIDVal) {
+    public void deleteRoConfirmation(Context context, String roDocumentId) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference refRO = db.collection("ReceivedOrderData");
+
         BottomSheetMaterialDialog mBottomSheetDialog = new BottomSheetMaterialDialog.Builder((Activity) context)
                 .setTitle("Hapus Data")
                 .setAnimation(R.raw.lottie_delete)
                 .setMessage("Apakah Anda yakin ingin menghapus data Received Order yang Anda pilih? Setelah dihapus, data tidak dapat dikembalikan.")
                 .setCancelable(true)
                 .setPositiveButton("YA", R.drawable.ic_outline_check, (dialogInterface, which) -> {
-                    // TODO DETECT USER MODEL - IF SUPER ADMIN, ABLE TO VERIFY
+                    refRO.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (task.isSuccessful()){
+                                for(DocumentSnapshot documentSnapshot : task.getResult()){
+                                    String getDocumentID = documentSnapshot.getId();
+                                    if (getDocumentID.equals(roDocumentId)){
+                                        db.collection("ReceivedOrderData").document(roDocumentId).delete();
+                                        dialogInterface.dismiss();
+                                        //helper.refreshRoManagementActivity(context);
+                                    }
+                                }
+                            }
+                        }
+                    });
+                    /* // TODO DETECT USER MODEL - IF SUPER ADMIN, ABLE TO VERIFY
                     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("ReceivedOrders");
                     ValueEventListener valueEventListener = new ValueEventListener() {
                         @Override
@@ -465,7 +535,7 @@ public class DialogInterface {
                         @Override
                         public void onCancelled(@NonNull DatabaseError error) {}
                     };
-                    databaseReference.addListenerForSingleValueEvent(valueEventListener);
+                    databaseReference.addListenerForSingleValueEvent(valueEventListener);*/
                 })
                 .setNegativeButton("TIDAK", R.drawable.ic_outline_close, (dialogInterface, which) -> dialogInterface.dismiss())
                 .build();

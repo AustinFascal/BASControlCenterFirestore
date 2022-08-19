@@ -26,6 +26,7 @@ import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.ptbas.controlcenter.Helper;
 import com.squareup.picasso.Picasso;
 import com.ptbas.controlcenter.MainActivity;
 import com.ptbas.controlcenter.R;
@@ -40,13 +41,21 @@ public class UploadProfilePicActivity extends AppCompatActivity {
     private FirebaseUser firebaseUser;
     private Uri uriImage;
 
+    Helper helper = new Helper();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload_profile_pic);
 
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setTitle("Masuk");
+        // ACTION BAR FOR STANDARD ACTIVITY
+        assert actionBar != null;
+        helper.handleActionBarConfigForStandardActivity(
+                this, actionBar, "Ubah Foto Profil");
+
+        // SYSTEM UI MODE FOR STANDARD ACTIVITY
+        helper.handleUIModeForStandardActivity(this, actionBar);
         // showing the back button in action bar
         actionBar.setDisplayHomeAsUpEnabled(true);
 

@@ -27,6 +27,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.ptbas.controlcenter.Helper;
 import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.model.UserModel;
 
@@ -43,13 +44,21 @@ public class UpdateProfileActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private DatePickerDialog datePicker;
 
+    Helper helper = new Helper();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_update_profile);
 
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setTitle("Ubah Profil");
+        // ACTION BAR FOR STANDARD ACTIVITY
+        assert actionBar != null;
+        helper.handleActionBarConfigForStandardActivity(
+                this, actionBar, "Ubah Profil");
+
+        // SYSTEM UI MODE FOR STANDARD ACTIVITY
+        helper.handleUIModeForStandardActivity(this, actionBar);
         // showing the back button in action bar
         actionBar.setDisplayHomeAsUpEnabled(true);
 

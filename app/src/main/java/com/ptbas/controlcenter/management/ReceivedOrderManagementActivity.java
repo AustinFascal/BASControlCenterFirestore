@@ -1,12 +1,16 @@
 package com.ptbas.controlcenter.management;
 
+import static android.content.ContentValues.TAG;
+
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.cardview.widget.CardView;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.widget.NestedScrollView;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
@@ -21,6 +25,8 @@ import android.os.Vibrator;
 import android.text.InputType;
 import android.transition.AutoTransition;
 import android.transition.TransitionManager;
+import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -32,6 +38,10 @@ import android.widget.Toast;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.database.DataSnapshot;
@@ -40,6 +50,14 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.ptbas.controlcenter.DialogInterface;
 import com.ptbas.controlcenter.DragLinearLayout;
 import com.ptbas.controlcenter.Helper;
@@ -51,6 +69,7 @@ import com.ptbas.controlcenter.model.ReceivedOrderModel;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class ReceivedOrderManagementActivity extends AppCompatActivity {
 
@@ -96,6 +115,8 @@ public class ReceivedOrderManagementActivity extends AppCompatActivity {
             spinnerMaterialType, spinnerCompanyName;
 
     CoordinatorLayout coordinatorLayout;
+
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -259,8 +280,44 @@ public class ReceivedOrderManagementActivity extends AppCompatActivity {
     }
 
     private void showDataDefaultQuery() {
+        db.collection("ReceivedOrderData").orderBy("roDateCreated")
+                .addSnapshotListener((value, error) -> {
+                    receivedOrderModelArrayList.clear();
+                    if (!value.isEmpty()){
+                        for (DocumentSnapshot d : value.getDocuments()) {
+                            ReceivedOrderModel receivedOrderModel = d.toObject(ReceivedOrderModel.class);
+                            receivedOrderModelArrayList.add(receivedOrderModel);
+                        }
+                        llNoData.setVisibility(View.GONE);
+                        nestedScrollView.setVisibility(View.VISIBLE);
+                    } else{
+                        llNoData.setVisibility(View.VISIBLE);
+                        nestedScrollView.setVisibility(View.GONE);
+                    }
+                    Collections.reverse(receivedOrderModelArrayList);
+                    roManagementAdapter = new ROManagementAdapter(context, receivedOrderModelArrayList);
+                    rvReceivedOrderList.setAdapter(roManagementAdapter);
+                });
+       /* db.collection("ReceivedOrderData").get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    receivedOrderModelArrayList.clear();
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        for (DocumentSnapshot d : queryDocumentSnapshots.getDocuments()) {
+                            ReceivedOrderModel receivedOrderModel = d.toObject(ReceivedOrderModel.class);
+                            receivedOrderModelArrayList.add(receivedOrderModel);
+                        }
+                        llNoData.setVisibility(View.GONE);
+                        nestedScrollView.setVisibility(View.VISIBLE);
+                    } else {
+                        llNoData.setVisibility(View.VISIBLE);
+                        nestedScrollView.setVisibility(View.GONE);
+                    }
+                    Collections.reverse(receivedOrderModelArrayList);
+                    roManagementAdapter = new ROManagementAdapter(context, receivedOrderModelArrayList);
+                    rvReceivedOrderList.setAdapter(roManagementAdapter);
+                });*/
 
-        Query query = databaseReference.child("ReceivedOrders").orderByChild("roDateCreated");
+        /*Query query = databaseReference.child("ReceivedOrders").orderByChild("roDateCreated");
         query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -276,24 +333,19 @@ public class ReceivedOrderManagementActivity extends AppCompatActivity {
                     nestedScrollView.setVisibility(View.VISIBLE);
 
                 } else {
-                    //dialogInterface.roNotExistsDialog(ReceivedOrderManagementActivity.this);
                     llNoData.setVisibility(View.VISIBLE);
                     nestedScrollView.setVisibility(View.GONE);
                 }
-
                 Collections.reverse(receivedOrderModelArrayList);
                 roManagementAdapter = new ROManagementAdapter(context, receivedOrderModelArrayList);
                 rvReceivedOrderList.setAdapter(roManagementAdapter);
-
-
-
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 
             }
-        });
+        });*/
 
 
        /* databaseReference.child("GoodIssueData").orderByChild("giDateCreated").addValueEventListener(new ValueEventListener() {
@@ -435,6 +487,23 @@ public class ReceivedOrderManagementActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
+        // HANDLE RESPONSIVE CONTENT
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int width = displayMetrics.widthPixels;
+        if (width<=1080){
+            RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 1);
+            rvReceivedOrderList.setLayoutManager(mLayoutManager);
+        }
+        if (width>1080&&width<1366){
+            RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 2);
+            rvReceivedOrderList.setLayoutManager(mLayoutManager);
+        }
+        if (width>=1366){
+            RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 3);
+            rvReceivedOrderList.setLayoutManager(mLayoutManager);
+        }
 
         showDataDefaultQuery();
     }

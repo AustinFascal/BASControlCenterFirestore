@@ -542,7 +542,7 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
                                 }
 
                                 if (receivedOrderModel.getRoStatus().equals(false)){
-                                    dialogInterface.roNotActiveYet(UpdateGoodIssueActivity.this, roNumber);
+                                    //dialogInterface.roNotActiveYet(UpdateGoodIssueActivity.this, roNumber);
                                 }
 
                                 databaseReference.child(key).child("OrderedItems").addValueEventListener(new ValueEventListener() {

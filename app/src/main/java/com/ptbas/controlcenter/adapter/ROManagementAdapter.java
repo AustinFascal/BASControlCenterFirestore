@@ -102,14 +102,14 @@ public class ROManagementAdapter extends RecyclerView.Adapter<ROManagementAdapte
 
             btnApproveRo.setOnClickListener(view -> {
                 if (tvPoCustNumber.getText().toString().equals("PO: -")){
-                    dialogInterface.noRoPoNumberInformation(context, receivedOrderModel.getRoUID());
+                    dialogInterface.noRoPoNumberInformation(context, receivedOrderModel.getRoDocumentID());
                 } else {
-                    dialogInterface.approveRoConfirmation(context, receivedOrderModel.getRoUID());
+                    dialogInterface.approveRoConfirmation(context, receivedOrderModel.getRoDocumentID());
                 }
             });
 
             btnDeleteRo.setOnClickListener(view ->
-                    dialogInterface.deleteRoConfirmation(context, receivedOrderModel.getRoUID()));
+                    dialogInterface.deleteRoConfirmation(context, receivedOrderModel.getRoDocumentID()));
         }
     }
 }

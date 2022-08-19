@@ -30,6 +30,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.ptbas.controlcenter.Helper;
 import com.squareup.picasso.Picasso;
 import com.ptbas.controlcenter.MainActivity;
 import com.ptbas.controlcenter.R;
@@ -46,6 +47,8 @@ public class UserProfileActivity extends AppCompatActivity {
 
     private int intResume = 0;
 
+    Helper helper = new Helper();
+
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,25 +57,16 @@ public class UserProfileActivity extends AppCompatActivity {
 
 
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setTitle("Profil Pengguna");
+
+        // ACTION BAR FOR STANDARD ACTIVITY
+        assert actionBar != null;
+        helper.handleActionBarConfigForStandardActivity(
+                this, actionBar, "Profil Akun");
+
+        // SYSTEM UI MODE FOR STANDARD ACTIVITY
+        helper.handleUIModeForStandardActivity(this, actionBar);
+        // showing the back button in action bar
         actionBar.setDisplayHomeAsUpEnabled(true);
-
-        int nightModeFlags =
-                this.getResources().getConfiguration().uiMode &
-                        Configuration.UI_MODE_NIGHT_MASK;
-        switch (nightModeFlags) {
-            case Configuration.UI_MODE_NIGHT_YES:
-                actionBar.setBackgroundDrawable(new ColorDrawable(getResources()
-                        .getColor(R.color.black)));
-                break;
-
-            case Configuration.UI_MODE_NIGHT_NO:
-
-            case Configuration.UI_MODE_NIGHT_UNDEFINED:
-                actionBar.setBackgroundDrawable(new ColorDrawable(getResources()
-                        .getColor(R.color.white)));
-                break;
-        }
 
         textViewWelcome = findViewById(R.id.textView_show_welcome);
         textViewFullName = findViewById(R.id.textView_show_full_name);

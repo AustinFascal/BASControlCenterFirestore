@@ -48,9 +48,12 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.normal.TedPermission;
 import com.ptbas.controlcenter.adapter.MainFeaturesMenuAdapter;
+import com.ptbas.controlcenter.adapter.ROManagementAdapter;
 import com.ptbas.controlcenter.adapter.StatisticsAdapter;
 import com.ptbas.controlcenter.create.AddCustomerActivity;
 import com.ptbas.controlcenter.create.AddGoodIssueActivity;
@@ -59,12 +62,14 @@ import com.ptbas.controlcenter.create.AddReceivedOrder;
 import com.ptbas.controlcenter.create.AddVehicleActivity;
 import com.ptbas.controlcenter.management.ReceivedOrderManagementActivity;
 import com.ptbas.controlcenter.model.MainFeatureModel;
+import com.ptbas.controlcenter.model.ReceivedOrderModel;
 import com.ptbas.controlcenter.model.StatisticsModel;
 import com.ptbas.controlcenter.model.UserModel;
 import com.ptbas.controlcenter.userprofile.UserProfileActivity;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class DashboardActivity extends AppCompatActivity {
@@ -94,6 +99,7 @@ public class DashboardActivity extends AppCompatActivity {
     Helper helper = new Helper();
 
     BottomSheetBehavior<ConstraintLayout> bottomSheetBehavior;
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @SuppressLint("ClickableViewAccessibility")
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -369,7 +375,13 @@ public class DashboardActivity extends AppCompatActivity {
         });
 
         // SUM RECEIVED ORDER - NEED APPROVAL
-        databaseReference.child("ReceivedOrders").orderByChild("roStatus").equalTo(false).addListenerForSingleValueEvent(new ValueEventListener() {
+
+        db.collection("ReceivedOrderData").whereEqualTo("roStatus", false)
+                .addSnapshotListener((value, error) -> {
+                    int countFinal = Integer.parseInt(String.valueOf(value.getDocuments().size()));
+                    getActiveReceivedOrderDataCount(String.valueOf(countFinal));
+                });
+        /*databaseReference.child("ReceivedOrders").orderByChild("roStatus").equalTo(false).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 int countFinal = Integer.parseInt(String.valueOf(dataSnapshot.getChildrenCount()));
@@ -380,7 +392,7 @@ public class DashboardActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError error) {
 
             }
-        });
+        });*/
         // SUM CUSTOMER
         databaseReference.child("CustomerData").orderByKey().addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

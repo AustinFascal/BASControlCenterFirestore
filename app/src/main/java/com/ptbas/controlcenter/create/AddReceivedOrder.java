@@ -66,6 +66,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 
@@ -109,6 +110,7 @@ public class AddReceivedOrder extends AppCompatActivity {
     ArrayList<String> arrayListRoType = new ArrayList<>(Arrays.asList(roType));
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();
+    DocumentReference refRO = db.collection("ReceivedOrderData").document();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -600,50 +602,49 @@ public class AddReceivedOrder extends AppCompatActivity {
                 previewProductItemAdapter = new PreviewProductItemAdapter(this, getList());
                 rvItems.setAdapter(previewProductItemAdapter);
 
-               // DatabaseReference ref1 = FirebaseDatabase.getInstance().getReference("ReceivedOrders");
+                // DatabaseReference ref1 = FirebaseDatabase.getInstance().getReference("ReceivedOrders");
                 //DatabaseReference ref2 = FirebaseDatabase.getInstance().getReference("ReceivedOrders");
 
-                // Create PO object
+                Map<String, List<ProductItems>> productItemsHashMap = new HashMap<>();
+                for(int i=0; i<productItemsArrayList.size(); i++) {
+                    String sortID = productItemsArrayList.get(i).getMatName().toLowerCase().replace(" ", "");
+                    List<ProductItems> objectList = productItemsHashMap.get(sortID);
+                    if(objectList == null) {
+                        objectList = new ArrayList<>();
+                    }
+                    objectList.add(productItemsArrayList.get(i));
+                    productItemsHashMap.put(sortID, objectList);
+                }
+
+                // Create RO object
+                String roDocumentID = refRO.getId();
                 ReceivedOrderModel receivedOrderModel = new ReceivedOrderModel(
-                        roUID, roCreatedBy, roDateCreated, roTOP, roMatType, roCurrency,
+                        roDocumentID, roUID, roCreatedBy, roDateCreated, roTOP, roMatType, roCurrency,
                         roPoCustNumber, roCustName, poSubTotalBuy, poSubTotalSell, poVAT,
-                        poTotalSellFinal, poEstProfit, roSatus);
+                        poTotalSellFinal, poEstProfit, roSatus, productItemsHashMap);
 
-                //HashMap<ProductItems, Integer> productItems = convertArrayListToHashMap(productItemsArrayList);
-
-                DocumentReference refRO = db.collection("ReceivedOrderData").document();
-                String refRODocID = refRO.getId();
                 fabActionSaveCloud.setOnClickListener(view -> {
                     if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED){
                         refRO.set(receivedOrderModel)
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void unused) {
-                                        /*refRO.collection("OrderedItems").document().set(productItemsArrayList)
-                                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                    @Override
-                                                    public void onSuccess(Void unused) {
-                                                        Intent intent = new Intent();
-                                                        intent.putExtra("addedStatus", "true");
-                                                        intent.putExtra("activityType", "RO");
-                                                        setResult(RESULT_OK, intent);
-                                                        finish();
-                                                    }
-                                                })
-                                                .addOnFailureListener(new OnFailureListener() {
-                                                    @Override
-                                                    public void onFailure(@NonNull Exception e) {
-                                                        Toast.makeText(AddReceivedOrder.this, "FAILED", Toast.LENGTH_SHORT).show();
-                                                    }
-                                                });*/
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Toast.makeText(AddReceivedOrder.this, "FAILED", Toast.LENGTH_SHORT).show();
-                                    }
-                                });
+                                .addOnSuccessListener(unused -> {
+                                    Intent intent = new Intent();
+                                    intent.putExtra("addedStatus", "true");
+                                    intent.putExtra("activityType", "RO");
+                                    setResult(RESULT_OK, intent);
+                                    finish();
+                                }).addOnFailureListener(e ->
+                                        Toast.makeText(AddReceivedOrder.this, "FAILED", Toast.LENGTH_SHORT).show());
+
+                                        /*refRO.collection("OrderedItems")
+                                                .document()
+                                                .set(productItemsHashMap)
+                                        .addOnSuccessListener(unused1 -> {
+
+                                        })
+                                        .addOnFailureListener(e ->
+                                                Toast.makeText(AddReceivedOrder.this,
+                                                        "FAILED", Toast.LENGTH_SHORT).show()))*/
+
 
 
 
@@ -677,16 +678,6 @@ public class AddReceivedOrder extends AppCompatActivity {
 
 
     }
-
-    /*private HashMap<ProductItems, Integer> convertArrayListToHashMap(ArrayList<ProductItems> productItemsArrayList) {
-        HashMap<ProductItems, Integer> hashMap = new HashMap<>();
-        for (ProductItems productItems : productItemsArrayList) {
-            hashMap.put(productItems);
-        }
-
-        return hashMap;
-    }*/
-
 
     public static String currencyFormat(String amount) {
         DecimalFormat formatter = new DecimalFormat("###,###,##0.00");
