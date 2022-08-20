@@ -7,6 +7,7 @@ import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.NestedScrollView;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
@@ -22,6 +23,7 @@ import android.os.Vibrator;
 import android.text.Html;
 import android.transition.AutoTransition;
 import android.transition.TransitionManager;
+import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -752,6 +754,28 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
         }
         onBackPressed();
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // HANDLE RESPONSIVE CONTENT
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int width = displayMetrics.widthPixels;
+        if (width<=1080){
+            RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 1);
+            rvGoodIssueList.setLayoutManager(mLayoutManager);
+        }
+        if (width>1080&&width<1366){
+            RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 2);
+            rvGoodIssueList.setLayoutManager(mLayoutManager);
+        }
+        if (width>=1366){
+            RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 3);
+            rvGoodIssueList.setLayoutManager(mLayoutManager);
+        }
     }
 
     @Override

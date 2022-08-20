@@ -157,6 +157,10 @@ public class ReceivedOrderModel {
         this.roDocumentID = roDocumentID;
     }
 
+    public void setRoOrderedItems(Map<String, List<ProductItems>> roOrderedItems) {
+        this.roOrderedItems = roOrderedItems;
+    }
+
     public Map<String, List<ProductItems>> getRoOrderedItems() {
         return roOrderedItems;
     }

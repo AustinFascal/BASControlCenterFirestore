@@ -25,13 +25,18 @@ import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.database.DataSnapshot;
@@ -39,8 +44,11 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.ptbas.controlcenter.DialogInterface;
 import com.ptbas.controlcenter.Helper;
 import com.ptbas.controlcenter.R;
@@ -55,10 +63,14 @@ import com.ptbas.controlcenter.utils.LangUtils;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
+import java.util.Set;
 
 import dev.shreyaspatil.MaterialDialog.BottomSheetMaterialDialog;
 
@@ -301,6 +313,61 @@ public class AddGoodIssueActivity extends AppCompatActivity {
         spinnerRoNumber.setOnItemClickListener((adapterView, view, position, l) -> {
             String selectedSpinnerPoPtBasNumber = (String) adapterView.getItemAtPosition(position);
 
+            db.collection("ReceivedOrderData").whereEqualTo("roUID", selectedSpinnerPoPtBasNumber).get()
+                    .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                        @Override
+                        public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                            String data = "";
+                            matNameList.clear();
+                            for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots){
+                                ReceivedOrderModel receivedOrderModel = documentSnapshot.toObject(ReceivedOrderModel.class);
+                                receivedOrderModel.setRoDocumentID(documentSnapshot.getId());
+
+                                String documentID = receivedOrderModel.getRoDocumentID();
+
+                                String roMatType = receivedOrderModel.getRoMatType();
+                                String roPoCustNumber = receivedOrderModel.getRoPoCustNumber();
+                                spinnerMatType.setText(roMatType);
+                                edtPoNumberCust.setText(roPoCustNumber);
+
+                                                        /*for (String orderedItems : receivedOrderModel.getRoOrderedItems().keySet()){
+                                                            //data = orderedItems;
+                                                            matNameList.add(orderedItems);
+                                                            //matNameList.remove("JASA ANGKUT");
+                                                        }*/
+
+                                matNameList.addAll(receivedOrderModel.getRoOrderedItems().keySet());
+                                matNameList.remove("JASA ANGKUT");
+
+                                ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddGoodIssueActivity.this, R.layout.style_spinner, matNameList);
+                                arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
+                                spinnerMatName.setAdapter(arrayAdapter);
+                            }
+                        }
+                    });
+
+            /*db.collection("ReceivedOrderData").whereEqualTo("roUID", selectedSpinnerPoPtBasNumber)
+                    .addSnapshotListener((value, error) -> {
+                        //receiveOrderNumberList.clear();
+                        if (value != null) {
+                            if (!value.isEmpty()) {
+                                for (DocumentSnapshot d : value.getDocuments()) {
+
+                                    *//*String roMatType = Objects.requireNonNull(d.get("roMatType")).toString();
+                                    //String roMatType = Objects.requireNonNull(d.get("roOrderedItems")).toString();
+                                    spinnerMatType.setText(roMatType);*//*
+
+
+
+                                }
+
+                            } else {
+
+                            }
+                        }
+
+                    });*/
+
             /*db.collection("ReceivedOrderData").orderBy("roDateCreated")
                     .addSnapshotListener((value, error) -> {
 
@@ -312,7 +379,7 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                         }
                     });*/
 
-            databaseReference.child("ReceivedOrders").addValueEventListener(new ValueEventListener() {
+           /* databaseReference.child("ReceivedOrders").addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     if (snapshot.exists()){
@@ -374,7 +441,7 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                 }
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {}
-            });
+            });*/
 
             spinnerRoNumber.setError(null);
             edtPoNumberCust.setError(null);
@@ -553,9 +620,8 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                         spinnerMatName.setError(null);
                         spinnerMatName.clearFocus();
                         String giUID = "";
-                        giUID = getRandomString(5)+"-"+ matType.substring(0, 3)+"-"+giDay.toString()+"-"+giMonth.toString()+"-"+giYear.toString();
+                        giUID = getRandomString(5)+"-"+ giMatType.substring(0, 3)+"-"+giDay.toString()+"-"+giMonth.toString()+"-"+giYear.toString();
 
-                        DecimalFormat df13 = new DecimalFormat("0.00");
                         insertData(giUID, giCreatedBy, giVerifiedBy, giRONumber, giPOCustomerNumber, giMatName, giMatType,
                                 giVhlUID, giDate, giTime,
                                 Integer.parseInt(giVhlLength),
@@ -563,7 +629,7 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                                 Integer.parseInt(giVhlHeight),
                                 Integer.parseInt(radioOperation+giHeightCorrection.replaceAll("[^0-9]", "")),
                                 Integer.parseInt(tvHeightCorrection.getText().toString().replaceAll("[^0-9]", "")),
-                                Float.parseFloat(df13.format(Float.parseFloat(giVhlCubication.replaceAll("[^0-9.]", "")))),
+                                Float.parseFloat(df.format(Float.parseFloat(giVhlCubication.replaceAll("[^0-9.]", "")))),
                                 false, false);
                     }
                 }

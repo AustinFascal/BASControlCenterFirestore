@@ -363,7 +363,7 @@
                     </com.ptbas.controlcenter.DragLinearLayout>
 
                 </LinearLayout>
-                <Button
+                <!--<Button
                     android:id="@+id/imgbtn_expand_collapse_filter_layout"
                     style="@style/MaterialDialog.NegativeButton"
                     android:layout_width="wrap_content"
@@ -371,7 +371,7 @@
                     android:drawableEnd="@drawable/ic_outline_keyboard_arrow_up"
                     android:paddingTop="4dp"
                     android:text="Sembunyikan Filter"
-                    android:visibility="visible" />
+                    android:visibility="visible" />-->
 
                 <!--<Button
                     android:id="@+id/imgbtn_expand_collapse_filter_layout"

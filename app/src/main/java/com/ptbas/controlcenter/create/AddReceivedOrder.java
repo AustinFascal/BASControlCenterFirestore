@@ -607,7 +607,7 @@ public class AddReceivedOrder extends AppCompatActivity {
 
                 Map<String, List<ProductItems>> productItemsHashMap = new HashMap<>();
                 for(int i=0; i<productItemsArrayList.size(); i++) {
-                    String sortID = productItemsArrayList.get(i).getMatName().toLowerCase().replace(" ", "");
+                    String sortID = productItemsArrayList.get(i).getMatName();
                     List<ProductItems> objectList = productItemsHashMap.get(sortID);
                     if(objectList == null) {
                         objectList = new ArrayList<>();
