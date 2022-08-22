@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -51,13 +52,17 @@ public class MainFeaturesMenuAdapter extends RecyclerView.Adapter<MainFeatureVie
             @Override
             public void onClick(View view) {
                 if (pos == 0){
-                    Intent intent1 = new Intent(context, UserManagementActivity.class);
+                    Toast.makeText(context, "Coming soon", Toast.LENGTH_SHORT).show();
+
+                    /*Intent intent1 = new Intent(context, UserManagementActivity.class);
                     intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    context.startActivity(intent1);
+                    context.startActivity(intent1);*/
                 } else if (pos == 1){
-                    Intent intent2 = new Intent(context, VehicleManagementActivity.class);
+                    Toast.makeText(context, "Coming soon", Toast.LENGTH_SHORT).show();
+
+                    /*Intent intent2 = new Intent(context, VehicleManagementActivity.class);
                     intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    context.startActivity(intent2);
+                    context.startActivity(intent2);*/
                 } else if (pos == 2){
                     Intent intent2 = new Intent(context, ReceivedOrderManagementActivity.class);
                     intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -67,13 +72,17 @@ public class MainFeaturesMenuAdapter extends RecyclerView.Adapter<MainFeatureVie
                     intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(intent2);
                 } else if (pos == 4){
-                    Intent intent2 = new Intent(context, AddCustomerActivity.class);
+                    Toast.makeText(context, "Coming soon", Toast.LENGTH_SHORT).show();
+
+                    /*Intent intent2 = new Intent(context, AddCustomerActivity.class);
                     intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    context.startActivity(intent2);
+                    context.startActivity(intent2);*/
                 } else if (pos == 5){
-                    Intent intent2 = new Intent(context, InvoiceManagementActivity.class);
+                    Toast.makeText(context, "Coming soon", Toast.LENGTH_SHORT).show();
+
+                    /*Intent intent2 = new Intent(context, InvoiceManagementActivity.class);
                     intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    context.startActivity(intent2);
+                    context.startActivity(intent2);*/
                 }
             }
         });

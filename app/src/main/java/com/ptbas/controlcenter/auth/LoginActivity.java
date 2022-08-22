@@ -118,7 +118,6 @@ public class LoginActivity extends AppCompatActivity {
                     if (firebaseUser.isEmailVerified()){
                         startActivity(new Intent(LoginActivity.this, DashboardActivity.class));
                         finish();
-                        Toast.makeText(LoginActivity.this, "Berhasil masuk", Toast.LENGTH_SHORT).show();
                     } else {
                         firebaseUser.sendEmailVerification();
                         authProfile.signOut();

@@ -36,8 +36,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
@@ -66,7 +64,6 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 
@@ -82,6 +79,7 @@ public class AddReceivedOrder extends AppCompatActivity {
     List<String> productName, transportTypeName, customerName, currencyName;
     String transportData = "", customerData = "", customerID ="", randomString="NULL", currencyData="";
     Integer poYear = 0, poMonth = 0, poDay = 0;
+    Integer roType;
 
     double totalSellPrice = 0, totalBuyPrice = 0;
 
@@ -106,8 +104,9 @@ public class AddReceivedOrder extends AppCompatActivity {
 
     PreviewProductItemAdapter previewProductItemAdapter;
 
-    String[] roType = {"JASA ANGKUT + MATERIAL", "MATERIAL SAJA", "JASA ANGKUT SAJA"};
-    ArrayList<String> arrayListRoType = new ArrayList<>(Arrays.asList(roType));
+    String[] roTypeStr = {"JASA ANGKUT + MATERIAL", "MATERIAL SAJA", "JASA ANGKUT SAJA"};
+    Integer[] roTypeVal = {0, 1, 2};
+    ArrayList<String> arrayListRoType = new ArrayList<>(Arrays.asList(roTypeStr));
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     DocumentReference refRO = db.collection("ReceivedOrderData").document();
@@ -124,10 +123,33 @@ public class AddReceivedOrder extends AppCompatActivity {
         spinnerRoType = findViewById(R.id.spinner_ro_type);
         spinnerRoType.setAdapter(arrayAdapterRoType);
 
-        spinnerRoType.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                //spinnerRoType.setText(adapterView.indexOfChild(i));
+        spinnerRoType.setOnItemClickListener((adapterView, view, i, l) -> {
+            //spinnerRoType.setText(adapterView.indexOfChild(i));
+            llList.removeAllViews();
+            btnLockRow.setVisibility(View.GONE);
+            llAddItem.setVisibility(View.VISIBLE);
+            llList.requestFocus();
+            switch (i) {
+                case 0:
+                    roType = roTypeVal[0];
+                    addViewInit();
+                    btnAddRow.setVisibility(View.VISIBLE);
+                    fabProceed.setVisibility(View.GONE);
+                    break;
+                case 1:
+                    roType = roTypeVal[1];
+                    addView();
+                    btnAddRow.setVisibility(View.GONE);
+                    fabProceed.setVisibility(View.VISIBLE);
+                    break;
+                case 2:
+                    roType = roTypeVal[2];
+                    addViewInit();
+                    btnAddRow.setVisibility(View.GONE);
+                    fabProceed.setVisibility(View.VISIBLE);
+                    break;
+                default:
+                    break;
             }
         });
 
@@ -189,6 +211,7 @@ public class AddReceivedOrder extends AppCompatActivity {
         fabActionSaveToPdf = findViewById(R.id.fab_action_save_to_pdf);
 
         fabExpandMenu.setVisibility(View.GONE);
+        llAddItem.setVisibility(View.GONE);
 
         txtInputEdtPoNumberCustomer = findViewById(R.id.txt_input_edt_po_number_customer);
         //llPoNumberAvailability = findViewById(R.id.ll_po_number_availability);
@@ -398,7 +421,7 @@ public class AddReceivedOrder extends AppCompatActivity {
         };
 
         runnable.run();
-        addViewInit();
+        //addViewInit();
 
         btnLockRow.setOnClickListener(view -> {
             fabProceed.setVisibility(View.VISIBLE);
@@ -422,7 +445,7 @@ public class AddReceivedOrder extends AppCompatActivity {
             String roCreatedBy = helper.getUserId();
             String roDateCreated = Objects.requireNonNull(edtPoDate.getText()).toString();
             String roTOP = "";
-            String roMatType = Objects.requireNonNull(spinnerPoTransportType.getText()).toString();
+            String roMatTransport = Objects.requireNonNull(spinnerPoTransportType.getText()).toString();
             String roCurrency = Objects.requireNonNull(spinnerPoCurrency.getText()).toString();
             String roCustName = Objects.requireNonNull(spinnerPoCustName.getText()).toString();
             String roPoCustNumber = Objects.requireNonNull(edtPoNumberCustomer.getText()).toString();
@@ -444,7 +467,7 @@ public class AddReceivedOrder extends AppCompatActivity {
                 roPoCustNumber = "-";
             }
 
-            if (TextUtils.isEmpty(roMatType)) {
+            if (TextUtils.isEmpty(roMatTransport)) {
                 spinnerPoTransportType.setError("Mohon masukkan jenis material");
                 spinnerPoTransportType.requestFocus();
             }
@@ -459,10 +482,10 @@ public class AddReceivedOrder extends AppCompatActivity {
                 spinnerPoCustName.requestFocus();
             }
 
-            if (!TextUtils.isEmpty(roDateCreated)&&!TextUtils.isEmpty(roMatType)&&!TextUtils.isEmpty(roCurrency)&&
+            if (!TextUtils.isEmpty(roDateCreated)&&!TextUtils.isEmpty(roMatTransport)&&!TextUtils.isEmpty(roCurrency)&&
                     !TextUtils.isEmpty(roCustName)&&!TextUtils.isEmpty(roUID)){
-                insertData(roUID, roCreatedBy, roDateCreated, roTOP, roMatType, roCurrency, roPoCustNumber,
-                        roCustName, false);
+                insertData(roUID, roCreatedBy, roDateCreated, roTOP, roMatTransport, roCurrency, roPoCustNumber,
+                        roCustName, roType,false);
             }
 
         });
@@ -495,7 +518,7 @@ public class AddReceivedOrder extends AppCompatActivity {
 
     }
 
-    private OnMenuItemClickListener<PowerMenuItem> onMenuItemClickListener = new OnMenuItemClickListener<PowerMenuItem>() {
+  /*  private OnMenuItemClickListener<PowerMenuItem> onMenuItemClickListener = new OnMenuItemClickListener<PowerMenuItem>() {
         @Override
         public void onItemClick(int position, PowerMenuItem item) {
             if (item.getTitle().toString().equals("JASA ANGKUT SAJA")){
@@ -510,7 +533,7 @@ public class AddReceivedOrder extends AppCompatActivity {
                 Toast.makeText(AddReceivedOrder.this, "Material Saja", Toast.LENGTH_SHORT).show();
             }
         }
-    };
+    };*/
 
     private void bottomSheetExpanded() {
         llInputAllData.setVisibility(View.INVISIBLE);
@@ -532,8 +555,8 @@ public class AddReceivedOrder extends AppCompatActivity {
 
     // Get passed data and save to cloud
     private void insertData(String roUID, String roCreatedBy, String roDateCreated,
-                            String roTOP, String roMatType, String roCurrency,
-                            String roPoCustNumber, String roCustName, Boolean roSatus) {
+                            String roTOP, String roMatTransport, String roCurrency,
+                            String roPoCustNumber, String roCustName, Integer roType, Boolean roSatus) {
 
         RelativeLayout wrapTitle = bottomSheet.findViewById(R.id.wrapTitle);
         TextView tvPoCurrency = bottomSheet.findViewById(R.id.tvPoCurrency);
@@ -568,7 +591,7 @@ public class AddReceivedOrder extends AppCompatActivity {
             tvPoPtBasNumber.setText(roUID);
             tvPoDate.setText(roDateCreated);
             tvPoTOP.setText(roTOP);
-            tvPoTransportType.setText(roMatType);
+            tvPoTransportType.setText(roMatTransport);
             tvPoCustomerName.setText(roCustName);
             tvPoCustomerNumber.setText(roPoCustNumber);
 
@@ -619,8 +642,8 @@ public class AddReceivedOrder extends AppCompatActivity {
                 // Create RO object
                 String roDocumentID = refRO.getId();
                 ReceivedOrderModel receivedOrderModel = new ReceivedOrderModel(
-                        roDocumentID, roUID, roCreatedBy, roDateCreated, roTOP, roMatType, roCurrency,
-                        roPoCustNumber, roCustName, poSubTotalBuy, poSubTotalSell, poVAT,
+                        roDocumentID, roUID, roCreatedBy, roDateCreated, roTOP, roMatTransport, roCurrency,
+                        roPoCustNumber, roCustName, roType, poSubTotalBuy, poSubTotalSell, poVAT,
                         poTotalSellFinal, poEstProfit, roSatus, productItemsHashMap);
 
                 fabActionSaveCloud.setOnClickListener(view -> {
@@ -766,7 +789,14 @@ public class AddReceivedOrder extends AppCompatActivity {
         } else if (!result){
             Toast.makeText(this, "Masukkan semua detail item dengan benar.", Toast.LENGTH_SHORT).show();
         } else{
-            if (llList.getChildCount()==1){
+            if (roType == 0){
+                fabProceed.setVisibility(View.GONE);
+            } else if (roType == 1){
+                fabProceed.setVisibility(View.VISIBLE);
+            } else if (roType == 2){
+                fabProceed.setVisibility(View.VISIBLE);
+            }
+            /*if (llList.getChildCount()==1){
                 btnAddRow.setVisibility(View.GONE);
                 btnLockRow.setVisibility(View.VISIBLE);
                 //fabProceed.setVisibility(View.VISIBLE);
@@ -775,7 +805,7 @@ public class AddReceivedOrder extends AppCompatActivity {
                 btnLockRow.setVisibility(View.GONE);
                 btnUnlockRow.setVisibility(View.GONE);
                 fabProceed.setVisibility(View.GONE);
-            }
+            }*/
         }
 
         return result;
@@ -915,10 +945,18 @@ public class AddReceivedOrder extends AppCompatActivity {
         });
 
         imgDeleteRow.setOnClickListener(view -> {
+            llList.requestFocus();
             removeView(materialView);
             btnAddRow.setVisibility(View.VISIBLE);
             btnLockRow.setVisibility(View.GONE);
             fabProceed.setVisibility(View.GONE);
+            if (roType==1){
+                btnAddRow.setOnClickListener(view1 -> {
+                    addView();
+                    btnAddRow.setVisibility(View.GONE);
+                    fabProceed.setVisibility(View.VISIBLE);
+                });
+            }
         });
 
         llList.addView(materialView);
