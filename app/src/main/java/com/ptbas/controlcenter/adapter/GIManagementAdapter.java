@@ -9,9 +9,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -20,8 +18,9 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.ptbas.controlcenter.DialogInterface;
 import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.model.GoodIssueModel;
@@ -70,16 +69,12 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
                 tvVhlUid, tvPoCustNumber;
         Button btnDeleteGi, btnApproveGi;
         ImageView ivShowDetail;
-        RelativeLayout rlOpenGiDetail;
-
-
 
         public ItemViewHolder(@NonNull View itemView) {
             super(itemView);
-            rlOpenGiDetail = itemView.findViewById(R.id.rl_open_ro_detail);
             llStatusApproved = itemView.findViewById(R.id.ll_status_approved);
             llStatusInvoiced = itemView.findViewById(R.id.ll_status_invoiced);
-            llStatusPOAvailable = itemView.findViewById(R.id.ll_status_po_vailable);
+            llStatusPOAvailable = itemView.findViewById(R.id.ll_status_po_unvailable);
             llRoNeedsUpdate = itemView.findViewById(R.id.ll_ro_needs_update);
             tvCubication = itemView.findViewById(R.id.tv_cubication);
             tvGiDateTime = itemView.findViewById(R.id.tv_ro_date_time);
@@ -92,14 +87,9 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
             btnDeleteGi = itemView.findViewById(R.id.btn_delete_gi);
             btnApproveGi = itemView.findViewById(R.id.btn_approve_gi);
             ivShowDetail = itemView.findViewById(R.id.iv_show_detail);
-
-
         }
 
-
-
         public void viewBind(GoodIssueModel goodIssueModel) {
-
             dialogInterface = new DialogInterface();
             DecimalFormat df = new DecimalFormat("0.00");
             float cubication = goodIssueModel.getGiVhlCubication();
@@ -123,6 +113,22 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
             tvGiVhlDetail.setText(vhlDetail);
             tvVhlUid.setText(vhlUID);
 
+            String giUIDVal =goodIssueModel.getGiUID();
+            String giRoUIDVal =goodIssueModel.getGiRoUID();
+
+            DatabaseReference databaseReferenceGI = FirebaseDatabase.getInstance().getReference();
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            db.collection("ReceivedOrderData").whereEqualTo("roUID", giRoUIDVal)
+                    .addSnapshotListener((value, error) -> {
+                        String poUIDUpdate = "";
+                        for (DocumentSnapshot d : value.getDocuments()) {
+                            ReceivedOrderModel receivedOrderModel = d.toObject(ReceivedOrderModel.class);
+                            receivedOrderModel.setRoDocumentID(d.getId());
+                            poUIDUpdate = receivedOrderModel.getRoPoCustNumber();
+                        }
+                        databaseReferenceGI.child("GoodIssueData").child(giUIDVal).child("giPoCustNumber").setValue(poUIDUpdate);
+                    });
+
             if (giStatus){
                 llStatusApproved.setVisibility(View.VISIBLE);
                 btnApproveGi.setVisibility(View.GONE);
@@ -144,13 +150,6 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
                 tvPoCustNumber.setVisibility(View.VISIBLE);
                 llStatusPOAvailable.setVisibility(View.GONE);
             }
-
-            rlOpenGiDetail.setOnClickListener(view -> {
-                String giUID1 =goodIssueModel.getGiUID();
-                Intent i = new Intent(context, UpdateGoodIssueActivity.class);
-                i.putExtra("key", giUID1);
-                context.startActivity(i);
-            });
 
             ivShowDetail.setOnClickListener(view -> {
                 String giUID1 =goodIssueModel.getGiUID();

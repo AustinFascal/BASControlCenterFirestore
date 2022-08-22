@@ -58,9 +58,9 @@ public class ROManagementAdapter extends RecyclerView.Adapter<ROManagementAdapte
         public ItemViewHolder(@NonNull View itemView) {
             super(itemView);
             ivShowDetail = itemView.findViewById(R.id.iv_show_detail);
-            rlOpenRoDetail = itemView.findViewById(R.id.rl_open_ro_detail);
+            rlOpenRoDetail = itemView.findViewById(R.id.open_detail);
             llStatusApproved = itemView.findViewById(R.id.ll_status_approved);
-            llStatusPOAvailable = itemView.findViewById(R.id.ll_status_po_vailable);
+            llStatusPOAvailable = itemView.findViewById(R.id.ll_status_po_unvailable);
             tvRoDateTime = itemView.findViewById(R.id.tv_ro_date_time);
             tvRoUid = itemView.findViewById(R.id.tv_ro_uid);
             tvPoCustNumber = itemView.findViewById(R.id.tv_po_cust_number);

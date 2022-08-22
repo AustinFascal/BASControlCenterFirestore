@@ -1,5 +1,6 @@
 package com.ptbas.controlcenter.model;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -9,7 +10,7 @@ public class ReceivedOrderModel {
             roCustName;
     Double roSubTotalBuy, roSubTotalSell, roVATPPN, roTotalSellFinal, roEstProfit;
     Boolean roStatus;
-    Map<String, List<ProductItems>> roOrderedItems;
+    HashMap<String, List<ProductItems>> roOrderedItems;
 
     public ReceivedOrderModel() {
     }
@@ -18,7 +19,7 @@ public class ReceivedOrderModel {
                               String roMatType, String roCurrency, String roPoCustNumber,
                               String roCustName, Double roSubTotalBuy, Double roSubTotalSell,
                               Double roVATPPN, Double roTotalSellFinal, Double roEstProfit,
-                              Boolean roStatus, Map<String, List<ProductItems>> roOrderedItems) {
+                              Boolean roStatus, HashMap<String, List<ProductItems>> roOrderedItems) {
         this.roDocumentID = roDocumentID;
         this.roUID = roUID;
         this.roCreatedBy = roCreatedBy;
@@ -157,11 +158,11 @@ public class ReceivedOrderModel {
         this.roDocumentID = roDocumentID;
     }
 
-    public void setRoOrderedItems(Map<String, List<ProductItems>> roOrderedItems) {
+    public void setRoOrderedItems(HashMap<String, List<ProductItems>> roOrderedItems) {
         this.roOrderedItems = roOrderedItems;
     }
 
-    public Map<String, List<ProductItems>> getRoOrderedItems() {
+    public HashMap<String, List<ProductItems>> getRoOrderedItems() {
         return roOrderedItems;
     }
 }

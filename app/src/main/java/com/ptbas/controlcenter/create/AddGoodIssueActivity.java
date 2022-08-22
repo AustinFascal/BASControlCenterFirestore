@@ -4,14 +4,9 @@ import static android.content.ContentValues.TAG;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
-import android.content.Context;
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.VibrationEffect;
-import android.os.Vibrator;
 import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
@@ -19,24 +14,18 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.database.DataSnapshot;
@@ -44,7 +33,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -52,8 +40,6 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.ptbas.controlcenter.DialogInterface;
 import com.ptbas.controlcenter.Helper;
 import com.ptbas.controlcenter.R;
-import com.ptbas.controlcenter.adapter.ROManagementAdapter;
-import com.ptbas.controlcenter.management.ReceivedOrderManagementActivity;
 import com.ptbas.controlcenter.model.GoodIssueModel;
 import com.ptbas.controlcenter.model.ProductItems;
 import com.ptbas.controlcenter.model.ReceivedOrderModel;
@@ -63,16 +49,12 @@ import com.ptbas.controlcenter.utils.LangUtils;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
-
-import dev.shreyaspatil.MaterialDialog.BottomSheetMaterialDialog;
 
 public class AddGoodIssueActivity extends AppCompatActivity {
 
@@ -312,31 +294,34 @@ public class AddGoodIssueActivity extends AppCompatActivity {
 
         spinnerRoNumber.setOnItemClickListener((adapterView, view, position, l) -> {
             String selectedSpinnerPoPtBasNumber = (String) adapterView.getItemAtPosition(position);
-
+            spinnerMatName.setText("");
+            spinnerMatName.setError(null);
+            spinnerMatName.requestFocus();
             db.collection("ReceivedOrderData").whereEqualTo("roUID", selectedSpinnerPoPtBasNumber).get()
                     .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                         @Override
                         public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                            String data = "";
+                            String matNameStr = "";
                             matNameList.clear();
                             for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots){
                                 ReceivedOrderModel receivedOrderModel = documentSnapshot.toObject(ReceivedOrderModel.class);
                                 receivedOrderModel.setRoDocumentID(documentSnapshot.getId());
 
-                                String documentID = receivedOrderModel.getRoDocumentID();
+                                //String documentID = receivedOrderModel.getRoDocumentID();
 
                                 String roMatType = receivedOrderModel.getRoMatType();
                                 String roPoCustNumber = receivedOrderModel.getRoPoCustNumber();
                                 spinnerMatType.setText(roMatType);
                                 edtPoNumberCust.setText(roPoCustNumber);
 
-                                                        /*for (String orderedItems : receivedOrderModel.getRoOrderedItems().keySet()){
-                                                            //data = orderedItems;
-                                                            matNameList.add(orderedItems);
-                                                            //matNameList.remove("JASA ANGKUT");
-                                                        }*/
+                                HashMap<String, List<ProductItems>> map = receivedOrderModel.getRoOrderedItems();
+                                for (HashMap.Entry<String, List<ProductItems>> e : map.entrySet()) {
+                                    for (ProductItems productItems : e.getValue()) {
+                                        matNameStr = productItems.getMatName();
+                                    }
+                                }
 
-                                matNameList.addAll(receivedOrderModel.getRoOrderedItems().keySet());
+                                matNameList.addAll(Collections.singleton(matNameStr));
                                 matNameList.remove("JASA ANGKUT");
 
                                 ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddGoodIssueActivity.this, R.layout.style_spinner, matNameList);
@@ -460,7 +445,7 @@ public class AddGoodIssueActivity extends AppCompatActivity {
             return false;
         });
 
-        spinnerMatName.setOnFocusChangeListener((view, b) -> spinnerMatName.setText(matName));
+        //spinnerMatName.setOnFocusChangeListener((view, b) -> spinnerMatName.setText(matName));
 
         spinnerMatType.setOnItemClickListener((adapterView, view, position, l) -> {
             String selectedSpinnerTransportType = (String) adapterView.getItemAtPosition(position);
@@ -468,7 +453,7 @@ public class AddGoodIssueActivity extends AppCompatActivity {
             spinnerMatType.setError(null);
         });
 
-        spinnerMatType.setOnFocusChangeListener((view, b) -> spinnerMatType.setText(matType));
+        //spinnerMatType.setOnFocusChangeListener((view, b) -> spinnerMatType.setText(matType));
 
         db.collection("ReceivedOrderData").whereEqualTo("roStatus", true)
                 .addSnapshotListener((value, error) -> {

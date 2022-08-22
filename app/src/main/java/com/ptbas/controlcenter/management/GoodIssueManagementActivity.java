@@ -18,6 +18,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
@@ -39,6 +40,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.ptbas.controlcenter.DialogInterface;
 import com.ptbas.controlcenter.DragLinearLayout;
 import com.ptbas.controlcenter.Helper;
 import com.ptbas.controlcenter.R;
@@ -85,6 +87,7 @@ public class GoodIssueManagementActivity extends AppCompatActivity {
     GIManagementAdapter giManagementAdapter;
 
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+    DialogInterface dialogInterface = new DialogInterface();
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -518,7 +521,62 @@ public class GoodIssueManagementActivity extends AppCompatActivity {
 
     private void showDataSearchByType(String newText, String searchTypeData) {
         Query query;
-        if (dateStart.isEmpty()||dateEnd.isEmpty()){
+        query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated").startAt(dateStart).endAt(dateEnd);
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                /*searchByTypeOnDataChange(snapshot, newText, searchTypeData);*/
+                goodIssueModelArrayList.clear();
+                if (snapshot.exists()){
+                    nestedScrollView.setVisibility(View.VISIBLE);
+                    llNoData.setVisibility(View.GONE);
+                    for (DataSnapshot item : snapshot.getChildren()) {
+                        GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
+
+                        if (searchTypeData.equals(searchTypeValue[0])){
+                            if(Objects.requireNonNull(goodIssueModel).getGiUID().contains(newText)) {
+                                goodIssueModelArrayList.add(goodIssueModel);
+                            }
+                        }
+
+                        if (searchTypeData.equals(searchTypeValue[1])){
+                            if(Objects.requireNonNull(goodIssueModel).getGiRoUID().contains(newText)) {
+                                goodIssueModelArrayList.add(goodIssueModel);
+                            }
+                        }
+
+                        if (searchTypeData.equals(searchTypeValue[2])){
+                            if(Objects.requireNonNull(goodIssueModel).getGiPoCustNumber().contains(newText)) {
+                                goodIssueModelArrayList.add(goodIssueModel);
+                            }
+                        }
+
+                        if (searchTypeData.equals(searchTypeValue[3])){
+                            if(Objects.requireNonNull(goodIssueModel).getVhlUID().contains(newText)) {
+                                goodIssueModelArrayList.add(goodIssueModel);
+                            }
+                        }
+
+                        if (searchTypeData.equals(searchTypeValue[4])){
+                            if(Objects.requireNonNull(goodIssueModel).getGiMatName().contains(newText)) {
+                                goodIssueModelArrayList.add(goodIssueModel);
+                            }
+                        }
+                    }
+                    Collections.reverse(goodIssueModelArrayList);
+                } else  {
+                    nestedScrollView.setVisibility(View.GONE);
+                    llNoData.setVisibility(View.VISIBLE);
+                }
+                giManagementAdapter = new GIManagementAdapter(context, goodIssueModelArrayList);
+                rvGoodIssueList.setAdapter(giManagementAdapter);
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+        /*if (dateStart.isEmpty()||dateEnd.isEmpty()){
             query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated");
             query.addValueEventListener(new ValueEventListener() {
                 @Override
@@ -531,66 +589,15 @@ public class GoodIssueManagementActivity extends AppCompatActivity {
                 }
             });
         } else {
-            query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated").startAt(dateStart).endAt(dateEnd);
-            query.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    searchByTypeOnDataChange(snapshot, newText, searchTypeData);
-                }
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
 
-                }
-            });
-        }
+        }*/
 
-        giManagementAdapter = new GIManagementAdapter(context, goodIssueModelArrayList);
-        rvGoodIssueList.setAdapter(giManagementAdapter);
+        /*giManagementAdapter = new GIManagementAdapter(context, goodIssueModelArrayList);
+        rvGoodIssueList.setAdapter(giManagementAdapter);*/
     }
 
     private void searchByTypeOnDataChange(DataSnapshot snapshot, String newText, String searchTypeData) {
-        goodIssueModelArrayList.clear();
-        if (snapshot.exists()){
-            for (DataSnapshot item : snapshot.getChildren()) {
-                GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
 
-                if (searchTypeData.equals(searchTypeValue[0])){
-                    if(Objects.requireNonNull(goodIssueModel).getGiUID().contains(newText)) {
-                        goodIssueModelArrayList.add(goodIssueModel);
-                    }
-                }
-
-                if (searchTypeData.equals(searchTypeValue[1])){
-                    if(Objects.requireNonNull(goodIssueModel).getGiRoUID().contains(newText)) {
-                        goodIssueModelArrayList.add(goodIssueModel);
-                    }
-                }
-
-                if (searchTypeData.equals(searchTypeValue[2])){
-                    if(Objects.requireNonNull(goodIssueModel).getGiPoCustNumber().contains(newText)) {
-                        goodIssueModelArrayList.add(goodIssueModel);
-                    }
-                }
-
-                if (searchTypeData.equals(searchTypeValue[3])){
-                    if(Objects.requireNonNull(goodIssueModel).getVhlUID().contains(newText)) {
-                        goodIssueModelArrayList.add(goodIssueModel);
-                    }
-                }
-
-                if (searchTypeData.equals(searchTypeValue[4])){
-                    if(Objects.requireNonNull(goodIssueModel).getGiMatName().contains(newText)) {
-                        goodIssueModelArrayList.add(goodIssueModel);
-                    }
-                }
-            }
-            Collections.reverse(goodIssueModelArrayList);
-        } else  {
-            nestedScrollView.setVisibility(View.GONE);
-            llNoData.setVisibility(View.VISIBLE);
-        }
-        giManagementAdapter = new GIManagementAdapter(context, goodIssueModelArrayList);
-        rvGoodIssueList.setAdapter(giManagementAdapter);
     }
 
     private void showDataDefaultQuery() {
@@ -678,15 +685,12 @@ public class GoodIssueManagementActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                if (spinnerSearchType.getText().toString().isEmpty()){
-                    spinnerSearchType.setError("Mohon pilih kategori pencarian terlebih dahulu");
-                } else {
-                    spinnerSearchType.setError(null);
-                    if (searchView.getQuery().toString().isEmpty()){
-                        showDataDefaultQuery();
-                    } else {
-                        showDataSearchByType(newText, searchTypeData);
+                if (spinnerSearchType.getText().toString().isEmpty() || edtGiDateFilterStart.getText().toString().isEmpty() || edtGiDateFilterEnd.getText().toString().isEmpty()){
+                    if (!searchView.getQuery().toString().isEmpty()){
+                        dialogInterface.fillSearchFilter(GoodIssueManagementActivity.this, searchView);
                     }
+                } else {
+                    showDataSearchByType(newText, searchTypeData);
                 }
 
                 return true;
@@ -701,12 +705,12 @@ public class GoodIssueManagementActivity extends AppCompatActivity {
         if (item.getItemId() == R.id.filter_data) {
             if (expandStatus){
                 expandStatus=false;
-                wrapFilter.setVisibility(View.GONE);
+                //wrapFilter.setVisibility(View.GONE);
                 cdvFilter.setVisibility(View.GONE);
                 item.setIcon(R.drawable.ic_outline_filter_alt);
             } else {
                 expandStatus=true;
-                wrapFilter.setVisibility(View.VISIBLE);
+                //wrapFilter.setVisibility(View.VISIBLE);
                 cdvFilter.setVisibility(View.VISIBLE);
                 item.setIcon(R.drawable.ic_outline_filter_alt_off);
             }

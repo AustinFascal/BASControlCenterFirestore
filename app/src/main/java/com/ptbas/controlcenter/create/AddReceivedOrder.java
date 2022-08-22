@@ -605,7 +605,7 @@ public class AddReceivedOrder extends AppCompatActivity {
                 // DatabaseReference ref1 = FirebaseDatabase.getInstance().getReference("ReceivedOrders");
                 //DatabaseReference ref2 = FirebaseDatabase.getInstance().getReference("ReceivedOrders");
 
-                Map<String, List<ProductItems>> productItemsHashMap = new HashMap<>();
+                HashMap<String, List<ProductItems>> productItemsHashMap = new HashMap<>();
                 for(int i=0; i<productItemsArrayList.size(); i++) {
                     String sortID = productItemsArrayList.get(i).getMatName();
                     List<ProductItems> objectList = productItemsHashMap.get(sortID);

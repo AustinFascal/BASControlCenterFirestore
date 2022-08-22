@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SearchView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -37,14 +38,28 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import dev.shreyaspatil.MaterialDialog.BottomSheetMaterialDialog;
+import dev.shreyaspatil.MaterialDialog.MaterialDialog;
+import dev.shreyaspatil.MaterialDialog.MaterialDialog;
 import dev.shreyaspatil.MaterialDialog.model.TextAlignment;
 
 public class DialogInterface {
     Helper helper = new Helper();
 
+    public void fillSearchFilter(Activity activity, SearchView searchView) {
+        MaterialDialog materialDialog = new MaterialDialog.Builder(activity)
+                .setMessage("Mohon lengkapi tipe pencarian dan rentang tanggal dengan benar terlebih dahulu", TextAlignment.START)
+                .setCancelable(false)
+                .setPositiveButton("OKE", R.drawable.ic_outline_check, (dialogInterface, which) -> {
+                    searchView.setQuery(null,false);
+                    dialogInterface.dismiss();
+                })
+                .build();
+
+        materialDialog.show();
+    }
+
     public void discardDialogConfirmation(Activity activity) {
-        BottomSheetMaterialDialog mBottomSheetDialog = new BottomSheetMaterialDialog.Builder(activity)
+        MaterialDialog mBottomSheetDialog = new MaterialDialog.Builder(activity)
                 .setTitle("Batalkan?")
                 .setAnimation(R.raw.lottie_cancel)
                 .setMessage("Apakah Anda yakin ingin membatalkan proses?")
@@ -68,7 +83,7 @@ public class DialogInterface {
         } else {
             vibrator.vibrate(100);
         }
-        BottomSheetMaterialDialog mBottomSheetDialog = new BottomSheetMaterialDialog.Builder(activity)
+        MaterialDialog mBottomSheetDialog = new MaterialDialog.Builder(activity)
                 .setTitle("Sukses!")
                 .setAnimation(R.raw.lottie_success_2)
                 .setMessage("Berhasil menambahkan data. Mau menambah data lagi?")
@@ -93,7 +108,7 @@ public class DialogInterface {
             vibrator.vibrate(100);
         }
 
-        BottomSheetMaterialDialog mBottomSheetDialog = new BottomSheetMaterialDialog.Builder(activity)
+        MaterialDialog mBottomSheetDialog = new MaterialDialog.Builder(activity)
                 .setTitle("Sukses!")
                 .setAnimation(R.raw.lottie_success_2)
                 .setMessage("Berhasil menambahkan data. Mau menambah data lagi?")
@@ -121,7 +136,7 @@ public class DialogInterface {
         } else {
             vibrator.vibrate(100);
         }
-        BottomSheetMaterialDialog mBottomSheetDialog = new BottomSheetMaterialDialog.Builder(activity)
+        MaterialDialog mBottomSheetDialog = new MaterialDialog.Builder(activity)
                 .setTitle("Sukses!")
                 .setAnimation(R.raw.lottie_success_2)
                 .setMessage("Berhasil menambahkan data. Mau menambah data lagi?")
@@ -145,7 +160,7 @@ public class DialogInterface {
         } else {
             vibrator.vibrate(100);
         }
-        BottomSheetMaterialDialog mBottomSheetDialog = new BottomSheetMaterialDialog.Builder(activity)
+        MaterialDialog mBottomSheetDialog = new MaterialDialog.Builder(activity)
                 .setTitle("Sukses!", TextAlignment.START)
                 .setAnimation(R.raw.lottie_success)
                 .setMessage("Data berhasil diperbarui", TextAlignment.START)
@@ -168,7 +183,7 @@ public class DialogInterface {
         } else {
             vibrator.vibrate(100);
         }
-        BottomSheetMaterialDialog mBottomSheetDialog = new BottomSheetMaterialDialog.Builder((Activity) context)
+        MaterialDialog mBottomSheetDialog = new MaterialDialog.Builder((Activity) context)
                 .setTitle("Perhatian!", TextAlignment.START)
                 .setAnimation(R.raw.lottie_attention)
                 .setMessage("Data Good Issue ini masih belum memiliki nomor PO. Mohon perbarui data tersebut agar dapat melakukan validasi dan dapat muncul saat direkapitulasi.", TextAlignment.START)
@@ -191,7 +206,7 @@ public class DialogInterface {
         } else {
             vibrator.vibrate(100);
         }
-        BottomSheetMaterialDialog mBottomSheetDialog = new BottomSheetMaterialDialog.Builder((Activity) context)
+        MaterialDialog mBottomSheetDialog = new MaterialDialog.Builder((Activity) context)
                 .setTitle("Perhatian!", TextAlignment.START)
                 .setAnimation(R.raw.lottie_attention)
                 .setMessage("Data Received Order ini masih belum memiliki nomor PO. Mohon perbarui data tersebut agar dapat melakukan validasi dan dapat muncul saat menambahkan Good Issue.", TextAlignment.START)
@@ -249,7 +264,7 @@ public class DialogInterface {
         } else {
             vibrator.vibrate(100);
         }
-        BottomSheetMaterialDialog mBottomSheetDialog = new BottomSheetMaterialDialog.Builder(activity)
+        MaterialDialog mBottomSheetDialog = new MaterialDialog.Builder(activity)
                 .setMessage("Anda tidak dapat mengubah data ini", TextAlignment.START)
                 .setCancelable(true)
                 .setPositiveButton("OKE", (dialogInterface, which) -> dialogInterface.dismiss())
@@ -267,7 +282,7 @@ public class DialogInterface {
         } else {
             vibrator.vibrate(100);
         }
-        BottomSheetMaterialDialog mBottomSheetDialog = new BottomSheetMaterialDialog.Builder(activity)
+        MaterialDialog mBottomSheetDialog = new MaterialDialog.Builder(activity)
                 .setMessage("Mohon masukkan rentang tanggal dan pilih ID Received Order atau ID Purchase Order Customer", TextAlignment.START)
                 .setCancelable(true)
                 .setPositiveButton("OKE", (dialogInterface, which) -> dialogInterface.dismiss())
@@ -286,7 +301,7 @@ public class DialogInterface {
             vibrator.vibrate(100);
         }
 
-        BottomSheetMaterialDialog mBottomSheetDialog = new BottomSheetMaterialDialog.Builder(activity)
+        MaterialDialog mBottomSheetDialog = new MaterialDialog.Builder(activity)
                 .setTitle("RO Belum Aktif")
                 .setAnimation(R.raw.lottie_attention)
                 .setMessage("Anda tidak dapat membuat Good Issue karena ID Received Order yang Anda pilih belum disahkan. Sahkan sekarang?")
@@ -328,7 +343,7 @@ public class DialogInterface {
             vibrator.vibrate(100);
         }
 
-        BottomSheetMaterialDialog mBottomSheetDialog = new BottomSheetMaterialDialog.Builder(activity)
+        MaterialDialog mBottomSheetDialog = new MaterialDialog.Builder(activity)
                 .setTitle("Tidak Ada Received Order")
                 .setAnimation(R.raw.lottie_attention)
                 .setMessage("Anda tidak dapat membuat Good Issue karena tidak memiliki Received Order yang aktif dan sah. Validasi atau tambah Received Order sekarang?")
@@ -357,7 +372,7 @@ public class DialogInterface {
             vibrator.vibrate(100);
         }
 
-        BottomSheetMaterialDialog mBottomSheetDialog = new BottomSheetMaterialDialog.Builder((Activity) context)
+        MaterialDialog mBottomSheetDialog = new MaterialDialog.Builder((Activity) context)
                 .setTitle("Validasi Data")
                 .setAnimation(R.raw.lottie_approval)
                 .setMessage("Apakah Anda yakin ingin mengesahkan data Good Issue yang Anda pilih? Setelah disahkan, status tidak dapat dikembalikan.")
@@ -386,7 +401,7 @@ public class DialogInterface {
         } else {
             vibrator.vibrate(100);
         }
-        BottomSheetMaterialDialog mBottomSheetDialog = new BottomSheetMaterialDialog.Builder((Activity) context)
+        MaterialDialog mBottomSheetDialog = new MaterialDialog.Builder((Activity) context)
                 .setTitle("Validasi Data")
                 .setAnimation(R.raw.lottie_approval)
                 .setMessage("Apakah Anda yakin ingin mengesahkan data Received Order yang Anda pilih? Setelah disahkan, status tidak dapat dikembalikan.")
@@ -436,7 +451,7 @@ public class DialogInterface {
     }
 
     public void changePoNumberCustomer(Context context, String roUIDVal) {
-        BottomSheetMaterialDialog mBottomSheetDialog = new BottomSheetMaterialDialog.Builder((Activity) context)
+        MaterialDialog mBottomSheetDialog = new MaterialDialog.Builder((Activity) context)
                 .setTitle("Ubah Nomor PO")
                 .setAnimation(R.raw.lottie_attention)
                 .setMessage("Untuk mengubah nomor PO, Anda harus memperbarui data nomor PO di Received Order terpilih. Perbarui sekarang?")
@@ -456,7 +471,7 @@ public class DialogInterface {
     }
 
     public void deleteGiConfirmation(Context context, String giUID) {
-        BottomSheetMaterialDialog mBottomSheetDialog = new BottomSheetMaterialDialog.Builder((Activity) context)
+        MaterialDialog mBottomSheetDialog = new MaterialDialog.Builder((Activity) context)
                 .setTitle("Hapus Data")
                 .setAnimation(R.raw.lottie_delete)
                 .setMessage("Apakah Anda yakin ingin menghapus data Good Issue yang Anda pilih? Setelah dihapus, data tidak dapat dikembalikan.")
@@ -474,7 +489,7 @@ public class DialogInterface {
     }
 
     public void deleteGiFromActivityConfirmation(Activity activity, String giUID) {
-        BottomSheetMaterialDialog mBottomSheetDialog = new BottomSheetMaterialDialog.Builder(activity)
+        MaterialDialog mBottomSheetDialog = new MaterialDialog.Builder(activity)
                 .setTitle("Hapus Data")
                 .setAnimation(R.raw.lottie_delete)
                 .setMessage("Apakah Anda yakin ingin menghapus data Good Issue yang Anda pilih? Setelah dihapus, data tidak dapat dikembalikan.")
@@ -497,7 +512,7 @@ public class DialogInterface {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         CollectionReference refRO = db.collection("ReceivedOrderData");
 
-        BottomSheetMaterialDialog mBottomSheetDialog = new BottomSheetMaterialDialog.Builder((Activity) context)
+        MaterialDialog mBottomSheetDialog = new MaterialDialog.Builder((Activity) context)
                 .setTitle("Hapus Data")
                 .setAnimation(R.raw.lottie_delete)
                 .setMessage("Apakah Anda yakin ingin menghapus data Received Order yang Anda pilih? Setelah dihapus, data tidak dapat dikembalikan.")

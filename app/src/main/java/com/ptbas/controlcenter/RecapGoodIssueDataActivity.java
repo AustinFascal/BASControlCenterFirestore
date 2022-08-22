@@ -649,7 +649,7 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
                                             for (int i = 0; i < rvGoodIssueList.getChildCount(); i++) {
                                                 rvGoodIssueList.getChildAt(i).findViewById(R.id.btn_delete_gi).setVisibility(View.GONE);
 
-                                                View rlOpenRoDetail = rvGoodIssueList.getChildAt(i).findViewById(R.id.rl_open_ro_detail);
+                                                View rlOpenRoDetail = rvGoodIssueList.getChildAt(i).findViewById(R.id.open_detail);
                                                 View ivShowDetail = rvGoodIssueList.getChildAt(i).findViewById(R.id.iv_show_detail);
                                                 rlOpenRoDetail.setOnClickListener(view1 -> {});
                                                 ivShowDetail.setVisibility(View.GONE);
