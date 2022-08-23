@@ -1,21 +1,19 @@
 package com.ptbas.controlcenter;
 
+
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
-import android.view.View;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -25,20 +23,20 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.ptbas.controlcenter.adapter.ROManagementAdapter;
+import com.ptbas.controlcenter.create.AddInvoiceActivity;
 import com.ptbas.controlcenter.create.AddReceivedOrder;
 import com.ptbas.controlcenter.management.ReceivedOrderManagementActivity;
-import com.ptbas.controlcenter.model.ReceivedOrderModel;
+import com.ptbas.controlcenter.model.GoodIssueModel;
+import com.ptbas.controlcenter.model.InvoiceModel;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 import java.util.Objects;
 
-import dev.shreyaspatil.MaterialDialog.MaterialDialog;
 import dev.shreyaspatil.MaterialDialog.MaterialDialog;
 import dev.shreyaspatil.MaterialDialog.model.TextAlignment;
 
@@ -551,6 +549,49 @@ public class DialogInterface {
                         public void onCancelled(@NonNull DatabaseError error) {}
                     };
                     databaseReference.addListenerForSingleValueEvent(valueEventListener);*/
+                })
+                .setNegativeButton("TIDAK", R.drawable.ic_outline_close, (dialogInterface, which) -> dialogInterface.dismiss())
+                .build();
+
+        mBottomSheetDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
+        mBottomSheetDialog.show();
+    }
+
+    public void confirmCreateInvoice(Context context, FirebaseFirestore db,
+                                     ArrayList<GoodIssueModel> goodIssueModelArrayList,
+                                     String rouidVal, String invPoDate, String invPoUID, String invCustName,
+                                     Double invTotal, Double invTax1, Double invTax2) {
+        MaterialDialog mBottomSheetDialog = new MaterialDialog.Builder((Activity) context)
+                .setTitle("Buat Invoice")
+                .setAnimation(R.raw.lottie_attention)
+                .setMessage("Apakah Anda yakin ingin membuat Invoice dari data Good Issue terpilih?")
+                .setCancelable(true)
+                .setPositiveButton("YA", R.drawable.ic_outline_check, (dialogInterface, which) -> {
+                    DatabaseReference databaseReferenceGI = FirebaseDatabase.getInstance().getReference();
+                    DocumentReference refRO = db.collection("InvoiceData").document();
+                    String invDocumentID = refRO.getId();
+                    String invUID = "INV - "+rouidVal;
+                    String invCreatedBy = helper.getUserId();
+                    String invDateCreated = new SimpleDateFormat("dd/MM/yyyy", Locale.US).format(new Date());
+
+
+                    InvoiceModel invoiceModel = new InvoiceModel(
+                            invDocumentID, invUID, invCreatedBy, invDateCreated, invPoUID,
+                            invPoDate, invCustName, invTotal, invTax1, invTax2, false);
+
+                    refRO.set(invoiceModel);
+                    DocumentReference refGI = db.collection("InvoiceData").document(invDocumentID);
+                    for (int i = 0; i < goodIssueModelArrayList.size(); i++) {
+                        GoodIssueModel goodIssueModel = goodIssueModelArrayList.get(i);
+                        refGI.collection("GoodIssueData").document(goodIssueModelArrayList.get(i).getGiUID()).set(goodIssueModel);
+                        databaseReferenceGI.child("GoodIssueData").child(goodIssueModelArrayList.get(i).getGiUID()).child("giInvoiced").setValue(true);
+                    }
+
+                    AddInvoiceActivity addInvoiceActivity = (AddInvoiceActivity) context;
+                    addInvoiceActivity.createInvPDF(Helper.getAppPath(context)+rouidVal+".pdf");
+                    //createInvPDF(Helper.getAppPath(context)+rouidVal+".pdf");
+
+                    dialogInterface.dismiss();
                 })
                 .setNegativeButton("TIDAK", R.drawable.ic_outline_close, (dialogInterface, which) -> dialogInterface.dismiss())
                 .build();

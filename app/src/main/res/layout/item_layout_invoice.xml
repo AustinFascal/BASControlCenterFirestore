@@ -40,12 +40,12 @@
                     android:text="12/12/2022" />
 
                 <TextView
-                    android:id="@+id/tv_ro_uid"
+                    android:id="@+id/tv_inv_uid"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
                     android:maxLines="1"
-                    android:text="Nomor RO UID"
+                    android:text="Nomor Invoice UID"
                     android:textSize="16sp"
                     android:textStyle="bold" />
 
@@ -80,22 +80,6 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="VALID"
-                            android:textSize="11sp"
-                            android:textStyle="bold" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/ll_status_po_unvailable"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/pill_red"
-                        android:paddingHorizontal="8dp"
-                        android:paddingVertical="2dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="NOMOR PO BELUM TERSEDIA"
                             android:textSize="11sp"
                             android:textStyle="bold" />
                     </LinearLayout>

@@ -186,7 +186,7 @@ public class AddCustomerActivity extends AppCompatActivity {
     }
 
     private void insertData(String custType, String custName, String custAlias, String custAddress, String custNPWP, String custPhone) {
-        String custUID = custAlias + " " + getRandomUID(4);
+        String custUID = custAlias + " " + getRandomUID(3);
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("CustomerData");
         CustomerModel customerModel = new CustomerModel(custUID, custName+", "+custType, custAlias, custAddress, custNPWP, custPhone);
 

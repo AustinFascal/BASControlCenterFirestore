@@ -14,11 +14,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.ptbas.controlcenter.DialogInterface;
@@ -29,15 +26,12 @@ import com.ptbas.controlcenter.update.UpdateGoodIssueActivity;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 
 public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapter.ItemViewHolder> {
 
     Context context;
     ArrayList<GoodIssueModel> goodIssueModelArrayList;
     DialogInterface dialogInterface;
-
-
 
     public GIManagementAdapter(Context context, ArrayList<GoodIssueModel> goodIssueModelArrayList) {
         this.context = context;
@@ -77,7 +71,7 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
             llStatusPOAvailable = itemView.findViewById(R.id.ll_status_po_unvailable);
             llRoNeedsUpdate = itemView.findViewById(R.id.ll_ro_needs_update);
             tvCubication = itemView.findViewById(R.id.tv_cubication);
-            tvGiDateTime = itemView.findViewById(R.id.tv_ro_date_time);
+            tvGiDateTime = itemView.findViewById(R.id.tv_inv_date_created);
             tvGiUid = itemView.findViewById(R.id.tv_gi_uid);
             tvRoUid = itemView.findViewById(R.id.tv_ro_uid);
             tvPoCustNumber = itemView.findViewById(R.id.tv_po_cust_number);

@@ -78,11 +78,11 @@ public class MainFeaturesMenuAdapter extends RecyclerView.Adapter<MainFeatureVie
                     intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(intent2);*/
                 } else if (pos == 5){
-                    Toast.makeText(context, "Coming soon", Toast.LENGTH_SHORT).show();
+                    /*Toast.makeText(context, "Coming soon", Toast.LENGTH_SHORT).show();*/
 
-                    /*Intent intent2 = new Intent(context, InvoiceManagementActivity.class);
+                    Intent intent2 = new Intent(context, InvoiceManagementActivity.class);
                     intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    context.startActivity(intent2);*/
+                    context.startActivity(intent2);
                 }
             }
         });

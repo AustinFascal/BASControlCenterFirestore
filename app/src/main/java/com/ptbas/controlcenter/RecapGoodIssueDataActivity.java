@@ -102,7 +102,6 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
     NestedScrollView nestedScrollView;
 
     List<String> arrayListRoUID, arrayListPoUID;
-    //List<String> arrayListRoUID, arrayListPoUID, matNameList;
 
     LinearLayout llWrapFilterByDateRange, llWrapFilterByRouid, llNoData;
 
@@ -253,28 +252,6 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
 
         arrayListRoUID = new ArrayList<>();
         arrayListPoUID = new ArrayList<>();
-
-        /*databaseReference.child("ReceivedOrders").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()){
-                    for (DataSnapshot dataSnapshot: snapshot.getChildren()){
-                        String spinnerRoUIDVal = dataSnapshot.child("roUID").getValue(String.class);
-                        arrayListRoUID.add(spinnerRoUIDVal);
-                    }
-                    ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(RecapGoodIssueDataActivity.this, R.layout.style_spinner, arrayListRoUID);
-                    arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
-                    spinnerRoUID.setAdapter(arrayAdapter);
-                } else {
-                    Toast.makeText(RecapGoodIssueDataActivity.this, "Data RO tidak ditemukan", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });*/
 
         db.collection("ReceivedOrderData").whereEqualTo("roStatus", true)
                 .addSnapshotListener((value, error) -> {
@@ -431,8 +408,6 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
         String currentDate = new SimpleDateFormat("dd/MM/yyyy", Locale.US).format(new Date());
 
         try {
-            /*String roMatNameTypeStrVal = "Material: "+matNameList +" | "+
-                    goodIssueModelArrayList.get(0).getGiMatType();*/
             String roMatNameTypeStrVal = "Material: "+ matNameVal +" | "+ matTypeVal;
             String roCustNameStrVal = "Customer: "+custNameVal;
             String roPoCustNumberStrVal = "Nomor PO: "+roPoCustNumber;
@@ -586,8 +561,6 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
 
         db.collection("ReceivedOrderData").whereEqualTo("roUID", rouidVal).get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
-                    //String matNameStr = "";
-                    //matNameList.clear();
                     for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots){
                         ReceivedOrderModel receivedOrderModel = documentSnapshot.toObject(ReceivedOrderModel.class);
                         receivedOrderModel.setRoDocumentID(documentSnapshot.getId());
@@ -608,32 +581,6 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
                         }
                     }
                 });
-
-       /* databaseReference.child("ReceivedOrders").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()){
-                    for (DataSnapshot dataSnapshot: snapshot.getChildren()){
-                        String key = dataSnapshot.getKey();
-                        assert key != null;
-                        ProductItems productItems = snapshot.child(key).child("OrderedItems/1").getValue(ProductItems.class);
-                        matBuyPrice = Objects.requireNonNull(productItems).getMatBuyPrice();
-
-                        custNameVal = snapshot.child(key).child("roCustName").getValue(String.class);
-                        currencyVal = snapshot.child(key).child("roCurrency").getValue(String.class);
-
-                        String spinnerMaterialData = snapshot.child(key).child("OrderedItems/1").child("matName").getValue(String.class);
-                        matNameList.add(spinnerMaterialData);
-                        matNameList.remove("JASA ANGKUT");
-
-
-                    }
-                }
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {}
-        });*/
-
 
         Query query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated").startAt(dateStartVal).endAt(dateEndVal);
         query.addValueEventListener(new ValueEventListener() {
@@ -673,14 +620,6 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
 
                 giManagementAdapter = new GIManagementAdapter(context, goodIssueModelArrayList);
                 rvGoodIssueList.setAdapter(giManagementAdapter);
-
-                /*Toast.makeText(context, String.valueOf(rvGoodIssueList.getChildCount()), Toast.LENGTH_SHORT).show();
-                *//*for (int i = 0; i < rvGoodIssueList.getChildCount(); i++) {
-                    rvGoodIssueList.getChildAt(i).findViewById(R.id.btn_delete_gi).setVisibility(View.GONE);
-                    View ivShowDetail = rvGoodIssueList.getChildAt(i).findViewById(R.id.iv_show_detail);
-                    ivShowDetail.setVisibility(View.GONE);
-                }*/
-
             }
 
             @Override
@@ -688,8 +627,6 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
 
             }
         });
-
-
     }
 
     private void expandFilterViewValidation() {

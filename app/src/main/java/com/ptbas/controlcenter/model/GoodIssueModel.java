@@ -12,7 +12,7 @@ public class GoodIssueModel implements Parcelable {
     Float giVhlCubication;
     Boolean giStatus, giInvoiced;
 
-    GoodIssueModel() {
+    public GoodIssueModel() {
     }
 
     public GoodIssueModel(String giUID, String giCreatedBy, String giVerifiedBy, String giRoUID, String giPoCustNumber, String giMatName, String giMatType, String vhlUID, String giDateCreated, String giTimeCreted, Integer vhlLength, Integer vhlWidth, Integer vhlHeight, Integer vhlHeightCorrection, Integer vhlHeightAfterCorrection, Float giVhlCubication, Boolean giStatus, Boolean giInvoiced) {

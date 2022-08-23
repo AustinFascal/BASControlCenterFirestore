@@ -61,11 +61,11 @@ public class ROManagementAdapter extends RecyclerView.Adapter<ROManagementAdapte
             rlOpenRoDetail = itemView.findViewById(R.id.open_detail);
             llStatusApproved = itemView.findViewById(R.id.ll_status_approved);
             llStatusPOAvailable = itemView.findViewById(R.id.ll_status_po_unvailable);
-            tvRoDateTime = itemView.findViewById(R.id.tv_ro_date_time);
+            tvRoDateTime = itemView.findViewById(R.id.tv_inv_date_created);
             tvRoUid = itemView.findViewById(R.id.tv_ro_uid);
             tvPoCustNumber = itemView.findViewById(R.id.tv_po_cust_number);
-            btnDeleteRo = itemView.findViewById(R.id.btn_delete_ro);
-            btnApproveRo = itemView.findViewById(R.id.btn_approve_ro);
+            btnDeleteRo = itemView.findViewById(R.id.btn_delete_inv);
+            btnApproveRo = itemView.findViewById(R.id.btn_approve_inv);
         }
 
         public void viewBind(ReceivedOrderModel receivedOrderModel) {

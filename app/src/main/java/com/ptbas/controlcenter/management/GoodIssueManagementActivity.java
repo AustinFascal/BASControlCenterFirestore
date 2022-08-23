@@ -18,7 +18,6 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
@@ -576,28 +575,6 @@ public class GoodIssueManagementActivity extends AppCompatActivity {
 
             }
         });
-        /*if (dateStart.isEmpty()||dateEnd.isEmpty()){
-            query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated");
-            query.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    searchByTypeOnDataChange(snapshot, newText, searchTypeData);
-                }
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-
-                }
-            });
-        } else {
-
-        }*/
-
-        /*giManagementAdapter = new GIManagementAdapter(context, goodIssueModelArrayList);
-        rvGoodIssueList.setAdapter(giManagementAdapter);*/
-    }
-
-    private void searchByTypeOnDataChange(DataSnapshot snapshot, String newText, String searchTypeData) {
-
     }
 
     private void showDataDefaultQuery() {
@@ -685,7 +662,9 @@ public class GoodIssueManagementActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                if (spinnerSearchType.getText().toString().isEmpty() || edtGiDateFilterStart.getText().toString().isEmpty() || edtGiDateFilterEnd.getText().toString().isEmpty()){
+                if (spinnerSearchType.getText().toString().isEmpty() ||
+                        Objects.requireNonNull(edtGiDateFilterStart.getText()).toString().isEmpty() ||
+                        Objects.requireNonNull(edtGiDateFilterEnd.getText()).toString().isEmpty()){
                     if (!searchView.getQuery().toString().isEmpty()){
                         dialogInterface.fillSearchFilter(GoodIssueManagementActivity.this, searchView);
                     }
@@ -705,12 +684,10 @@ public class GoodIssueManagementActivity extends AppCompatActivity {
         if (item.getItemId() == R.id.filter_data) {
             if (expandStatus){
                 expandStatus=false;
-                //wrapFilter.setVisibility(View.GONE);
                 cdvFilter.setVisibility(View.GONE);
                 item.setIcon(R.drawable.ic_outline_filter_alt);
             } else {
                 expandStatus=true;
-                //wrapFilter.setVisibility(View.VISIBLE);
                 cdvFilter.setVisibility(View.VISIBLE);
                 item.setIcon(R.drawable.ic_outline_filter_alt_off);
             }
