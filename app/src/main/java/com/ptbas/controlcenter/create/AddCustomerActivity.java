@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -26,9 +27,12 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.ptbas.controlcenter.DialogInterface;
 import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.model.CustomerModel;
+import com.ptbas.controlcenter.model.ReceivedOrderModel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,6 +52,10 @@ public class AddCustomerActivity extends AppCompatActivity {
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
 
     List<String> corporateTypeList;
+
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    DocumentReference refCust = db.collection("CustomerData").document();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -186,7 +194,7 @@ public class AddCustomerActivity extends AppCompatActivity {
     }
 
     private void insertData(String custType, String custName, String custAlias, String custAddress, String custNPWP, String custPhone) {
-        String custUID = custAlias + " " + getRandomUID(3);
+        /*String custUID = custAlias + " " + getRandomUID(3);
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("CustomerData");
         CustomerModel customerModel = new CustomerModel(custUID, custName+", "+custType, custAlias, custAddress, custNPWP, custPhone);
 
@@ -197,7 +205,18 @@ public class AddCustomerActivity extends AppCompatActivity {
             } else {
                 Toast.makeText(AddCustomerActivity.this, "Terjadi Kesalahan", Toast.LENGTH_SHORT).show();
             }
-        });
+        });*/
+        //String custDocumentID = refCust.getId();
+        String custUID = custAlias + " " + getRandomUID(3);
+        CustomerModel customerModel = new CustomerModel(custUID, custName+", "+custType, custAlias, custAddress, custNPWP, custPhone);
+
+
+        refCust.set(customerModel)
+                .addOnSuccessListener(unused -> {
+                    dialogInterface.savedInformation(AddCustomerActivity.this);
+                }).addOnFailureListener(e ->
+                        Toast.makeText(AddCustomerActivity.this, "FAILED", Toast.LENGTH_SHORT).show());
+
     }
 
     private static String getRandomUID(final int sizeOfRandomString)

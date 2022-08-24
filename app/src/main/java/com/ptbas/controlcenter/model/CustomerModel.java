@@ -2,7 +2,7 @@ package com.ptbas.controlcenter.model;
 
 public class CustomerModel {
 
-    String custUID, custName, custAlias, custAddress, custNPWP, custPhone;
+    String  custUID, custName, custAlias, custAddress, custNPWP, custPhone;
 
     public CustomerModel() {
     }

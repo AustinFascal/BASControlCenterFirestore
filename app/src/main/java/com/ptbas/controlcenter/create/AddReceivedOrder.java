@@ -46,10 +46,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.ptbas.controlcenter.DialogInterface;
 import com.ptbas.controlcenter.Helper;
 import com.ptbas.controlcenter.R;
+import com.ptbas.controlcenter.RecapGoodIssueDataActivity;
 import com.ptbas.controlcenter.adapter.PreviewProductItemAdapter;
 import com.ptbas.controlcenter.model.ProductItems;
 import com.ptbas.controlcenter.model.ProductModel;
@@ -258,7 +260,26 @@ public class AddReceivedOrder extends AppCompatActivity {
             }
         });
 
-        databaseReference.child("CustomerData").orderByChild("custName").addValueEventListener(new ValueEventListener() {
+        db.collection("CustomerData").orderBy("custName")
+                .addSnapshotListener((value, error) -> {
+                    customerName.clear();
+                    if (value != null) {
+                        if (!value.isEmpty()) {
+                            for (DocumentSnapshot d : value.getDocuments()) {
+                                String spinnerCustUID = Objects.requireNonNull(d.get("custUID")).toString();
+                                String spinnerCustName = Objects.requireNonNull(d.get("custName")).toString();
+                                customerName.add(spinnerCustUID+" - "+spinnerCustName);
+                            }
+                            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddReceivedOrder.this, R.layout.style_spinner, customerName);
+                            arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
+                            spinnerPoCustName.setAdapter(arrayAdapter);
+                        } else {
+                            Toast.makeText(AddReceivedOrder.this, "Not exists", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+
+        /*databaseReference.child("CustomerData").orderByChild("custName").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()){
@@ -279,7 +300,7 @@ public class AddReceivedOrder extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError error) {
 
             }
-        });
+        });*/
 
         databaseReference.child("CurrencyData").addValueEventListener(new ValueEventListener() {
             @Override

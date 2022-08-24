@@ -9,6 +9,7 @@ import android.os.Build;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SearchView;
@@ -36,12 +37,16 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Random;
 
 import dev.shreyaspatil.MaterialDialog.MaterialDialog;
 import dev.shreyaspatil.MaterialDialog.model.TextAlignment;
 
 public class DialogInterface {
     Helper helper = new Helper();
+
+    private static final String ALLOWED_CHARACTERS ="0123456789QWERTYUIOPASDFGHJKLZXCVBNM";
+
 
     public void fillSearchFilter(Activity activity, SearchView searchView) {
         MaterialDialog materialDialog = new MaterialDialog.Builder(activity)
@@ -559,7 +564,7 @@ public class DialogInterface {
 
     public void confirmCreateInvoice(Context context, FirebaseFirestore db,
                                      ArrayList<GoodIssueModel> goodIssueModelArrayList,
-                                     String rouidVal, String invPoDate, String invPoUID, String invCustName,
+                                     String invUID, String invCreatedBy, String invDateCreated, String invPoDate, String invPoUID, String invCustName,
                                      Double invTotal, Double invTax1, Double invTax2) {
         MaterialDialog mBottomSheetDialog = new MaterialDialog.Builder((Activity) context)
                 .setTitle("Buat Invoice")
@@ -570,10 +575,6 @@ public class DialogInterface {
                     DatabaseReference databaseReferenceGI = FirebaseDatabase.getInstance().getReference();
                     DocumentReference refRO = db.collection("InvoiceData").document();
                     String invDocumentID = refRO.getId();
-                    String invUID = "INV - "+rouidVal;
-                    String invCreatedBy = helper.getUserId();
-                    String invDateCreated = new SimpleDateFormat("dd/MM/yyyy", Locale.US).format(new Date());
-
 
                     InvoiceModel invoiceModel = new InvoiceModel(
                             invDocumentID, invUID, invCreatedBy, invDateCreated, invPoUID,
@@ -588,7 +589,7 @@ public class DialogInterface {
                     }
 
                     AddInvoiceActivity addInvoiceActivity = (AddInvoiceActivity) context;
-                    addInvoiceActivity.createInvPDF(Helper.getAppPath(context)+rouidVal+".pdf");
+                    addInvoiceActivity.createInvPDF(Helper.getAppPath(context)+invUID+".pdf");
                     //createInvPDF(Helper.getAppPath(context)+rouidVal+".pdf");
 
                     dialogInterface.dismiss();
@@ -599,4 +600,6 @@ public class DialogInterface {
         mBottomSheetDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
         mBottomSheetDialog.show();
     }
+
+
 }
