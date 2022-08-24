@@ -261,37 +261,31 @@
                                         style="@style/Widget.MaterialComponents.Chip.Choice"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:text="VALID"/>
+                                        android:text="LUNAS"/>
                                     <com.google.android.material.chip.Chip
                                         android:id="@+id/chip_filter_status_invalid"
                                         style="@style/Widget.MaterialComponents.Chip.Choice"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:text="BELUM VALID"/>
+                                        android:text="BELUM LUNAS"/>
                                     <com.google.android.material.chip.Chip
                                         android:id="@+id/chip_filter_status_invoiced"
                                         style="@style/Widget.MaterialComponents.Chip.Choice"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:text="SUDAH DITAGIHKAN"/>
+                                        android:text="MATERIAL + JASA ANGKUT"/>
                                     <com.google.android.material.chip.Chip
                                         android:id="@+id/chip_filter_status_not_yet_invoiced"
                                         style="@style/Widget.MaterialComponents.Chip.Choice"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:text="BELUM DITAGIHKAN"/>
+                                        android:text="JASA ANGKUT SAJA"/>
                                     <com.google.android.material.chip.Chip
                                         android:id="@+id/chip_filter_status_transport_type_curah"
                                         style="@style/Widget.MaterialComponents.Chip.Choice"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:text="CURAH"/>
-                                    <com.google.android.material.chip.Chip
-                                        android:id="@+id/chip_filter_status_transport_type_borong"
-                                        style="@style/Widget.MaterialComponents.Chip.Choice"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:text="BORONG"/>
+                                        android:text="MATERIAL SAJA"/>
 
                                 </com.google.android.material.chip.ChipGroup>
                             </HorizontalScrollView>
@@ -415,8 +409,8 @@
             android:id="@+id/nestedScrollView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scrollbars="vertical"
-            android:layout_below="@+id/cdv_filter">
+            android:layout_below="@+id/cdv_filter"
+            android:scrollbars="vertical">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_good_issue_list"
@@ -425,7 +419,7 @@
                 android:paddingTop="10dp"
                 android:paddingBottom="80dp"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:listitem="@layout/item_layout_good_issue" />
+                tools:listitem="@layout/item_layout_invoice" />
 
             <!--<LinearLayout
             android:layout_width="match_parent"

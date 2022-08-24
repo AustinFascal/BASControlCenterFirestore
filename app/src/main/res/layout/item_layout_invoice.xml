@@ -59,35 +59,6 @@
                     android:textSize="14sp" />
 
 
-                <LinearLayout
-                    android:id="@+id/ll_wrap_gi_status"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:orientation="horizontal"
-                    android:paddingVertical="4dp">
-
-                    <LinearLayout
-                        android:id="@+id/ll_status_approved"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/pill_green"
-                        android:paddingHorizontal="8dp"
-                        android:layout_marginEnd="4dp"
-                        android:paddingVertical="2dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="VALID"
-                            android:textSize="11sp"
-                            android:textStyle="bold" />
-                    </LinearLayout>
-
-
-                </LinearLayout>
-
-
             </LinearLayout>
 
             <ImageView
@@ -97,9 +68,28 @@
                 android:layout_height="32dp"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentEnd="true"
-                android:layout_marginTop="12dp"
                 android:src="@drawable/ic_outline_navigate_next"
                 app:tint="@color/white" />
+
+            <LinearLayout
+                android:id="@+id/ll_status_approved"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/iv_show_detail"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="4dp"
+                android:background="@drawable/pill_green"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="2dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="LUNAS"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
 
         </RelativeLayout>
         <LinearLayout
@@ -113,10 +103,21 @@
                 android:id="@+id/btn_delete_inv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="2"
+                android:layout_weight="1"
                 android:layout_marginEnd="4dp"
                 android:drawableLeft="@drawable/ic_outline_delete_forever"
                 android:text="HAPUS"
+                android:textAllCaps="true" />
+            <Button
+                android:tag="DeleteGI"
+                style="@style/MaterialDialog.NegativeButton"
+                android:id="@+id/btn_delete_inv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="4dp"
+                android:drawableLeft="@drawable/ic_outline_print"
+                android:text="CETAK"
                 android:textAllCaps="true" />
             <Button
                 style="@style/MaterialDialog.NegativeButton"
@@ -125,7 +126,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:drawableLeft="@drawable/ic_outline_check"
-                android:text="SAHKAN"
+                android:text="LUNAS"
                 android:textAllCaps="true" />
         </LinearLayout>
     </LinearLayout>
