@@ -48,7 +48,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.itextpdf.text.Anchor;
 import com.itextpdf.text.BadElementException;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Chunk;
@@ -60,7 +59,6 @@ import com.itextpdf.text.Image;
 import com.itextpdf.text.ListItem;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
@@ -98,10 +96,12 @@ public class AddInvoiceActivity extends AppCompatActivity {
 
     private static final String ALLOWED_CHARACTERS ="0123456789QWERTYUIOPASDFGHJKLZXCVBNM";
 
-    double matSellPrice;
+    double matSellPrice, transportServiceSellPrice, invTax1 = 0, invTax2 =0;
     String dateStartVal = "", dateEndVal = "", rouidVal= "", currencyVal = "", pouidVal = "",
-            monthStrVal, dayStrVal, roPoCustNumber, matTypeVal, matNameVal;
-    public String custNameVal = "", custAddressVal = "", invUID="";
+            monthStrVal, dayStrVal, roPoCustNumber, matTypeVal, matNameVal, transportServiceNameVal,
+            invPoDate = "", invCustName = "", invPoUID = "", custNameVal = "",
+            custAddressVal = "", invUID="", invPotypeVal = "";
+    int invPoType;
 
     Button btnSearchData, imgbtnExpandCollapseFilterLayout;
     AutoCompleteTextView spinnerRoUID;
@@ -119,6 +119,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
     NestedScrollView nestedScrollView;
 
     List<String> arrayListRoUID, arrayListPoUID;
+    List<ProductItems> productItemsList;
 
     LinearLayout llWrapFilterByDateRange, llWrapFilterByRouid, llNoData;
 
@@ -128,26 +129,15 @@ public class AddInvoiceActivity extends AppCompatActivity {
 
     DialogInterface dialogInterface = new DialogInterface();
 
-
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-    String invPoDate = "";
-    String invCustName = "";
-    String invPoUID = "";
-    double invTotal = 0;
-    double invTax1 = 0;
-    double invTax2 =0;
-
     public static BaseFont baseNormal, baseMedium, baseBold;
-    public static Font fontNormal;
-    public static Font fontNormalSmall;
-    public static Font fontNormalSmallItalic;
-    public static Font fontMedium;
-    public static Font fontMediumWhite;
-    public static Font fontBold;
-    public static Font fontTransparent;
+    public static Font fontNormal, fontNormalSmall, fontNormalSmallItalic,
+            fontMedium, fontMediumWhite, fontBold, fontTransparent;
+    public static BaseColor baseColorBluePale, baseColorLightGrey;
 
-    public static BaseColor baseColorBluePale;
+    DecimalFormat df = new DecimalFormat("0.00");
+    DecimalFormat dfRound = new DecimalFormat("0");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -157,6 +147,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
         LangUtils.setLocale(this, "en");
 
         baseColorBluePale = new BaseColor(22,169,242);
+        baseColorLightGrey = new BaseColor(237, 237, 237);
 
         try {
             baseNormal = BaseFont.createFont("/res/font/kanitregular.ttf", BaseFont.IDENTITY_H,BaseFont.EMBEDDED);
@@ -166,7 +157,6 @@ public class AddInvoiceActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        //Typeface fontBaseNormal = ResourcesCompat.getFont(context, R.font.kanitregular);
         fontNormal = new Font(baseNormal, 10, Font.NORMAL, BaseColor.BLACK);
         fontNormalSmall = new Font(baseNormal, 8, Font.NORMAL, BaseColor.BLACK);
         fontNormalSmallItalic = new Font(baseNormal, 8, Font.ITALIC, BaseColor.BLACK);
@@ -174,7 +164,6 @@ public class AddInvoiceActivity extends AppCompatActivity {
         fontMediumWhite = new Font(baseMedium, 10, Font.NORMAL, BaseColor.WHITE);
         fontBold = new Font(baseBold, 20, Font.NORMAL, BaseColor.BLACK);
         fontTransparent = new Font(baseNormal, 20, Font.NORMAL, null);
-
 
         context = this;
 
@@ -336,15 +325,11 @@ public class AddInvoiceActivity extends AppCompatActivity {
                         for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots){
                             ReceivedOrderModel receivedOrderModel = documentSnapshot.toObject(ReceivedOrderModel.class);
                             receivedOrderModel.setRoDocumentID(documentSnapshot.getId());
-
-                            //String documentID = receivedOrderModel.getRoDocumentID();
                             rouidVal = selectedSpinnerPoPtBasNumber;
                             roPoCustNumber = receivedOrderModel.getRoPoCustNumber();
                         }
                         edtPoUID.setText(roPoCustNumber);
                     });
-
-
         });
 
         btnGiSearchByDateReset.setOnClickListener(view -> {
@@ -385,16 +370,14 @@ public class AddInvoiceActivity extends AppCompatActivity {
                 ActivityCompat.requestPermissions((Activity) context,
                         new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 10);
             } else {
-                DecimalFormat df = new DecimalFormat("0.00");
-
-                float totalCubication = 0;
+                float totalUnit = 0;
                 for (int i = 0; i < goodIssueModelArrayList.size(); i++){
-                    totalCubication += goodIssueModelArrayList.get(i).getGiVhlCubication();
+                    totalUnit += goodIssueModelArrayList.get(i).getGiVhlCubication();
                 }
-                double totalIDR = matSellPrice *Double.parseDouble(df.format(totalCubication));
+                double totalIDR = matSellPrice *Double.parseDouble(df.format(totalUnit));
 
-                String one = rouidVal.replaceAll("\\s","");
-                invUID = getRandomString(5)+"-INV-"+one;
+                String roUIDValNoSpace = rouidVal.replaceAll("\\s","");
+                invUID = getRandomString()+"-INV-"+roUIDValNoSpace;
 
                 String invDateCreated = new SimpleDateFormat("dd/MM/yyyy", Locale.US).format(new Date());
                 String invCreatedBy = helper.getUserId();
@@ -402,13 +385,12 @@ public class AddInvoiceActivity extends AppCompatActivity {
                 dialogInterface.confirmCreateInvoice(context, db, goodIssueModelArrayList,
                         invUID, invCreatedBy, invDateCreated, invPoDate, invPoUID, invCustName, totalIDR, invTax1, invTax2);
 
-                String two = custNameVal.replace(" - ","-");
-                int indexcustnameval = two.lastIndexOf('-');
-                db.collection("CustomerData").whereEqualTo("custUID", two.substring(0, indexcustnameval)).get()
+                String custNameValReplace = custNameVal.replace(" - ","-");
+                int indexCustNameVal = custNameValReplace.lastIndexOf('-');
+                db.collection("CustomerData").whereEqualTo("custUID", custNameValReplace.substring(0, indexCustNameVal)).get()
                         .addOnSuccessListener(queryDocumentSnapshots2 -> {
                             for (QueryDocumentSnapshot documentSnapshot2 : queryDocumentSnapshots2){
                                 CustomerModel customerModel = documentSnapshot2.toObject(CustomerModel.class);
-                                //customerModel.setCustAddress(documentSnapshot2.getId());
                                 custAddressVal = customerModel.getCustAddress();
                             }
                         });
@@ -416,11 +398,10 @@ public class AddInvoiceActivity extends AppCompatActivity {
         });
     }
 
-    private static String getRandomString(final int sizeOfRandomString)
-    {
+    private static String getRandomString() {
         final Random random=new Random();
-        final StringBuilder sb=new StringBuilder(sizeOfRandomString);
-        for(int i=0;i<sizeOfRandomString;++i)
+        final StringBuilder sb=new StringBuilder(5);
+        for(int i = 0; i< 5; ++i)
             sb.append(ALLOWED_CHARACTERS.charAt(random.nextInt(ALLOWED_CHARACTERS.length())));
         return sb.toString();
     }
@@ -431,12 +412,6 @@ public class AddInvoiceActivity extends AppCompatActivity {
         }
 
         try {
-            /*String one = rouidVal.replaceAll("\\s","");
-            String two = one.replaceAll("-", "/");
-            int index=two.lastIndexOf('/');
-            String invDateCreated = new SimpleDateFormat("dd/MM/yyyy", Locale.US).format(new Date());
-            String invUID = "INV/"+invDateCreated+two.substring(index)+"/"+two.substring(0,index);*/
-
             Document document = new Document();
             PdfWriter.getInstance(document, new FileOutputStream(dest));
             document.open();
@@ -444,11 +419,12 @@ public class AddInvoiceActivity extends AppCompatActivity {
             document.addAuthor("PT BAS");
             document.addCreator("BAS Control Center");
             document.addCreationDate();
-            addUpperSpace(document);
-            addTitlePage(document);
-            addContent(document);
-            //addLogo(document);
+            addUpperSpc(document);
+            addTtlInv(document);
+            addMainContent(document);
             document.close();
+
+            // OPEN GENERATED FILE
             Helper.openFilePDF(context, new File(dest));
         } catch (DocumentException | FileNotFoundException e) {
             e.printStackTrace();
@@ -456,10 +432,19 @@ public class AddInvoiceActivity extends AppCompatActivity {
         }
     }
 
-    private void addTitlePage(Document document) throws DocumentException {
+    private void addUpperSpc(Document document) throws DocumentException {
+        Paragraph preface0 = new Paragraph();
+        Chunk title = new Chunk(" ", fontTransparent);
+        Paragraph paragraphTitle = new Paragraph(title);
+        paragraphTitle.setAlignment(Element.ALIGN_LEFT);
+        document.add(paragraphTitle);
+        preface0.setAlignment(Element.ALIGN_CENTER);
+        preface0.setSpacingAfter(120);
+        document.add(preface0);
+    }
+    private void addTtlInv(Document document) throws DocumentException {
         Paragraph preface1 = new Paragraph();
         Chunk title = new Chunk("INVOICE", fontBold);
-        //Chunk title = new Chunk("INV - RO-"+rouidVal, fontBigBold);
         Paragraph paragraphTitle = new Paragraph(title);
         paragraphTitle.setAlignment(Element.ALIGN_LEFT);
         document.add(paragraphTitle);
@@ -467,19 +452,28 @@ public class AddInvoiceActivity extends AppCompatActivity {
         preface1.setSpacingAfter(20);
         document.add(preface1);
     }
-    private void addUpperSpace(Document document) throws DocumentException {
-        Paragraph preface0 = new Paragraph();
-        Chunk title = new Chunk(" ", fontTransparent);
-        //Chunk title = new Chunk("INV - RO-"+rouidVal, fontBigBold);
-        Paragraph paragraphTitle = new Paragraph(title);
-        paragraphTitle.setAlignment(Element.ALIGN_LEFT);
-        document.add(paragraphTitle);
-        preface0.setAlignment(Element.ALIGN_CENTER);
-        preface0.setSpacingAfter(70);
-        document.add(preface0);
+    public static PdfPCell cellImgQrSqr(Image image) throws DocumentException {
+        PdfPCell cell = new PdfPCell();
+        cell.addElement(image);
+        cell.setBorder(PdfPCell.NO_BORDER);
+        cell.setColspan(1);
+        cell.setRowspan(5);
+        return cell;
     }
-
-    public static PdfPCell createTextCellNoBorderNormal(Paragraph paragraph, int alignment) throws DocumentException {
+    public static PdfPCell cellTxtSpan4RowList() throws DocumentException {
+        com.itextpdf.text.List ordered = new com.itextpdf.text.List(com.itextpdf.text.List.ORDERED);
+        ordered.add(new ListItem("Invoice ini sah dan diproses oleh komputer.", fontNormalSmall));
+        ordered.add(new ListItem("Bukti PPh 23 dikirim ke email bintang.andalan.semesta@gmail.com (apabila tersedia).", fontNormalSmall));
+        ordered.add(new ListItem("Apabila Anda membutuhkan bantuan, silakan hubungi kami melalui WA: 081335376111 / 085105164000.", fontNormalSmall));
+        PdfPCell cell = new PdfPCell();
+        cell.addElement(ordered);
+        cell.setBorder(PdfPCell.NO_BORDER);
+        cell.setVerticalAlignment(Element.ALIGN_TOP);
+        cell.setColspan(1);
+        cell.setRowspan(5);
+        return cell;
+    }
+    public static PdfPCell cellTxtNoBrdrNrml(Paragraph paragraph, int alignment) throws DocumentException {
         paragraph.setAlignment(alignment);
         paragraph.setLeading(0, 1);
         PdfPCell cell = new PdfPCell();
@@ -488,7 +482,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
         cell.setBorder(PdfPCell.NO_BORDER);
         return cell;
     }
-    public static PdfPCell createTextCellNoBorderNormalPaddingLeft(Paragraph paragraph, int alignment) throws DocumentException {
+    public static PdfPCell cellTxtNoBrdrNrmlWthPadLft(Paragraph paragraph, int alignment) throws DocumentException {
         paragraph.setAlignment(alignment);
         paragraph.setLeading(0, 1);
         PdfPCell cell = new PdfPCell();
@@ -498,34 +492,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
         cell.setBorder(PdfPCell.NO_BORDER);
         return cell;
     }
-
-    public static PdfPCell cellSpanRowImage(Image image) throws DocumentException {
-        PdfPCell cell = new PdfPCell();
-        cell.addElement(image);
-        cell.setBorder(PdfPCell.NO_BORDER);
-        cell.setColspan(1);
-        cell.setRowspan(3);
-        return cell;
-    }
-    public static PdfPCell cellSpanRowTextList() throws DocumentException {
-
-        com.itextpdf.text.List ordered = new com.itextpdf.text.List(com.itextpdf.text.List.ORDERED);
-        ordered.add(new ListItem("Invoice ini sah dan diproses oleh komputer.", fontNormalSmall));
-        ordered.add(new ListItem("Bukti PPH23 dikirim ke email bintang.andalan.semesta@gmail.com (apabila tersedia).", fontNormalSmall));
-        ordered.add(new ListItem("Apabila Anda membutuhkan bantuan, silakan hubungi kami melalui WA: 081335376111 / 085105164000", fontNormalSmall));
-        /*document.add(ordered);
-
-        paragraph.setAlignment(Element.ALIGN_LEFT);
-        paragraph.setLeading(0, 1);*/
-        PdfPCell cell = new PdfPCell();
-        cell.addElement(ordered);
-        cell.setBorder(PdfPCell.NO_BORDER);
-        cell.setColspan(1);
-        cell.setRowspan(3);
-        return cell;
-    }
-
-    public static PdfPCell createTextCellNoBorderNormalMainContent(Paragraph paragraph, int alignment) throws DocumentException {
+    public static PdfPCell cellTxtNoBrdrNrmlMainContent(Paragraph paragraph, int alignment) throws DocumentException {
         paragraph.setAlignment(alignment);
         paragraph.setLeading(0, 1);
         PdfPCell cell = new PdfPCell();
@@ -536,8 +503,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
         cell.setPadding(5);
         return cell;
     }
-
-    public static PdfPCell createTextCellBorderTopNormalMainContent(Paragraph paragraph, int alignment) throws DocumentException {
+    public static PdfPCell cellTxtBrdrTopNrmlMainContent(Paragraph paragraph, int alignment) throws DocumentException {
         paragraph.setAlignment(alignment);
         paragraph.setLeading(0, 1);
         PdfPCell cell = new PdfPCell();
@@ -546,32 +512,30 @@ public class AddInvoiceActivity extends AppCompatActivity {
         cell.setVerticalAlignment(Element.ALIGN_LEFT);
         cell.setBorderWidthLeft(0);
         cell.setBorderWidthRight(0);
+        cell.setPadding(5);
         return cell;
     }
-
-    public static PdfPCell createTextColumnHeader(Paragraph paragraph, int alignment) {
+    public static PdfPCell cellColHeader(Paragraph paragraph, int alignment) {
         paragraph.setAlignment(alignment);
         paragraph.setLeading(0, 1);
         PdfPCell cell = new PdfPCell();
         cell.addElement(paragraph);
         cell.setHorizontalAlignment(alignment);
         cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
-        cell.setBackgroundColor(baseColorBluePale);
+        cell.setBackgroundColor(baseColorLightGrey);
         cell.setBorderWidthLeft(0);
         cell.setBorderWidthRight(0);
         cell.setPadding(5);
         return cell;
     }
-    public PdfPCell createTextColumnHeaderNoBorder(Paragraph paragraph, int alignment) {
+    public PdfPCell cellColHeaderNoBrdr(Paragraph paragraph, int alignment) {
         paragraph.setAlignment(alignment);
         paragraph.setLeading(0, 1);
         PdfPCell cell = new PdfPCell();
         cell.addElement(paragraph);
         cell.setHorizontalAlignment(alignment);
         cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
-        //cell.setBackgroundColor(baseColorBluePale);
         cell.setBorder(PdfPCell.NO_BORDER);
-
 
         Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.bg_table_column_blue_pale);
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
@@ -584,417 +548,362 @@ public class AddInvoiceActivity extends AppCompatActivity {
         } catch (BadElementException | IOException e) {
             e.printStackTrace();
         }
-        /*Image image = null;
-        try {
-            image = Image.getInstance("resources/images/dog.bmp");
-        } catch (BadElementException | IOException e) {
-            e.printStackTrace();
-        }*/
         cell.setCellEvent(new ImageAndPositionRenderer(img));
         cell.setPaddingTop(1);
         cell.setPaddingBottom(5);
         cell.setPaddingLeft(7);
         return cell;
     }
-
-    public static PdfPCell createTextNormalCell(Paragraph paragraph, int alignment) {
-        paragraph.setAlignment(alignment);
-        paragraph.setLeading(0, 1);
-        PdfPCell cell = new PdfPCell();
-        cell.addElement(paragraph);
-        cell.setHorizontalAlignment(alignment);
-        cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
-        return cell;
-    }
-
-    private void addContent(Document document) throws DocumentException{
-        DecimalFormat df = new DecimalFormat("0.00");
-        String currentDate = new SimpleDateFormat("dd/MM/yyyy", Locale.US).format(new Date());
-
-        /*String one = rouidVal.replaceAll("\\s","");
-        String two = one.replaceAll("-", "/");
-        int index=two.lastIndexOf('/');
-        String invUID = "INV/"+currentDate+two.substring(index)+"/"+two.substring(0,index);*/
-
-
+    private void addMainContent(Document document) throws DocumentException{
         try {
-            String roMatNameTypeStrVal = "Material: "+ matNameVal +" | "+ matTypeVal;
-            /*String roCustNameStrVal = "Customer: "+custNameVal;
-            String roPoCustNumberStrVal = "Nomor PO: "+roPoCustNumber;
-            String roRecapDateCreatedStrVal = "Tanggal rekap dibuat: "+currentDate;*/
-
-            /*Chunk roMatNameType = new Chunk(roMatNameTypeStrVal, fontNormal);
-            Chunk roCustName = new Chunk(roCustNameStrVal, fontNormal);*/
-
-
-
-
-            Paragraph paragraphROMatNameType = new Paragraph("");
-            paragraphROMatNameType.setAlignment(Element.ALIGN_LEFT);
-            paragraphROMatNameType.setSpacingAfter(0);
-
-            Paragraph paragraphROCustName = new Paragraph("");
-            paragraphROCustName.setAlignment(Element.ALIGN_LEFT);
-            paragraphROCustName.setSpacingAfter(5);
-
-            String invDateCreated = new SimpleDateFormat("dd/MM/yyyy", Locale.US).format(new Date());
-            String invTimeCreated = new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
-
-            Paragraph paragraphInvDateCreated = new Paragraph("Terakhir diperbarui: "+invDateCreated+" "+invTimeCreated+" WIB", fontNormalSmallItalic);
-            paragraphInvDateCreated.setAlignment(Element.ALIGN_RIGHT);
-            paragraphInvDateCreated.setSpacingAfter(5);
-
-
-
+            String invDateCreated =
+                    new SimpleDateFormat("dd/MM/yyyy", Locale.US).format(new Date());
+            String invTimeCreated =
+                    new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
 
             Paragraph paragraphBlank = new Paragraph(" ");
 
-            Paragraph preface2 = new Paragraph();
-            preface2.setSpacingAfter(2);
+            Paragraph paragraphInvDateCreated =
+                    new Paragraph("Terakhir diperbarui: "
+                            +invDateCreated+" "+invTimeCreated+" WIB", fontNormalSmallItalic);
+            paragraphInvDateCreated.setAlignment(Element.ALIGN_RIGHT);
+            paragraphInvDateCreated.setSpacingAfter(5);
 
-            PdfPTable table0 = new PdfPTable(7);
-            table0.setWidthPercentage(100);
-            table0.setWidths(new float[]{5,1,7,1,6,1,9});
-
-            PdfPTable table01 = new PdfPTable(7);
-            table01.setWidthPercentage(100);
-            table01.setWidths(new float[]{3,1,9,1,4,1,11});
-
-            PdfPTable table02 = new PdfPTable(7);
-            table02.setWidthPercentage(100);
-            table02.setWidths(new float[]{3,1,9,1,4,1,11});
-
-            PdfPTable table03 = new PdfPTable(7);
-            table03.setWidthPercentage(100);
-            table03.setWidths(new float[]{3,1,9,1,4,1,11});
-
-
-
-            PdfPTable table1 = new PdfPTable(5);
-            table1.setWidthPercentage(100);
-            table1.setWidths(new float[]{3,2,2,3,4});
-
-            PdfPTable table2 = new PdfPTable(5);
-            table2.setWidthPercentage(100);
-            table2.setWidths(new float[]{3,2,2,3,4});
-
-            PdfPTable table3 = new PdfPTable(5);
-            table3.setWidthPercentage(100);
-            table3.setWidths(new float[]{3,2,2,3,4});
-
-            PdfPTable table4 = new PdfPTable(5);
-            table4.setWidthPercentage(100);
-            table4.setWidths(new float[]{3,2,2,3,4});
-
-            PdfPTable table5 = new PdfPTable(2);
-            table5.setWidthPercentage(100);
-            table5.setWidths(new float[]{3,10});
-
-            PdfPTable table6 = new PdfPTable(2);
-            table6.setWidthPercentage(100);
-            table6.setWidths(new float[]{9,1});
-
-
-
-
-            table0.addCell(createTextColumnHeaderNoBorder(
-                    new Paragraph("DITAGIH KE", fontMediumWhite),
-                    Element.ALIGN_LEFT));
-            table0.addCell(createTextCellNoBorderNormal(
-                    new Paragraph("", fontMediumWhite),
-                    Element.ALIGN_LEFT));
-            table0.addCell(createTextCellNoBorderNormal(
-                    new Paragraph("", fontMediumWhite),
-                    Element.ALIGN_LEFT));
-            table0.addCell(createTextCellNoBorderNormal(
-                    new Paragraph("", fontMediumWhite),
-                    Element.ALIGN_LEFT));
-            table0.addCell(createTextColumnHeaderNoBorder(
-                    new Paragraph("DETAIL TAGIHAN", fontMediumWhite),
-                    Element.ALIGN_LEFT));
-            table0.addCell(createTextCellNoBorderNormal(
-                    new Paragraph("", fontMediumWhite),
-                    Element.ALIGN_LEFT));
-            table0.addCell(createTextCellNoBorderNormal(
-                    new Paragraph("", fontMediumWhite),
-                    Element.ALIGN_LEFT));
-
-
-            table01.addCell(createTextCellNoBorderNormal(
-                    new Paragraph("Nama", fontNormal),
-                    Element.ALIGN_LEFT));
-            table01.addCell(createTextCellNoBorderNormal(
-                    new Paragraph(":", fontNormal),
-                    Element.ALIGN_LEFT));
-            table01.addCell(createTextCellNoBorderNormal(
-                    new Paragraph(custNameVal, fontNormal),
-                    Element.ALIGN_LEFT));
-            table01.addCell(createTextCellNoBorderNormal(
-                    new Paragraph("", fontMediumWhite),
-                    Element.ALIGN_LEFT));
-            table01.addCell(createTextCellNoBorderNormal(
-                    new Paragraph("Kode Unik Tagihan", fontNormal),
-                    Element.ALIGN_LEFT));
-            table01.addCell(createTextCellNoBorderNormal(
-                    new Paragraph(":", fontNormal),
-                    Element.ALIGN_LEFT));
-            table01.addCell(createTextCellNoBorderNormal(
-                    new Paragraph(invUID, fontNormal),
-                    Element.ALIGN_LEFT));
-
-
-
-            table02.addCell(createTextCellNoBorderNormal(
-                    new Paragraph("Alamat", fontNormal),
-                    Element.ALIGN_LEFT));
-            table02.addCell(createTextCellNoBorderNormal(
-                    new Paragraph(":", fontNormal),
-                    Element.ALIGN_LEFT));
-            table02.addCell(createTextCellNoBorderNormal(
-                    new Paragraph(custAddressVal, fontNormal),
-                    Element.ALIGN_LEFT));
-            table02.addCell(createTextCellNoBorderNormal(
-                    new Paragraph("", fontMediumWhite),
-                    Element.ALIGN_LEFT));
-            table02.addCell(createTextCellNoBorderNormal(
-                    new Paragraph("No. PO"+"\n"+"Tanggal PO", fontNormal),
-                    Element.ALIGN_LEFT));
-            table02.addCell(createTextCellNoBorderNormal(
-                    new Paragraph(":"+"\n"+":", fontNormal),
-                    Element.ALIGN_LEFT));
-            table02.addCell(createTextCellNoBorderNormal(
-                    new Paragraph(pouidVal+"\n"+invPoDate, fontNormal),
-                    Element.ALIGN_LEFT));
-
-
-            table1.addCell(createTextColumnHeader(
-                    new Paragraph("Item# / Deskripsi", fontMediumWhite), Element.ALIGN_LEFT));
-            table1.addCell(createTextColumnHeader(
-                    new Paragraph("Harga Satuan", fontMediumWhite), Element.ALIGN_RIGHT));
-            table1.addCell(createTextColumnHeader(
-                    new Paragraph("Jumlah (Unit)", fontMediumWhite), Element.ALIGN_RIGHT));
-            table1.addCell(createTextColumnHeader(
-                    new Paragraph("Pajak", fontMediumWhite), Element.ALIGN_RIGHT));
-            table1.addCell(createTextColumnHeader(
-                    new Paragraph("Jumlah", fontMediumWhite), Element.ALIGN_RIGHT));
-
-
-            float totalCubication = 0;
-            for (int i = 0; i < goodIssueModelArrayList.size(); i++){
-                totalCubication += goodIssueModelArrayList.get(i).getGiVhlCubication();
-
-               /* // TODO FOR INVOICE WHEN FEW ITEMS HAS BEEN SELECTED
-                DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference("GoodIssueData").child(goodIssueModelArrayList.get(i).getGiUID());
-                rootRef.child("giInvoiced").setValue(true);
-                // SET VALUE TOTAL SELL*/
-            }
-
-            double totalAmount = matSellPrice*totalCubication;
-            double taxPPN = (0.11)*totalAmount;
-            double totalDue = totalAmount+taxPPN;
-
-            DecimalFormat dfRound = new DecimalFormat("0");
-
-            table2.addCell(createTextCellNoBorderNormalMainContent(
-                    new Paragraph(matNameVal, fontNormal), Element.ALIGN_LEFT));
-            table2.addCell(createTextCellNoBorderNormalMainContent(
-                    new Paragraph(currencyVal+" "+currencyFormat(df.format(matSellPrice)), fontNormal), Element.ALIGN_RIGHT));
-            table2.addCell(createTextCellNoBorderNormalMainContent(
-                    new Paragraph(String.valueOf(totalCubication), fontNormal), Element.ALIGN_RIGHT));
-            table2.addCell(createTextCellNoBorderNormalMainContent(
-                    new Paragraph(currencyVal+" "+currencyFormat(df.format(taxPPN)), fontNormal), Element.ALIGN_RIGHT));
-            table2.addCell(createTextCellNoBorderNormalMainContent(
-                    new Paragraph(currencyVal+" "+currencyFormat(df.format(totalAmount)), fontNormal), Element.ALIGN_RIGHT));
-
-
-            table3.addCell(createTextCellBorderTopNormalMainContent(
-                    new Paragraph("", fontMedium), Element.ALIGN_LEFT));
-            table3.addCell(createTextCellBorderTopNormalMainContent(
-                    new Paragraph("", fontNormal), Element.ALIGN_LEFT));
-            table3.addCell(createTextCellBorderTopNormalMainContent(
-                    new Paragraph("", fontMedium), Element.ALIGN_LEFT));
-            table3.addCell(createTextCellBorderTopNormalMainContent(
-                    new Paragraph("Total Belanja :"+"\n"+"Diskon :"+"\n"+"PPN 11% :"+"\n"+"PPH23 :", fontNormal), Element.ALIGN_RIGHT));
-            table3.addCell(createTextCellBorderTopNormalMainContent(
-                    new Paragraph(currencyVal+" "+currencyFormat(df.format(totalAmount))+"\n"+currencyVal+" "+"0"+"\n"+currencyVal+" "+currencyFormat(df.format(taxPPN))+"\n"+currencyVal+" "+"0", fontNormal), Element.ALIGN_RIGHT));
-
-            table4.addCell(createTextColumnHeader(
-                    new Paragraph("", fontMedium), Element.ALIGN_LEFT));
-            table4.addCell(createTextColumnHeader(
-                    new Paragraph("", fontNormal), Element.ALIGN_LEFT));
-            table4.addCell(createTextColumnHeader(
-                    new Paragraph("", fontMedium), Element.ALIGN_LEFT));
-            table4.addCell(createTextColumnHeader(
-                    new Paragraph("TOTAL TAGIHAN", fontMediumWhite), Element.ALIGN_RIGHT));
-            table4.addCell(createTextColumnHeader(
-                    new Paragraph(currencyVal+" "+currencyFormat(dfRound.format(totalDue)), fontMediumWhite), Element.ALIGN_RIGHT));
-
-            table5.addCell(createTextColumnHeaderNoBorder(
-                    new Paragraph("TERBILANG", fontMediumWhite),
-                    Element.ALIGN_LEFT));
-            table5.addCell(createTextCellNoBorderNormal(
-                    new Paragraph("", fontMediumWhite),
-                    Element.ALIGN_LEFT));
-
-
-            table6.addCell(createTextCellNoBorderNormal(
-                    new Paragraph(NumberToWords.convert(Long.parseLong(dfRound.format(totalDue)))+" Rupiah", fontMedium),
-                    Element.ALIGN_LEFT));
-            table6.addCell(createTextCellNoBorderNormal(
-                    new Paragraph("", fontMediumWhite),
-                    Element.ALIGN_LEFT));
-
-
-
+            // INIT IMAGE BCA QR CODE
             Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.bca_qr_bas);
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            bm.compress(Bitmap.CompressFormat.JPEG, 90, stream);
+            bm.compress(Bitmap.CompressFormat.PNG, 100, stream);
             Image img = null;
             byte[] byteArray = stream.toByteArray();
-
             try {
                 img = Image.getInstance(byteArray);
+                img.setAlignment(Image.TEXTWRAP);
+                img.scaleAbsolute(80f, 80f);
             } catch (BadElementException | IOException e) {
                 e.printStackTrace();
             }
-            img.setAlignment(Image.TEXTWRAP);
-            img.scaleAbsolute(50f, 50f);
 
-            PdfPTable table7 = new PdfPTable(6);
-            table7.setWidthPercentage(100);
-            table7.setWidths(new float[]{2,3,1,4,1,9});
+            // TOTAL UNIT CALCULATION
+            float totalUnit = 0;
+            for (int i = 0; i < goodIssueModelArrayList.size(); i++){
+                totalUnit += goodIssueModelArrayList.get(i).getGiVhlCubication();
+            }
 
-            table7.addCell(cellSpanRowImage(img));
-            table7.addCell(createTextCellNoBorderNormalPaddingLeft(
-                    new Paragraph("Transfer ke", fontNormalSmall),
+            // TOTAL AMOUNT CALCULATION
+            double totalAmountForMaterials = matSellPrice*totalUnit;
+            double totalAmountForTransportService = transportServiceSellPrice*totalUnit;
+            double taxPPN = (0.11)*totalAmountForMaterials;
+            double taxPPH = (0.02)*totalAmountForTransportService;
+            double totalDue = totalAmountForMaterials+totalAmountForTransportService+taxPPN-taxPPH;
+            double totalDueForTransportService = totalAmountForTransportService-taxPPH;
+
+            // INIT TABLE
+            PdfPTable tblInvSection1 = new PdfPTable(7);
+            PdfPTable tblInvSection2 = new PdfPTable(7);
+            PdfPTable tblInvSection3 = new PdfPTable(7);
+            PdfPTable tblInvSection4 = new PdfPTable(7);
+            PdfPTable tblInvSection5 = new PdfPTable(5);
+            PdfPTable tblInvSection6 = new PdfPTable(5);
+            PdfPTable tblInvSection7 = new PdfPTable(5);
+            PdfPTable tblInvSection8 = new PdfPTable(5);
+            PdfPTable tblInvSection9 = new PdfPTable(5);
+            PdfPTable tblInvSection10 = new PdfPTable(2);
+            PdfPTable tblInvSection11 = new PdfPTable(2);
+            PdfPTable tblInvSection12 = new PdfPTable(6);
+            PdfPTable tblInvSection13 = new PdfPTable(6);
+
+            // WIDTH PERCENTAGE CONFIG
+            tblInvSection1.setWidthPercentage(100);
+            tblInvSection2.setWidthPercentage(100);
+            tblInvSection3.setWidthPercentage(100);
+            tblInvSection4.setWidthPercentage(100);
+            tblInvSection5.setWidthPercentage(100);
+            tblInvSection6.setWidthPercentage(100);
+            tblInvSection7.setWidthPercentage(100);
+            tblInvSection8.setWidthPercentage(100);
+            tblInvSection9.setWidthPercentage(100);
+            tblInvSection10.setWidthPercentage(100);
+            tblInvSection11.setWidthPercentage(100);
+            tblInvSection12.setWidthPercentage(100);
+            tblInvSection13.setWidthPercentage(100);
+
+            // WIDTH FLOAT CONFIG
+            tblInvSection1.setWidths(new float[]{5,1,7,1,6,1,9}); //7 COLS
+            tblInvSection2.setWidths(new float[]{3,1,9,1,4,1,11}); //7 COLS
+            tblInvSection3.setWidths(new float[]{3,1,9,1,4,1,11}); //7 COLS
+            tblInvSection4.setWidths(new float[]{3,1,9,1,4,1,11}); //5 COLS
+            tblInvSection5.setWidths(new float[]{3,2,2,3,4}); //5 COLS
+            tblInvSection6.setWidths(new float[]{3,2,2,3,4}); //5 COLS
+            tblInvSection7.setWidths(new float[]{3,2,2,3,4}); //5 COLS
+            tblInvSection8.setWidths(new float[]{3,2,2,3,4}); //5 COLS
+            tblInvSection9.setWidths(new float[]{3,2,2,3,4}); //5 COLS
+            tblInvSection10.setWidths(new float[]{2,10}); //2 COLS
+            tblInvSection11.setWidths(new float[]{9,1}); //2 COLS
+            tblInvSection12.setWidths(new float[]{3,3,1,4,1,9}); //6 COLS
+            tblInvSection13.setWidths(new float[]{5,2,5,3,1,5}); //6 COLS
+
+            // ADD CELL TO RESPECTIVE TABLES
+            tblInvSection1.addCell(cellColHeaderNoBrdr(
+                    new Paragraph("DITAGIH KE", fontMediumWhite),
                     Element.ALIGN_LEFT));
-            table7.addCell(createTextCellNoBorderNormal(
+            tblInvSection1.addCell(cellTxtNoBrdrNrml(
+                    new Paragraph("", fontMediumWhite),
+                    Element.ALIGN_LEFT));
+            tblInvSection1.addCell(cellTxtNoBrdrNrml(
+                    new Paragraph("", fontMediumWhite),
+                    Element.ALIGN_LEFT));
+            tblInvSection1.addCell(cellTxtNoBrdrNrml(
+                    new Paragraph("", fontMediumWhite),
+                    Element.ALIGN_LEFT));
+            tblInvSection1.addCell(cellColHeaderNoBrdr(
+                    new Paragraph("DETAIL TAGIHAN", fontMediumWhite),
+                    Element.ALIGN_LEFT));
+            tblInvSection1.addCell(cellTxtNoBrdrNrml(
+                    new Paragraph("", fontMediumWhite),
+                    Element.ALIGN_LEFT));
+            tblInvSection1.addCell(cellTxtNoBrdrNrml(
+                    new Paragraph("", fontMediumWhite),
+                    Element.ALIGN_LEFT));
+
+            tblInvSection2.addCell(cellTxtNoBrdrNrml(
+                    new Paragraph("Nama", fontNormal),
+                    Element.ALIGN_LEFT));
+            tblInvSection2.addCell(cellTxtNoBrdrNrml(
+                    new Paragraph(":", fontNormal),
+                    Element.ALIGN_LEFT));
+            tblInvSection2.addCell(cellTxtNoBrdrNrml(
+                    new Paragraph(custNameVal, fontNormal),
+                    Element.ALIGN_LEFT));
+            tblInvSection2.addCell(cellTxtNoBrdrNrml(
+                    new Paragraph("", fontMediumWhite),
+                    Element.ALIGN_LEFT));
+            tblInvSection2.addCell(cellTxtNoBrdrNrml(
+                    new Paragraph("Kode Unik Tagihan", fontNormal),
+                    Element.ALIGN_LEFT));
+            tblInvSection2.addCell(cellTxtNoBrdrNrml(
+                    new Paragraph(":", fontNormal),
+                    Element.ALIGN_LEFT));
+            tblInvSection2.addCell(cellTxtNoBrdrNrml(
+                    new Paragraph(invUID, fontNormal),
+                    Element.ALIGN_LEFT));
+
+            tblInvSection3.addCell(cellTxtNoBrdrNrml(
+                    new Paragraph("Alamat", fontNormal),
+                    Element.ALIGN_LEFT));
+            tblInvSection3.addCell(cellTxtNoBrdrNrml(
+                    new Paragraph(":", fontNormal),
+                    Element.ALIGN_LEFT));
+            tblInvSection3.addCell(cellTxtNoBrdrNrml(
+                    new Paragraph(custAddressVal, fontNormal),
+                    Element.ALIGN_LEFT));
+            tblInvSection3.addCell(cellTxtNoBrdrNrml(
+                    new Paragraph("", fontMediumWhite),
+                    Element.ALIGN_LEFT));
+            tblInvSection3.addCell(cellTxtNoBrdrNrml(
+                    new Paragraph("No. PO"+"\n"+"Tanggal PO"+"\n"+"Jenis PO", fontNormal),
+                    Element.ALIGN_LEFT));
+            tblInvSection3.addCell(cellTxtNoBrdrNrml(
+                    new Paragraph(":"+"\n"+":"+"\n"+":", fontNormal),
+                    Element.ALIGN_LEFT));
+            tblInvSection3.addCell(cellTxtNoBrdrNrml(
+                    new Paragraph(pouidVal+"\n"+invPoDate+"\n"+invPotypeVal, fontNormal),
+                    Element.ALIGN_LEFT));
+
+            tblInvSection5.addCell(cellColHeader(
+                    new Paragraph("Item# / Deskripsi", fontMedium), Element.ALIGN_LEFT));
+            tblInvSection5.addCell(cellColHeader(
+                    new Paragraph("Harga Satuan", fontMedium), Element.ALIGN_RIGHT));
+            tblInvSection5.addCell(cellColHeader(
+                    new Paragraph("Jumlah (Unit)", fontMedium), Element.ALIGN_RIGHT));
+            tblInvSection5.addCell(cellColHeader(
+                    new Paragraph("Pajak", fontMedium), Element.ALIGN_RIGHT));
+            tblInvSection5.addCell(cellColHeader(
+                    new Paragraph("Jumlah", fontMedium), Element.ALIGN_RIGHT));
+
+            for (int i = 0; i<productItemsList.size();i++){
+                tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
+                        new Paragraph(matNameVal, fontNormal), Element.ALIGN_LEFT));
+                tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
+                        new Paragraph(currencyVal+" "+currencyFormat(df.format(matSellPrice)), fontNormal), Element.ALIGN_RIGHT));
+                tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
+                        new Paragraph(String.valueOf(totalUnit), fontNormal), Element.ALIGN_RIGHT));
+                tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
+                        new Paragraph(currencyVal+" "+currencyFormat(df.format(taxPPN)), fontNormal), Element.ALIGN_RIGHT));
+                tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
+                        new Paragraph(currencyVal+" "+currencyFormat(df.format(totalAmountForMaterials)), fontNormal), Element.ALIGN_RIGHT));
+            }
+
+            tblInvSection7.addCell(cellTxtNoBrdrNrmlMainContent(
+                    new Paragraph(transportServiceNameVal, fontNormal), Element.ALIGN_LEFT));
+            tblInvSection7.addCell(cellTxtNoBrdrNrmlMainContent(
+                    new Paragraph(currencyVal+" "+currencyFormat(df.format(transportServiceSellPrice)), fontNormal), Element.ALIGN_RIGHT));
+            tblInvSection7.addCell(cellTxtNoBrdrNrmlMainContent(
+                    new Paragraph(String.valueOf(totalUnit), fontNormal), Element.ALIGN_RIGHT));
+            tblInvSection7.addCell(cellTxtNoBrdrNrmlMainContent(
+                    new Paragraph(currencyVal+" "+currencyFormat(df.format(taxPPH)), fontNormal), Element.ALIGN_RIGHT));
+            tblInvSection7.addCell(cellTxtNoBrdrNrmlMainContent(
+                    new Paragraph(currencyVal+" "+currencyFormat(df.format(totalAmountForTransportService)), fontNormal), Element.ALIGN_RIGHT));
+
+            tblInvSection8.addCell(cellTxtBrdrTopNrmlMainContent(
+                    new Paragraph("", fontMedium), Element.ALIGN_LEFT));
+            tblInvSection8.addCell(cellTxtBrdrTopNrmlMainContent(
+                    new Paragraph("", fontNormal), Element.ALIGN_LEFT));
+            tblInvSection8.addCell(cellTxtBrdrTopNrmlMainContent(
+                    new Paragraph("", fontMedium), Element.ALIGN_LEFT));
+            tblInvSection8.addCell(cellTxtBrdrTopNrmlMainContent(
+                    new Paragraph("Sub Total :"+"\n"+"Diskon :"+"\n"+"PPN 11% :"+"\n"+"PPh 23 :"+"\n"+"Total Tagihan:", fontNormal), Element.ALIGN_RIGHT));
+            if (invPoType == 2){
+                taxPPN = 0;
+                tblInvSection8.addCell(cellTxtBrdrTopNrmlMainContent(
+                        new Paragraph(currencyVal+" "+currencyFormat(df.format(totalAmountForTransportService))+"\n"+currencyVal+" "+"0"+"\n"+currencyVal+" "+currencyFormat(df.format(taxPPN))+"\n"+"("+currencyVal+" "+currencyFormat(df.format(taxPPH))+")"+"\n"+currencyVal+" "+currencyFormat(df.format(totalDueForTransportService)), fontNormal), Element.ALIGN_RIGHT));
+            } else{
+                tblInvSection8.addCell(cellTxtBrdrTopNrmlMainContent(
+                        new Paragraph(currencyVal+" "+currencyFormat(df.format(totalAmountForMaterials))+"\n"+currencyVal+" "+"0"+"\n"+currencyVal+" "+currencyFormat(df.format(taxPPN))+"\n"+"("+currencyVal+" "+currencyFormat(df.format(taxPPH))+")"+"\n"+currencyVal+" "+currencyFormat(df.format(totalDue)), fontNormal), Element.ALIGN_RIGHT));
+            }
+
+
+            tblInvSection9.addCell(cellColHeader(
+                    new Paragraph("", fontMedium), Element.ALIGN_LEFT));
+            tblInvSection9.addCell(cellColHeader(
+                    new Paragraph("", fontNormal), Element.ALIGN_LEFT));
+            tblInvSection9.addCell(cellColHeader(
+                    new Paragraph("", fontMedium), Element.ALIGN_LEFT));
+            tblInvSection9.addCell(cellColHeader(
+                    new Paragraph("TOTAL TAGIHAN (PEMBULATAN)", fontMedium), Element.ALIGN_RIGHT));
+            tblInvSection9.addCell(cellColHeader(
+                    new Paragraph(currencyVal+" "+currencyFormat(dfRound.format(totalDue)), fontMedium), Element.ALIGN_RIGHT));
+
+            tblInvSection10.addCell(cellColHeaderNoBrdr(
+                    new Paragraph("TERBILANG", fontMediumWhite),
+                    Element.ALIGN_LEFT));
+            tblInvSection10.addCell(cellTxtNoBrdrNrml(
+                    new Paragraph("", fontMediumWhite),
+                    Element.ALIGN_LEFT));
+
+            tblInvSection11.addCell(cellTxtNoBrdrNrml(
+                    new Paragraph(NumberToWords.convert(Long.parseLong(dfRound.format(totalDue)))+" Rupiah", fontMedium),
+                    Element.ALIGN_LEFT));
+            tblInvSection11.addCell(cellTxtNoBrdrNrml(
+                    new Paragraph("", fontMediumWhite),
+                    Element.ALIGN_LEFT));
+
+            tblInvSection12.addCell(cellImgQrSqr(img));
+            tblInvSection12.addCell(cellTxtNoBrdrNrmlWthPadLft(
+                    new Paragraph("Transfer Melalui", fontNormalSmall),
+                    Element.ALIGN_LEFT));
+            tblInvSection12.addCell(cellTxtNoBrdrNrml(
                     new Paragraph(":", fontNormalSmall),
                     Element.ALIGN_RIGHT));
-            table7.addCell(createTextCellNoBorderNormal(
-                    new Paragraph("BCA KCU VETERAN", fontNormalSmall),
+            tblInvSection12.addCell(cellTxtNoBrdrNrml(
+                    new Paragraph("BANK CENTRAL ASIA (BCA)", fontNormalSmall),
                     Element.ALIGN_LEFT));
-            table7.addCell(createTextCellNoBorderNormal(
+            tblInvSection12.addCell(cellTxtNoBrdrNrml(
                     new Paragraph("", fontNormalSmall),
                     Element.ALIGN_LEFT));
-            table7.addCell(cellSpanRowTextList());
+            tblInvSection12.addCell(cellTxtSpan4RowList());
 
-            table7.addCell(createTextCellNoBorderNormalPaddingLeft(
+            tblInvSection12.addCell(cellTxtNoBrdrNrmlWthPadLft(
                     new Paragraph("Atas Nama", fontNormalSmall),
                     Element.ALIGN_LEFT));
-            table7.addCell(createTextCellNoBorderNormal(
+            tblInvSection12.addCell(cellTxtNoBrdrNrml(
                     new Paragraph(":", fontNormalSmall),
                     Element.ALIGN_RIGHT));
-            table7.addCell(createTextCellNoBorderNormal(
+            tblInvSection12.addCell(cellTxtNoBrdrNrml(
                     new Paragraph("PT BINTANG ANDALAN SEMESTA", fontNormalSmall),
                     Element.ALIGN_LEFT));
-            table7.addCell(createTextCellNoBorderNormal(
+            tblInvSection12.addCell(cellTxtNoBrdrNrml(
                     new Paragraph("", fontNormalSmall),
                     Element.ALIGN_LEFT));
 
-
-            table7.addCell(createTextCellNoBorderNormalPaddingLeft(
+            tblInvSection12.addCell(cellTxtNoBrdrNrmlWthPadLft(
                     new Paragraph("No. Rekening", fontNormalSmall),
                     Element.ALIGN_LEFT));
-            table7.addCell(createTextCellNoBorderNormal(
+            tblInvSection12.addCell(cellTxtNoBrdrNrml(
                     new Paragraph(":", fontNormalSmall),
                     Element.ALIGN_RIGHT));
-            table7.addCell(createTextCellNoBorderNormal(
+            tblInvSection12.addCell(cellTxtNoBrdrNrml(
                     new Paragraph("010-556-5777", fontNormalSmall),
                     Element.ALIGN_LEFT));
-            table7.addCell(createTextCellNoBorderNormal(
+            tblInvSection12.addCell(cellTxtNoBrdrNrml(
                     new Paragraph("", fontNormalSmall),
                     Element.ALIGN_LEFT));
 
-            PdfPTable table8 = new PdfPTable(6);
-            table8.setWidthPercentage(100);
-            table8.setWidths(new float[]{5,2,4,3,1,5});
-            table8.addCell(createTextColumnHeaderNoBorder(
+            tblInvSection12.addCell(cellTxtNoBrdrNrmlWthPadLft(
+                    new Paragraph("Kode SWIFT", fontNormalSmall),
+                    Element.ALIGN_LEFT));
+            tblInvSection12.addCell(cellTxtNoBrdrNrml(
+                    new Paragraph(":", fontNormalSmall),
+                    Element.ALIGN_RIGHT));
+            tblInvSection12.addCell(cellTxtNoBrdrNrml(
+                    new Paragraph("CENAIDJAXXX", fontNormalSmall),
+                    Element.ALIGN_LEFT));
+            tblInvSection12.addCell(cellTxtNoBrdrNrml(
+                    new Paragraph("", fontNormalSmall),
+                    Element.ALIGN_LEFT));
+
+            tblInvSection12.addCell(cellTxtNoBrdrNrmlWthPadLft(
+                    new Paragraph("Status", fontMedium),
+                    Element.ALIGN_LEFT));
+            tblInvSection12.addCell(cellTxtNoBrdrNrml(
+                    new Paragraph(":", fontMedium),
+                    Element.ALIGN_RIGHT));
+            tblInvSection12.addCell(cellTxtNoBrdrNrml(
+                    new Paragraph("BELUM LUNAS", fontMedium),
+                    Element.ALIGN_LEFT));
+            tblInvSection12.addCell(cellTxtNoBrdrNrml(
+                    new Paragraph("", fontNormalSmall),
+                    Element.ALIGN_LEFT));
+
+            tblInvSection13.addCell(cellColHeaderNoBrdr(
                     new Paragraph("DETAIL PEMBAYARAN", fontMediumWhite),
                     Element.ALIGN_LEFT));
-            table8.addCell(createTextCellNoBorderNormal(
+            tblInvSection13.addCell(cellTxtNoBrdrNrml(
                     new Paragraph("", fontNormalSmall),
                     Element.ALIGN_RIGHT));
-            table8.addCell(createTextCellNoBorderNormal(
+            tblInvSection13.addCell(cellTxtNoBrdrNrml(
                     new Paragraph("", fontNormalSmall),
                     Element.ALIGN_RIGHT));
-            table8.addCell(createTextColumnHeaderNoBorder(
+            tblInvSection13.addCell(cellColHeaderNoBrdr(
                     new Paragraph("CATATAN", fontMediumWhite),
                     Element.ALIGN_LEFT));
-            table8.addCell(createTextCellNoBorderNormal(
+            tblInvSection13.addCell(cellTxtNoBrdrNrml(
                     new Paragraph("", fontNormalSmall),
                     Element.ALIGN_LEFT));
-            table8.addCell(createTextCellNoBorderNormal(
+            tblInvSection13.addCell(cellTxtNoBrdrNrml(
                     new Paragraph("", fontNormalSmall),
                     Element.ALIGN_LEFT));
 
-            document.add(table0);
-            document.add(table01);
-            document.add(table02);
-            document.add(paragraphBlank);
-            document.add(table1);
-            document.add(table2);
-            document.add(table3);
-            document.add(table4);
-            document.add(paragraphBlank);
-            document.add(table5);
-            document.add(table6);
-            document.add(paragraphBlank);
-            document.add(table8);
-            document.add(table7);
-            document.add(paragraphBlank);
+            document.add(tblInvSection1);
+            document.add(tblInvSection2);
+            document.add(tblInvSection3);
+            document.add(paragraphBlank); // SPACE SEPARATOR
+            document.add(tblInvSection5);
+            if (invPoType == 0){
+                document.add(tblInvSection6);
+                document.add(tblInvSection7);
+            }
+            if (invPoType == 1){
+                document.add(tblInvSection6);
+            }
+            if (invPoType == 2){
+                document.add(tblInvSection7);
+            }
+
+            document.add(tblInvSection8);
+            document.add(tblInvSection9);
+            document.add(paragraphBlank); // SPACE SEPARATOR
+            document.add(tblInvSection10);
+            document.add(tblInvSection11);
+            document.add(paragraphBlank); // SPACE SEPARATOR
+            document.add(tblInvSection13);
+            document.add(tblInvSection12);
+            document.add(paragraphBlank); // SPACE SEPARATOR
             document.add(paragraphInvDateCreated);
         } catch (DocumentException e) {
             e.printStackTrace();
             Toast.makeText(context, e.toString(), Toast.LENGTH_LONG).show();
         }
     }
-
-    public void addLogo(Document document) throws DocumentException {
-        try { // Get user Settings GeneralSettings getUserSettings =
-
-           /* Rectangle rectDoc = document.getPageSize();
-            float width = rectDoc.getWidth();
-            float height = rectDoc.getHeight();
-            float imageStartX = width - document.rightMargin() - 500f;
-            float imageStartY = height - document.topMargin() - 500f;*/
-
-            //System.gc();
-
-            Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.bca_qr_bas);
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            bm.compress(Bitmap.CompressFormat.JPEG, 80, stream);
-            Image img = null;
-            byte[] byteArray = stream.toByteArray();
-
-            try {
-                img = Image.getInstance(byteArray);
-            } catch (BadElementException | IOException e) {
-                e.printStackTrace();
-            }
-
-            //InputStream ims = getAssets().open("bca_qr_bas.png");
-            //Bitmap bmp = BitmapFactory.decodeStream(ims);
-            //ByteArrayOutputStream stream = new ByteArrayOutputStream();
-
-            //bm.compress(Bitmap.CompressFormat.JPEG, 50, stream);
-
-            //byte[] byteArray = stream.toByteArray();
-            //PdfImage img = new PdfImage(arg0, arg1, arg2)
-
-            // Converting byte array into image Image img =
-            //Image img = Image.getInstance(byteArray); // img.scalePercent(50);
-            img.setAlignment(Image.TEXTWRAP);
-            img.scaleAbsolute(100f, 100f);
-            //img.setAbsolutePosition(imageStartX, imageStartY); // Adding Image
-            document.add(img);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-    }
-
 
     public static String currencyFormat(String amount) {
         DecimalFormat formatter = new DecimalFormat("###,###,##0.00");
@@ -1007,41 +916,50 @@ public class AddInvoiceActivity extends AppCompatActivity {
 
         db.collection("ReceivedOrderData").whereEqualTo("roUID", rouidVal).get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (productItemsList != null){
+                        productItemsList.clear();
+                    }
+                    transportServiceSellPrice = 0;
+
                     for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots){
                         ReceivedOrderModel receivedOrderModel = documentSnapshot.toObject(ReceivedOrderModel.class);
                         receivedOrderModel.setRoDocumentID(documentSnapshot.getId());
-
-                        //String documentID = receivedOrderModel.getRoDocumentID();
 
                         matTypeVal = receivedOrderModel.getRoMatType();
                         roPoCustNumber = receivedOrderModel.getRoPoCustNumber();
                         custNameVal = receivedOrderModel.getRoCustName();
                         currencyVal = receivedOrderModel.getRoCurrency();
-
                         invCustName = receivedOrderModel.getRoCustName();
                         invPoUID = receivedOrderModel.getRoPoCustNumber();
                         invPoDate = receivedOrderModel.getRoDateCreated();
+                        invPoType = receivedOrderModel.getRoType();
+
+                        if (invPoType == 0){
+                            invPotypeVal = "MATERIAL + JASA ANGKUT";
+                        }
+                        if (invPoType == 1){
+                            invPotypeVal = "MATERIAL SAJA";
+                        }
+                        if (invPoType == 2){
+                            invPotypeVal = "JASA ANGKUT SAJA";
+                        }
 
                         HashMap<String, List<ProductItems>> map = receivedOrderModel.getRoOrderedItems();
                         for (HashMap.Entry<String, List<ProductItems>> e : map.entrySet()) {
-                            for (ProductItems productItems : e.getValue()) {
-                                matNameVal = productItems.getMatName();
-                                matSellPrice = productItems.getMatSellPrice();
+                            productItemsList = e.getValue();
+                            for (int i = 0; i<productItemsList.size();i++){
+                                if (productItemsList.get(i).getMatName().equals("JASA ANGKUT")){
+                                    transportServiceNameVal = productItemsList.get(i).getMatName();
+                                    transportServiceSellPrice = productItemsList.get(i).getMatSellPrice();
+                                } else {
+                                    matNameVal = productItemsList.get(i).getMatName();
+                                    matSellPrice = productItemsList.get(i).getMatSellPrice();
+                                }
                             }
+
                         }
-
-                       // String one = receivedOrderModel.getRoCustName();
                     }
-
-
                 });
-
-
-
-
-        DatabaseReference databaseReferenceGI = FirebaseDatabase.getInstance().getReference();
-        //databaseReferenceGI.child("GoodIssueData").child(goodIssueModel.getGiUID()).child("giInvoiced").setValue(true);
-
 
         Query query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated").startAt(dateStartVal).endAt(dateEndVal);
         query.addValueEventListener(new ValueEventListener() {
@@ -1060,7 +978,6 @@ public class AddInvoiceActivity extends AppCompatActivity {
                                         fabCreateGiRecap.show();
                                         nestedScrollView.setVisibility(View.VISIBLE);
                                         llNoData.setVisibility(View.GONE);
-                                        //databaseReferenceGI.child("GoodIssueData").child(goodIssueModel.getGiUID()).child("giInvoiced").setValue(true);
                                     }
                                 }
                             }
@@ -1124,7 +1041,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(@NonNull Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.recap_gi_menu, menu);
         return super.onCreateOptionsMenu(menu);

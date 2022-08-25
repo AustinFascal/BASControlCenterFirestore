@@ -51,8 +51,9 @@ public class ROManagementAdapter extends RecyclerView.Adapter<ROManagementAdapte
     public class ItemViewHolder extends RecyclerView.ViewHolder {
         LinearLayout llStatusApproved, llStatusPOAvailable;
         TextView tvRoDateTime, tvRoUid, tvPoCustNumber;
-        Button btnDeleteRo, btnApproveRo;
+        RelativeLayout btnDeleteRo, btnApproveRo;
         RelativeLayout rlOpenRoDetail;
+        Button btn1, btn2;
         ImageView ivShowDetail;
 
         public ItemViewHolder(@NonNull View itemView) {
@@ -66,6 +67,8 @@ public class ROManagementAdapter extends RecyclerView.Adapter<ROManagementAdapte
             tvPoCustNumber = itemView.findViewById(R.id.tv_po_cust_number);
             btnDeleteRo = itemView.findViewById(R.id.btn_delete_inv);
             btnApproveRo = itemView.findViewById(R.id.btn_approve_inv);
+            btn1 = itemView.findViewById(R.id.btn1);
+            btn2 = itemView.findViewById(R.id.btn2);
         }
 
         public void viewBind(ReceivedOrderModel receivedOrderModel) {
@@ -100,7 +103,7 @@ public class ROManagementAdapter extends RecyclerView.Adapter<ROManagementAdapte
                 context.startActivity(i);*/
             });
 
-            btnApproveRo.setOnClickListener(view -> {
+            btn2.setOnClickListener(view -> {
                 if (tvPoCustNumber.getText().toString().equals("PO: -")){
                     dialogInterface.noRoPoNumberInformation(context, receivedOrderModel.getRoDocumentID());
                 } else {
@@ -108,7 +111,7 @@ public class ROManagementAdapter extends RecyclerView.Adapter<ROManagementAdapte
                 }
             });
 
-            btnDeleteRo.setOnClickListener(view ->
+            btn1.setOnClickListener(view ->
                     dialogInterface.deleteRoConfirmation(context, receivedOrderModel.getRoDocumentID()));
         }
     }

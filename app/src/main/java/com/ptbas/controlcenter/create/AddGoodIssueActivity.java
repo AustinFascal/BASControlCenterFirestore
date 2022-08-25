@@ -321,8 +321,15 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                                     }
                                 }
 
+
                                 matNameList.addAll(Collections.singleton(matNameStr));
-                                matNameList.remove("JASA ANGKUT");
+                                int matNameListSize = matNameList.size();
+                                if (matNameListSize > 1 && matNameList.get(0).equals("JASA ANGKUT")){
+                                    matNameList.remove("JASA ANGKUT");
+                                }
+
+
+
 
                                 ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddGoodIssueActivity.this, R.layout.style_spinner, matNameList);
                                 arrayAdapter.setDropDownViewResource(R.layout.style_spinner);

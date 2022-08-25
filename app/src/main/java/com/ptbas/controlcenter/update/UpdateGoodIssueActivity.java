@@ -804,7 +804,6 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
                 new VehicleModel(vhlUID, true, vhlLength, vhlWidth, vhlHeight,
                         "", "", "", "");
 
-
         DatabaseReference dbRefAddVehicle = FirebaseDatabase.getInstance().getReference("VehicleData");
         dbRefAddVehicle.child(vhlUID).setValue(vehicleModel).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
@@ -823,30 +822,30 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
                 giMatName, giMatType, vhlUID, giDateCreated, giTimeCreted, vhlLength,
                 vhlWidth, vhlHeight, vhlHeightCorrection, vhlHeightAfterCorrection, giVhlCubication, giStatus, giInvoiced);
 
-        DatabaseReference refGIExists = FirebaseDatabase.getInstance("https://bas-delivery-report-default-rtdb.asia-southeast1.firebasedatabase.app").getReference("GoodIssueData/"+giUID);
+        /*DatabaseReference refGIExists = FirebaseDatabase.getInstance().getReference("GoodIssueData/"+giUID);
         refGIExists.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot snapshot) {
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                DatabaseReference refGI = FirebaseDatabase.getInstance("https://bas-delivery-report-default-rtdb.asia-southeast1.firebasedatabase.app").getReference("GoodIssueData");
-                refGI.child(giUID).setValue(goodIssueModel).addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        dialogInterface.updatedInformation(UpdateGoodIssueActivity.this);
-                    } else {
-                        try{
-                            throw task.getException();
-                        } catch (Exception e){
-                            Log.e(TAG, e.getMessage());
-                            Toast.makeText(UpdateGoodIssueActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
 
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 
+            }
+        });*/
+        DatabaseReference refGI = FirebaseDatabase.getInstance().getReference("GoodIssueData");
+        refGI.child(giUID).setValue(goodIssueModel).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                dialogInterface.updatedInformation(UpdateGoodIssueActivity.this);
+            } else {
+                try{
+                    throw Objects.requireNonNull(task.getException());
+                } catch (Exception e){
+                    Log.e(TAG, e.getMessage());
+                    Toast.makeText(UpdateGoodIssueActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }

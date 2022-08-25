@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -61,7 +62,8 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
         LinearLayout llStatusApproved, llStatusInvoiced, llStatusPOAvailable, llRoNeedsUpdate;
         TextView tvCubication, tvGiDateTime, tvGiUid, tvRoUid, tvGiMatDetail, tvGiVhlDetail,
                 tvVhlUid, tvPoCustNumber;
-        Button btnDeleteGi, btnApproveGi;
+        RelativeLayout btnDeleteGi, btnApproveGi;
+        Button btn1, btn2;
         ImageView ivShowDetail;
 
         public ItemViewHolder(@NonNull View itemView) {
@@ -80,6 +82,8 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
             tvVhlUid = itemView.findViewById(R.id.tv_vhl_uid);
             btnDeleteGi = itemView.findViewById(R.id.btn_delete_gi);
             btnApproveGi = itemView.findViewById(R.id.btn_approve_gi);
+            btn1 = itemView.findViewById(R.id.btn1);
+            btn2 = itemView.findViewById(R.id.btn2);
             ivShowDetail = itemView.findViewById(R.id.iv_show_detail);
         }
 
@@ -152,7 +156,7 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
                 context.startActivity(i);
             });
 
-            btnApproveGi.setOnClickListener(view -> {
+            btn2.setOnClickListener(view -> {
                 if (tvPoCustNumber.getText().toString().equals("PO: -")){
                     dialogInterface.noPoNumberInformation(context);
                 } else {
@@ -160,7 +164,7 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
                 }
             });
 
-            btnDeleteGi.setOnClickListener(view ->
+            btn1.setOnClickListener(view ->
                     dialogInterface.deleteGiConfirmation(context, goodIssueModel.getGiUID()));
         }
     }
