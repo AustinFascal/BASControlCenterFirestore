@@ -104,6 +104,7 @@
                     android:layout_height="wrap_content"
                     android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890/"
                     android:imeOptions="actionNext"
+                    android:focusable="false"
                     android:hint="@string/inputPoNumberPtBas"
                     android:inputType="textCapCharacters"
                     android:singleLine="true"

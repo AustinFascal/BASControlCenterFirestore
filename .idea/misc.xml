@@ -12,8 +12,10 @@
         <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout/activity_add_good_issue.xml" value="0.12082066869300911" />
         <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout/activity_good_issue_management.xml" value="0.12082066869300911" />
         <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout/activity_invoice_management.xml" value="0.16799999999999998" />
+        <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout/activity_update_good_issue.xml" value="0.17255434782608695" />
         <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout/item_layout_good_issue.xml" value="0.2484375" />
         <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout/item_layout_invoice.xml" value="0.4" />
+        <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout/item_layout_received_order.xml" value="0.2484375" />
         <entry key="..\:/Android/Projects/CMH/BASReportProject/app/src/main/res/drawable/bg_gradient1.xml" value="0.1065" />
         <entry key="..\:/Android/Projects/CMH/BASReportProject/app/src/main/res/drawable/border.xml" value="0.2275" />
         <entry key="..\:/Android/Projects/CMH/BASReportProject/app/src/main/res/drawable/dashboard_main_content.xml" value="0.12" />

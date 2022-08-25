@@ -49,7 +49,7 @@ public class InvoiceManagementAdapter extends RecyclerView.Adapter<InvoiceManage
 
 
     public class ItemViewHolder extends RecyclerView.ViewHolder {
-        LinearLayout llStatusApproved;
+        LinearLayout llStatusPaid, llStatusUnpaid;
         TextView tvInvDateCreated, tvInvUID, tvPoCustNumber;
         Button btnDeleteInv, btnApproveInv;
         RelativeLayout rlOpenInvDetail;
@@ -59,7 +59,8 @@ public class InvoiceManagementAdapter extends RecyclerView.Adapter<InvoiceManage
             super(itemView);
             ivShowDetail = itemView.findViewById(R.id.iv_show_detail);
             rlOpenInvDetail = itemView.findViewById(R.id.open_detail);
-            llStatusApproved = itemView.findViewById(R.id.ll_status_approved);
+            llStatusPaid = itemView.findViewById(R.id.ll_status_paid);
+            llStatusUnpaid = itemView.findViewById(R.id.ll_status_unpaid);
             tvInvDateCreated = itemView.findViewById(R.id.tv_inv_date_created);
             tvInvUID = itemView.findViewById(R.id.tv_inv_uid);
             tvPoCustNumber = itemView.findViewById(R.id.tv_po_cust_number);
@@ -79,10 +80,12 @@ public class InvoiceManagementAdapter extends RecyclerView.Adapter<InvoiceManage
             tvInvDateCreated.setText(invDateCreated);
             tvPoCustNumber.setText(invPoUID);
             if (invStatus){
-                llStatusApproved.setVisibility(View.VISIBLE);
+                llStatusPaid.setVisibility(View.VISIBLE);
+                llStatusUnpaid.setVisibility(View.GONE);
                 btnApproveInv.setVisibility(View.GONE);
             } else {
-                llStatusApproved.setVisibility(View.GONE);
+                llStatusPaid.setVisibility(View.GONE);
+                llStatusUnpaid.setVisibility(View.VISIBLE);
                 btnApproveInv.setVisibility(View.VISIBLE);
             }
             /*if (tvPoCustNumber.getText().toString().equals("PO: -")){

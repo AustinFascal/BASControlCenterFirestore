@@ -72,7 +72,7 @@
                 app:tint="@color/white" />
 
             <LinearLayout
-                android:id="@+id/ll_status_approved"
+                android:id="@+id/ll_status_paid"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/iv_show_detail"
@@ -91,42 +91,164 @@
                     android:textStyle="bold" />
             </LinearLayout>
 
+            <LinearLayout
+                android:id="@+id/ll_status_unpaid"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/iv_show_detail"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="4dp"
+                android:background="@drawable/pill_red"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="2dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="BELUM LUNAS"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
         </RelativeLayout>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingHorizontal="4dp"
+            android:layout_margin="0dp"
+            android:background="@color/pure_grey"
             android:orientation="horizontal">
-            <Button
+            <!--<ImageButton
                 android:tag="DeleteGI"
-                style="@style/MaterialDialog.NegativeButton"
+                style="@style/Widget.AppCompat.Button.Borderless"
                 android:id="@+id/btn_delete_inv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_marginEnd="4dp"
-                android:drawableLeft="@drawable/ic_outline_delete_forever"
+                android:src="@drawable/ic_outline_delete_forever"
                 android:text="HAPUS"
-                android:textAllCaps="true" />
-            <Button
-                style="@style/MaterialDialog.NegativeButton"
+                android:textAllCaps="true" />-->
+            <RelativeLayout
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:gravity="center">
+
+                <ImageView
+                    android:scaleType="center"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_outline_delete_forever"
+                    android:layout_alignStart="@+id/btn_delete_inv"
+                    android:layout_alignEnd="@+id/btn_delete_inv"
+                    android:layout_alignTop="@+id/btn_delete_inv"
+                    android:layout_alignBottom="@+id/btn_delete_inv"/>
+
+                <Button
+                    android:id="@+id/btn_delete_inv"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginStart="0dp"
+                    android:layout_marginTop="0dp"
+                    android:layout_marginEnd="0dp"
+                    android:layout_marginBottom="0dp"
+                    android:background="?attr/selectableItemBackground"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:gravity="center">
+
+                <ImageView
+                    android:scaleType="center"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_outline_print"
+                    android:layout_alignStart="@+id/btn_print_inv"
+                    android:layout_alignEnd="@+id/btn_print_inv"
+                    android:layout_alignTop="@+id/btn_print_inv"
+                    android:layout_alignBottom="@+id/btn_print_inv"/>
+
+                <Button
+                    android:id="@+id/btn_print_inv"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginStart="0dp"
+                    android:layout_marginTop="0dp"
+                    android:layout_marginEnd="0dp"
+                    android:layout_marginBottom="0dp"
+                    android:background="?attr/selectableItemBackground"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp" />
+
+            </RelativeLayout>
+            <!--<ImageButton
+                style="@style/Widget.AppCompat.Button.Borderless"
                 android:id="@+id/btn_print_inv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_marginEnd="4dp"
-                android:drawableLeft="@drawable/ic_outline_print"
+                android:src="@drawable/ic_outline_print"
                 android:text="CETAK"
-                android:textAllCaps="true" />
-            <Button
-                style="@style/MaterialDialog.NegativeButton"
+                android:textAllCaps="true" />-->
+            <!--<Button
+                style="@style/Widget.AppCompat.Button.Borderless"
                 android:id="@+id/btn_approve_inv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:drawableLeft="@drawable/ic_outline_check"
-                android:text="LUNAS"
-                android:textAllCaps="true" />
+                android:gravity="center"
+                android:background="@drawable/ic_outline_check"
+                android:textAllCaps="true" />-->
+
+            <RelativeLayout
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:gravity="center">
+
+                <ImageView
+                    android:scaleType="center"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_outline_check"
+                    android:layout_alignStart="@+id/btn_approve_inv"
+                    android:layout_alignEnd="@+id/btn_approve_inv"
+                    android:layout_alignTop="@+id/btn_approve_inv"
+                    android:layout_alignBottom="@+id/btn_approve_inv"/>
+
+                <Button
+                    android:id="@+id/btn_approve_inv"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginStart="0dp"
+                    android:layout_marginTop="0dp"
+                    android:layout_marginEnd="0dp"
+                    android:layout_marginBottom="0dp"
+                    android:background="?attr/selectableItemBackground"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp" />
+
+            </RelativeLayout>
         </LinearLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

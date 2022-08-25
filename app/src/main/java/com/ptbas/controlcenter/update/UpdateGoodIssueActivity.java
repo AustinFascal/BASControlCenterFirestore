@@ -30,6 +30,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
@@ -38,10 +39,15 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.ptbas.controlcenter.DialogInterface;
 import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.create.AddGoodIssueActivity;
 import com.ptbas.controlcenter.model.GoodIssueModel;
+import com.ptbas.controlcenter.model.ProductItems;
 import com.ptbas.controlcenter.model.ReceivedOrderModel;
 import com.ptbas.controlcenter.model.VehicleModel;
 import com.ptbas.controlcenter.utils.LangUtils;
@@ -49,6 +55,8 @@ import com.ptbas.controlcenter.utils.LangUtils;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -73,6 +81,8 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
     FloatingActionButton fabSaveGIData;
 
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+
 
     DialogInterface dialogInterface = new DialogInterface();
     //Helper helper = new Helper();
@@ -152,7 +162,6 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     GoodIssueModel goodIssueModel = snapshot.getValue(GoodIssueModel.class);
 
-
                     if (goodIssueModel == null){
                         finish();
                     } else {
@@ -175,7 +184,22 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
                         giStatus = goodIssueModel.getGiStatus();
                         giInvoiced = goodIssueModel.getGiInvoiced();
 
-                        databaseReference.child("ReceivedOrders").addValueEventListener(new ValueEventListener() {
+                        db.collection("ReceivedOrderData").whereEqualTo("roUID", roNumber).get()
+                                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                        for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots){
+                                            ReceivedOrderModel receivedOrderModel = documentSnapshot.toObject(ReceivedOrderModel.class);
+                                            //receivedOrderModel.setRoDocumentID(documentSnapshot.getId());
+
+                                            //String documentID = receivedOrderModel.getRoDocumentID();
+
+                                            edtPoNumberCust.setText(receivedOrderModel.getRoPoCustNumber());
+                                        }
+                                    }
+                                });
+
+                        /*databaseReference.child("ReceivedOrders").addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
                                 if (snapshot.exists()){
@@ -202,7 +226,7 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
                             }
                             @Override
                             public void onCancelled(@NonNull DatabaseError error) {}
-                        });
+                        });*/
 
                         edtPoNumberCust.setOnClickListener(view -> dialogInterface.changePoNumberCustomer(UpdateGoodIssueActivity.this, roNumber));
                         DatabaseReference referenceProfile = FirebaseDatabase.getInstance("https://bas-delivery-report-default-rtdb.asia-southeast1.firebasedatabase.app").getReference("RegisteredUser");
@@ -492,7 +516,7 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
             matNameList.clear();
         });*/
 
-        databaseReference.child("ReceivedOrders").addValueEventListener(new ValueEventListener() {
+        /*databaseReference.child("ReceivedOrders").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 receiveOrderNumberList.clear();
@@ -513,9 +537,26 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError error) {
 
             }
-        });
+        });*/
 
 
+        /*db.collection("ReceivedOrderData").orderBy("roUID", Query.Direction.ASCENDING).get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        receiveOrderNumberList.clear();
+                        for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots){
+                            String spinnerPurchaseOrders = documentSnapshot.get("roUID").toString();
+                            receiveOrderNumberList.add(spinnerPurchaseOrders);
+                        }
+                        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(UpdateGoodIssueActivity.this, R.layout.style_spinner, receiveOrderNumberList);
+                        arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
+                        spinnerRoNumber.setAdapter(arrayAdapter);
+                    }
+                });*/
+
+
+/*
         spinnerRoNumber.setOnItemClickListener((adapterView, view, position, l) -> {
             String selectedSpinnerPoPtBasNumber = (String) adapterView.getItemAtPosition(position);
             roNumber = selectedSpinnerPoPtBasNumber;
@@ -582,6 +623,7 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
                 }
             });
         });
+*/
 
         spinnerMatName.setOnItemClickListener((adapterView, view, position, l) -> {
             String selectedSpinnerMaterialName = (String) adapterView.getItemAtPosition(position);

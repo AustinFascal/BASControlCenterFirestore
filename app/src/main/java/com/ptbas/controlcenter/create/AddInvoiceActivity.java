@@ -1,15 +1,5 @@
 package com.ptbas.controlcenter.create;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.cardview.widget.CardView;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.core.widget.NestedScrollView;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -22,7 +12,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
-import android.text.Html;
 import android.transition.AutoTransition;
 import android.transition.TransitionManager;
 import android.util.DisplayMetrics;
@@ -38,6 +27,16 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.widget.NestedScrollView;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.database.DataSnapshot;
@@ -49,6 +48,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.itextpdf.text.Anchor;
 import com.itextpdf.text.BadElementException;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Chunk;
@@ -57,15 +57,14 @@ import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.Image;
+import com.itextpdf.text.ListItem;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.Rectangle;
+import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.BaseFont;
-import com.itextpdf.text.pdf.PdfImage;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
-import com.itextpdf.text.pdf.draw.LineSeparator;
 import com.ptbas.controlcenter.DialogInterface;
 import com.ptbas.controlcenter.DragLinearLayout;
 import com.ptbas.controlcenter.Helper;
@@ -84,7 +83,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -142,6 +140,8 @@ public class AddInvoiceActivity extends AppCompatActivity {
 
     public static BaseFont baseNormal, baseMedium, baseBold;
     public static Font fontNormal;
+    public static Font fontNormalSmall;
+    public static Font fontNormalSmallItalic;
     public static Font fontMedium;
     public static Font fontMediumWhite;
     public static Font fontBold;
@@ -168,6 +168,8 @@ public class AddInvoiceActivity extends AppCompatActivity {
 
         //Typeface fontBaseNormal = ResourcesCompat.getFont(context, R.font.kanitregular);
         fontNormal = new Font(baseNormal, 10, Font.NORMAL, BaseColor.BLACK);
+        fontNormalSmall = new Font(baseNormal, 8, Font.NORMAL, BaseColor.BLACK);
+        fontNormalSmallItalic = new Font(baseNormal, 8, Font.ITALIC, BaseColor.BLACK);
         fontMedium = new Font(baseMedium, 10, Font.NORMAL, BaseColor.BLACK);
         fontMediumWhite = new Font(baseMedium, 10, Font.NORMAL, BaseColor.WHITE);
         fontBold = new Font(baseBold, 20, Font.NORMAL, BaseColor.BLACK);
@@ -445,7 +447,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
             addUpperSpace(document);
             addTitlePage(document);
             addContent(document);
-            addLogo(document);
+            //addLogo(document);
             document.close();
             Helper.openFilePDF(context, new File(dest));
         } catch (DocumentException | FileNotFoundException e) {
@@ -484,6 +486,42 @@ public class AddInvoiceActivity extends AppCompatActivity {
         cell.addElement(paragraph);
         cell.setHorizontalAlignment(alignment);
         cell.setBorder(PdfPCell.NO_BORDER);
+        return cell;
+    }
+    public static PdfPCell createTextCellNoBorderNormalPaddingLeft(Paragraph paragraph, int alignment) throws DocumentException {
+        paragraph.setAlignment(alignment);
+        paragraph.setLeading(0, 1);
+        PdfPCell cell = new PdfPCell();
+        cell.addElement(paragraph);
+        cell.setPaddingLeft(5);
+        cell.setHorizontalAlignment(alignment);
+        cell.setBorder(PdfPCell.NO_BORDER);
+        return cell;
+    }
+
+    public static PdfPCell cellSpanRowImage(Image image) throws DocumentException {
+        PdfPCell cell = new PdfPCell();
+        cell.addElement(image);
+        cell.setBorder(PdfPCell.NO_BORDER);
+        cell.setColspan(1);
+        cell.setRowspan(3);
+        return cell;
+    }
+    public static PdfPCell cellSpanRowTextList() throws DocumentException {
+
+        com.itextpdf.text.List ordered = new com.itextpdf.text.List(com.itextpdf.text.List.ORDERED);
+        ordered.add(new ListItem("Invoice ini sah dan diproses oleh komputer.", fontNormalSmall));
+        ordered.add(new ListItem("Bukti PPH23 dikirim ke email bintang.andalan.semesta@gmail.com (apabila tersedia).", fontNormalSmall));
+        ordered.add(new ListItem("Apabila Anda membutuhkan bantuan, silakan hubungi kami melalui WA: 081335376111 / 085105164000", fontNormalSmall));
+        /*document.add(ordered);
+
+        paragraph.setAlignment(Element.ALIGN_LEFT);
+        paragraph.setLeading(0, 1);*/
+        PdfPCell cell = new PdfPCell();
+        cell.addElement(ordered);
+        cell.setBorder(PdfPCell.NO_BORDER);
+        cell.setColspan(1);
+        cell.setRowspan(3);
         return cell;
     }
 
@@ -537,7 +575,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
 
         Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.bg_table_column_blue_pale);
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bm.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        bm.compress(Bitmap.CompressFormat.PNG, 90, stream);
         Image img = null;
         byte[] byteArray = stream.toByteArray();
 
@@ -599,6 +637,13 @@ public class AddInvoiceActivity extends AppCompatActivity {
             paragraphROCustName.setAlignment(Element.ALIGN_LEFT);
             paragraphROCustName.setSpacingAfter(5);
 
+            String invDateCreated = new SimpleDateFormat("dd/MM/yyyy", Locale.US).format(new Date());
+            String invTimeCreated = new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
+
+            Paragraph paragraphInvDateCreated = new Paragraph("Terakhir diperbarui: "+invDateCreated+" "+invTimeCreated+" WIB", fontNormalSmallItalic);
+            paragraphInvDateCreated.setAlignment(Element.ALIGN_RIGHT);
+            paragraphInvDateCreated.setSpacingAfter(5);
+
 
 
 
@@ -627,19 +672,19 @@ public class AddInvoiceActivity extends AppCompatActivity {
 
             PdfPTable table1 = new PdfPTable(5);
             table1.setWidthPercentage(100);
-            table1.setWidths(new float[]{3,2,2,2,5});
+            table1.setWidths(new float[]{3,2,2,3,4});
 
             PdfPTable table2 = new PdfPTable(5);
             table2.setWidthPercentage(100);
-            table2.setWidths(new float[]{3,2,2,2,5});
+            table2.setWidths(new float[]{3,2,2,3,4});
 
             PdfPTable table3 = new PdfPTable(5);
             table3.setWidthPercentage(100);
-            table3.setWidths(new float[]{3,2,2,2,5});
+            table3.setWidths(new float[]{3,2,2,3,4});
 
             PdfPTable table4 = new PdfPTable(5);
             table4.setWidthPercentage(100);
-            table4.setWidths(new float[]{3,2,2,2,5});
+            table4.setWidths(new float[]{3,2,2,3,4});
 
             PdfPTable table5 = new PdfPTable(2);
             table5.setWidthPercentage(100);
@@ -649,9 +694,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
             table6.setWidthPercentage(100);
             table6.setWidths(new float[]{9,1});
 
-            /*PdfPTable table7 = new PdfPTable(6);
-            table7.setWidthPercentage(100);
-            table7.setWidths(new float[]{3,4,1,5,1,1,10});*/
+
 
 
             table0.addCell(createTextColumnHeaderNoBorder(
@@ -714,7 +757,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
                     new Paragraph("", fontMediumWhite),
                     Element.ALIGN_LEFT));
             table02.addCell(createTextCellNoBorderNormal(
-                    new Paragraph("No. PO"+"\n"+"Tanggal", fontNormal),
+                    new Paragraph("No. PO"+"\n"+"Tanggal PO", fontNormal),
                     Element.ALIGN_LEFT));
             table02.addCell(createTextCellNoBorderNormal(
                     new Paragraph(":"+"\n"+":", fontNormal),
@@ -725,15 +768,15 @@ public class AddInvoiceActivity extends AppCompatActivity {
 
 
             table1.addCell(createTextColumnHeader(
-                    new Paragraph("Item# / Deskripsi", fontMediumWhite), Element.ALIGN_CENTER));
+                    new Paragraph("Item# / Deskripsi", fontMediumWhite), Element.ALIGN_LEFT));
             table1.addCell(createTextColumnHeader(
-                    new Paragraph("Harga (IDR)", fontMediumWhite), Element.ALIGN_CENTER));
+                    new Paragraph("Harga Satuan", fontMediumWhite), Element.ALIGN_RIGHT));
             table1.addCell(createTextColumnHeader(
-                    new Paragraph("Qty (Unit)", fontMediumWhite), Element.ALIGN_CENTER));
+                    new Paragraph("Jumlah (Unit)", fontMediumWhite), Element.ALIGN_RIGHT));
             table1.addCell(createTextColumnHeader(
-                    new Paragraph("Pajak (IDR)", fontMediumWhite), Element.ALIGN_CENTER));
+                    new Paragraph("Pajak", fontMediumWhite), Element.ALIGN_RIGHT));
             table1.addCell(createTextColumnHeader(
-                    new Paragraph("Jumlah (IDR)", fontMediumWhite), Element.ALIGN_CENTER));
+                    new Paragraph("Jumlah", fontMediumWhite), Element.ALIGN_RIGHT));
 
 
             float totalCubication = 0;
@@ -753,15 +796,15 @@ public class AddInvoiceActivity extends AppCompatActivity {
             DecimalFormat dfRound = new DecimalFormat("0");
 
             table2.addCell(createTextCellNoBorderNormalMainContent(
-                    new Paragraph(matNameVal, fontNormal), Element.ALIGN_CENTER));
+                    new Paragraph(matNameVal, fontNormal), Element.ALIGN_LEFT));
             table2.addCell(createTextCellNoBorderNormalMainContent(
-                    new Paragraph(currencyFormat(df.format(matSellPrice)), fontNormal), Element.ALIGN_CENTER));
+                    new Paragraph(currencyVal+" "+currencyFormat(df.format(matSellPrice)), fontNormal), Element.ALIGN_RIGHT));
             table2.addCell(createTextCellNoBorderNormalMainContent(
-                    new Paragraph(String.valueOf(totalCubication), fontNormal), Element.ALIGN_CENTER));
+                    new Paragraph(String.valueOf(totalCubication), fontNormal), Element.ALIGN_RIGHT));
             table2.addCell(createTextCellNoBorderNormalMainContent(
-                    new Paragraph(currencyFormat(df.format(taxPPN)), fontNormal), Element.ALIGN_CENTER));
+                    new Paragraph(currencyVal+" "+currencyFormat(df.format(taxPPN)), fontNormal), Element.ALIGN_RIGHT));
             table2.addCell(createTextCellNoBorderNormalMainContent(
-                    new Paragraph(currencyFormat(df.format(totalAmount)), fontNormal), Element.ALIGN_CENTER));
+                    new Paragraph(currencyVal+" "+currencyFormat(df.format(totalAmount)), fontNormal), Element.ALIGN_RIGHT));
 
 
             table3.addCell(createTextCellBorderTopNormalMainContent(
@@ -771,9 +814,9 @@ public class AddInvoiceActivity extends AppCompatActivity {
             table3.addCell(createTextCellBorderTopNormalMainContent(
                     new Paragraph("", fontMedium), Element.ALIGN_LEFT));
             table3.addCell(createTextCellBorderTopNormalMainContent(
-                    new Paragraph("Sub-Total :"+"\n"+"PPN 11% :"+"\n"+"PPH23 :", fontNormal), Element.ALIGN_RIGHT));
+                    new Paragraph("Total Belanja :"+"\n"+"Diskon :"+"\n"+"PPN 11% :"+"\n"+"PPH23 :", fontNormal), Element.ALIGN_RIGHT));
             table3.addCell(createTextCellBorderTopNormalMainContent(
-                    new Paragraph(currencyFormat(df.format(totalAmount))+"\n"+currencyFormat(df.format(taxPPN))+"\n"+"0", fontNormal), Element.ALIGN_CENTER));
+                    new Paragraph(currencyVal+" "+currencyFormat(df.format(totalAmount))+"\n"+currencyVal+" "+"0"+"\n"+currencyVal+" "+currencyFormat(df.format(taxPPN))+"\n"+currencyVal+" "+"0", fontNormal), Element.ALIGN_RIGHT));
 
             table4.addCell(createTextColumnHeader(
                     new Paragraph("", fontMedium), Element.ALIGN_LEFT));
@@ -782,9 +825,9 @@ public class AddInvoiceActivity extends AppCompatActivity {
             table4.addCell(createTextColumnHeader(
                     new Paragraph("", fontMedium), Element.ALIGN_LEFT));
             table4.addCell(createTextColumnHeader(
-                    new Paragraph("TOTAL", fontMediumWhite), Element.ALIGN_RIGHT));
+                    new Paragraph("TOTAL TAGIHAN", fontMediumWhite), Element.ALIGN_RIGHT));
             table4.addCell(createTextColumnHeader(
-                    new Paragraph(currencyFormat(dfRound.format(totalDue)), fontMediumWhite), Element.ALIGN_CENTER));
+                    new Paragraph(currencyVal+" "+currencyFormat(dfRound.format(totalDue)), fontMediumWhite), Element.ALIGN_RIGHT));
 
             table5.addCell(createTextColumnHeaderNoBorder(
                     new Paragraph("TERBILANG", fontMediumWhite),
@@ -803,24 +846,92 @@ public class AddInvoiceActivity extends AppCompatActivity {
 
 
 
+            Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.bca_qr_bas);
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            bm.compress(Bitmap.CompressFormat.JPEG, 90, stream);
+            Image img = null;
+            byte[] byteArray = stream.toByteArray();
 
+            try {
+                img = Image.getInstance(byteArray);
+            } catch (BadElementException | IOException e) {
+                e.printStackTrace();
+            }
+            img.setAlignment(Image.TEXTWRAP);
+            img.scaleAbsolute(50f, 50f);
 
-            /*table7.addCell(cellQR);
+            PdfPTable table7 = new PdfPTable(6);
+            table7.setWidthPercentage(100);
+            table7.setWidths(new float[]{2,3,1,4,1,9});
+
+            table7.addCell(cellSpanRowImage(img));
+            table7.addCell(createTextCellNoBorderNormalPaddingLeft(
+                    new Paragraph("Transfer ke", fontNormalSmall),
+                    Element.ALIGN_LEFT));
             table7.addCell(createTextCellNoBorderNormal(
-                    new Paragraph("", fontNormal),
-                    Element.ALIGN_LEFT));*/
+                    new Paragraph(":", fontNormalSmall),
+                    Element.ALIGN_RIGHT));
+            table7.addCell(createTextCellNoBorderNormal(
+                    new Paragraph("BCA KCU VETERAN", fontNormalSmall),
+                    Element.ALIGN_LEFT));
+            table7.addCell(createTextCellNoBorderNormal(
+                    new Paragraph("", fontNormalSmall),
+                    Element.ALIGN_LEFT));
+            table7.addCell(cellSpanRowTextList());
+
+            table7.addCell(createTextCellNoBorderNormalPaddingLeft(
+                    new Paragraph("Atas Nama", fontNormalSmall),
+                    Element.ALIGN_LEFT));
+            table7.addCell(createTextCellNoBorderNormal(
+                    new Paragraph(":", fontNormalSmall),
+                    Element.ALIGN_RIGHT));
+            table7.addCell(createTextCellNoBorderNormal(
+                    new Paragraph("PT BINTANG ANDALAN SEMESTA", fontNormalSmall),
+                    Element.ALIGN_LEFT));
+            table7.addCell(createTextCellNoBorderNormal(
+                    new Paragraph("", fontNormalSmall),
+                    Element.ALIGN_LEFT));
+
+
+            table7.addCell(createTextCellNoBorderNormalPaddingLeft(
+                    new Paragraph("No. Rekening", fontNormalSmall),
+                    Element.ALIGN_LEFT));
+            table7.addCell(createTextCellNoBorderNormal(
+                    new Paragraph(":", fontNormalSmall),
+                    Element.ALIGN_RIGHT));
+            table7.addCell(createTextCellNoBorderNormal(
+                    new Paragraph("010-556-5777", fontNormalSmall),
+                    Element.ALIGN_LEFT));
+            table7.addCell(createTextCellNoBorderNormal(
+                    new Paragraph("", fontNormalSmall),
+                    Element.ALIGN_LEFT));
+
+            PdfPTable table8 = new PdfPTable(6);
+            table8.setWidthPercentage(100);
+            table8.setWidths(new float[]{5,2,4,3,1,5});
+            table8.addCell(createTextColumnHeaderNoBorder(
+                    new Paragraph("DETAIL PEMBAYARAN", fontMediumWhite),
+                    Element.ALIGN_LEFT));
+            table8.addCell(createTextCellNoBorderNormal(
+                    new Paragraph("", fontNormalSmall),
+                    Element.ALIGN_RIGHT));
+            table8.addCell(createTextCellNoBorderNormal(
+                    new Paragraph("", fontNormalSmall),
+                    Element.ALIGN_RIGHT));
+            table8.addCell(createTextColumnHeaderNoBorder(
+                    new Paragraph("CATATAN", fontMediumWhite),
+                    Element.ALIGN_LEFT));
+            table8.addCell(createTextCellNoBorderNormal(
+                    new Paragraph("", fontNormalSmall),
+                    Element.ALIGN_LEFT));
+            table8.addCell(createTextCellNoBorderNormal(
+                    new Paragraph("", fontNormalSmall),
+                    Element.ALIGN_LEFT));
 
             document.add(table0);
             document.add(table01);
             document.add(table02);
-            //document.add(table03);
             document.add(paragraphBlank);
-            //document.add(table02);
-            //document.add(table03);
-            /*document.add(paragraphROMatNameType);
-            document.add(paragraphROCustName);*/
-            //document.add(new LineSeparator());
-            //document.add(preface2);
             document.add(table1);
             document.add(table2);
             document.add(table3);
@@ -829,9 +940,10 @@ public class AddInvoiceActivity extends AppCompatActivity {
             document.add(table5);
             document.add(table6);
             document.add(paragraphBlank);
-
-
-            //document.add(table7);
+            document.add(table8);
+            document.add(table7);
+            document.add(paragraphBlank);
+            document.add(paragraphInvDateCreated);
         } catch (DocumentException e) {
             e.printStackTrace();
             Toast.makeText(context, e.toString(), Toast.LENGTH_LONG).show();
@@ -841,11 +953,11 @@ public class AddInvoiceActivity extends AppCompatActivity {
     public void addLogo(Document document) throws DocumentException {
         try { // Get user Settings GeneralSettings getUserSettings =
 
-            Rectangle rectDoc = document.getPageSize();
+           /* Rectangle rectDoc = document.getPageSize();
             float width = rectDoc.getWidth();
             float height = rectDoc.getHeight();
             float imageStartX = width - document.rightMargin() - 500f;
-            float imageStartY = height - document.topMargin() - 500f;
+            float imageStartY = height - document.topMargin() - 500f;*/
 
             //System.gc();
 
@@ -874,7 +986,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
             //Image img = Image.getInstance(byteArray); // img.scalePercent(50);
             img.setAlignment(Image.TEXTWRAP);
             img.scaleAbsolute(100f, 100f);
-            img.setAbsolutePosition(imageStartX, imageStartY); // Adding Image
+            //img.setAbsolutePosition(imageStartX, imageStartY); // Adding Image
             document.add(img);
 
         } catch (Exception e) {
