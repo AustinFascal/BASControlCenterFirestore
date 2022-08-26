@@ -50,7 +50,7 @@ public class InvoiceManagementAdapter extends RecyclerView.Adapter<InvoiceManage
 
     public class ItemViewHolder extends RecyclerView.ViewHolder {
         LinearLayout llStatusPaid, llStatusUnpaid;
-        TextView tvInvDateCreated, tvInvUID, tvPoCustNumber;
+        TextView tvInvDateCreated, tvInvUID, tvPoCustNumber, tvPoCustName;
         Button btnDeleteInv, btnApproveInv;
         RelativeLayout rlOpenInvDetail;
         ImageView ivShowDetail;
@@ -64,6 +64,7 @@ public class InvoiceManagementAdapter extends RecyclerView.Adapter<InvoiceManage
             tvInvDateCreated = itemView.findViewById(R.id.tv_inv_date_created);
             tvInvUID = itemView.findViewById(R.id.tv_inv_uid);
             tvPoCustNumber = itemView.findViewById(R.id.tv_po_cust_number);
+            tvPoCustName = itemView.findViewById(R.id.tv_po_cust_name);
             btnDeleteInv = itemView.findViewById(R.id.btn_delete_inv);
             btnApproveInv = itemView.findViewById(R.id.btn_approve_inv);
         }
@@ -72,13 +73,15 @@ public class InvoiceManagementAdapter extends RecyclerView.Adapter<InvoiceManage
             dialogInterface = new DialogInterface();
             String invUID = invoiceModel.getInvUID();
             String invPoUID = "PO: "+invoiceModel.getInvPoUID();
+            String invPoCustName = invoiceModel.getInvCustName();
             String invDateCreated = invoiceModel.getInvDateCreated();
-            //String invCustName = invoiceModel.getInvCustName();
+            String invPoType = invoiceModel.getInvPoType();
             boolean invStatus = invoiceModel.getInvStatus();
 
             tvInvUID.setText(invUID);
             tvInvDateCreated.setText(invDateCreated);
-            tvPoCustNumber.setText(invPoUID);
+            tvPoCustNumber.setText(invPoUID.concat(" | ").concat(invPoType));
+            tvPoCustName.setText(invPoCustName);
             if (invStatus){
                 llStatusPaid.setVisibility(View.VISIBLE);
                 llStatusUnpaid.setVisibility(View.GONE);

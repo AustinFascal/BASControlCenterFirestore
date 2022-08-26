@@ -718,6 +718,7 @@ public class GoodIssueManagementActivity extends AppCompatActivity {
             RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 3);
             rvGoodIssueList.setLayoutManager(mLayoutManager);
         }
+        chip_filter_all.isSelected();
         chip_filter_all.isChecked();
         showDataDefaultQuery();
     }

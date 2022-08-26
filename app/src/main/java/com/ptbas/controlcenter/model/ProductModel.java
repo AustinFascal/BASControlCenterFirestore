@@ -2,39 +2,39 @@ package com.ptbas.controlcenter.model;
 
 public class ProductModel {
 
-    String name;
-    Float priceBuy, priceSell;
+    String productName;
+    Double priceBuy, priceSell;
 
     public ProductModel() {
     }
 
-    public ProductModel(String name, Float priceBuy, Float priceSell) {
-        this.name = name;
+    public ProductModel(String productName, Double priceBuy, Double priceSell) {
+        this.productName = productName;
         this.priceBuy = priceBuy;
         this.priceSell = priceSell;
     }
 
-    public String getName() {
-        return name;
+    public String getProductName() {
+        return productName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setProductName(String productName) {
+        this.productName = productName;
     }
 
-    public Float getPriceBuy() {
+    public Double getPriceBuy() {
         return priceBuy;
     }
 
-    public void setPriceBuy(Float priceBuy) {
+    public void setPriceBuy(Double priceBuy) {
         this.priceBuy = priceBuy;
     }
 
-    public Float getPriceSell() {
+    public Double getPriceSell() {
         return priceSell;
     }
 
-    public void setPriceSell(Float priceSell) {
+    public void setPriceSell(Double priceSell) {
         this.priceSell = priceSell;
     }
 }

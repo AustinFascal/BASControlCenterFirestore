@@ -11,16 +11,12 @@ import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.transition.AutoTransition;
-import android.transition.TransitionManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.DatePicker;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -40,14 +36,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.ptbas.controlcenter.DialogInterface;
 import com.ptbas.controlcenter.R;
-import com.ptbas.controlcenter.create.AddGoodIssueActivity;
 import com.ptbas.controlcenter.model.GoodIssueModel;
-import com.ptbas.controlcenter.model.ProductItems;
 import com.ptbas.controlcenter.model.ReceivedOrderModel;
 import com.ptbas.controlcenter.model.VehicleModel;
 import com.ptbas.controlcenter.utils.LangUtils;
@@ -55,8 +48,6 @@ import com.ptbas.controlcenter.utils.LangUtils;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -199,35 +190,6 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
                                     }
                                 });
 
-                        /*databaseReference.child("ReceivedOrders").addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                if (snapshot.exists()){
-                                    for (DataSnapshot dataSnapshot: snapshot.getChildren()){
-                                        String key = dataSnapshot.getKey();
-                                        assert key != null;
-                                        //String roUID = snapshot.child(key).child(goodIssueModel.getGiRoUID()).getValue(String.class);
-                                        ReceivedOrderModel receivedOrderModel = snapshot.child(key).getValue(ReceivedOrderModel.class);
-                                        if (receivedOrderModel.getRoUID().equals(roNumber)) {
-                                            if (receivedOrderModel.getRoStatus().equals(true)){
-                                                if (receivedOrderModel != null) {
-                                                    edtPoNumberCust.setText(String.valueOf(receivedOrderModel.getRoPoCustNumber()));
-                                                } else {
-                                                    Toast.makeText(UpdateGoodIssueActivity.this, "Null", Toast.LENGTH_SHORT).show();
-                                                }
-                                            } else {
-                                            }
-                                        } else {
-                                            edtPoNumberCust.setText(String.valueOf(goodIssueModel.getGiPoCustNumber()));
-                                        }
-                                    }
-                                } else {
-                                }
-                            }
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError error) {}
-                        });*/
-
                         edtPoNumberCust.setOnClickListener(view -> dialogInterface.changePoNumberCustomer(UpdateGoodIssueActivity.this, roNumber));
                         DatabaseReference referenceProfile = FirebaseDatabase.getInstance("https://bas-delivery-report-default-rtdb.asia-southeast1.firebasedatabase.app").getReference("RegisteredUser");
                         referenceProfile.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -252,8 +214,10 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
 
                         if (giInvoiced.equals(true)){
                             tvGiInvoicedStatus.setText("Status Ditagihkan: SUDAH DITAGIHKAN");
+                            fabSaveFormIsEmpty();
                         } else{
                             tvGiInvoicedStatus.setText("Status Ditagihkan: BELUM DITAGIHKAN");
+                            fabSaveBtnFormIsNotEmpty();
                         }
 
                         edtGiDate.setText(giDateCreated);
@@ -438,193 +402,6 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
             });
         });
 
-
-       /* spinnerRoNumber.setOnItemClickListener((adapterView, view, position, l) -> {
-            String selectedSpinnerPoPtBasNumber = (String) adapterView.getItemAtPosition(position);
-
-            databaseReference.child("ReceivedOrders").addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    if (snapshot.exists()){
-                        for (DataSnapshot dataSnapshot: snapshot.getChildren()){
-                            String key = dataSnapshot.getKey();
-                            assert key != null;
-                            String roUID = snapshot.child(key).child("roUID").getValue(String.class);
-                            if (Objects.equals(roUID, selectedSpinnerPoPtBasNumber)){
-                                roNumber = roUID;
-                                ReceivedOrderModel receivedOrderModel = snapshot.child(key).getValue(ReceivedOrderModel.class);
-                                if (Objects.equals(snapshot.child(key).child("roStatus").getValue(), true)) {
-                                    if (receivedOrderModel != null) {
-                                        //matNameList.clear();
-                                        roKey = key;
-
-                                        databaseReference.child("OrderedItems").addValueEventListener(new ValueEventListener() {
-                                            @Override
-                                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                                matNameList.clear();
-                                                if (snapshot.exists()){
-                                                    for (DataSnapshot dataSnapshot: snapshot.getChildren()){
-                                                        String spinnerMaterialData = dataSnapshot.child("matName").getValue(String.class);
-                                                        matNameList.add(spinnerMaterialData);
-                                                        matNameList.remove("JASA ANGKUT");
-                                                    }
-                                                    ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(UpdateGoodIssueActivity.this, R.layout.style_spinner, matNameList);
-                                                    arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
-                                                    spinnerMatName.setAdapter(arrayAdapter);
-                                                } else {
-                                                    Toast.makeText(UpdateGoodIssueActivity.this, "Data tidak ditemukan", Toast.LENGTH_SHORT).show();
-                                                }
-                                            }
-                                            @Override
-                                            public void onCancelled(@NonNull DatabaseError error) {}
-                                        });
-
-
-
-                                        edtPoNumberCust.setText(String.valueOf(receivedOrderModel.getRoPoCustNumber()));
-                                        if (receivedOrderModel.getRoMatType().contains("CUR")) {
-                                            spinnerMatType.setText("CURAH");
-                                            matType = "CURAH";
-                                        } else {
-                                            spinnerMatType.setText("BORONG");
-                                            matType = "BORONG";
-                                        }
-                                        edtPoNumberCust.setOnClickListener(view1 ->
-                                                dialogInterface.changePoNumberCustomer(
-                                                        UpdateGoodIssueActivity.this, roNumber));
-                                    } else {
-                                        Toast.makeText(UpdateGoodIssueActivity.this, "Null", Toast.LENGTH_SHORT).show();
-                                    }
-                                } else {
-                                    dialogInterface.roNotActiveYet(UpdateGoodIssueActivity.this, roNumber);
-
-                                }
-                            }
-                            //DatabaseReference databaseReferenceMaterial = FirebaseDatabase.getInstance().getReference("ReceivedOrders");
-                        }
-
-                    } else {
-                        //dialogInterface.roNotExistsDialog(AddGoodIssueActivity.this);
-                    }
-                }
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {}
-            });
-
-            spinnerRoNumber.setError(null);
-            edtPoNumberCust.setError(null);
-            matNameList.clear();
-        });*/
-
-        /*databaseReference.child("ReceivedOrders").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                receiveOrderNumberList.clear();
-                if (snapshot.exists()){
-                    for (DataSnapshot dataSnapshot: snapshot.getChildren()){
-                        String spinnerPurchaseOrders = dataSnapshot.child("roUID").getValue(String.class);
-                        receiveOrderNumberList.add(spinnerPurchaseOrders);
-                    }
-                    ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(UpdateGoodIssueActivity.this, R.layout.style_spinner, receiveOrderNumberList);
-                    arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
-                    spinnerRoNumber.setAdapter(arrayAdapter);
-                } else {
-                    //dialogInterface.roNotExistsDialog(AddGoodIssueActivity.this);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });*/
-
-
-        /*db.collection("ReceivedOrderData").orderBy("roUID", Query.Direction.ASCENDING).get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        receiveOrderNumberList.clear();
-                        for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots){
-                            String spinnerPurchaseOrders = documentSnapshot.get("roUID").toString();
-                            receiveOrderNumberList.add(spinnerPurchaseOrders);
-                        }
-                        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(UpdateGoodIssueActivity.this, R.layout.style_spinner, receiveOrderNumberList);
-                        arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
-                        spinnerRoNumber.setAdapter(arrayAdapter);
-                    }
-                });*/
-
-
-/*
-        spinnerRoNumber.setOnItemClickListener((adapterView, view, position, l) -> {
-            String selectedSpinnerPoPtBasNumber = (String) adapterView.getItemAtPosition(position);
-            roNumber = selectedSpinnerPoPtBasNumber;
-            spinnerRoNumber.setError(null);
-            edtPoNumberCust.setError(null);
-            spinnerMatName.setText(null);
-
-            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("ReceivedOrders");
-            databaseReference.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    for(DataSnapshot ds : snapshot.getChildren()) {
-                        String key = ds.getKey();
-                        ReceivedOrderModel receivedOrderModel = snapshot.child(key).getValue(ReceivedOrderModel.class);
-                        if (receivedOrderModel.getRoUID().equals(roNumber)) {
-                            if (receivedOrderModel !=null){
-                                edtPoNumberCust.setText(String.valueOf(receivedOrderModel.getRoPoCustNumber()));
-                                if (receivedOrderModel.getRoMatType().contains("CUR")){
-                                    spinnerMatType.setText("CURAH");
-                                    matType = "CURAH";
-                                } else{
-                                    spinnerMatType.setText("BORONG");
-                                    matType = "BORONG";
-                                }
-
-                                if (receivedOrderModel.getRoStatus().equals(false)){
-                                    //dialogInterface.roNotActiveYet(UpdateGoodIssueActivity.this, roNumber);
-                                }
-
-                                databaseReference.child(key).child("OrderedItems").addValueEventListener(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                        matNameList.clear();
-                                        if (snapshot.exists()){
-                                            for (DataSnapshot dataSnapshot: snapshot.getChildren()){
-                                                String spinnerMaterialData = dataSnapshot.child("matName").getValue(String.class);
-                                                matNameList.add(spinnerMaterialData);
-                                                matNameList.remove("JASA ANGKUT");
-                                            }
-                                            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(UpdateGoodIssueActivity.this, R.layout.style_spinner, matNameList);
-                                            arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
-                                            spinnerMatName.setAdapter(arrayAdapter);
-                                        } else {
-                                            Toast.makeText(UpdateGoodIssueActivity.this, "Not exists", Toast.LENGTH_SHORT).show();
-                                        }
-                                    }
-
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError error) {
-
-                                    }
-                                });
-                            } else {
-                                Toast.makeText(UpdateGoodIssueActivity.this, "Null", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    }
-
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-
-                }
-            });
-        });
-*/
-
         spinnerMatName.setOnItemClickListener((adapterView, view, position, l) -> {
             String selectedSpinnerMaterialName = (String) adapterView.getItemAtPosition(position);
             matName = selectedSpinnerMaterialName;
@@ -678,9 +455,13 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
 
             }
         });
+    }
 
+    private void fabSaveFormIsEmpty(){
+        fabSaveGIData.setOnClickListener(view -> Toast.makeText(getApplicationContext(), "Anda tidak dapat mengubah data yang sudah ditagihkan.", Toast.LENGTH_SHORT).show());
+    }
 
-
+    private void fabSaveBtnFormIsNotEmpty(){
         fabSaveGIData.setOnClickListener(view -> {
             String giDate = Objects.requireNonNull(edtGiDate.getText()).toString();
             String giTime = Objects.requireNonNull(edtGiTime.getText()).toString();
@@ -749,33 +530,6 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
                 edtHeightCorrection.setText("0");
             }
 
-            /*for(int i = 0; i<receiveOrderNumberList.size(); i++){
-                if (!spinnerRoNumber.getText().toString().equals(receiveOrderNumberList.get(i))){
-                    spinnerRoNumber.setError("Nomor Received Order tidak ditemukan");
-                    spinnerRoNumber.requestFocus();
-                } else{
-                    spinnerRoNumber.setError(null);
-                    spinnerRoNumber.clearFocus();
-
-
-                }
-            }*/
-
-
-
-
-            /*for(int i = 0; i<matNameList.size(); i++){
-                if (!spinnerMatName.getText().toString().equals(matNameList.get(i).toString())){
-                    spinnerMatName.setError("Nama material tidak ditemukan");
-                    spinnerMatName.requestFocus();
-                } else{
-                    spinnerMatName.setError(null);
-                    spinnerMatName.clearFocus();
-
-
-                }
-            }*/
-
             if (!TextUtils.isEmpty(giDate)&&!TextUtils.isEmpty(giTime)
                     &&!TextUtils.isEmpty(giRONumber)&&!TextUtils.isEmpty(giPOCustomerNumber)
                     &&!TextUtils.isEmpty(giMatName)&&!TextUtils.isEmpty(giMatType)
@@ -792,10 +546,7 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
                         Integer.parseInt(tvHeightCorrection.getText().toString().replaceAll("[^0-9]", "")),
                         Float.parseFloat(df.format(Float.parseFloat(giVhlCubication.replaceAll("[^0-9.]", "")))),
                         giStatus, giInvoiced);
-
             }
-
-
 
         });
     }
@@ -828,19 +579,6 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
                 giMatName, giMatType, vhlUID, giDateCreated, giTimeCreted, vhlLength,
                 vhlWidth, vhlHeight, vhlHeightCorrection, vhlHeightAfterCorrection, giVhlCubication, giStatus, giInvoiced);
 
-        /*DatabaseReference refGIExists = FirebaseDatabase.getInstance().getReference("GoodIssueData/"+giUID);
-        refGIExists.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });*/
         DatabaseReference refGI = FirebaseDatabase.getInstance().getReference("GoodIssueData");
         refGI.child(giUID).setValue(goodIssueModel).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
@@ -907,7 +645,6 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        //dialogInterface.discardDialogConfirmation(UpdateGoodIssueActivity.this);
     }
 
 }

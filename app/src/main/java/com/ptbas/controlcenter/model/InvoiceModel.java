@@ -2,16 +2,17 @@ package com.ptbas.controlcenter.model;
 
 public class InvoiceModel {
 
-    String invDocumentID, invUID, invCreatedBy, invDateCreated, invPoUID, invPoDate, invCustName;
+    String invDocumentID, invUID, invPoType, invCreatedBy, invDateCreated, invPoUID, invPoDate, invCustName;
     Double invTotal, invTax1, invTax2;
     Boolean invStatus;
 
     public InvoiceModel() {
     }
 
-    public InvoiceModel(String invDocumentID, String invUID, String invCreatedBy, String invDateCreated, String invPoUID, String invPoDate, String invCustName, Double invTotal, Double invTax1, Double invTax2, Boolean invStatus) {
+    public InvoiceModel(String invDocumentID, String invUID, String invPoType, String invCreatedBy, String invDateCreated, String invPoUID, String invPoDate, String invCustName, Double invTotal, Double invTax1, Double invTax2, Boolean invStatus) {
         this.invDocumentID = invDocumentID;
         this.invUID = invUID;
+        this.invPoType = invPoType;
         this.invCreatedBy = invCreatedBy;
         this.invDateCreated = invDateCreated;
         this.invPoUID = invPoUID;
@@ -21,6 +22,14 @@ public class InvoiceModel {
         this.invTax1 = invTax1;
         this.invTax2 = invTax2;
         this.invStatus = invStatus;
+    }
+
+    public String getInvPoType() {
+        return invPoType;
+    }
+
+    public void setInvPoType(String invPoType) {
+        this.invPoType = invPoType;
     }
 
     public String getInvDocumentID() {

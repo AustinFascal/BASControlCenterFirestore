@@ -149,6 +149,7 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
                 llStatusPOAvailable.setVisibility(View.GONE);
             }
 
+
             ivShowDetail.setOnClickListener(view -> {
                 String giUID1 =goodIssueModel.getGiUID();
                 Intent i = new Intent(context, UpdateGoodIssueActivity.class);

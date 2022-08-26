@@ -7,18 +7,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.CountDownTimer;
-import android.os.Handler;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -28,9 +24,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.ptbas.controlcenter.create.AddInvoiceActivity;
 import com.ptbas.controlcenter.create.AddReceivedOrder;
@@ -39,12 +33,8 @@ import com.ptbas.controlcenter.model.GoodIssueModel;
 import com.ptbas.controlcenter.model.InvoiceModel;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Locale;
 import java.util.Objects;
-import java.util.Random;
 
 import dev.shreyaspatil.MaterialDialog.MaterialDialog;
 import dev.shreyaspatil.MaterialDialog.model.TextAlignment;
@@ -497,6 +487,24 @@ public class DialogInterface {
         mBottomSheetDialog.show();
     }
 
+    public void deleteProductDataConfirmation(Context context, String productDataUID) {
+        MaterialDialog mBottomSheetDialog = new MaterialDialog.Builder((Activity) context)
+                .setTitle("Hapus Data")
+                .setAnimation(R.raw.lottie_delete)
+                .setMessage("Apakah Anda yakin ingin menghapus data Material yang Anda pilih? Setelah dihapus, data tidak dapat dikembalikan.")
+                .setCancelable(true)
+                .setPositiveButton("YA", R.drawable.ic_outline_check, (dialogInterface, which) -> {
+                    dialogInterface.dismiss();
+                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+                    databaseReference.child("ProductData").child(productDataUID).removeValue();
+                })
+                .setNegativeButton("TIDAK", R.drawable.ic_outline_close, (dialogInterface, which) -> dialogInterface.dismiss())
+                .build();
+
+        mBottomSheetDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
+        mBottomSheetDialog.show();
+    }
+
     public void deleteGiFromActivityConfirmation(Activity activity, String giUID) {
         MaterialDialog mBottomSheetDialog = new MaterialDialog.Builder(activity)
                 .setTitle("Hapus Data")
@@ -570,7 +578,7 @@ public class DialogInterface {
 
     public void confirmCreateInvoice(Context context, FirebaseFirestore db,
                                      ArrayList<GoodIssueModel> goodIssueModelArrayList,
-                                     String invUID, String invCreatedBy, String invDateCreated, String invPoDate, String invPoUID, String invCustName,
+                                     String invUID, String invPoType, String invCreatedBy, String invDateCreated, String invPoDate, String invPoUID, String invCustName,
                                      Double invTotal, Double invTax1, Double invTax2) {
         MaterialDialog mBottomSheetDialog = new MaterialDialog.Builder((Activity) context)
                 .setTitle("Buat Invoice")
@@ -580,7 +588,7 @@ public class DialogInterface {
                 .setPositiveButton("YA", R.drawable.ic_outline_check, (dialogInterface, which) -> {
                     generatingInvoice(context, db,
                             goodIssueModelArrayList,
-                            invUID, invCreatedBy, invDateCreated, invPoDate, invPoUID, invCustName,
+                            invUID, invPoType, invCreatedBy, invDateCreated, invPoDate, invPoUID, invCustName,
                             invTotal, invTax1, invTax2);
                     dialogInterface.dismiss();
                 })
@@ -593,7 +601,7 @@ public class DialogInterface {
 
     public void generatingInvoice(Context context, FirebaseFirestore db,
                                   ArrayList<GoodIssueModel> goodIssueModelArrayList,
-                                  String invUID, String invCreatedBy, String invDateCreated, String invPoDate, String invPoUID, String invCustName,
+                                  String invUID, String invPoType, String invCreatedBy, String invDateCreated, String invPoDate, String invPoUID, String invCustName,
                                   Double invTotal, Double invTax1, Double invTax2) {
 
         MaterialDialog generatingInvoiceDialog = new MaterialDialog.Builder((Activity) context)
@@ -617,7 +625,7 @@ public class DialogInterface {
                 String invDocumentID = refRO.getId();
 
                 InvoiceModel invoiceModel = new InvoiceModel(
-                        invDocumentID, invUID, invCreatedBy, invDateCreated, invPoUID,
+                        invDocumentID, invUID, invPoType, invCreatedBy, invDateCreated, invPoUID,
                         invPoDate, invCustName, invTotal, invTax1, invTax2, false);
 
                 refRO.set(invoiceModel);

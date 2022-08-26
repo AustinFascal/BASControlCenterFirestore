@@ -216,18 +216,9 @@ public class AddReceivedOrder extends AppCompatActivity {
         llAddItem.setVisibility(View.GONE);
 
         txtInputEdtPoNumberCustomer = findViewById(R.id.txt_input_edt_po_number_customer);
-        //llPoNumberAvailability = findViewById(R.id.ll_po_number_availability);
-        //btnNoPoNumber = findViewById(R.id.btn_no_po_number);
         btnPoNumberAvailable = findViewById(R.id.btn_po_number_available);
 
         txtInputEdtPoNumberCustomer.setVisibility(View.GONE);
-
-       /* btnNoPoNumber.setOnClickListener(view -> {
-            edtPoNumberCustomer.setText(R.string.dash);
-            edtPoNumberCustomer.setInputType(InputType.TYPE_NULL);
-            txtInputEdtPoNumberCustomer.setVisibility(View.VISIBLE);
-            llPoNumberAvailability.setVisibility(View.GONE);
-        });*/
 
         btnPoNumberAvailable.setOnClickListener(view -> {
             edtPoNumberCustomer.setText("");
@@ -278,29 +269,6 @@ public class AddReceivedOrder extends AppCompatActivity {
                         }
                     }
                 });
-
-        /*databaseReference.child("CustomerData").orderByChild("custName").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()){
-                    for (DataSnapshot dataSnapshot: snapshot.getChildren()){
-                        String spinnerCustUID = dataSnapshot.child("custUID").getValue(String.class);
-                        String spinnerCustName = dataSnapshot.child("custName").getValue(String.class);
-                        customerName.add(spinnerCustUID+" - "+spinnerCustName);
-                    }
-                    ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddReceivedOrder.this, R.layout.style_spinner, customerName);
-                    arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
-                    spinnerPoCustName.setAdapter(arrayAdapter);
-                } else {
-                    Toast.makeText(AddReceivedOrder.this, "Not exists", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });*/
 
         databaseReference.child("CurrencyData").addValueEventListener(new ValueEventListener() {
             @Override
@@ -411,32 +379,6 @@ public class AddReceivedOrder extends AppCompatActivity {
                     }
 
                 }
-                /*if (transportData.isEmpty()){
-                    if (poMonth==0||poYear==0){
-                        edtPoNumberPtbas.setText(customerID +"- "+transportData+" - ");
-                    } else {
-                        edtPoNumberPtbas.setText(customerID +"- "+transportData+" - "+poYear+monthStrVal);
-                    }
-                } else {
-                    if (poMonth==0||poYear==0){
-                        edtPoNumberPtbas.setText(customerID +"- "+transportData.substring(0, 3) + " - ");
-                        if (!customerData.isEmpty() &&!Objects.requireNonNull(edtPoDate.getText()).toString().equals("")){
-                            edtPoNumberPtbas.setText(randomString+" - "+customerID +"- "+transportData.substring(0, 3)+" - ");
-                        }
-                    } else {
-                        edtPoNumberPtbas.setText(customerID +"- "+transportData.substring(0, 3) + " - " + poYear+monthStrVal);
-                        if (customerData.isEmpty() &&!Objects.requireNonNull(edtPoDate.getText()).toString().equals("")){
-                            if (customerData.equals("-") || edtPoNumberCustomer.getText().toString().equals("-")){
-                                edtPoNumberPtbas.setText(randomString+" - "+ customerID +"- "+transportData.substring(0, 3)+" - "+poYear+monthStrVal);
-                            }
-                        }
-                        if (!customerData.isEmpty() && !edtPoNumberCustomer.getText().toString().equals("-")){
-                            String poNumberCustomer = Objects.requireNonNull(edtPoNumberCustomer.getText()).toString();
-                            edtPoNumberPtbas.setText(randomString+" - "+ customerID +"- "+transportData.substring(0, 3)+" - "+poNumberCustomer);
-                        }
-                    }
-
-                }*/
                 handler.postDelayed(this, 500);
             }
         };
@@ -539,22 +481,6 @@ public class AddReceivedOrder extends AppCompatActivity {
 
     }
 
-  /*  private OnMenuItemClickListener<PowerMenuItem> onMenuItemClickListener = new OnMenuItemClickListener<PowerMenuItem>() {
-        @Override
-        public void onItemClick(int position, PowerMenuItem item) {
-            if (item.getTitle().toString().equals("JASA ANGKUT SAJA")){
-                Toast.makeText(AddReceivedOrder.this, "Jasa Angkut saja", Toast.LENGTH_SHORT).show();
-            }
-
-            if (item.getTitle().toString().equals("JASA ANGKUT DAN MATERIAL")){
-                Toast.makeText(AddReceivedOrder.this, "Jasa Angkut + Material", Toast.LENGTH_SHORT).show();
-            }
-
-            if (item.getTitle().toString().equals("MATERIAL SAJA")){
-                Toast.makeText(AddReceivedOrder.this, "Material Saja", Toast.LENGTH_SHORT).show();
-            }
-        }
-    };*/
 
     private void bottomSheetExpanded() {
         llInputAllData.setVisibility(View.INVISIBLE);
@@ -646,9 +572,6 @@ public class AddReceivedOrder extends AppCompatActivity {
                 previewProductItemAdapter = new PreviewProductItemAdapter(this, getList());
                 rvItems.setAdapter(previewProductItemAdapter);
 
-                // DatabaseReference ref1 = FirebaseDatabase.getInstance().getReference("ReceivedOrders");
-                //DatabaseReference ref2 = FirebaseDatabase.getInstance().getReference("ReceivedOrders");
-
                 HashMap<String, List<ProductItems>> productItemsHashMap = new HashMap<>();
                 for(int i=0; i<productItemsArrayList.size(); i++) {
                     String sortID = productItemsArrayList.get(i).getMatName();
@@ -679,38 +602,6 @@ public class AddReceivedOrder extends AppCompatActivity {
                                 }).addOnFailureListener(e ->
                                         Toast.makeText(AddReceivedOrder.this, "FAILED", Toast.LENGTH_SHORT).show());
 
-                                        /*refRO.collection("OrderedItems")
-                                                .document()
-                                                .set(productItemsHashMap)
-                                        .addOnSuccessListener(unused1 -> {
-
-                                        })
-                                        .addOnFailureListener(e ->
-                                                Toast.makeText(AddReceivedOrder.this,
-                                                        "FAILED", Toast.LENGTH_SHORT).show()))*/
-
-
-
-
-
-                        /*String key = ref1.push().getKey();
-                        ref1.child(key).setValue(receivedOrderModel).addOnCompleteListener  (task ->
-                                ref2.child(key).child("OrderedItems").setValue(productItemsArrayList).addOnCompleteListener(task1 -> {
-                                    if(task1.isSuccessful())
-                                    {
-                                        Intent intent = new Intent();
-                                        intent.putExtra("addedStatus", "true");
-                                        intent.putExtra("activityType", "RO");
-                                        setResult(RESULT_OK, intent);
-                                        finish();
-                                        *//*bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-                                        fabExpandMenu.collapse();
-                                        llInputAllData.setVisibility(View.INVISIBLE);*//*
-
-
-                                        //dialogInterface.savedROInformation(AddReceivedOrder.this);
-                                    }
-                                }));*/
                     }
                 });
 

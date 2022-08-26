@@ -50,13 +50,62 @@
                     android:textStyle="bold" />
 
                 <TextView
+                    android:id="@+id/tv_po_cust_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:text="Nama Customer"
+                    android:textSize="14sp" />
+
+                <TextView
                     android:id="@+id/tv_po_cust_number"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
                     android:maxLines="1"
-                    android:text="Nomor PO Customer"
+                    android:text="Nomor PO Customer dan Tipe PO"
                     android:textSize="14sp" />
+                <LinearLayout
+                    android:id="@+id/ll_status_unpaid"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/iv_show_detail"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="4dp"
+                    android:background="@drawable/pill_red"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="2dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="BELUM LUNAS"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/ll_status_paid"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/iv_show_detail"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="4dp"
+                    android:background="@drawable/pill_green"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="2dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="LUNAS"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+
 
 
             </LinearLayout>
@@ -71,45 +120,8 @@
                 android:src="@drawable/ic_outline_navigate_next"
                 app:tint="@color/white" />
 
-            <LinearLayout
-                android:id="@+id/ll_status_paid"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/iv_show_detail"
-                android:layout_alignParentEnd="true"
-                android:layout_marginTop="4dp"
-                android:layout_marginEnd="4dp"
-                android:background="@drawable/pill_green"
-                android:paddingHorizontal="8dp"
-                android:paddingVertical="2dp">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="LUNAS"
-                    android:textSize="11sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
 
-            <LinearLayout
-                android:id="@+id/ll_status_unpaid"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/iv_show_detail"
-                android:layout_alignParentEnd="true"
-                android:layout_marginTop="4dp"
-                android:layout_marginEnd="4dp"
-                android:background="@drawable/pill_red"
-                android:paddingHorizontal="8dp"
-                android:paddingVertical="2dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="BELUM LUNAS"
-                    android:textSize="11sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
 
         </RelativeLayout>
         <LinearLayout
@@ -138,6 +150,7 @@
                     android:scaleType="center"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:tint="@color/dark_red"
                     android:src="@drawable/ic_outline_delete_forever"
                     android:layout_alignStart="@+id/btn_delete_inv"
                     android:layout_alignEnd="@+id/btn_delete_inv"

@@ -54,7 +54,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
-import java.util.Set;
 
 public class AddGoodIssueActivity extends AppCompatActivity {
 
@@ -328,112 +327,12 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                                     matNameList.remove("JASA ANGKUT");
                                 }
 
-
-
-
                                 ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddGoodIssueActivity.this, R.layout.style_spinner, matNameList);
                                 arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
                                 spinnerMatName.setAdapter(arrayAdapter);
                             }
                         }
                     });
-
-            /*db.collection("ReceivedOrderData").whereEqualTo("roUID", selectedSpinnerPoPtBasNumber)
-                    .addSnapshotListener((value, error) -> {
-                        //receiveOrderNumberList.clear();
-                        if (value != null) {
-                            if (!value.isEmpty()) {
-                                for (DocumentSnapshot d : value.getDocuments()) {
-
-                                    *//*String roMatType = Objects.requireNonNull(d.get("roMatType")).toString();
-                                    //String roMatType = Objects.requireNonNull(d.get("roOrderedItems")).toString();
-                                    spinnerMatType.setText(roMatType);*//*
-
-
-
-                                }
-
-                            } else {
-
-                            }
-                        }
-
-                    });*/
-
-            /*db.collection("ReceivedOrderData").orderBy("roDateCreated")
-                    .addSnapshotListener((value, error) -> {
-
-                        if (!value.isEmpty()){
-                            for (DocumentSnapshot d : value.getDocuments()) {
-                                ReceivedOrderModel receivedOrderModel = d.toObject(ReceivedOrderModel.class);
-                            }
-                        } else{
-                        }
-                    });*/
-
-           /* databaseReference.child("ReceivedOrders").addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    if (snapshot.exists()){
-                        for (DataSnapshot dataSnapshot: snapshot.getChildren()){
-                            String key = dataSnapshot.getKey();
-                            assert key != null;
-                            String roUID = snapshot.child(key).child("roUID").getValue(String.class);
-                            if (Objects.equals(roUID, selectedSpinnerPoPtBasNumber)){
-                                roNumber = roUID;
-                                ReceivedOrderModel receivedOrderModel = snapshot.child(key).getValue(ReceivedOrderModel.class);
-                                if (Objects.equals(snapshot.child(key).child("roStatus").getValue(), true)) {
-                                    if (receivedOrderModel != null) {
-                                        matNameList.clear();
-                                        roKey = key;
-                                        edtPoNumberCust.setText(String.valueOf(receivedOrderModel.getRoPoCustNumber()));
-                                        if (receivedOrderModel.getRoMatType().contains("CUR")) {
-                                            spinnerMatType.setText("CURAH");
-                                            matType = "CURAH";
-                                        } else {
-                                            spinnerMatType.setText("BORONG");
-                                            matType = "BORONG";
-                                        }
-                                        edtPoNumberCust.setOnClickListener(view1 ->
-                                                dialogInterface.changePoNumberCustomer(
-                                                        AddGoodIssueActivity.this, roNumber));
-                                    } else {
-                                        Toast.makeText(AddGoodIssueActivity.this, "Null", Toast.LENGTH_SHORT).show();
-                                    }
-                                } else {
-                                    //dialogInterface.roNotActiveYet(AddGoodIssueActivity.this, roNumber);
-
-                                }
-                            }
-                        }
-                        DatabaseReference databaseReferenceMaterial = FirebaseDatabase.getInstance().getReference("ReceivedOrders");
-                        databaseReferenceMaterial.child(roKey).child("OrderedItems").addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                matNameList.clear();
-                                if (snapshot.exists()){
-                                    for (DataSnapshot dataSnapshot: snapshot.getChildren()){
-                                        String spinnerMaterialData = dataSnapshot.child("matName").getValue(String.class);
-                                        matNameList.add(spinnerMaterialData);
-                                        matNameList.remove("JASA ANGKUT");
-                                    }
-                                    ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddGoodIssueActivity.this, R.layout.style_spinner, matNameList);
-                                    arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
-                                    spinnerMatName.setAdapter(arrayAdapter);
-                                } else {
-                                    Toast.makeText(AddGoodIssueActivity.this, "Data tidak ditemukan", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError error) {}
-                        });
-                    } else {
-                        //dialogInterface.roNotExistsDialog(AddGoodIssueActivity.this);
-                    }
-                }
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {}
-            });*/
 
             spinnerRoNumber.setError(null);
             edtPoNumberCust.setError(null);
@@ -452,15 +351,12 @@ public class AddGoodIssueActivity extends AppCompatActivity {
             return false;
         });
 
-        //spinnerMatName.setOnFocusChangeListener((view, b) -> spinnerMatName.setText(matName));
-
         spinnerMatType.setOnItemClickListener((adapterView, view, position, l) -> {
             String selectedSpinnerTransportType = (String) adapterView.getItemAtPosition(position);
             matType = selectedSpinnerTransportType;
             spinnerMatType.setError(null);
         });
 
-        //spinnerMatType.setOnFocusChangeListener((view, b) -> spinnerMatType.setText(matType));
 
         db.collection("ReceivedOrderData").whereEqualTo("roStatus", true)
                 .addSnapshotListener((value, error) -> {
@@ -482,29 +378,6 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                     }
 
                 });
-
-        /*databaseReference.child("ReceivedOrders").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                receiveOrderNumberList.clear();
-                if (snapshot.exists()){
-                    for (DataSnapshot dataSnapshot: snapshot.getChildren()){
-                        String spinnerPurchaseOrders = dataSnapshot.child("roUID").getValue(String.class);
-                        receiveOrderNumberList.add(spinnerPurchaseOrders);
-                    }
-                    ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddGoodIssueActivity.this, R.layout.style_spinner, receiveOrderNumberList);
-                    arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
-                    spinnerRoNumber.setAdapter(arrayAdapter);
-                } else {
-                    //dialogInterface.roNotExistsDialog(AddGoodIssueActivity.this);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });*/
 
         databaseReference.child("VehicleData").addValueEventListener(new ValueEventListener() {
             @Override

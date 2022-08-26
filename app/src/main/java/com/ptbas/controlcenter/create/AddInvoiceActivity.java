@@ -385,7 +385,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
                 String invCreatedBy = helper.getUserId();
 
                 dialogInterface.confirmCreateInvoice(context, db, goodIssueModelArrayList,
-                        invUID, invCreatedBy, invDateCreated, invPoDate, invPoUID, invCustName, totalIDR, invTax1, invTax2);
+                        invUID, invPotypeVal, invCreatedBy, invDateCreated, invPoDate, invPoUID, invCustName, totalIDR, invTax1, invTax2);
 
                 String custNameValReplace = custNameVal.replace(" - ","-");
                 int indexCustNameVal = custNameValReplace.lastIndexOf('-');
@@ -425,10 +425,12 @@ public class AddInvoiceActivity extends AppCompatActivity {
             addUpperSpc(document);
             addInvTtl(document);
             addInvMainContent(document);
-            // CREATE SUMMARY OF INVOICE PAGE
-            document.newPage();
-            addGiRcpTtl(document);
-            addGiRcpMainContent(document);
+            // CREATE SUMMARY OF INVOICE PAGE IF PO TYPE != 2 (JASA ANGKUT SAJA)
+            if (invPoType == 0 || invPoType == 1){
+                document.newPage();
+                addGiRcpTtl(document);
+                addGiRcpMainContent(document);
+            }
             document.close();
 
             // OPEN GENERATED FILE
@@ -773,9 +775,12 @@ public class AddInvoiceActivity extends AppCompatActivity {
                 taxPPN = 0;
                 tblInvSection8.addCell(cellTxtBrdrTopNrmlMainContent(
                         new Paragraph(currencyVal+" "+currencyFormat(df.format(totalAmountForTransportService))+"\n"+currencyVal+" "+"0"+"\n"+currencyVal+" "+currencyFormat(df.format(taxPPN))+"\n"+"("+currencyVal+" "+currencyFormat(df.format(taxPPH))+")"+"\n"+currencyVal+" "+currencyFormat(df.format(totalDueForTransportService)), fontNormal), Element.ALIGN_RIGHT));
-            } else{
+            } else if (invPoType == 1){
                 tblInvSection8.addCell(cellTxtBrdrTopNrmlMainContent(
                         new Paragraph(currencyVal+" "+currencyFormat(df.format(totalAmountForMaterials))+"\n"+currencyVal+" "+"0"+"\n"+currencyVal+" "+currencyFormat(df.format(taxPPN))+"\n"+"("+currencyVal+" "+currencyFormat(df.format(taxPPH))+")"+"\n"+currencyVal+" "+currencyFormat(df.format(totalDue)), fontNormal), Element.ALIGN_RIGHT));
+            } else if (invPoType == 0){
+                tblInvSection8.addCell(cellTxtBrdrTopNrmlMainContent(
+                        new Paragraph(currencyVal+" "+currencyFormat(df.format(totalAmountForMaterials+totalAmountForTransportService   ))+"\n"+currencyVal+" "+"0"+"\n"+currencyVal+" "+currencyFormat(df.format(taxPPN))+"\n"+"("+currencyVal+" "+currencyFormat(df.format(taxPPH))+")"+"\n"+currencyVal+" "+currencyFormat(df.format(totalDue)), fontNormal), Element.ALIGN_RIGHT));
             }
 
 
@@ -1081,6 +1086,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
                         productItemsList.clear();
                     }
                     transportServiceSellPrice = 0;
+                    matSellPrice = 0;
 
                     for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots){
                         ReceivedOrderModel receivedOrderModel = documentSnapshot.toObject(ReceivedOrderModel.class);
@@ -1109,9 +1115,9 @@ public class AddInvoiceActivity extends AppCompatActivity {
                         for (HashMap.Entry<String, List<ProductItems>> e : map.entrySet()) {
                             productItemsList = e.getValue();
                             for (int i = 0; i<productItemsList.size();i++){
-                                if (productItemsList.get(i).getMatName().equals("JASA ANGKUT")){
-                                    transportServiceNameVal = productItemsList.get(i).getMatName();
-                                    transportServiceSellPrice = productItemsList.get(i).getMatSellPrice();
+                                if (productItemsList.get(0).getMatName().equals("JASA ANGKUT")){
+                                    transportServiceNameVal = productItemsList.get(0).getMatName();
+                                    transportServiceSellPrice = productItemsList.get(0).getMatSellPrice();
                                 } else {
                                     matNameVal = productItemsList.get(i).getMatName();
                                     matSellPrice = productItemsList.get(i).getMatSellPrice();

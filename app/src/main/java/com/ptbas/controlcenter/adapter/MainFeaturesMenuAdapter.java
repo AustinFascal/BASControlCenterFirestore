@@ -14,6 +14,7 @@ import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.create.AddCustomerActivity;
 import com.ptbas.controlcenter.management.GoodIssueManagementActivity;
 import com.ptbas.controlcenter.management.InvoiceManagementActivity;
+import com.ptbas.controlcenter.management.ProductDataManagementActivity;
 import com.ptbas.controlcenter.management.ReceivedOrderManagementActivity;
 import com.ptbas.controlcenter.management.UserManagementActivity;
 import com.ptbas.controlcenter.management.VehicleManagementActivity;
@@ -81,6 +82,12 @@ public class MainFeaturesMenuAdapter extends RecyclerView.Adapter<MainFeatureVie
                     /*Toast.makeText(context, "Coming soon", Toast.LENGTH_SHORT).show();*/
 
                     Intent intent2 = new Intent(context, InvoiceManagementActivity.class);
+                    intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(intent2);
+                }else if (pos == 6){
+                    /*Toast.makeText(context, "Coming soon", Toast.LENGTH_SHORT).show();*/
+
+                    Intent intent2 = new Intent(context, ProductDataManagementActivity.class);
                     intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(intent2);
                 }

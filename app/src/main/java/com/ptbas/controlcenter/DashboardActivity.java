@@ -58,6 +58,7 @@ import com.ptbas.controlcenter.adapter.StatisticsAdapter;
 import com.ptbas.controlcenter.create.AddCustomerActivity;
 import com.ptbas.controlcenter.create.AddGoodIssueActivity;
 import com.ptbas.controlcenter.create.AddInvoiceActivity;
+import com.ptbas.controlcenter.create.AddProductData;
 import com.ptbas.controlcenter.create.AddReceivedOrder;
 import com.ptbas.controlcenter.create.AddVehicleActivity;
 import com.ptbas.controlcenter.management.ReceivedOrderManagementActivity;
@@ -192,6 +193,7 @@ public class DashboardActivity extends AppCompatActivity {
 
         LinearLayout llAddVehicleFromBottomSheet = bottomSheet.findViewById(R.id.ll_add_vehicle);
         LinearLayout llAddCustomerFromBottomSheet = bottomSheet.findViewById(R.id.ll_add_customer);
+        LinearLayout llAddMaterialFromBottomSheet = bottomSheet.findViewById(R.id.ll_add_material);
         ImageView ivExpandCollapseFromBottomSheet = bottomSheet.findViewById(R.id.iv_expand_collapse);
 
         bottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
@@ -237,6 +239,11 @@ public class DashboardActivity extends AppCompatActivity {
 
         llAddCustomerFromBottomSheet.setOnClickListener(view -> {
             Intent intent = new Intent(DashboardActivity.this, AddCustomerActivity.class);
+            startActivity(intent);
+        });
+
+        llAddMaterialFromBottomSheet.setOnClickListener(view -> {
+            Intent intent = new Intent(DashboardActivity.this, AddProductData.class);
             startActivity(intent);
         });
 
@@ -558,6 +565,12 @@ public class DashboardActivity extends AppCompatActivity {
         //ob6.setDesc("Atur data invoice transaksi");
         ob6.setImgName(R.drawable.ic_invoice);
         holder.add(ob6);
+
+        MainFeatureModel ob7 = new MainFeatureModel();
+        ob7.setHeader("Manajemen Material");
+        //ob6.setDesc("Atur data invoice transaksi");
+        ob7.setImgName(R.drawable.ic_add_material);
+        holder.add(ob7);
 
         return holder;
     }
