@@ -376,6 +376,8 @@ public class DashboardActivity extends AppCompatActivity {
 
         // SUM RECEIVED ORDER - NEED APPROVAL
 
+
+
         db.collection("ReceivedOrderData").whereEqualTo("roStatus", false)
                 .addSnapshotListener((value, error) -> {
                     int countFinal = Integer.parseInt(String.valueOf(value.getDocuments().size()));
@@ -447,10 +449,10 @@ public class DashboardActivity extends AppCompatActivity {
     }
 
     public void showStatistics(){
-        statisticsAdapter = new StatisticsAdapter(dataQueueStatistic(),getApplicationContext());
-        rvStatistics.setAdapter(statisticsAdapter);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL, false);
         rvStatistics.setLayoutManager(layoutManager);
+        statisticsAdapter = new StatisticsAdapter(dataQueueStatistic(), (Context) this);
+        rvStatistics.setAdapter(statisticsAdapter);
     }
 
     private void showUserProfile(FirebaseUser firebaseUser) {

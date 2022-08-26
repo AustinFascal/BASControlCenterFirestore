@@ -43,7 +43,7 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
     @Override
     public GIManagementAdapter.ItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_layout_good_issue, parent, false);
-
+        
         return new ItemViewHolder(itemView);
     }
 

@@ -349,8 +349,8 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
             document.addAuthor("PT BAS");
             document.addCreator("BAS Control Center");
             document.addCreationDate();
-            addTitlePage(document);
-            addContent(document);
+            addGiRcpTtl(document);
+            addGiRcpMainContent(document);
             document.close();
             Helper.openFilePDF(context, new File(Helper.getAppPath(context)+rouidVal+".pdf"));
         } catch (DocumentException | FileNotFoundException e) {
@@ -359,7 +359,7 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
         }
     }
 
-    private void addTitlePage(Document document) throws DocumentException {
+    private void addGiRcpTtl(Document document) throws DocumentException {
         Paragraph preface = new Paragraph();
         Chunk title = new Chunk("RO-"+rouidVal, fontBigBold);
         Paragraph paragraphTitle = new Paragraph(title);
@@ -403,7 +403,7 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
         return cell;
     }
 
-    private void addContent(Document document) throws DocumentException{
+    private void addGiRcpMainContent(Document document) throws DocumentException{
         DecimalFormat df = new DecimalFormat("0.00");
         String currentDate = new SimpleDateFormat("dd/MM/yyyy", Locale.US).format(new Date());
 

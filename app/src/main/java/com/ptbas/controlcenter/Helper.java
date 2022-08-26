@@ -53,7 +53,7 @@ public class Helper {
     }
 
     public static void openFilePDF(Context context, File url){
-        Toast.makeText(context, "Berhasil menyimpan data rekap menjadi PDF di "+url, Toast.LENGTH_LONG).show();
+       // Toast.makeText(context, "Berhasil menyimpan data rekap menjadi PDF di "+url, Toast.LENGTH_LONG).show();
 
         Uri uri = FileProvider.getUriForFile(
                 context,

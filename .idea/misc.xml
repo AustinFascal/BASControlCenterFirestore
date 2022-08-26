@@ -10,7 +10,8 @@
         <entry key="..\:/AUSTINFASCALISKANDAR/Projects/TravelPermitBAS/app/src/main/res/layout/activity_register.xml" value="0.22" />
         <entry key="..\:/AUSTINFASCALISKANDAR/Projects/TravelPermitBAS/app/src/main/res/layout/activity_user_profile.xml" value="0.1" />
         <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout/activity_add_good_issue.xml" value="0.12082066869300911" />
-        <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout/activity_good_issue_management.xml" value="0.12082066869300911" />
+        <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout/activity_dashboard.xml" value="0.17255434782608695" />
+        <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout/activity_good_issue_management.xml" value="0.1" />
         <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout/activity_invoice_management.xml" value="0.16799999999999998" />
         <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout/activity_update_good_issue.xml" value="0.17255434782608695" />
         <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout/item_layout_good_issue.xml" value="0.2484375" />
@@ -89,9 +90,6 @@
         <entry key="..\:/Users/CMH/Documents/GitHub/BASReportProject/app/src/main/res/menu/gi_search_menu.xml" value="0.21822916666666667" />
         <entry key="..\:/Users/CMH/Documents/GitHub/BASReportProject/app/src/main/res/menu/recap_gi_menu.xml" value="0.21927083333333333" />
         <entry key="..\:/Users/CMH/Documents/GitHub/BASReportProject/app/src/main/res/xml/provider_paths.xml" value="0.1743659420289855" />
-        <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/layout/item_layout_good_issue.xml" value="0.264" />
-        <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/layout/item_layout_invoice.xml" value="0.1585144927536232" />
-        <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/layout/item_layout_received_order.xml" value="0.1585144927536232" />
         <entry key="..\:/Users/CMH/StudioProjects/BASReportProject/app/src/main/res/layout/activity_add_received_order.xml" value="0.264" />
         <entry key="..\:/Users/CMH/StudioProjects/BASReportProject/app/src/main/res/layout/activity_dashboard.xml" value="0.16576086956521738" />
         <entry key="..\:/Users/CMH/StudioProjects/BASReportProject/app/src/main/res/layout/activity_good_issue_management.xml" value="0.136" />

@@ -48,7 +48,6 @@
                 android:layout_alignParentTop="true"
                 android:layout_alignParentBottom="true"
                 android:layout_toStartOf="@+id/wrap_profile_pic"
-                android:layout_toEndOf="@+id/imgbtn_menu"
                 android:layout_weight="3"
                 android:layout_marginStart="18dp"
                 android:gravity="center_vertical"
@@ -104,6 +103,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="90dp"
+        android:fillViewport="true"
         android:orientation="vertical">
 
 
@@ -119,8 +119,7 @@
                 android:layout_marginTop="20dp"
                 app:cardCornerRadius="18dp"
                 app:cardElevation="10dp"
-                app:cardPreventCornerOverlap="false"
-                app:layout_constraintTop_toBottomOf="@+id/linearLayout2">
+                app:cardPreventCornerOverlap="false">
 
                 <LinearLayout
                     android:id="@+id/ll_wrap_shortcuts"
@@ -184,7 +183,6 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:ellipsize="end"
-                                android:gravity="center_vertical"
                                 android:maxLines="2"
                                 android:text="Buat RO Baru"
                                 android:textAlignment="center" />
@@ -210,7 +208,6 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:ellipsize="end"
-                                android:gravity="center_vertical"
                                 android:maxLines="2"
                                 android:text="Buat GI Baru"
                                 android:textAlignment="center" />
@@ -236,7 +233,6 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:ellipsize="end"
-                                android:gravity="center_vertical"
                                 android:maxLines="2"
                                 android:text="Buat Invoice"
                                 android:textAlignment="center" />
@@ -262,7 +258,6 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:ellipsize="end"
-                                android:gravity="center_vertical"
                                 android:maxLines="2"
                                 android:text="Lihat Lainnya"
                                 android:textAlignment="center" />
@@ -288,8 +283,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="90dp"
                 android:background="@drawable/dashboard_main_content"
-                android:orientation="vertical"
-                app:layout_constraintTop_toBottomOf="@+id/linearLayout2">
+                android:orientation="vertical">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -319,7 +313,6 @@
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
                             android:layout_weight="1"
-                            android:gravity="center_vertical"
                             android:text="Lihat Semua"
                             android:textAlignment="textEnd"
                             android:textSize="14sp"
@@ -330,7 +323,10 @@
                         android:id="@+id/rv_statistics"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:paddingHorizontal="32dp" />
+                        android:paddingHorizontal="32dp"
+                        android:orientation="horizontal"
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                        tools:listitem="@layout/cardview_statistic" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -352,7 +348,6 @@
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
                             android:layout_weight="1"
-                            android:gravity="center_vertical"
                             android:text="Lihat Semua"
                             android:textAlignment="textEnd"
                             android:textSize="14sp"
@@ -364,7 +359,10 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_marginHorizontal="32dp"
-                        android:layout_marginBottom="160dp"/>
+                        android:layout_marginBottom="160dp"
+                        app:spanCount="2"
+                        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                        tools:listitem="@layout/cardview_main_feature"/>
                 </LinearLayout>
 
             </LinearLayout>

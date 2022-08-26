@@ -749,7 +749,7 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
                 edtHeightCorrection.setText("0");
             }
 
-            for(int i = 0; i<receiveOrderNumberList.size(); i++){
+            /*for(int i = 0; i<receiveOrderNumberList.size(); i++){
                 if (!spinnerRoNumber.getText().toString().equals(receiveOrderNumberList.get(i))){
                     spinnerRoNumber.setError("Nomor Received Order tidak ditemukan");
                     spinnerRoNumber.requestFocus();
@@ -757,36 +757,42 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
                     spinnerRoNumber.setError(null);
                     spinnerRoNumber.clearFocus();
 
-                    if (!TextUtils.isEmpty(giDate)&&!TextUtils.isEmpty(giTime)
-                            &&!TextUtils.isEmpty(giRONumber)&&!TextUtils.isEmpty(giPOCustomerNumber)
-                            &&!TextUtils.isEmpty(giMatName)&&!TextUtils.isEmpty(giMatType)
-                            &&!TextUtils.isEmpty(giVhlUID)&&!TextUtils.isEmpty(giVhlWidth)
-                            &&!TextUtils.isEmpty(giVhlLength)&&!TextUtils.isEmpty(giVhlHeight)
-                            &&!TextUtils.isEmpty(giHeightCorrection)){
-                        DecimalFormat df = new DecimalFormat("0.00");
-                        insertData(giUIDVal, giCreatedBy, giVerifiedBy, giRONumber, giPOCustomerNumber, giMatName, giMatType,
-                                giVhlUID, giDate, giTime,
-                                Integer.parseInt(giVhlLength),
-                                Integer.parseInt(giVhlWidth),
-                                Integer.parseInt(giVhlHeight),
-                                Integer.parseInt(radioOperation+giHeightCorrection.replaceAll("[^0-9]", "")),
-                                Integer.parseInt(tvHeightCorrection.getText().toString().replaceAll("[^0-9]", "")),
-                                Float.parseFloat(df.format(Float.parseFloat(giVhlCubication.replaceAll("[^0-9.]", "")))),
-                                giStatus, giInvoiced);
 
-                    }
                 }
-            }
+            }*/
 
 
-            for(int i = 0; i<matNameList.size(); i++){
+
+
+            /*for(int i = 0; i<matNameList.size(); i++){
                 if (!spinnerMatName.getText().toString().equals(matNameList.get(i).toString())){
                     spinnerMatName.setError("Nama material tidak ditemukan");
                     spinnerMatName.requestFocus();
                 } else{
                     spinnerMatName.setError(null);
                     spinnerMatName.clearFocus();
+
+
                 }
+            }*/
+
+            if (!TextUtils.isEmpty(giDate)&&!TextUtils.isEmpty(giTime)
+                    &&!TextUtils.isEmpty(giRONumber)&&!TextUtils.isEmpty(giPOCustomerNumber)
+                    &&!TextUtils.isEmpty(giMatName)&&!TextUtils.isEmpty(giMatType)
+                    &&!TextUtils.isEmpty(giVhlUID)&&!TextUtils.isEmpty(giVhlWidth)
+                    &&!TextUtils.isEmpty(giVhlLength)&&!TextUtils.isEmpty(giVhlHeight)
+                    &&!TextUtils.isEmpty(giHeightCorrection)){
+                DecimalFormat df = new DecimalFormat("0.00");
+                insertData(giUIDVal, giCreatedBy, giVerifiedBy, giRONumber, giPOCustomerNumber, giMatName, giMatType,
+                        giVhlUID, giDate, giTime,
+                        Integer.parseInt(giVhlLength),
+                        Integer.parseInt(giVhlWidth),
+                        Integer.parseInt(giVhlHeight),
+                        Integer.parseInt(radioOperation+giHeightCorrection.replaceAll("[^0-9]", "")),
+                        Integer.parseInt(tvHeightCorrection.getText().toString().replaceAll("[^0-9]", "")),
+                        Float.parseFloat(df.format(Float.parseFloat(giVhlCubication.replaceAll("[^0-9.]", "")))),
+                        giStatus, giInvoiced);
+
             }
 
 

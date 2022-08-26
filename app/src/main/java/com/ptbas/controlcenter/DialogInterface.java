@@ -6,15 +6,19 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.os.CountDownTimer;
+import android.os.Handler;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -24,7 +28,9 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.ptbas.controlcenter.create.AddInvoiceActivity;
 import com.ptbas.controlcenter.create.AddReceivedOrder;
@@ -32,6 +38,7 @@ import com.ptbas.controlcenter.management.ReceivedOrderManagementActivity;
 import com.ptbas.controlcenter.model.GoodIssueModel;
 import com.ptbas.controlcenter.model.InvoiceModel;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -46,7 +53,6 @@ public class DialogInterface {
     Helper helper = new Helper();
 
     private static final String ALLOWED_CHARACTERS ="0123456789QWERTYUIOPASDFGHJKLZXCVBNM";
-
 
     public void fillSearchFilter(Activity activity, SearchView searchView) {
         MaterialDialog materialDialog = new MaterialDialog.Builder(activity)
@@ -568,30 +574,14 @@ public class DialogInterface {
                                      Double invTotal, Double invTax1, Double invTax2) {
         MaterialDialog mBottomSheetDialog = new MaterialDialog.Builder((Activity) context)
                 .setTitle("Buat Invoice")
-                .setAnimation(R.raw.lottie_attention)
+                .setAnimation(R.raw.lottie_generate_bill)
                 .setMessage("Apakah Anda yakin ingin membuat Invoice dari data Good Issue terpilih?")
                 .setCancelable(true)
                 .setPositiveButton("YA", R.drawable.ic_outline_check, (dialogInterface, which) -> {
-                    DatabaseReference databaseReferenceGI = FirebaseDatabase.getInstance().getReference();
-                    DocumentReference refRO = db.collection("InvoiceData").document();
-                    String invDocumentID = refRO.getId();
-
-                    InvoiceModel invoiceModel = new InvoiceModel(
-                            invDocumentID, invUID, invCreatedBy, invDateCreated, invPoUID,
-                            invPoDate, invCustName, invTotal, invTax1, invTax2, false);
-
-                    refRO.set(invoiceModel);
-                    DocumentReference refGI = db.collection("InvoiceData").document(invDocumentID);
-                    for (int i = 0; i < goodIssueModelArrayList.size(); i++) {
-                        GoodIssueModel goodIssueModel = goodIssueModelArrayList.get(i);
-                        refGI.collection("GoodIssueData").document(goodIssueModelArrayList.get(i).getGiUID()).set(goodIssueModel);
-                        databaseReferenceGI.child("GoodIssueData").child(goodIssueModelArrayList.get(i).getGiUID()).child("giInvoiced").setValue(true);
-                    }
-
-                    AddInvoiceActivity addInvoiceActivity = (AddInvoiceActivity) context;
-                    addInvoiceActivity.createInvPDF(Helper.getAppPath(context)+invUID+".pdf");
-                    //createInvPDF(Helper.getAppPath(context)+rouidVal+".pdf");
-
+                    generatingInvoice(context, db,
+                            goodIssueModelArrayList,
+                            invUID, invCreatedBy, invDateCreated, invPoDate, invPoUID, invCustName,
+                            invTotal, invTax1, invTax2);
                     dialogInterface.dismiss();
                 })
                 .setNegativeButton("TIDAK", R.drawable.ic_outline_close, (dialogInterface, which) -> dialogInterface.dismiss())
@@ -599,6 +589,67 @@ public class DialogInterface {
 
         mBottomSheetDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
         mBottomSheetDialog.show();
+    }
+
+    public void generatingInvoice(Context context, FirebaseFirestore db,
+                                  ArrayList<GoodIssueModel> goodIssueModelArrayList,
+                                  String invUID, String invCreatedBy, String invDateCreated, String invPoDate, String invPoUID, String invCustName,
+                                  Double invTotal, Double invTax1, Double invTax2) {
+
+        MaterialDialog generatingInvoiceDialog = new MaterialDialog.Builder((Activity) context)
+                .setTitle("Memproses Permintaan")
+                .setMessage("Invoice sedang diproses. Harap tunggu ...")
+                .setAnimation(R.raw.lottie_generate_bill)
+                .setCancelable(false)
+                .build();
+
+        generatingInvoiceDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
+        generatingInvoiceDialog.show();
+
+        new CountDownTimer(2000, 1000) {
+            public void onTick(long millisUntilFinished) {
+            }
+
+            public void onFinish() {
+
+                DatabaseReference databaseReferenceGI = FirebaseDatabase.getInstance().getReference();
+                DocumentReference refRO = db.collection("InvoiceData").document();
+                String invDocumentID = refRO.getId();
+
+                InvoiceModel invoiceModel = new InvoiceModel(
+                        invDocumentID, invUID, invCreatedBy, invDateCreated, invPoUID,
+                        invPoDate, invCustName, invTotal, invTax1, invTax2, false);
+
+                refRO.set(invoiceModel);
+
+                DocumentReference refGI = db.collection("InvoiceData").document(invDocumentID);
+                for (int i = 0; i < goodIssueModelArrayList.size(); i++) {
+                    GoodIssueModel goodIssueModel = goodIssueModelArrayList.get(i);
+                    refGI.collection("GoodIssueData").document(goodIssueModelArrayList.get(i).getGiUID()).set(goodIssueModel);
+                    databaseReferenceGI.child("GoodIssueData").child(goodIssueModelArrayList.get(i).getGiUID()).child("giInvoiced").setValue(true);
+                }
+                AddInvoiceActivity addInvoiceActivity = (AddInvoiceActivity) context;
+                addInvoiceActivity.createInvPDF(Helper.getAppPath(context)+invUID+".pdf");
+                generatingInvoiceDialog.dismiss();
+            }
+        }.start();
+    }
+
+    public void invoiceGeneratedInformation(Context context, String filepath) {
+        MaterialDialog invoiceGeneratedInformationDialog = new MaterialDialog.Builder((Activity) context)
+                .setTitle("Berhasil!")
+                .setAnimation(R.raw.lottie_bill_generated)
+                .setMessage("Data invoice telah berhasil disimpan ke database dan diekspor menjadi berkas PDF di " + filepath + ". Buka berkas sekarang?")
+                .setCancelable(true)
+                .setPositiveButton("YA", R.drawable.ic_outline_check, (dialogInterface, which) -> {
+                    Helper.openFilePDF(context, new File(filepath));
+                    dialogInterface.dismiss();
+                })
+                .setNegativeButton("TIDAK", R.drawable.ic_outline_close, (dialogInterface, which) -> dialogInterface.dismiss())
+                .build();
+
+        invoiceGeneratedInformationDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
+        invoiceGeneratedInformationDialog.show();
     }
 
 

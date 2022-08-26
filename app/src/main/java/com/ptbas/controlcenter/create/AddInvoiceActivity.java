@@ -12,6 +12,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
+import android.text.Html;
 import android.transition.AutoTransition;
 import android.transition.TransitionManager;
 import android.util.DisplayMetrics;
@@ -63,6 +64,7 @@ import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.text.pdf.draw.LineSeparator;
 import com.ptbas.controlcenter.DialogInterface;
 import com.ptbas.controlcenter.DragLinearLayout;
 import com.ptbas.controlcenter.Helper;
@@ -94,7 +96,7 @@ import java.util.Random;
 
 public class AddInvoiceActivity extends AppCompatActivity {
 
-    private static final String ALLOWED_CHARACTERS ="0123456789QWERTYUIOPASDFGHJKLZXCVBNM";
+    private static final String ALLOWED_CHARACTERS = "0123456789QWERTYUIOPASDFGHJKLZXCVBNM";
 
     double matSellPrice, transportServiceSellPrice, invTax1 = 0, invTax2 =0;
     String dateStartVal = "", dateEndVal = "", rouidVal= "", currencyVal = "", pouidVal = "",
@@ -419,13 +421,19 @@ public class AddInvoiceActivity extends AppCompatActivity {
             document.addAuthor("PT BAS");
             document.addCreator("BAS Control Center");
             document.addCreationDate();
+            // CREATE INVOICE PAGE
             addUpperSpc(document);
-            addTtlInv(document);
-            addMainContent(document);
+            addInvTtl(document);
+            addInvMainContent(document);
+            // CREATE SUMMARY OF INVOICE PAGE
+            document.newPage();
+            addGiRcpTtl(document);
+            addGiRcpMainContent(document);
             document.close();
 
             // OPEN GENERATED FILE
-            Helper.openFilePDF(context, new File(dest));
+            dialogInterface.invoiceGeneratedInformation(context, dest);
+
         } catch (DocumentException | FileNotFoundException e) {
             e.printStackTrace();
             Toast.makeText(context, e.toString(), Toast.LENGTH_LONG).show();
@@ -442,7 +450,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
         preface0.setSpacingAfter(120);
         document.add(preface0);
     }
-    private void addTtlInv(Document document) throws DocumentException {
+    private void addInvTtl(Document document) throws DocumentException {
         Paragraph preface1 = new Paragraph();
         Chunk title = new Chunk("INVOICE", fontBold);
         Paragraph paragraphTitle = new Paragraph(title);
@@ -471,6 +479,15 @@ public class AddInvoiceActivity extends AppCompatActivity {
         cell.setVerticalAlignment(Element.ALIGN_TOP);
         cell.setColspan(1);
         cell.setRowspan(5);
+        return cell;
+    }
+    public static PdfPCell cellTxtNrml(Paragraph paragraph, int alignment) {
+        paragraph.setAlignment(alignment);
+        paragraph.setLeading(0, 1);
+        PdfPCell cell = new PdfPCell();
+        cell.addElement(paragraph);
+        cell.setHorizontalAlignment(alignment);
+        cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
         return cell;
     }
     public static PdfPCell cellTxtNoBrdrNrml(Paragraph paragraph, int alignment) throws DocumentException {
@@ -539,7 +556,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
 
         Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.bg_table_column_blue_pale);
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bm.compress(Bitmap.CompressFormat.PNG, 90, stream);
+        bm.compress(Bitmap.CompressFormat.PNG, 30, stream);
         Image img = null;
         byte[] byteArray = stream.toByteArray();
 
@@ -554,7 +571,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
         cell.setPaddingLeft(7);
         return cell;
     }
-    private void addMainContent(Document document) throws DocumentException{
+    private void addInvMainContent(Document document) throws DocumentException{
         try {
             String invDateCreated =
                     new SimpleDateFormat("dd/MM/yyyy", Locale.US).format(new Date());
@@ -572,7 +589,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
             // INIT IMAGE BCA QR CODE
             Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.bca_qr_bas);
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            bm.compress(Bitmap.CompressFormat.PNG, 100, stream);
+            bm.compress(Bitmap.CompressFormat.JPEG, 90, stream);
             Image img = null;
             byte[] byteArray = stream.toByteArray();
             try {
@@ -726,7 +743,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
                 tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
                         new Paragraph(currencyVal+" "+currencyFormat(df.format(matSellPrice)), fontNormal), Element.ALIGN_RIGHT));
                 tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
-                        new Paragraph(String.valueOf(totalUnit), fontNormal), Element.ALIGN_RIGHT));
+                        new Paragraph(df.format(totalUnit), fontNormal), Element.ALIGN_RIGHT));
                 tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
                         new Paragraph(currencyVal+" "+currencyFormat(df.format(taxPPN)), fontNormal), Element.ALIGN_RIGHT));
                 tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
@@ -738,7 +755,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
             tblInvSection7.addCell(cellTxtNoBrdrNrmlMainContent(
                     new Paragraph(currencyVal+" "+currencyFormat(df.format(transportServiceSellPrice)), fontNormal), Element.ALIGN_RIGHT));
             tblInvSection7.addCell(cellTxtNoBrdrNrmlMainContent(
-                    new Paragraph(String.valueOf(totalUnit), fontNormal), Element.ALIGN_RIGHT));
+                    new Paragraph(df.format(totalUnit), fontNormal), Element.ALIGN_RIGHT));
             tblInvSection7.addCell(cellTxtNoBrdrNrmlMainContent(
                     new Paragraph(currencyVal+" "+currencyFormat(df.format(taxPPH)), fontNormal), Element.ALIGN_RIGHT));
             tblInvSection7.addCell(cellTxtNoBrdrNrmlMainContent(
@@ -888,7 +905,6 @@ public class AddInvoiceActivity extends AppCompatActivity {
             if (invPoType == 2){
                 document.add(tblInvSection7);
             }
-
             document.add(tblInvSection8);
             document.add(tblInvSection9);
             document.add(paragraphBlank); // SPACE SEPARATOR
@@ -899,11 +915,156 @@ public class AddInvoiceActivity extends AppCompatActivity {
             document.add(tblInvSection12);
             document.add(paragraphBlank); // SPACE SEPARATOR
             document.add(paragraphInvDateCreated);
+
         } catch (DocumentException e) {
             e.printStackTrace();
             Toast.makeText(context, e.toString(), Toast.LENGTH_LONG).show();
         }
     }
+
+    private void addGiRcpTtl(Document document) throws DocumentException {
+        Paragraph preface = new Paragraph();
+        Chunk title = new Chunk("Rekapitulasi Good Issue", fontBold);
+        Paragraph paragraphTitle = new Paragraph(title);
+        paragraphTitle.setAlignment(Element.ALIGN_CENTER);
+        document.add(paragraphTitle);
+        preface.setAlignment(Element.ALIGN_CENTER);
+        preface.setSpacingAfter(15);
+        document.add(preface);
+        document.add(new LineSeparator());
+    }
+    private void addGiRcpMainContent(Document document) throws DocumentException{
+        DecimalFormat df = new DecimalFormat("0.00");
+        String currentDate = new SimpleDateFormat("dd/MM/yyyy", Locale.US).format(new Date());
+
+        try {
+            String roMatNameTypeStrVal = "Material: "+ matNameVal +" | "+ matTypeVal;
+            String roCustNameStrVal = "Customer: "+custNameVal;
+            String roPoCustNumberStrVal = "Nomor PO: "+roPoCustNumber;
+            String roRecapDateCreatedStrVal = "Tanggal rekap dibuat: "+currentDate;
+
+            Chunk roMatNameType = new Chunk(roMatNameTypeStrVal, fontNormal);
+            Chunk roCustName = new Chunk(roCustNameStrVal, fontNormal);
+
+            Paragraph paragraphROMatNameType = new Paragraph(roMatNameType);
+            paragraphROMatNameType.setAlignment(Element.ALIGN_LEFT);
+            paragraphROMatNameType.setSpacingAfter(0);
+
+            Paragraph paragraphROCustName = new Paragraph(roCustName);
+            paragraphROCustName.setAlignment(Element.ALIGN_LEFT);
+            paragraphROCustName.setSpacingAfter(5);
+
+            Paragraph preface2 = new Paragraph();
+            preface2.setSpacingAfter(10);
+
+            PdfPTable table0 = new PdfPTable(2);
+            table0.setWidthPercentage(100);
+
+            PdfPTable table1 = new PdfPTable(10);
+            table1.setWidthPercentage(100);
+            table1.setWidths(new float[]{2,4,3,4,2,2,2,2,2,3});
+
+            PdfPTable table2 = new PdfPTable(2);
+            table2.setWidthPercentage(100);
+            table2.setWidths(new float[]{23,3});
+
+            PdfPTable table3 = new PdfPTable(2);
+            table3.setWidthPercentage(100);
+            table3.setWidths(new float[]{5, 4});
+
+            table0.addCell(cellTxtNoBrdrNrml(
+                    new Paragraph(roPoCustNumberStrVal, fontNormal),
+                    Element.ALIGN_LEFT));
+            table0.addCell(cellTxtNoBrdrNrml(
+                    new Paragraph(roRecapDateCreatedStrVal, fontNormal),
+                    Element.ALIGN_RIGHT));
+
+            table1.addCell(cellColHeader(
+                    new Paragraph("No", fontMedium), Element.ALIGN_CENTER));
+            table1.addCell(cellColHeader(
+                    new Paragraph("Tanggal", fontMedium), Element.ALIGN_CENTER));
+            table1.addCell(cellColHeader(
+                    new Paragraph("ID", fontMedium), Element.ALIGN_CENTER));
+            table1.addCell(cellColHeader(
+                    new Paragraph("NOPOL", fontMedium), Element.ALIGN_CENTER));
+            table1.addCell(cellColHeader(
+                    new Paragraph("P", fontMedium), Element.ALIGN_CENTER));
+            table1.addCell(cellColHeader(
+                    new Paragraph("L", fontMedium), Element.ALIGN_CENTER));
+            table1.addCell(cellColHeader(
+                    new Paragraph("T", fontMedium), Element.ALIGN_CENTER));
+            table1.addCell(cellColHeader(
+                    new Paragraph("K", fontMedium), Element.ALIGN_CENTER));
+            table1.addCell(cellColHeader(
+                    new Paragraph("TK", fontMedium), Element.ALIGN_CENTER));
+            table1.addCell(cellColHeader(
+                    new Paragraph(String.valueOf(Html.fromHtml("M\u00B3")), fontMedium), Element.ALIGN_CENTER));
+
+            float totalCubication = 0;
+            for (int i = 0; i < goodIssueModelArrayList.size(); i++){
+                String rowNumberStrVal = String.valueOf(i+1);
+                String rowDateStrVal = goodIssueModelArrayList.get(i).getGiDateCreated();
+                String rowIDStrVal = goodIssueModelArrayList.get(i).getGiUID().substring(0,5);
+                String rowVhlUIDStrVal = goodIssueModelArrayList.get(i).getVhlUID();
+                String rowVhLengthStrVal = goodIssueModelArrayList.get(i).getVhlLength().toString();
+                String rowVhWidthStrVal = goodIssueModelArrayList.get(i).getVhlWidth().toString();
+                String rowVhHeightStrVal = goodIssueModelArrayList.get(i).getVhlHeight().toString();
+                String rowVhHeightCorrectionStrVal = goodIssueModelArrayList.get(i).getVhlHeightCorrection().toString();
+                String rowVhHeightAfterCorrectionStrVal = goodIssueModelArrayList.get(i).getVhlHeightAfterCorrection().toString();
+                String vhlCubicationStrVal = df.format(goodIssueModelArrayList.get(i).getGiVhlCubication());
+
+                table1.addCell(cellTxtNrml(
+                        new Paragraph(rowNumberStrVal, fontNormal), Element.ALIGN_CENTER));
+                table1.addCell(cellTxtNrml(
+                        new Paragraph(rowDateStrVal, fontNormal), Element.ALIGN_CENTER));
+                table1.addCell(cellTxtNrml(
+                        new Paragraph(rowIDStrVal, fontNormal), Element.ALIGN_CENTER));
+                table1.addCell(cellTxtNrml(
+                        new Paragraph(rowVhlUIDStrVal, fontNormal), Element.ALIGN_CENTER));
+                table1.addCell(cellTxtNrml(
+                        new Paragraph(rowVhLengthStrVal, fontNormal), Element.ALIGN_CENTER));
+                table1.addCell(cellTxtNrml(
+                        new Paragraph(rowVhWidthStrVal, fontNormal), Element.ALIGN_CENTER));
+                table1.addCell(cellTxtNrml(
+                        new Paragraph(rowVhHeightStrVal, fontNormal), Element.ALIGN_CENTER));
+                table1.addCell(cellTxtNrml(
+                        new Paragraph(rowVhHeightCorrectionStrVal, fontNormal), Element.ALIGN_CENTER));
+                table1.addCell(cellTxtNrml(
+                        new Paragraph(rowVhHeightAfterCorrectionStrVal, fontNormal), Element.ALIGN_CENTER));
+                table1.addCell(cellTxtNrml(
+                        new Paragraph(vhlCubicationStrVal, fontNormal), Element.ALIGN_CENTER));
+
+                totalCubication += goodIssueModelArrayList.get(i).getGiVhlCubication();
+
+            }
+
+            String totalCubicationStrVal = df.format(totalCubication);
+            double totalIDR = matSellPrice*Double.parseDouble(df.format(totalCubication))    ;
+            String totalIDRStrVal = currencyVal+" "+currencyFormat(df.format(totalIDR));
+
+            table2.addCell(cellColHeader(
+                    new Paragraph("Total Unit", fontMedium), Element.ALIGN_CENTER));
+            table2.addCell(cellTxtNrml(
+                    new Paragraph(totalCubicationStrVal, fontNormal), Element.ALIGN_CENTER));
+            table3.addCell(cellColHeader(
+                    new Paragraph("Total", fontMedium), Element.ALIGN_CENTER));
+            table3.addCell(cellTxtNrml(
+                    new Paragraph(totalIDRStrVal, fontNormal), Element.ALIGN_CENTER));
+
+            document.add(table0);
+            document.add(paragraphROMatNameType);
+            document.add(paragraphROCustName);
+            document.add(new LineSeparator());
+            document.add(preface2);
+            document.add(table1);
+            document.add(table2);
+            document.add(table3);
+        } catch (DocumentException e) {
+            e.printStackTrace();
+            Toast.makeText(context, e.toString(), Toast.LENGTH_LONG).show();
+        }
+    }
+
 
     public static String currencyFormat(String amount) {
         DecimalFormat formatter = new DecimalFormat("###,###,##0.00");
