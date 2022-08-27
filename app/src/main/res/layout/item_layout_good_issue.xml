@@ -270,8 +270,8 @@
                     android:layout_alignStart="@+id/btn1"
                     android:layout_alignEnd="@+id/btn1"
                     android:layout_alignTop="@+id/btn1"
-                    android:tint="@color/dark_red"
-                    android:layout_alignBottom="@+id/btn1"/>
+                    android:layout_alignBottom="@+id/btn1"
+                    app:tint="@color/dark_red" />
 
                 <Button
                     android:id="@+id/btn1"

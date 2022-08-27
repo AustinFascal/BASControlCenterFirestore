@@ -9,6 +9,7 @@ import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
@@ -209,11 +210,13 @@ public class AddReceivedOrder extends AppCompatActivity {
         fabExpandMenu = findViewById(R.id.fab_expand_menu);
         fabActionSaveCloud = findViewById(R.id.fab_action_save_cloud);
         fabActionUpdateData = findViewById(R.id.fab_action_update_data);
-        fabActionGenerateQrCode = findViewById(R.id.fab_action_generate_qr_code);
-        fabActionSaveToPdf = findViewById(R.id.fab_action_save_to_pdf);
+        /*fabActionGenerateQrCode = findViewById(R.id.fab_action_generate_qr_code);
+        fabActionSaveToPdf = findViewById(R.id.fab_action_save_to_pdf);*/
 
         fabExpandMenu.setVisibility(View.GONE);
         llAddItem.setVisibility(View.GONE);
+        spinnerPoCustName.setFilters(new InputFilter[] {new InputFilter.AllCaps()});
+        spinnerPoTransportType.setFilters(new InputFilter[] {new InputFilter.AllCaps()});
 
         txtInputEdtPoNumberCustomer = findViewById(R.id.txt_input_edt_po_number_customer);
         btnPoNumberAvailable = findViewById(R.id.btn_po_number_available);
@@ -251,7 +254,7 @@ public class AddReceivedOrder extends AppCompatActivity {
             }
         });
 
-        db.collection("CustomerData").orderBy("custName")
+        db.collection("CustomerData").orderBy("custName").whereEqualTo("custStatus", true)
                 .addSnapshotListener((value, error) -> {
                     customerName.clear();
                     if (value != null) {
@@ -603,6 +606,11 @@ public class AddReceivedOrder extends AppCompatActivity {
                                         Toast.makeText(AddReceivedOrder.this, "FAILED", Toast.LENGTH_SHORT).show());
 
                     }
+                });
+
+                fabActionUpdateData.setOnClickListener(view -> {
+                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                    bottomSheetCollapsed();
                 });
 
             } catch (Exception e) {

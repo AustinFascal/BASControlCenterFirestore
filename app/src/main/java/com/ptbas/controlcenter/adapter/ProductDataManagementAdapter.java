@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,6 +20,7 @@ import com.ptbas.controlcenter.model.ProductModel;
 import com.ptbas.controlcenter.update.UpdateProductData;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class ProductDataManagementAdapter extends RecyclerView.Adapter<ProductDataManagementAdapter.ItemViewHolder> {
 
@@ -51,12 +53,14 @@ public class ProductDataManagementAdapter extends RecyclerView.Adapter<ProductDa
 
 
     public class ItemViewHolder extends RecyclerView.ViewHolder {
+        RelativeLayout btnDeleteWrap;
         TextView tvProductName, tvBuyPrice, tvPriceSell;
         ImageView ivShowDetail;
         Button btn1;
 
         public ItemViewHolder(@NonNull View itemView) {
             super(itemView);
+            btnDeleteWrap = itemView.findViewById(R.id.btnDeleteWrap);
             tvProductName = itemView.findViewById(R.id.tvProductName);
             tvBuyPrice = itemView.findViewById(R.id.tvBuyPrice);
             tvPriceSell = itemView.findViewById(R.id.tvSellPrice);
@@ -83,6 +87,11 @@ public class ProductDataManagementAdapter extends RecyclerView.Adapter<ProductDa
                 i.putExtra("key", productDataUID);
                 context.startActivity(i);
             });
+
+
+            if (Objects.equals(productName, "JASA ANGKUT")){
+                btnDeleteWrap.setVisibility(View.GONE);
+            }
 
             btn1.setOnClickListener(view ->
                     dialogInterface.deleteProductDataConfirmation(context, productName.replaceAll(" ", "").toLowerCase()));

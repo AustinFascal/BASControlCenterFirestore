@@ -70,7 +70,6 @@
                             android:id="@+id/edt_customer_name"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZ "
                             android:hint="Nama Customer"
                             android:inputType="textCapCharacters" />
                     </com.google.android.material.textfield.TextInputLayout>

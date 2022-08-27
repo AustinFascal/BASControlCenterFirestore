@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.create.AddCustomerActivity;
+import com.ptbas.controlcenter.management.CustomerManagementActivity;
 import com.ptbas.controlcenter.management.GoodIssueManagementActivity;
 import com.ptbas.controlcenter.management.InvoiceManagementActivity;
 import com.ptbas.controlcenter.management.ProductDataManagementActivity;
@@ -43,7 +44,7 @@ public class MainFeaturesMenuAdapter extends RecyclerView.Adapter<MainFeatureVie
 
     @Override
     public void onBindViewHolder(@NonNull MainFeatureViewHolder holder, int position) {
-        int pos = position;
+        //int pos = position;
 
         holder.img.setImageResource(mainFeatureData.get(position).getImgName());
         holder.tv1.setText(mainFeatureData.get(position).getHeader());
@@ -52,41 +53,33 @@ public class MainFeaturesMenuAdapter extends RecyclerView.Adapter<MainFeatureVie
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (pos == 0){
+                if (holder.tv1.getText().toString().equals("Manajemen Pengguna")){
                     Toast.makeText(context, "Coming soon", Toast.LENGTH_SHORT).show();
-
-                    /*Intent intent1 = new Intent(context, UserManagementActivity.class);
-                    intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    context.startActivity(intent1);*/
-                } else if (pos == 1){
+                }
+                if (holder.tv1.getText().toString().equals("Manajemen Armada")){
                     Toast.makeText(context, "Coming soon", Toast.LENGTH_SHORT).show();
-
-                    /*Intent intent2 = new Intent(context, VehicleManagementActivity.class);
-                    intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    context.startActivity(intent2);*/
-                } else if (pos == 2){
+                }
+                if (holder.tv1.getText().toString().equals("Manajemen Received Order")){
                     Intent intent2 = new Intent(context, ReceivedOrderManagementActivity.class);
                     intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(intent2);
-                } else if (pos == 3){
+                }
+                if (holder.tv1.getText().toString().equals("Manajemen Good Issue")){
                     Intent intent2 = new Intent(context, GoodIssueManagementActivity.class);
                     intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(intent2);
-                } else if (pos == 4){
-                    Toast.makeText(context, "Coming soon", Toast.LENGTH_SHORT).show();
-
-                    /*Intent intent2 = new Intent(context, AddCustomerActivity.class);
+                }
+                if (holder.tv1.getText().toString().equals("Manajemen Customer")){
+                    Intent intent2 = new Intent(context, CustomerManagementActivity.class);
                     intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    context.startActivity(intent2);*/
-                } else if (pos == 5){
-                    /*Toast.makeText(context, "Coming soon", Toast.LENGTH_SHORT).show();*/
-
+                    context.startActivity(intent2);
+                }
+                if (holder.tv1.getText().toString().equals("Manajemen Invoice")){
                     Intent intent2 = new Intent(context, InvoiceManagementActivity.class);
                     intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(intent2);
-                }else if (pos == 6){
-                    /*Toast.makeText(context, "Coming soon", Toast.LENGTH_SHORT).show();*/
-
+                }
+                if (holder.tv1.getText().toString().equals("Manajemen Material")){
                     Intent intent2 = new Intent(context, ProductDataManagementActivity.class);
                     intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(intent2);

@@ -535,17 +535,62 @@ public class DialogInterface {
                 .setMessage("Apakah Anda yakin ingin menghapus data Received Order yang Anda pilih? Setelah dihapus, data tidak dapat dikembalikan.")
                 .setCancelable(true)
                 .setPositiveButton("YA", R.drawable.ic_outline_check, (dialogInterface, which) -> {
-                    refRO.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    refRO.get().addOnCompleteListener(task -> {
+                        if (task.isSuccessful()){
+                            for(DocumentSnapshot documentSnapshot : task.getResult()){
+                                String getDocumentID = documentSnapshot.getId();
+                                if (getDocumentID.equals(roDocumentId)){
+                                    db.collection("ReceivedOrderData").document(roDocumentId).delete();
+                                    dialogInterface.dismiss();
+                                    //helper.refreshRoManagementActivity(context);
+                                }
+                            }
+                        }
+                    });
+                    /* // TODO DETECT USER MODEL - IF SUPER ADMIN, ABLE TO VERIFY
+                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("ReceivedOrders");
+                    ValueEventListener valueEventListener = new ValueEventListener() {
                         @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                            if (task.isSuccessful()){
-                                for(DocumentSnapshot documentSnapshot : task.getResult()){
-                                    String getDocumentID = documentSnapshot.getId();
-                                    if (getDocumentID.equals(roDocumentId)){
-                                        db.collection("ReceivedOrderData").document(roDocumentId).delete();
-                                        dialogInterface.dismiss();
-                                        //helper.refreshRoManagementActivity(context);
-                                    }
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            for(DataSnapshot ds : dataSnapshot.getChildren()) {
+                                String key = ds.getKey();
+                                String roUID = dataSnapshot.child(key).child("roUID").getValue(String.class);
+                                if (Objects.equals(roUID, roUIDVal)) {
+                                    databaseReference.child(key).removeValue();
+                                    dialogInterface.dismiss();
+                                }
+                            }
+                        }
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {}
+                    };
+                    databaseReference.addListenerForSingleValueEvent(valueEventListener);*/
+                })
+                .setNegativeButton("TIDAK", R.drawable.ic_outline_close, (dialogInterface, which) -> dialogInterface.dismiss())
+                .build();
+
+        mBottomSheetDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
+        mBottomSheetDialog.show();
+    }
+
+    public void deleteCustConfirmation(Context context, String custDocumentId) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference refCust = db.collection("CustomerData");
+
+        MaterialDialog mBottomSheetDialog = new MaterialDialog.Builder((Activity) context)
+                .setTitle("Hapus Data")
+                .setAnimation(R.raw.lottie_delete)
+                .setMessage("Apakah Anda yakin ingin menghapus data Customer yang Anda pilih? Setelah dihapus, data tidak dapat dikembalikan.")
+                .setCancelable(true)
+                .setPositiveButton("YA", R.drawable.ic_outline_check, (dialogInterface, which) -> {
+                    refCust.get().addOnCompleteListener(task -> {
+                        if (task.isSuccessful()){
+                            for(DocumentSnapshot documentSnapshot : task.getResult()){
+                                String getDocumentID = documentSnapshot.getId();
+                                if (getDocumentID.equals(custDocumentId)){
+                                    db.collection("CustomerData").document(custDocumentId).delete();
+                                    dialogInterface.dismiss();
+                                    //helper.refreshRoManagementActivity(context);
                                 }
                             }
                         }

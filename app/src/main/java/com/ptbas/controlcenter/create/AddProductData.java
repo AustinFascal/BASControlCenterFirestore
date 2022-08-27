@@ -88,7 +88,7 @@ public class AddProductData extends AppCompatActivity {
         DatabaseReference dbRefAddVehicle = FirebaseDatabase.getInstance().getReference("ProductData");
         dbRefAddVehicle.child(productUID).setValue(productModel).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                dialogInterface.savedInformation(AddProductData.this);
+                dialogInterface.savedInformationFromManagement(AddProductData.this);
             } else {
                 try{
                     throw Objects.requireNonNull(task.getException());
@@ -108,7 +108,7 @@ public class AddProductData extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        helper.refreshDashboard(this.getApplicationContext());
+        //helper.refreshDashboard(this.getApplicationContext());
         finish();
     }
 }

@@ -2,18 +2,36 @@ package com.ptbas.controlcenter.model;
 
 public class CustomerModel {
 
-    String  custUID, custName, custAlias, custAddress, custNPWP, custPhone;
+    String custDocumentID, custUID, custName, custAddress, custNPWP, custPhone;
+    Boolean custStatus;
 
     public CustomerModel() {
     }
 
-    public CustomerModel(String custUID, String custName, String custAlias, String custAddress, String custNPWP, String custPhone) {
+    public CustomerModel(String custDocumentID, String custUID, String custName, String custAddress, String custNPWP, String custPhone, Boolean custStatus) {
+        this.custDocumentID = custDocumentID;
         this.custUID = custUID;
         this.custName = custName;
-        this.custAlias = custAlias;
         this.custAddress = custAddress;
         this.custNPWP = custNPWP;
         this.custPhone = custPhone;
+        this.custStatus = custStatus;
+    }
+
+    public String getCustDocumentID() {
+        return custDocumentID;
+    }
+
+    public void setCustDocumentID(String custDocumentID) {
+        this.custDocumentID = custDocumentID;
+    }
+
+    public Boolean getCustStatus() {
+        return custStatus;
+    }
+
+    public void setCustStatus(Boolean custStatus) {
+        this.custStatus = custStatus;
     }
 
     public String getCustUID() {
@@ -30,14 +48,6 @@ public class CustomerModel {
 
     public void setCustName(String custName) {
         this.custName = custName;
-    }
-
-    public String getCustAlias() {
-        return custAlias;
-    }
-
-    public void setCustAlias(String custAlias) {
-        this.custAlias = custAlias;
     }
 
     public String getCustAddress() {

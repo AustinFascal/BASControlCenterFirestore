@@ -48,12 +48,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.normal.TedPermission;
 import com.ptbas.controlcenter.adapter.MainFeaturesMenuAdapter;
-import com.ptbas.controlcenter.adapter.ROManagementAdapter;
 import com.ptbas.controlcenter.adapter.StatisticsAdapter;
 import com.ptbas.controlcenter.create.AddCustomerActivity;
 import com.ptbas.controlcenter.create.AddGoodIssueActivity;
@@ -61,16 +59,13 @@ import com.ptbas.controlcenter.create.AddInvoiceActivity;
 import com.ptbas.controlcenter.create.AddProductData;
 import com.ptbas.controlcenter.create.AddReceivedOrder;
 import com.ptbas.controlcenter.create.AddVehicleActivity;
-import com.ptbas.controlcenter.management.ReceivedOrderManagementActivity;
 import com.ptbas.controlcenter.model.MainFeatureModel;
-import com.ptbas.controlcenter.model.ReceivedOrderModel;
 import com.ptbas.controlcenter.model.StatisticsModel;
 import com.ptbas.controlcenter.model.UserModel;
 import com.ptbas.controlcenter.userprofile.UserProfileActivity;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class DashboardActivity extends AppCompatActivity {
@@ -91,7 +86,7 @@ public class DashboardActivity extends AppCompatActivity {
     //ImageButton imgbtnMenu;
 
     FirebaseAuth authProfile;
-    String finalCountVehicle, finalCountUser, finalCountActiveReceivedOrderData, finalCountActiveGoodIssueDataToInvoiced, finalCountActiveGoodIssueData, finalCountCustomer;
+    String finalCountMaterial, finalCountUser, finalCountActiveReceivedOrderData, finalCountActiveGoodIssueDataToInvoiced, finalCountActiveGoodIssueData, finalCountCustomer;
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
 
     MainFeaturesMenuAdapter mainFeaturesMenuAdapter;
@@ -329,11 +324,11 @@ public class DashboardActivity extends AppCompatActivity {
         swipeContainer.setOnRefreshListener(() -> helper.refreshDashboard(DashboardActivity.this));
 
         // SUM VEHICLE
-        databaseReference.child("VehicleData").addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference.child("ProductData").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 int countFinal = Integer.parseInt(String.valueOf(dataSnapshot.getChildrenCount()));
-                getVehicleDataCount(String.valueOf(countFinal));
+                getMaterialDataCount(String.valueOf(countFinal));
             }
 
             @Override
@@ -441,8 +436,8 @@ public class DashboardActivity extends AppCompatActivity {
         showStatistics();
     }
 
-    public void getVehicleDataCount(String countFinal){
-        finalCountVehicle = countFinal;
+    public void getMaterialDataCount(String countFinal){
+        finalCountMaterial = countFinal;
         showStatistics();
     }
 
@@ -530,29 +525,37 @@ public class DashboardActivity extends AppCompatActivity {
 
         ArrayList<MainFeatureModel> holder = new ArrayList<>();
 
-        MainFeatureModel ob1 = new MainFeatureModel();
-        ob1.setHeader("Manajemen Pengguna");
-        //ob1.setDesc("Atur rincian data pengguna aplikasi");
-        ob1.setImgName(R.drawable.ic_manage_user);
-        holder.add(ob1);
+        MainFeatureModel mRO = new MainFeatureModel();
+        mRO.setHeader("Manajemen Received Order");
+        mRO.setImgName(R.drawable.ic_purchase_order);
+        holder.add(mRO);
 
-        MainFeatureModel ob2 = new MainFeatureModel();
-        ob2.setHeader("Manajemen Armada");
-        //ob2.setDesc("Atur rincian data armada/kendaraan");
-        ob2.setImgName(R.drawable.ic_manage_vehicle);
-        holder.add(ob2);
+        MainFeatureModel mGI = new MainFeatureModel();
+        mGI.setHeader("Manajemen Good Issue");
+        mGI.setImgName(R.drawable.ic_good_issue);
+        holder.add(mGI);
 
-        MainFeatureModel ob3 = new MainFeatureModel();
-        ob3.setHeader("Manajemen Received Order");
-        //ob3.setDesc("Atur rincian data purchase order");
-        ob3.setImgName(R.drawable.ic_purchase_order);
-        holder.add(ob3);
+        MainFeatureModel mInv = new MainFeatureModel();
+        mInv.setHeader("Manajemen Invoice");
+        mInv.setImgName(R.drawable.ic_invoice);
+        holder.add(mInv);
 
-        MainFeatureModel ob4 = new MainFeatureModel();
-        ob4.setHeader("Manajemen Good Issue");
-        //ob4.setDesc("Atur rincian data good issue");
-        ob4.setImgName(R.drawable.ic_good_issue);
-        holder.add(ob4);
+        MainFeatureModel mMat = new MainFeatureModel();
+        mMat.setHeader("Manajemen Material");
+        mMat.setImgName(R.drawable.ic_add_material);
+        holder.add(mMat);
+
+        MainFeatureModel mUsr = new MainFeatureModel();
+        mUsr.setHeader("Manajemen Pengguna");
+        mUsr.setImgName(R.drawable.ic_manage_user);
+        holder.add(mUsr);
+
+        MainFeatureModel mVhl = new MainFeatureModel();
+        mVhl.setHeader("Manajemen Armada");
+        mVhl.setImgName(R.drawable.ic_manage_vehicle);
+        holder.add(mVhl);
+
+
 
         MainFeatureModel ob5 = new MainFeatureModel();
         ob5.setHeader("Manajemen Customer");
@@ -560,17 +563,7 @@ public class DashboardActivity extends AppCompatActivity {
         ob5.setImgName(R.drawable.ic_manage_customers);
         holder.add(ob5);
 
-        MainFeatureModel ob6 = new MainFeatureModel();
-        ob6.setHeader("Manajemen Invoice");
-        //ob6.setDesc("Atur data invoice transaksi");
-        ob6.setImgName(R.drawable.ic_invoice);
-        holder.add(ob6);
 
-        MainFeatureModel ob7 = new MainFeatureModel();
-        ob7.setHeader("Manajemen Material");
-        //ob6.setDesc("Atur data invoice transaksi");
-        ob7.setImgName(R.drawable.ic_add_material);
-        holder.add(ob7);
 
         return holder;
     }
@@ -596,8 +589,8 @@ public class DashboardActivity extends AppCompatActivity {
         holder2.add(ob3);
 
         StatisticsModel ob4 = new StatisticsModel();
-        ob4.setHeader(finalCountVehicle);
-        ob4.setDesc("Jumlah Armada");
+        ob4.setHeader(finalCountMaterial);
+        ob4.setDesc("Jumlah Material");
         holder2.add(ob4);
 
         StatisticsModel ob5 = new StatisticsModel();
@@ -614,6 +607,8 @@ public class DashboardActivity extends AppCompatActivity {
         ob7.setHeader("0");
         ob7.setDesc("Jumlah Supplier");
         holder2.add(ob7);
+
+
 
         return holder2;
     }

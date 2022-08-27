@@ -547,7 +547,7 @@
         app:fab_labelStyle="@style/customFAB"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
-        <com.getbase.floatingactionbutton.FloatingActionButton
+<!--        <com.getbase.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab_action_save_to_pdf"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -564,7 +564,7 @@
             app:fab_colorPressed="@color/light_grey"
             app:fab_icon="@drawable/ic_outline_qr_code"
             app:fab_size="mini"
-            app:fab_title="Lihat QR Code" />
+            app:fab_title="Lihat QR Code" />-->
         <com.getbase.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab_action_update_data"
             android:layout_width="wrap_content"

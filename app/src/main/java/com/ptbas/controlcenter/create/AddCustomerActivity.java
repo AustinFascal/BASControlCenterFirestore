@@ -9,6 +9,7 @@ import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.InputFilter;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -92,6 +93,8 @@ public class AddCustomerActivity extends AppCompatActivity {
         edtCustomerPhone = findViewById(R.id.edt_customer_phone);
         spinnerCustType = findViewById(R.id.spinner_cust_type);
         fabProceed = findViewById(R.id.fab_save_cust_data);
+
+        edtCustomerName.setFilters(new InputFilter[] {new InputFilter.AllCaps()});
 
         corporateTypeList  = new ArrayList<>();
 
@@ -207,13 +210,14 @@ public class AddCustomerActivity extends AppCompatActivity {
             }
         });*/
         //String custDocumentID = refCust.getId();
-        String custUID = custAlias + " " + getRandomUID(3);
-        CustomerModel customerModel = new CustomerModel(custUID, custName+", "+custType, custAlias, custAddress, custNPWP, custPhone);
+        String custDocumentID = refCust.getId();
+        String custAliasVal = custAlias + " " + getRandomUID(3);
+        CustomerModel customerModel = new CustomerModel(custDocumentID, custAliasVal, custName+", "+custType, custAddress, custNPWP, custPhone, true);
 
 
         refCust.set(customerModel)
                 .addOnSuccessListener(unused -> {
-                    dialogInterface.savedInformation(AddCustomerActivity.this);
+                    dialogInterface.savedInformationFromManagement(AddCustomerActivity.this);
                 }).addOnFailureListener(e ->
                         Toast.makeText(AddCustomerActivity.this, "FAILED", Toast.LENGTH_SHORT).show());
 

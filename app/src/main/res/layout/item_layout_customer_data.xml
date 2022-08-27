@@ -24,84 +24,61 @@
             android:layout_height="wrap_content">
 
             <LinearLayout
+                android:id="@+id/ll_wrap_gi_status"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
+                android:orientation="vertical">
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/statusSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp" />
+
+                <TextView
+                    android:id="@+id/tvStatus"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="center"
+                    android:textSize="10sp"
+                    android:maxLines="2"
+                    android:text="Aktif" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
                 android:layout_marginEnd="12dp"
                 android:layout_toStartOf="@+id/iv_show_detail"
+                android:layout_toEndOf="@+id/ll_wrap_gi_status"
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/tv_inv_date_created"
+                    android:id="@+id/tvCustUID"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
                     android:maxLines="1"
-                    android:text="12/12/2022" />
+                    android:text="CustUID" />
 
                 <TextView
-                    android:id="@+id/tv_ro_uid"
+                    android:id="@+id/tvCustName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
                     android:maxLines="1"
-                    android:text="Nomor RO UID"
+                    android:text="CustName"
                     android:textSize="16sp"
                     android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/tv_po_cust_number"
+                    android:id="@+id/tvCustPhone"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
                     android:maxLines="1"
-                    android:text="Nomor PO Customer"
+                    android:text="CustPhone"
                     android:textSize="14sp" />
-
-
-                <LinearLayout
-                    android:id="@+id/ll_wrap_gi_status"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:orientation="horizontal"
-                    android:paddingVertical="4dp">
-
-                    <LinearLayout
-                        android:id="@+id/ll_status_approved"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/pill_green"
-                        android:paddingHorizontal="8dp"
-                        android:layout_marginEnd="4dp"
-                        android:paddingVertical="2dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="VALID"
-                            android:textSize="11sp"
-                            android:textStyle="bold" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/ll_status_po_unvailable"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/pill_red"
-                        android:paddingHorizontal="8dp"
-                        android:paddingVertical="2dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="NOMOR PO BELUM TERSEDIA"
-                            android:textSize="11sp"
-                            android:textStyle="bold" />
-                    </LinearLayout>
-
-
-                </LinearLayout>
 
 
             </LinearLayout>
@@ -123,26 +100,26 @@
             android:layout_height="match_parent"
             android:background="@color/pure_grey"
             android:orientation="horizontal">
-           <!-- <Button
-                android:tag="DeleteGI"
-                style="@style/MaterialDialog.NegativeButton"
-                android:id="@+id/btn_delete_inv"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:layout_marginEnd="4dp"
-                android:drawableLeft="@drawable/ic_outline_delete_forever"
-                android:text="HAPUS"
-                android:textAllCaps="true" />
-            <Button
-                style="@style/MaterialDialog.NegativeButton"
-                android:id="@+id/btn_approve_inv"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:drawableLeft="@drawable/ic_outline_check"
-                android:text="SAHKAN"
-                android:textAllCaps="true" />-->
+            <!-- <Button
+                 android:tag="DeleteGI"
+                 style="@style/MaterialDialog.NegativeButton"
+                 android:id="@+id/btn_delete_inv"
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content"
+                 android:layout_weight="2"
+                 android:layout_marginEnd="4dp"
+                 android:drawableLeft="@drawable/ic_outline_delete_forever"
+                 android:text="HAPUS"
+                 android:textAllCaps="true" />
+             <Button
+                 style="@style/MaterialDialog.NegativeButton"
+                 android:id="@+id/btn_approve_inv"
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content"
+                 android:layout_weight="1"
+                 android:drawableLeft="@drawable/ic_outline_check"
+                 android:text="SAHKAN"
+                 android:textAllCaps="true" />-->
             <!--<Button
                 android:tag="DeleteGI"
                 style="@style/MaterialDialog.NegativeButton"
@@ -192,40 +169,6 @@
 
             </RelativeLayout>
 
-            <RelativeLayout
-                android:id="@+id/btn_approve_inv"
-                android:layout_weight="1"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center">
-
-                <ImageView
-                    android:scaleType="center"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_outline_check"
-                    android:layout_alignStart="@+id/btn2"
-                    android:layout_alignEnd="@+id/btn2"
-                    android:layout_alignTop="@+id/btn2"
-                    android:layout_alignBottom="@+id/btn2"/>
-
-                <Button
-                    android:id="@+id/btn2"
-                    android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:layout_alignParentStart="true"
-                    android:layout_alignParentTop="true"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentBottom="true"
-                    android:layout_marginStart="0dp"
-                    android:layout_marginTop="0dp"
-                    android:layout_marginEnd="0dp"
-                    android:layout_marginBottom="0dp"
-                    android:background="?attr/selectableItemBackground"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp" />
-
-            </RelativeLayout>
         </LinearLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>
