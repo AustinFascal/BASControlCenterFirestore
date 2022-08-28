@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardCornerRadius="6dp"
+    app:cardElevation="2dp"
+    style="@style/Widget.MaterialComponents.CardView"
+    android:layout_marginHorizontal="8dp"
+    android:layout_marginVertical="4dp"
+    app:cardPreventCornerOverlap="false">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:id="@+id/open_detail"
+            android:paddingHorizontal="12dp"
+            android:paddingBottom="6dp"
+            android:paddingTop="12dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:id="@+id/ll_wrap_gi_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/statusSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp" />
+
+                <TextView
+                    android:id="@+id/tvStatus"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="center"
+                    android:textSize="10sp"
+                    android:maxLines="2"
+                    android:text="Aktif" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="12dp"
+                android:layout_toStartOf="@+id/iv_show_detail"
+                android:layout_toEndOf="@+id/ll_wrap_gi_status"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvVhlUID"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:text="vhlUID"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvVhlDetails"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:text="VhlDetails"
+                    android:textSize="14sp" />
+
+
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/iv_show_detail"
+                style="@style/Widget.Design.FloatingActionButton"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="12dp"
+                android:src="@drawable/ic_outline_navigate_next"
+                app:tint="@color/white" />
+
+        </RelativeLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/pure_grey"
+            android:orientation="horizontal">
+            <!-- <Button
+                 android:tag="DeleteGI"
+                 style="@style/MaterialDialog.NegativeButton"
+                 android:id="@+id/btn_delete_inv"
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content"
+                 android:layout_weight="2"
+                 android:layout_marginEnd="4dp"
+                 android:drawableLeft="@drawable/ic_outline_delete_forever"
+                 android:text="HAPUS"
+                 android:textAllCaps="true" />
+             <Button
+                 style="@style/MaterialDialog.NegativeButton"
+                 android:id="@+id/btn_approve_inv"
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content"
+                 android:layout_weight="1"
+                 android:drawableLeft="@drawable/ic_outline_check"
+                 android:text="SAHKAN"
+                 android:textAllCaps="true" />-->
+            <!--<Button
+                android:tag="DeleteGI"
+                style="@style/MaterialDialog.NegativeButton"
+                android:id="@+id/btn_delete_gi"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="4dp"
+                android:drawableLeft="@drawable/ic_outline_delete_forever"
+                android:text="HAPUS"
+                android:textStyle="bold"
+                android:textAllCaps="true" />-->
+            <RelativeLayout
+                android:id="@+id/btn_delete_inv"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center">
+
+                <ImageView
+                    android:scaleType="center"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_outline_delete_forever"
+                    android:layout_alignStart="@+id/btn1"
+                    android:layout_alignEnd="@+id/btn1"
+                    android:layout_alignTop="@+id/btn1"
+                    android:layout_alignBottom="@+id/btn1"
+                    app:tint="@color/dark_red" />
+
+                <Button
+                    android:id="@+id/btn1"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginStart="0dp"
+                    android:layout_marginTop="0dp"
+                    android:layout_marginEnd="0dp"
+                    android:layout_marginBottom="0dp"
+                    android:background="?attr/selectableItemBackground"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:tag="DeleteGI" />
+
+            </RelativeLayout>
+
+        </LinearLayout>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>
