@@ -254,7 +254,7 @@ public class AddReceivedOrder extends AppCompatActivity {
             }
         });
 
-        db.collection("CustomerData").orderBy("custName").whereEqualTo("custStatus", true)
+        db.collection("CustomerData").whereEqualTo("custStatus", true)
                 .addSnapshotListener((value, error) -> {
                     customerName.clear();
                     if (value != null) {
