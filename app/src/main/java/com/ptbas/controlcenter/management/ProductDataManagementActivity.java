@@ -22,19 +22,14 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.ptbas.controlcenter.Helper;
+import com.ptbas.controlcenter.helper.Helper;
 import com.ptbas.controlcenter.R;
-import com.ptbas.controlcenter.adapter.GIManagementAdapter;
 import com.ptbas.controlcenter.adapter.ProductDataManagementAdapter;
 import com.ptbas.controlcenter.create.AddProductData;
-import com.ptbas.controlcenter.model.GoodIssueModel;
 import com.ptbas.controlcenter.model.ProductModel;
-import com.ptbas.controlcenter.update.UpdateProductData;
 import com.ptbas.controlcenter.utils.LangUtils;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Objects;
 
 public class ProductDataManagementActivity extends AppCompatActivity {
 
@@ -124,15 +119,15 @@ public class ProductDataManagementActivity extends AppCompatActivity {
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         int width = displayMetrics.widthPixels;
         if (width<=1080){
-            RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 2);
+            RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 1);
             rv.setLayoutManager(mLayoutManager);
         }
         if (width>1080&&width<1366){
-            RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 4);
+            RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 2);
             rv.setLayoutManager(mLayoutManager);
         }
         if (width>=1366){
-            RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 6);
+            RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 3);
             rv.setLayoutManager(mLayoutManager);
         }
 

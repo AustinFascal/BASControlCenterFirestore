@@ -26,19 +26,14 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.ptbas.controlcenter.DialogInterface;
-import com.ptbas.controlcenter.Helper;
+import com.ptbas.controlcenter.helper.DialogInterface;
+import com.ptbas.controlcenter.helper.Helper;
 import com.ptbas.controlcenter.R;
-import com.ptbas.controlcenter.create.AddVehicleActivity;
-import com.ptbas.controlcenter.model.ProductModel;
 import com.ptbas.controlcenter.model.VehicleModel;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
-import dev.shreyaspatil.MaterialDialog.BottomSheetMaterialDialog;
-import dev.shreyaspatil.MaterialDialog.model.TextAlignment;
 
 public class UpdateVehicleData extends AppCompatActivity {
 
@@ -58,6 +53,8 @@ public class UpdateVehicleData extends AppCompatActivity {
     DatabaseReference dbRefVehicleBrand = FirebaseDatabase.getInstance().getReference();
     DatabaseReference dbRefAddVehicle = FirebaseDatabase.getInstance().getReference("VehicleData");
     List<String> vhlBrandList;
+
+    DialogInterface dialogInterface = new DialogInterface();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +81,8 @@ public class UpdateVehicleData extends AppCompatActivity {
         edtVhlIdentityNumber = findViewById(R.id.edt_vhl_identity_number);
         edtVhlEngineNumber = findViewById(R.id.edt_vhl_engine_number);
         edtVhlManufactureYear = findViewById(R.id.edt_vhl_manufacture_year);
+
+        edtVhlRegistNumber.setEnabled(false);
 
         fabSaveVhlData = findViewById(R.id.fab_save_vhl_data);
         vhlBrandList  = new ArrayList<>();
@@ -235,7 +234,7 @@ public class UpdateVehicleData extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
-                    infoSavedDialog();
+                    dialogInterface.updatedInformation(UpdateVehicleData.this);
                 } else {
                     try{
                         throw Objects.requireNonNull(task.getException());
@@ -248,34 +247,7 @@ public class UpdateVehicleData extends AppCompatActivity {
         });
     }
 
-    public void infoSavedDialog(){
-        BottomSheetMaterialDialog mBottomSheetDialog = new BottomSheetMaterialDialog.Builder(this)
-                .setTitle("Sukses!", TextAlignment.START)
-                .setAnimation(R.raw.lottie_saved)
-                .setMessage("Berhasil menambahkan data. Mau tambah lagi?", TextAlignment.START)
-                .setCancelable(false)
-                .setPositiveButton("TAMBAH LAGI", R.drawable.ic_outline_add, new BottomSheetMaterialDialog.OnClickListener() {
-                    @Override
-                    public void onClick(dev.shreyaspatil.MaterialDialog.interfaces.DialogInterface dialogInterface, int which) {
-                        dialogInterface.dismiss();
-                        startActivity(getIntent());
-                        finish();
-                        overridePendingTransition(0, 0);
-                    }
-                })
-                .setNegativeButton("TIDAK", R.drawable.ic_outline_close, new BottomSheetMaterialDialog.OnClickListener() {
-                    @Override
-                    public void onClick(dev.shreyaspatil.MaterialDialog.interfaces.DialogInterface dialogInterface, int which) {
-                        dialogInterface.dismiss();
-                        finish();
-                        helper.refreshDashboard(UpdateVehicleData.this);
-                    }
-                })
-                .build();
 
-        // Show Dialog
-        mBottomSheetDialog.show();
-    }
 
     @Override
     public void onBackPressed() {

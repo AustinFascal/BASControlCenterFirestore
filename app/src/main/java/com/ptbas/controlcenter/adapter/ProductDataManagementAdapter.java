@@ -1,20 +1,24 @@
 package com.ptbas.controlcenter.adapter;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.ptbas.controlcenter.DialogInterface;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.ptbas.controlcenter.helper.DialogInterface;
 import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.model.ProductModel;
 import com.ptbas.controlcenter.update.UpdateProductData;
@@ -54,8 +58,9 @@ public class ProductDataManagementAdapter extends RecyclerView.Adapter<ProductDa
 
     public class ItemViewHolder extends RecyclerView.ViewHolder {
         RelativeLayout btnDeleteWrap;
-        TextView tvProductName, tvBuyPrice, tvPriceSell;
+        TextView tvProductName, tvBuyPrice, tvPriceSell, tvStatus;
         ImageView ivShowDetail;
+        SwitchCompat statusSwitch;
         Button btn1;
 
         public ItemViewHolder(@NonNull View itemView) {
@@ -64,22 +69,61 @@ public class ProductDataManagementAdapter extends RecyclerView.Adapter<ProductDa
             tvProductName = itemView.findViewById(R.id.tvProductName);
             tvBuyPrice = itemView.findViewById(R.id.tvBuyPrice);
             tvPriceSell = itemView.findViewById(R.id.tvSellPrice);
+            tvStatus = itemView.findViewById(R.id.tvStatus);
             ivShowDetail = itemView.findViewById(R.id.ivShowDetail);
+            statusSwitch = itemView.findViewById(R.id.statusSwitch);
             btn1 = itemView.findViewById(R.id.btnDelete);
         }
 
         public void viewBind(ProductModel productModel) {
+            ProgressDialog pd = new ProgressDialog(context);
+            pd.setMessage("Memproses");
+            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+
+
             dialogInterface = new DialogInterface();
             //DecimalFormat df = new DecimalFormat("0.00");
 
+
             String productName = productModel.getProductName();
+            String productUID = productName.replaceAll(" ", "").toLowerCase();
             Double productBuyPrice = productModel.getPriceBuy();
             Double productSellPrice = productModel.getPriceSell();
+            boolean productStatus = productModel.getProductStatus();
+
+            if (productStatus){
+                statusSwitch.setChecked(true);
+                tvStatus.setText("Aktif");
+            } else{
+                statusSwitch.setChecked(false);
+                tvStatus.setText("Tidak Aktif");
+            }
 
             //Toast.makeText(context, productName, Toast.LENGTH_SHORT).show();
             tvProductName.setText(productName);
             tvBuyPrice.setText("Beli: "+productBuyPrice);
             tvPriceSell.setText("Jual: "+productSellPrice);
+
+            statusSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+                @Override
+                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                    pd.show();
+                    if (statusSwitch.isChecked()){
+                        databaseReference.child("ProductData").child(productUID).child("productStatus").setValue(true).addOnCompleteListener(task -> {
+                            if (task.isSuccessful()){
+                                pd.dismiss();
+                            }
+                        });
+                    } else {
+                        databaseReference.child("ProductData").child(productUID).child("productStatus").setValue(false).addOnCompleteListener(task -> {
+                            if (task.isSuccessful()){
+                                pd.dismiss();
+                            }
+                        });
+                    }
+                }
+            });
 
             ivShowDetail.setOnClickListener(view -> {
                 String productDataUID=productName.replaceAll(" ", "").toLowerCase();

@@ -37,8 +37,8 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.ptbas.controlcenter.DialogInterface;
-import com.ptbas.controlcenter.Helper;
+import com.ptbas.controlcenter.helper.DialogInterface;
+import com.ptbas.controlcenter.helper.Helper;
 import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.model.GoodIssueModel;
 import com.ptbas.controlcenter.model.ProductItems;
@@ -268,17 +268,16 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                     VehicleModel vehicleModel = snapshot.getValue(VehicleModel.class);
 
                     if (vehicleModel!=null){
-                        edtVhlLength.setText(String.valueOf(vehicleModel.getVhlLength()));
-                        edtVhlWidth.setText(String.valueOf(vehicleModel.getVhlWidth()));
-                        edtVhlHeight.setText(String.valueOf(vehicleModel.getVhlHeight()));
-                        tvHeightCorrection.setText(Html.fromHtml("Tinggi Hasil Koreksi (TK): "+ vehicleModel.getVhlHeight() +" cm"));
+                            edtVhlLength.setText(String.valueOf(vehicleModel.getVhlLength()));
+                            edtVhlWidth.setText(String.valueOf(vehicleModel.getVhlWidth()));
+                            edtVhlHeight.setText(String.valueOf(vehicleModel.getVhlHeight()));
+                            tvHeightCorrection.setText(Html.fromHtml("Tinggi Hasil Koreksi (TK): "+ vehicleModel.getVhlHeight() +" cm"));
 
-                        float finalVolumeDefault1 =
-                                (Float.parseFloat(edtVhlLength.getText().toString())*
-                                        Float.parseFloat(edtVhlWidth.getText().toString())*
-                                        Float.parseFloat(edtVhlHeight.getText().toString()))/1000000;
-                        tvVhlVolume.setText(Html.fromHtml(String.valueOf(df12.format(finalVolumeDefault1))+" m\u00B3"));
-
+                            float finalVolumeDefault1 =
+                                    (Float.parseFloat(edtVhlLength.getText().toString())*
+                                            Float.parseFloat(edtVhlWidth.getText().toString())*
+                                            Float.parseFloat(edtVhlHeight.getText().toString()))/1000000;
+                            tvVhlVolume.setText(Html.fromHtml(String.valueOf(df12.format(finalVolumeDefault1))+" m\u00B3"));
                     } else {
                         Toast.makeText(AddGoodIssueActivity.this, "Null", Toast.LENGTH_SHORT).show();
                     }
@@ -384,8 +383,10 @@ public class AddGoodIssueActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()){
                     for (DataSnapshot dataSnapshot: snapshot.getChildren()){
-                        String spinnerVhlRegistNumber = dataSnapshot.child("vhlUID").getValue(String.class);
-                        vhlUIDList.add(spinnerVhlRegistNumber);
+                        if (Objects.equals(dataSnapshot.child("vhlStatus").getValue(), true)){
+                            String spinnerVhlRegistNumber = dataSnapshot.child("vhlUID").getValue(String.class);
+                            vhlUIDList.add(spinnerVhlRegistNumber);
+                        }
                     }
                     ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddGoodIssueActivity.this, R.layout.style_spinner, vhlUIDList);
                     arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
@@ -607,13 +608,15 @@ public class AddGoodIssueActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        dialogInterface.discardDialogConfirmation(AddGoodIssueActivity.this);
+        onBackPressed();
+        //dialogInterface.discardDialogConfirmation(AddGoodIssueActivity.this);
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     public void onBackPressed() {
-        dialogInterface.discardDialogConfirmation(AddGoodIssueActivity.this);
+        finish();
+        //dialogInterface.discardDialogConfirmation(AddGoodIssueActivity.this);
     }
 
 }

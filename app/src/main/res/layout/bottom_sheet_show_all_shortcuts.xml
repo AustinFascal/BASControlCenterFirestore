@@ -117,7 +117,6 @@
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:ellipsize="end"
-                                        android:gravity="center_vertical"
                                         android:maxLines="2"
                                         android:text="Validasi Received Order"
                                         android:textAlignment="center" />
@@ -143,7 +142,6 @@
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:ellipsize="end"
-                                        android:gravity="center_vertical"
                                         android:maxLines="2"
                                         android:text="Validasi Good Issue"
                                         android:textAlignment="center" />
@@ -169,7 +167,6 @@
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:ellipsize="end"
-                                        android:gravity="center_vertical"
                                         android:maxLines="2"
                                         android:text="Buat BKK"
                                         android:textAlignment="center" />
@@ -188,13 +185,12 @@
                                         android:layout_width="match_parent"
                                         android:layout_height="48dp"
                                         android:layout_marginBottom="4dp"
-                                        android:src="@drawable/ic_add_corporate" />
+                                        android:src="@drawable/ic_add_customer" />
 
                                     <TextView
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:ellipsize="end"
-                                        android:gravity="center_vertical"
                                         android:maxLines="2"
                                         android:text="Tambah Customer"
                                         android:textAlignment="center" />
@@ -230,7 +226,6 @@
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:ellipsize="end"
-                                        android:gravity="center_vertical"
                                         android:maxLines="2"
                                         android:text="Tambah Tipe Customer"
                                         android:textAlignment="center" />
@@ -255,7 +250,6 @@
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:ellipsize="end"
-                                        android:gravity="center_vertical"
                                         android:maxLines="2"
                                         android:text="Tambah Material"
                                         android:textAlignment="center" />
@@ -281,7 +275,6 @@
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:ellipsize="end"
-                                        android:gravity="center_vertical"
                                         android:maxLines="2"
                                         android:text="Tambah Supplier"
                                         android:textAlignment="center" />
@@ -306,7 +299,6 @@
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:ellipsize="end"
-                                        android:gravity="center_vertical"
                                         android:maxLines="2"
                                         android:text="Tambah Pengguna"
                                         android:textAlignment="center" />
@@ -344,7 +336,6 @@
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:ellipsize="end"
-                                        android:gravity="center_vertical"
                                         android:maxLines="2"
                                         android:text="Tambah Armada"
                                         android:textAlignment="center" />
@@ -370,7 +361,6 @@
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:ellipsize="end"
-                                        android:gravity="center_vertical"
                                         android:maxLines="2"
                                         android:text="Tambah Brand Armada"
                                         android:textAlignment="center" />
@@ -396,7 +386,6 @@
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:ellipsize="end"
-                                        android:gravity="center_vertical"
                                         android:maxLines="2"
                                         android:text="Tambah Mata Uang"
                                         android:textAlignment="center" />

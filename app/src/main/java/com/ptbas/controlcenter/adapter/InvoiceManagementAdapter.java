@@ -13,7 +13,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.ptbas.controlcenter.DialogInterface;
+import com.ptbas.controlcenter.helper.DialogInterface;
 import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.model.InvoiceModel;
 
@@ -52,7 +52,7 @@ public class InvoiceManagementAdapter extends RecyclerView.Adapter<InvoiceManage
         LinearLayout llStatusPaid, llStatusUnpaid;
         TextView tvInvDateCreated, tvInvUID, tvPoCustNumber, tvPoCustName;
         Button btnDeleteInv, btnApproveInv;
-        RelativeLayout rlOpenInvDetail;
+        RelativeLayout rlOpenInvDetail, wrapBtnApprove;
         ImageView ivShowDetail;
 
         public ItemViewHolder(@NonNull View itemView) {
@@ -67,11 +67,13 @@ public class InvoiceManagementAdapter extends RecyclerView.Adapter<InvoiceManage
             tvPoCustName = itemView.findViewById(R.id.tv_po_cust_name);
             btnDeleteInv = itemView.findViewById(R.id.btn_delete_inv);
             btnApproveInv = itemView.findViewById(R.id.btn_approve_inv);
+            wrapBtnApprove = itemView.findViewById(R.id.wrapBtnApprove);
         }
 
         public void viewBind(InvoiceModel invoiceModel) {
             dialogInterface = new DialogInterface();
             String invUID = invoiceModel.getInvUID();
+            String invDocumentID = invoiceModel.getInvDocumentID();
             String invPoUID = "PO: "+invoiceModel.getInvPoUID();
             String invPoCustName = invoiceModel.getInvCustName();
             String invDateCreated = invoiceModel.getInvDateCreated();
@@ -85,37 +87,18 @@ public class InvoiceManagementAdapter extends RecyclerView.Adapter<InvoiceManage
             if (invStatus){
                 llStatusPaid.setVisibility(View.VISIBLE);
                 llStatusUnpaid.setVisibility(View.GONE);
-                btnApproveInv.setVisibility(View.GONE);
+                wrapBtnApprove.setVisibility(View.GONE);
             } else {
                 llStatusPaid.setVisibility(View.GONE);
                 llStatusUnpaid.setVisibility(View.VISIBLE);
-                btnApproveInv.setVisibility(View.VISIBLE);
-            }
-            /*if (tvPoCustNumber.getText().toString().equals("PO: -")){
-                tvPoCustNumber.setVisibility(View.GONE);
-                llStatusPOAvailable.setVisibility(View.VISIBLE);
-            } else {
-                tvPoCustNumber.setVisibility(View.VISIBLE);
-                llStatusPOAvailable.setVisibility(View.GONE);
+                wrapBtnApprove.setVisibility(View.VISIBLE);
             }
 
-            /*rlOpenInvDetail.setOnClickListener(view -> {
-                String roUID1 =receivedOrderModel.getRoUID();
-                Intent i = new Intent(context, UpdateGoodIssueActivity.class);
-                i.putExtra("key", roUID1);
-                context.startActivity(i);
-            });*/
+            btnApproveInv.setOnClickListener(view ->
+                    dialogInterface.approveInvConfirmation(context, invDocumentID));
 
-//            btnApproveInv.setOnClickListener(view -> {
-//                if (tvPoCustNumber.getText().toString().equals("PO: -")){
-//                    dialogInterface.noRoPoNumberInformation(context, invoiceModel.getRoDocumentID());
-//                } else {
-//                    dialogInterface.approveRoConfirmation(context, invoiceModel.getRoDocumentID());
-//                }
-//            });
-
-//            btnDeleteInv.setOnClickListener(view ->
-//                    dialogInterface.deleteRoConfirmation(context, invoiceModel.getRoDocumentID()));
+            btnDeleteInv.setOnClickListener(view ->
+                    dialogInterface.deleteInvConfirmation(context, invDocumentID));
         }
     }
 }

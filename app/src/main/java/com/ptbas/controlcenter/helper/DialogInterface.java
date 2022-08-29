@@ -1,4 +1,4 @@
-package com.ptbas.controlcenter;
+package com.ptbas.controlcenter.helper;
 
 
 
@@ -26,8 +26,11 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.WriteBatch;
+import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.create.AddInvoiceActivity;
 import com.ptbas.controlcenter.create.AddReceivedOrder;
+import com.ptbas.controlcenter.helper.Helper;
 import com.ptbas.controlcenter.management.ReceivedOrderManagementActivity;
 import com.ptbas.controlcenter.model.GoodIssueModel;
 import com.ptbas.controlcenter.model.InvoiceModel;
@@ -449,6 +452,35 @@ public class DialogInterface {
         mBottomSheetDialog.show();
     }
 
+
+    public void approveInvConfirmation(Context context, String invDocumentID) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference refInv = db.collection("InvoiceData");
+
+        Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            vibrator.vibrate(VibrationEffect.createOneShot(100,
+                    VibrationEffect.DEFAULT_AMPLITUDE));
+        } else {
+            vibrator.vibrate(100);
+        }
+        MaterialDialog mBottomSheetDialog = new MaterialDialog.Builder((Activity) context)
+                .setTitle("Invoice Lunas?")
+                .setAnimation(R.raw.lottie_approval)
+                .setMessage("Apakah Anda yakin ingin mengubah status Invoice yang Anda pilih menjadi lunas? Setelah diubah, status tidak dapat dikembalikan.")
+                .setCancelable(true)
+                .setPositiveButton("YA", R.drawable.ic_outline_check, (dialogInterface, which) -> {
+                    //Toast.makeText(context, invUID, Toast.LENGTH_SHORT).show();
+                    refInv.document(invDocumentID).update("invStatus", true);
+                    dialogInterface.dismiss();
+                })
+                .setNegativeButton("TIDAK", R.drawable.ic_outline_close, (dialogInterface, which) -> dialogInterface.dismiss())
+                .build();
+
+        mBottomSheetDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
+        mBottomSheetDialog.show();
+    }
+
     public void changePoNumberCustomer(Context context, String roUIDVal) {
         MaterialDialog mBottomSheetDialog = new MaterialDialog.Builder((Activity) context)
                 .setTitle("Ubah Nomor PO")
@@ -514,7 +546,7 @@ public class DialogInterface {
                 .setPositiveButton("YA", R.drawable.ic_outline_check, (dialogInterface, which) -> {
                     dialogInterface.dismiss();
                     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-                    databaseReference.child("ProductData").child(vhlUID).removeValue();
+                    databaseReference.child("VehicleData").child(vhlUID).removeValue();
                 })
                 .setNegativeButton("TIDAK", R.drawable.ic_outline_close, (dialogInterface, which) -> dialogInterface.dismiss())
                 .build();
@@ -589,6 +621,47 @@ public class DialogInterface {
 
         mBottomSheetDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
         mBottomSheetDialog.show();
+    }
+
+    public void deleteInvConfirmation(Context context, String invDocumentID) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference refInv = db.collection("InvoiceData");
+        CollectionReference documentReference = refInv.document(invDocumentID).collection("GoodIssueData");
+
+        MaterialDialog mBottomSheetDialog = new MaterialDialog.Builder((Activity) context)
+                .setTitle("Hapus Data")
+                .setAnimation(R.raw.lottie_delete)
+                .setMessage("Apakah Anda yakin ingin menghapus data Invoice yang Anda pilih? Setelah dihapus, data tidak dapat dikembalikan.")
+                .setCancelable(true)
+                .setPositiveButton("YA", R.drawable.ic_outline_check, (dialogInterface, which) -> {
+                    removeAllItemsFromShoppingCart(invDocumentID);
+                    refInv.document(invDocumentID).delete();
+                    dialogInterface.dismiss();
+                })
+                .setNegativeButton("TIDAK", R.drawable.ic_outline_close, (dialogInterface, which) -> dialogInterface.dismiss())
+                .build();
+
+        mBottomSheetDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
+        mBottomSheetDialog.show();
+    }
+
+    public void removeAllItemsFromShoppingCart(String invUID) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("InvoiceData").document(invUID).collection("GoodIssueData")
+                .get()
+                .addOnSuccessListener((querySnapshot) -> {
+                    WriteBatch batch = db.batch();
+                    for (DocumentSnapshot doc : querySnapshot) {
+                        batch.delete(doc.getReference());
+                    }
+                    batch.commit()
+                            .addOnSuccessListener((result) -> {
+                            })
+                            .addOnFailureListener((error) -> {
+                            });
+                })
+                .addOnFailureListener((error) -> {
+                });
     }
 
     public void deleteCustConfirmation(Context context, String custDocumentId) {

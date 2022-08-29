@@ -13,7 +13,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.ptbas.controlcenter.DialogInterface;
+import com.ptbas.controlcenter.helper.DialogInterface;
 import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.model.ReceivedOrderModel;
 

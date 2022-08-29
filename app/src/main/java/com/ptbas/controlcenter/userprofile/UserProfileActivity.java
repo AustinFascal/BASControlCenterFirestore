@@ -9,8 +9,6 @@ import androidx.cardview.widget.CardView;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Configuration;
-import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -30,7 +28,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.ptbas.controlcenter.Helper;
+import com.ptbas.controlcenter.helper.Helper;
 import com.squareup.picasso.Picasso;
 import com.ptbas.controlcenter.MainActivity;
 import com.ptbas.controlcenter.R;

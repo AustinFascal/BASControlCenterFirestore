@@ -11,15 +11,14 @@ import android.text.InputFilter;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.ptbas.controlcenter.DialogInterface;
-import com.ptbas.controlcenter.Helper;
+import com.ptbas.controlcenter.helper.DialogInterface;
+import com.ptbas.controlcenter.helper.Helper;
 import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.model.ProductModel;
 
@@ -82,7 +81,7 @@ public class AddProductData extends AppCompatActivity {
     }
 
     private void insertData(String productName, Double productBuyPrice, Double productSellPrice) {
-        ProductModel productModel = new ProductModel(productName, productBuyPrice, productSellPrice);
+        ProductModel productModel = new ProductModel(productName, productBuyPrice, productSellPrice, true);
 
         String productUID = productName.replaceAll(" ", "").toLowerCase();
         DatabaseReference dbRefAddVehicle = FirebaseDatabase.getInstance().getReference("ProductData");

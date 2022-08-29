@@ -20,7 +20,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidUserException;
-import com.ptbas.controlcenter.Helper;
+import com.ptbas.controlcenter.helper.Helper;
 import com.ptbas.controlcenter.MainActivity;
 import com.ptbas.controlcenter.R;
 

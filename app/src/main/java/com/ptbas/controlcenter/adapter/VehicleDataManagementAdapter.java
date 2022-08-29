@@ -1,11 +1,13 @@
 package com.ptbas.controlcenter.adapter;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -14,14 +16,14 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.ptbas.controlcenter.DialogInterface;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.ptbas.controlcenter.helper.DialogInterface;
 import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.model.VehicleModel;
-import com.ptbas.controlcenter.update.UpdateProductData;
 import com.ptbas.controlcenter.update.UpdateVehicleData;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 public class VehicleDataManagementAdapter extends RecyclerView.Adapter<VehicleDataManagementAdapter.ItemViewHolder> {
 
@@ -72,11 +74,14 @@ public class VehicleDataManagementAdapter extends RecyclerView.Adapter<VehicleDa
         }
 
         public void viewBind(VehicleModel vehicleModel) {
+            ProgressDialog pd = new ProgressDialog(context);
+            pd.setMessage("Memproses");
+
             dialogInterface = new DialogInterface();
             //DecimalFormat df = new DecimalFormat("0.00");
 
             String vhlUID = vehicleModel.getVhlUID();
-            String vhlDetails = "P: "+vehicleModel.getVhlLength()+" cm | T: "+vehicleModel.getVhlHeight()+" cm | L: "+vehicleModel.getVhlWidth()+" cm";
+            String vhlDetails = "P: "+vehicleModel.getVhlLength()+" cm | L: "+vehicleModel.getVhlWidth()+" cm | T: "+vehicleModel.getVhlHeight()+" cm";
             Boolean vhlStatus = vehicleModel.getVhlStatus();
 
             tvVhlUID.setText(vhlUID);
@@ -89,6 +94,29 @@ public class VehicleDataManagementAdapter extends RecyclerView.Adapter<VehicleDa
                 statusSwitch.setChecked(false);
                 tvStatus.setText("Tidak Aktif");
             }
+
+            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+
+            statusSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                    pd.show();
+                    if (statusSwitch.isChecked()) {
+                        databaseReference.child("VehicleData").child(vhlUID).child("vhlStatus").setValue(true).addOnCompleteListener(task -> {
+                            if (task.isSuccessful()){
+                                pd.dismiss();
+                            }
+                        });
+                    } else{
+                        databaseReference.child("VehicleData").child(vhlUID).child("vhlStatus").setValue(false).addOnCompleteListener(task -> {
+                            if (task.isSuccessful()){
+                                pd.dismiss();
+                            }
+                        });
+                    }
+
+                }
+            });
 
             ivShowDetail.setOnClickListener(view -> {
                 Intent i = new Intent(context, UpdateVehicleData.class);

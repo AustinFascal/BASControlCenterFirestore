@@ -30,11 +30,11 @@
                     android:id="@+id/edtProductName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Nama Material"
-                    android:textAllCaps="true"
-                    android:focusable="false"
                     android:enabled="false"
-                    android:inputType="textCapCharacters" />
+                    android:focusable="false"
+                    android:hint="Nama Material"
+                    android:inputType="textCapCharacters"
+                    android:textAllCaps="true" />
             </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -68,6 +68,38 @@
                     android:inputType="number" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Status Material" />
+
+            <RadioGroup
+                android:id="@+id/radio_group_status"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/outline_box"
+                android:orientation="horizontal"
+                android:padding="5dp">
+
+                <RadioButton
+                    android:id="@+id/radio_active"
+                    style="@style/Theme.TravelPermitBAS"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:checked="true"
+                    android:text="@string/active"
+                    android:textSize="16sp" />
+
+                <RadioButton
+                    android:id="@+id/radio_inactive"
+                    style="@style/Theme.TravelPermitBAS"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/inactive"
+                    android:textSize="16sp" />
+            </RadioGroup>
         </LinearLayout>
 
     </ScrollView>

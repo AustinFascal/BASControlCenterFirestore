@@ -1,7 +1,26 @@
 package com.ptbas.controlcenter;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.content.res.Configuration;
+import android.graphics.Color;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.Handler;
+import android.transition.Fade;
+import android.util.DisplayMetrics;
+import android.view.View;
+import android.view.WindowManager;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -15,29 +34,6 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
-import android.Manifest;
-import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
-import android.content.res.Configuration;
-import android.graphics.Color;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.net.Uri;
-import android.os.Build;
-import android.os.Bundle;
-import android.os.Handler;
-import android.transition.Fade;
-import android.util.DisplayMetrics;
-import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.snackbar.Snackbar;
@@ -59,6 +55,7 @@ import com.ptbas.controlcenter.create.AddInvoiceActivity;
 import com.ptbas.controlcenter.create.AddProductData;
 import com.ptbas.controlcenter.create.AddReceivedOrder;
 import com.ptbas.controlcenter.create.AddVehicleActivity;
+import com.ptbas.controlcenter.helper.Helper;
 import com.ptbas.controlcenter.model.MainFeatureModel;
 import com.ptbas.controlcenter.model.StatisticsModel;
 import com.ptbas.controlcenter.model.UserModel;
@@ -67,6 +64,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class DashboardActivity extends AppCompatActivity {
 
@@ -78,12 +76,11 @@ public class DashboardActivity extends AppCompatActivity {
     CoordinatorLayout coordinatorLayout;
     ConstraintLayout bottomSheet;
     LinearLayout linearLayout, llAddGi, llShowOthers, llAddRo, llAddInvoice, llTopView, llWrapShortcuts, llWrapProfilePic;
-    TextView title, tvShowAllShortcuts;
+    TextView title;
     RecyclerView rvMainFeatures, rvStatistics;
     NestedScrollView nestedscrollview;
-    CardView crdviewWrapInternetError, crdviewWrapShortcuts;
+    CardView crdviewWrapShortcuts;
     ImageView imageViewProfilePic;
-    //ImageButton imgbtnMenu;
 
     FirebaseAuth authProfile;
     String finalCountMaterial, finalCountUser, finalCountActiveReceivedOrderData, finalCountActiveGoodIssueDataToInvoiced, finalCountActiveGoodIssueData, finalCountCustomer;
@@ -98,12 +95,10 @@ public class DashboardActivity extends AppCompatActivity {
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @SuppressLint("ClickableViewAccessibility")
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
-
 
         llWrapProfilePic = findViewById(R.id.wrap_profile_pic);
         bottomSheet = findViewById(R.id.bottomSheetPODetails);
@@ -111,7 +106,6 @@ public class DashboardActivity extends AppCompatActivity {
         nestedscrollview = findViewById(R.id.nestedscrollview);
         llTopView = findViewById(R.id.ll_top_view);
         title = findViewById(R.id.title);
-        //imgbtnMenu = findViewById(R.id.imgbtn_menu);
         imageViewProfilePic = findViewById(R.id.imgbtn_profile);
         swipeContainer = findViewById(R.id.swipeContainerDashboard);
         crdviewWrapShortcuts = findViewById(R.id.crdview_wrap_shortcuts);
@@ -126,16 +120,9 @@ public class DashboardActivity extends AppCompatActivity {
         llAddInvoice = findViewById(R.id.ll_add_invoice);
 
         // HANDLING SDK VERSION
-        if (Build.VERSION.SDK_INT >= 19 && Build.VERSION.SDK_INT < 21) {
-            setWindowFlag(this, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, true);
-        }
-        if (Build.VERSION.SDK_INT >= 19) {
-            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
-        }
-        if (Build.VERSION.SDK_INT >= 21) {
-            getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-            getWindow().setStatusBarColor(Color.TRANSPARENT);
-        }
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        getWindow().setStatusBarColor(Color.TRANSPARENT);
 
         // HANDLING SYSTEM UI MODE
         int nightModeFlags =
@@ -197,22 +184,12 @@ public class DashboardActivity extends AppCompatActivity {
                 switch (newState) {
                     case BottomSheetBehavior.STATE_EXPANDED:
                         ivExpandCollapseFromBottomSheet.setImageResource(R.drawable.ic_outline_keyboard_arrow_down);
-                        ivExpandCollapseFromBottomSheet.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                            }
-                        });
+                        ivExpandCollapseFromBottomSheet.setOnClickListener(view -> bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED));
                         break;
                     case BottomSheetBehavior.STATE_COLLAPSED:
                     case BottomSheetBehavior.STATE_DRAGGING:
                         ivExpandCollapseFromBottomSheet.setImageResource(R.drawable.ic_outline_keyboard_arrow_up);
-                        ivExpandCollapseFromBottomSheet.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-                            }
-                        });
+                        ivExpandCollapseFromBottomSheet.setOnClickListener(view -> bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED));
                         break;
                     case BottomSheetBehavior.STATE_HALF_EXPANDED:
                     case BottomSheetBehavior.STATE_HIDDEN:
@@ -245,17 +222,9 @@ public class DashboardActivity extends AppCompatActivity {
         title.setText(R.string.app_name);
 
         imageViewProfilePic.setOnClickListener(view -> {
-            /*Intent intent = new Intent(DashboardActivity.this, UserProfileActivity.class);
-            startActivity(intent);*/
-
-            // on image click we are opening new activity
-            // and adding animation between this two activities.
             Intent intent = new Intent(DashboardActivity.this, UserProfileActivity.class);
-            // below method is used to make scene transition
-            // and adding fade animation in it.
             ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
-                    DashboardActivity.this, llWrapProfilePic, ViewCompat.getTransitionName(llWrapProfilePic));
-            // starting our activity with below method.
+                    DashboardActivity.this, llWrapProfilePic, Objects.requireNonNull(ViewCompat.getTransitionName(llWrapProfilePic)));
             startActivity(intent, options.toBundle());
         });
 
@@ -265,14 +234,11 @@ public class DashboardActivity extends AppCompatActivity {
 
         // FADE TRANSITION FOR DASHBOARD ACTIVITY
         Fade fade = new Fade();
-        //View decor = getWindow().getDecorView();
-        //fade.excludeTarget(decor.findViewById(androidx.appcompat.R.id.action_bar_container), true);
         fade.excludeTarget(android.R.id.statusBarBackground, true);
         fade.excludeTarget(android.R.id.navigationBarBackground, true);
 
         getWindow().setEnterTransition(fade);
         getWindow().setExitTransition(fade);
-
 
         // DASHBOARD'S SHORTCUTS CLICK LISTENER
         llAddRo.setOnClickListener(view -> {
@@ -317,8 +283,6 @@ public class DashboardActivity extends AppCompatActivity {
         }
         mainFeaturesMenuAdapter = new MainFeaturesMenuAdapter(dataQueue(),getApplicationContext());
         rvMainFeatures.setAdapter(mainFeaturesMenuAdapter);
-        /*GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
-        rvMainFeatures.setLayoutManager(gridLayoutManager);*/
 
         // REFRESH DASHBOARD'S CONTENTS
         swipeContainer.setOnRefreshListener(() -> helper.refreshDashboard(DashboardActivity.this));
@@ -336,6 +300,7 @@ public class DashboardActivity extends AppCompatActivity {
 
             }
         });
+
         // SUM REGISTERED USER
         databaseReference.child("RegisteredUser").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -375,28 +340,13 @@ public class DashboardActivity extends AppCompatActivity {
 
             }
         });
-
         // SUM RECEIVED ORDER - NEED APPROVAL
-
-
-
         db.collection("ReceivedOrderData").whereEqualTo("roStatus", false)
                 .addSnapshotListener((value, error) -> {
+                    assert value != null;
                     int countFinal = Integer.parseInt(String.valueOf(value.getDocuments().size()));
                     getActiveReceivedOrderDataCount(String.valueOf(countFinal));
                 });
-        /*databaseReference.child("ReceivedOrders").orderByChild("roStatus").equalTo(false).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                int countFinal = Integer.parseInt(String.valueOf(dataSnapshot.getChildrenCount()));
-                getActiveReceivedOrderDataCount(String.valueOf(countFinal));
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });*/
         // SUM CUSTOMER
         databaseReference.child("CustomerData").orderByKey().addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -410,15 +360,6 @@ public class DashboardActivity extends AppCompatActivity {
 
             }
         });
-
-        // HAMBURGER MENU CLICK LISTENER
-        /*imgbtnMenu.setOnClickListener(view -> {
-            final Dialog dialog = new Dialog(DashboardActivity.this);
-            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-            dialog.setContentView(R.layout.dialog_dashboard_option);
-            dialog.show();
-        });*/
     }
 
 
@@ -465,50 +406,9 @@ public class DashboardActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 UserModel userModel = snapshot.getValue(UserModel.class);
                 if (userModel != null){
-/*
-                    fullName = firebaseUser.getDisplayName();
-                    doB = userModel.doB;
-                    email = firebaseUser.getEmail();
-                    gender = userModel.gender;
-                    phone = userModel.phone;
-                    accessCode = userModel.accessCode;
-
-                    textViewWelcome.setText("Halo, " + fullName + "!");
-                    textViewFullName.setText(fullName);
-                    textViewEmail.setText(email);
-                    textViewGender.setText(gender);
-                    textViewDoB.setText(doB);
-                    textViewPhone.setText(phone);
-
-                    switch (accessCode) {
-                        case "000111":
-                            textViewAccessCode.setText("Admin BAS");
-                            llAdminBAS.setVisibility(View.VISIBLE);
-                            llAdminWings.setVisibility(View.GONE);
-                            llAdminSuper.setVisibility(View.GONE);
-                            break;
-                        case "111000":
-                            textViewAccessCode.setText("Admin Wings");
-                            llAdminBAS.setVisibility(View.GONE);
-                            llAdminWings.setVisibility(View.VISIBLE);
-                            llAdminSuper.setVisibility(View.GONE);
-                            break;
-                        case "111111":
-                            textViewAccessCode.setText("Super Admin");
-                            llAdminBAS.setVisibility(View.GONE);
-                            llAdminWings.setVisibility(View.GONE);
-                            llAdminSuper.setVisibility(View.VISIBLE);
-                            break;
-                        default:
-                            textViewAccessCode.setText("Unknown");
-                            break;
-                    }
-*/
-
                     Uri uri = firebaseUser.getPhotoUrl();
                     swipeContainer.setRefreshing(false);
                     Picasso.with(DashboardActivity.this).load(uri).into(imageViewProfilePic);
-
                 } else {
                     Toast.makeText(DashboardActivity.this, "NULL", Toast.LENGTH_SHORT).show();
                 }
@@ -542,7 +442,7 @@ public class DashboardActivity extends AppCompatActivity {
 
         MainFeatureModel mMat = new MainFeatureModel();
         mMat.setHeader("Manajemen Material");
-        mMat.setImgName(R.drawable.ic_add_material);
+        mMat.setImgName(R.drawable.ic_material);
         holder.add(mMat);
 
         MainFeatureModel mUsr = new MainFeatureModel();
@@ -555,15 +455,10 @@ public class DashboardActivity extends AppCompatActivity {
         mVhl.setImgName(R.drawable.ic_manage_vehicle);
         holder.add(mVhl);
 
-
-
         MainFeatureModel ob5 = new MainFeatureModel();
         ob5.setHeader("Manajemen Customer");
-        //ob5.setDesc("Atur rincian data customer");
         ob5.setImgName(R.drawable.ic_manage_customers);
         holder.add(ob5);
-
-
 
         return holder;
     }
@@ -608,58 +503,10 @@ public class DashboardActivity extends AppCompatActivity {
         ob7.setDesc("Jumlah Supplier");
         holder2.add(ob7);
 
-
-
         return holder2;
     }
 
-    public static void setWindowFlag(Activity activity, final int bits, boolean on) {
-        Window win = activity.getWindow();
-        WindowManager.LayoutParams winParams = win.getAttributes();
-        if (on) {
-            winParams.flags |= bits;
-        } else {
-            winParams.flags &= ~bits;
-        }
-        win.setAttributes(winParams);
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void haveNetworkConnection() {
-        boolean haveConnectedWifi = false;
-        boolean haveConnectedMobile = false;
-
-        /*int paddingDp = 80;
-        float density = this.getResources().getDisplayMetrics().density;
-        int paddingPixel = (int) (paddingDp * density);*/
-
-
-        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo[] netInfo = cm.getAllNetworkInfo();
-        for (NetworkInfo ni : netInfo) {
-            if (ni.getTypeName().equalsIgnoreCase("WIFI")){
-                if (ni.isConnected()){
-                    haveConnectedWifi = true;
-                    //swipeContainer.setRefreshing(true);
-                    //swipeContainer.setRefreshing(false);
-                } else {
-
-                }
-            }
-
-            if (ni.getTypeName().equalsIgnoreCase("MOBILE")) {
-                if (ni.isConnected()) {
-                    haveConnectedMobile = true;
-                    //swipeContainer.setRefreshing(true);
-                    //swipeContainer.setRefreshing(false);
-                } else {
-
-                }
-            }
-            llWrapShortcuts.setVisibility(View.VISIBLE);
-
-        }
-
         nestedscrollview.setOnScrollChangeListener((NestedScrollView.OnScrollChangeListener) (v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
 
             if (scrollY > 50) {
@@ -673,15 +520,9 @@ public class DashboardActivity extends AppCompatActivity {
                         llTopView.setBackgroundColor(ContextCompat.getColor(DashboardActivity.this, android.R.color.black));
                         llTopView.setElevation(20);
                         title.setTextColor(ContextCompat.getColor(DashboardActivity.this, R.color.white));
-                        //imgbtnMenu.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(DashboardActivity.this, R.color.white)));
 
-                        if (Build.VERSION.SDK_INT >= 21) {
-                            //Window window = getWindow();
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);//  set status text dark
-                            }
-                            getWindow().setStatusBarColor(ContextCompat.getColor(DashboardActivity.this, R.color.black));// set status background white
-                        }
+                        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);//  set status text dark
+                        getWindow().setStatusBarColor(ContextCompat.getColor(DashboardActivity.this, R.color.black));// set status background white
                         break;
                     case Configuration.UI_MODE_NIGHT_NO:
                     case Configuration.UI_MODE_NIGHT_UNDEFINED:
@@ -690,13 +531,9 @@ public class DashboardActivity extends AppCompatActivity {
                         title.setTextColor(ContextCompat.getColor(DashboardActivity.this, R.color.black));
                         //imgbtnMenu.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(DashboardActivity.this, R.color.black)));
 
-                        if (Build.VERSION.SDK_INT >= 21) {
-                            //Window window = getWindow();
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);//  set status text dark
-                            }
-                            getWindow().setStatusBarColor(ContextCompat.getColor(DashboardActivity.this, R.color.white));// set status background white
-                        }
+                        //Window window = getWindow();
+                        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);//  set status text dark
+                        getWindow().setStatusBarColor(ContextCompat.getColor(DashboardActivity.this, R.color.white));// set status background white
                         break;
                 }
 
@@ -707,7 +544,6 @@ public class DashboardActivity extends AppCompatActivity {
             }
             if (scrollY < 50) {
                 title.setTextColor(ContextCompat.getColor(DashboardActivity.this, R.color.white));
-                //imgbtnMenu.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(DashboardActivity.this, R.color.white)));
                 llTopView.setBackgroundColor(ContextCompat.getColor(DashboardActivity.this, android.R.color.transparent));
                 llTopView.setElevation(0);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -716,14 +552,6 @@ public class DashboardActivity extends AppCompatActivity {
                 getWindow().setStatusBarColor(ContextCompat.getColor(DashboardActivity.this, android.R.color.transparent));// set status background white
 
             }
-
-            /*if (scrollY == 0) {
-                Toast.makeText(DashboardActivity.this, "reached top", Toast.LENGTH_SHORT).show();
-            }
-
-            if (scrollY == ( v.getMeasuredHeight() - v.getChildAt(0).getMeasuredHeight() )) {
-                Toast.makeText(DashboardActivity.this, "Bottom Scroll", Toast.LENGTH_SHORT).show();
-            }*/
         });
     }
 
@@ -737,27 +565,19 @@ public class DashboardActivity extends AppCompatActivity {
                 String activityType = data.getStringExtra("activityType");
                 if (returnString.equals("true")&&activityType.equals("RO")){
                     Snackbar.make(coordinatorLayout, "Berhasil! Mau menambah data lagi?", Snackbar.LENGTH_LONG)
-                            .setTextColor(getResources().getColor(R.color.dark_green))
-                            .setBackgroundTint(getResources().getColor(R.color.pure_green))
+                            .setTextColor(ContextCompat.getColor(this, R.color.dark_green))
+                            .setBackgroundTint(ContextCompat.getColor(this, R.color.pure_green))
                             .setAction("TAMBAH LAGI", view1 -> {
                                 Intent i = new Intent(this, AddReceivedOrder.class);
                                 startActivityForResult(i, LAUNCH_SECOND_ACTIVITY);
-
                             })
-                            .setActionTextColor(getResources().getColor(R.color.black))
+                            .setActionTextColor(ContextCompat.getColor(this, R.color.black))
                             .show();
                 }
-                //String result=data.getStringExtra("result");
-
-            }
-            if (resultCode == Activity.RESULT_CANCELED) {
-                // Write your code if there's no result
             }
         }
-    } //onActivityResult
+    }
 
-
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onResume() {
         super.onResume();

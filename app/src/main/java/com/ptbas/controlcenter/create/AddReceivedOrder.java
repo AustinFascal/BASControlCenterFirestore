@@ -49,17 +49,14 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.ptbas.controlcenter.DialogInterface;
-import com.ptbas.controlcenter.Helper;
+import com.ptbas.controlcenter.helper.DialogInterface;
+import com.ptbas.controlcenter.helper.Helper;
 import com.ptbas.controlcenter.R;
-import com.ptbas.controlcenter.RecapGoodIssueDataActivity;
 import com.ptbas.controlcenter.adapter.PreviewProductItemAdapter;
 import com.ptbas.controlcenter.model.ProductItems;
 import com.ptbas.controlcenter.model.ProductModel;
 import com.ptbas.controlcenter.model.ReceivedOrderModel;
 import com.ptbas.controlcenter.utils.LangUtils;
-import com.skydoves.powermenu.OnMenuItemClickListener;
-import com.skydoves.powermenu.PowerMenuItem;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -481,7 +478,6 @@ public class AddReceivedOrder extends AppCompatActivity {
 
             }
         });
-
     }
 
 
@@ -762,9 +758,12 @@ public class AddReceivedOrder extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()){
                     for (DataSnapshot dataSnapshot: snapshot.getChildren()){
-                        String spinnerMaterialData = dataSnapshot.child("productName").getValue(String.class);
-                        productName.add(spinnerMaterialData);
-                        productName.remove("JASA ANGKUT");
+                        if (Objects.equals(dataSnapshot.child("productStatus").getValue(), true)){
+                            String spinnerMaterialData = dataSnapshot.child("productName").getValue(String.class);
+                            productName.add(spinnerMaterialData);
+                            productName.remove("JASA ANGKUT");
+                        }
+
                     }
                     ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddReceivedOrder.this, R.layout.style_spinner, productName);
                     arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
@@ -995,7 +994,8 @@ public class AddReceivedOrder extends AppCompatActivity {
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             bottomSheetCollapsed();
         } else {
-            dialogInterface.discardDialogConfirmation(AddReceivedOrder.this);
+            finish();
+            //dialogInterface.discardDialogConfirmation(AddReceivedOrder.this);
         }
 
     }

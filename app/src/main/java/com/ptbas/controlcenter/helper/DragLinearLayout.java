@@ -1,4 +1,4 @@
-package com.ptbas.controlcenter;
+package com.ptbas.controlcenter.helper;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -27,6 +27,8 @@ import android.widget.ScrollView;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.MotionEventCompat;
+
+import com.ptbas.controlcenter.R;
 
 
 public class DragLinearLayout extends LinearLayout {

@@ -4,14 +4,24 @@ public class ProductModel {
 
     String productName;
     Double priceBuy, priceSell;
+    Boolean productStatus;
 
     public ProductModel() {
     }
 
-    public ProductModel(String productName, Double priceBuy, Double priceSell) {
+    public ProductModel(String productName, Double priceBuy, Double priceSell, Boolean productStatus) {
         this.productName = productName;
         this.priceBuy = priceBuy;
         this.priceSell = priceSell;
+        this.productStatus = productStatus;
+    }
+
+    public Boolean getProductStatus() {
+        return productStatus;
+    }
+
+    public void setProductStatus(Boolean productStatus) {
+        this.productStatus = productStatus;
     }
 
     public String getProductName() {

@@ -11,6 +11,8 @@ import android.text.InputFilter;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -20,8 +22,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.ptbas.controlcenter.DialogInterface;
-import com.ptbas.controlcenter.Helper;
+import com.ptbas.controlcenter.helper.DialogInterface;
+import com.ptbas.controlcenter.helper.Helper;
 import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.model.ProductModel;
 
@@ -34,10 +36,14 @@ public class UpdateProductData extends AppCompatActivity {
 
     TextInputEditText edtProductName, edtPriceBuy, edtPriceSell;
     FloatingActionButton fabSaveMaterialData;
+    RadioGroup radioGroupStatus;
+    RadioButton radioStatusSelected;
 
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("ProductData");
 
     String productUID ="";
+
+    Boolean productStatus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,10 +60,14 @@ public class UpdateProductData extends AppCompatActivity {
         // SYSTEM UI MODE FOR STANDARD ACTIVITY
         helper.handleUIModeForStandardActivity(this, actionBar);
 
+        radioGroupStatus = findViewById(R.id.radio_group_status);
         edtProductName = findViewById(R.id.edtProductName);
         edtPriceBuy = findViewById(R.id.edtPriceBuy);
         edtPriceSell = findViewById(R.id.edtPriceSell);
         fabSaveMaterialData = findViewById(R.id.fabSaveMaterialData);
+        int selectedStatusId = radioGroupStatus.getCheckedRadioButtonId();
+        radioStatusSelected = findViewById(selectedStatusId);
+        //radioStatusSelected = findViewById(R.id.radio_group_status);
 
         edtProductName.setFilters(new InputFilter[] {new InputFilter.AllCaps()});
 
@@ -72,9 +82,17 @@ public class UpdateProductData extends AppCompatActivity {
                     if (productModel == null){
                         finish();
                     } else {
+                        productStatus = productModel.getProductStatus();
                         edtProductName.setText(productModel.getProductName());
                         edtPriceBuy.setText(String.valueOf(productModel.getPriceBuy()));
                         edtPriceSell.setText(String.valueOf(productModel.getPriceSell()));
+
+                        if (productStatus.equals(true)){
+                            radioGroupStatus.check(R.id.radio_active);
+                        }else {
+                            radioGroupStatus.check(R.id.radio_inactive);
+                        }
+
                     }
                 }
 
@@ -86,6 +104,8 @@ public class UpdateProductData extends AppCompatActivity {
         }
 
         fabSaveMaterialData.setOnClickListener(view -> {
+
+            //boolean productStatusVal;
             String productName = Objects.requireNonNull(edtProductName.getText()).toString();
             String productBuyPrice = Objects.requireNonNull(edtPriceBuy.getText()).toString();
             String productSellPrice = Objects.requireNonNull(edtPriceSell.getText()).toString();
@@ -103,6 +123,12 @@ public class UpdateProductData extends AppCompatActivity {
                 edtPriceSell.requestFocus();
             }
 
+            if (radioGroupStatus.getCheckedRadioButtonId() == R.id.radio_active){
+                productStatus = true;
+            } else if (radioGroupStatus.getCheckedRadioButtonId() == R.id.radio_inactive){
+                productStatus = false;
+            }
+
             if (!(TextUtils.isEmpty(productName)
                     &&TextUtils.isEmpty(productBuyPrice)
                     &&TextUtils.isEmpty(productSellPrice))){
@@ -112,7 +138,7 @@ public class UpdateProductData extends AppCompatActivity {
     }
 
     private void insertData(String productName, Double productBuyPrice, Double productSellPrice) {
-        ProductModel productModel = new ProductModel(productName, productBuyPrice, productSellPrice);
+        ProductModel productModel = new ProductModel(productName, productBuyPrice, productSellPrice, productStatus);
 
         //String productUID = productName.replaceAll(" ", "").toLowerCase();
         DatabaseReference dbRefAddVehicle = FirebaseDatabase.getInstance().getReference("ProductData");
