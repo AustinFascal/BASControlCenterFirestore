@@ -505,6 +505,24 @@ public class DialogInterface {
         mBottomSheetDialog.show();
     }
 
+    public void deleteVehicleDataConfirmation(Context context, String vhlUID) {
+        MaterialDialog mBottomSheetDialog = new MaterialDialog.Builder((Activity) context)
+                .setTitle("Hapus Data")
+                .setAnimation(R.raw.lottie_delete)
+                .setMessage("Apakah Anda yakin ingin menghapus data Armada yang Anda pilih? Setelah dihapus, data tidak dapat dikembalikan.")
+                .setCancelable(true)
+                .setPositiveButton("YA", R.drawable.ic_outline_check, (dialogInterface, which) -> {
+                    dialogInterface.dismiss();
+                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+                    databaseReference.child("ProductData").child(vhlUID).removeValue();
+                })
+                .setNegativeButton("TIDAK", R.drawable.ic_outline_close, (dialogInterface, which) -> dialogInterface.dismiss())
+                .build();
+
+        mBottomSheetDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
+        mBottomSheetDialog.show();
+    }
+
     public void deleteGiFromActivityConfirmation(Activity activity, String giUID) {
         MaterialDialog mBottomSheetDialog = new MaterialDialog.Builder(activity)
                 .setTitle("Hapus Data")

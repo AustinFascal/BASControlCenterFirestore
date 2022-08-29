@@ -18,6 +18,7 @@ import com.ptbas.controlcenter.DialogInterface;
 import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.model.VehicleModel;
 import com.ptbas.controlcenter.update.UpdateProductData;
+import com.ptbas.controlcenter.update.UpdateVehicleData;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -62,12 +63,12 @@ public class VehicleDataManagementAdapter extends RecyclerView.Adapter<VehicleDa
         public ItemViewHolder(@NonNull View itemView) {
             super(itemView);
             btnDeleteWrap = itemView.findViewById(R.id.btnDeleteWrap);
-            tvVhlUID = itemView.findViewById(R.id.tvProductName);
-            tvVhlDetails = itemView.findViewById(R.id.tvBuyPrice);
+            tvVhlUID = itemView.findViewById(R.id.tvVhlUID);
+            tvVhlDetails = itemView.findViewById(R.id.tvVhlDetails);
             tvStatus = itemView.findViewById(R.id.tvStatus);
             ivShowDetail = itemView.findViewById(R.id.ivShowDetail);
             statusSwitch = itemView.findViewById(R.id.statusSwitch);
-            btn1 = itemView.findViewById(R.id.btnDelete);
+            btn1 = itemView.findViewById(R.id.btn1);
         }
 
         public void viewBind(VehicleModel vehicleModel) {
@@ -75,7 +76,7 @@ public class VehicleDataManagementAdapter extends RecyclerView.Adapter<VehicleDa
             //DecimalFormat df = new DecimalFormat("0.00");
 
             String vhlUID = vehicleModel.getVhlUID();
-            String vhlDetails = "P: "+vehicleModel.getVhlLength()+", T: "+vehicleModel.getVhlHeight()+", L: "+vehicleModel.getVhlWidth();
+            String vhlDetails = "P: "+vehicleModel.getVhlLength()+" cm | T: "+vehicleModel.getVhlHeight()+" cm | L: "+vehicleModel.getVhlWidth()+" cm";
             Boolean vhlStatus = vehicleModel.getVhlStatus();
 
             tvVhlUID.setText(vhlUID);
@@ -90,14 +91,13 @@ public class VehicleDataManagementAdapter extends RecyclerView.Adapter<VehicleDa
             }
 
             ivShowDetail.setOnClickListener(view -> {
-                String productDataUID=vhlUID.replaceAll(" ", "").toLowerCase();
-                Intent i = new Intent(context, UpdateProductData.class);
-                i.putExtra("key", productDataUID);
+                Intent i = new Intent(context, UpdateVehicleData.class);
+                i.putExtra("key", vhlUID);
                 context.startActivity(i);
             });
 
             btn1.setOnClickListener(view ->
-                    dialogInterface.deleteProductDataConfirmation(context, vhlUID.replaceAll(" ", "").toLowerCase()));
+                    dialogInterface.deleteVehicleDataConfirmation(context, vhlUID));
         }
     }
 }

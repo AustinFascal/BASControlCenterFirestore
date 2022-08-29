@@ -10,16 +10,19 @@
         <entry key="..\:/AUSTINFASCALISKANDAR/Projects/TravelPermitBAS/app/src/main/res/layout/activity_register.xml" value="0.22" />
         <entry key="..\:/AUSTINFASCALISKANDAR/Projects/TravelPermitBAS/app/src/main/res/layout/activity_user_profile.xml" value="0.1" />
         <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout/activity_add_good_issue.xml" value="0.12082066869300911" />
+        <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout/activity_add_vehicle.xml" value="0.10833333333333334" />
         <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout/activity_good_issue_management.xml" value="0.12082066869300911" />
         <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout/activity_invoice_management.xml" value="0.16799999999999998" />
         <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout/activity_product_data_management.xml" value="0.2484375" />
         <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout/activity_update_good_issue.xml" value="0.17255434782608695" />
+        <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout/activity_update_vehicle_data.xml" value="0.2" />
         <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout/activity_vehicle_management.xml" value="0.4" />
         <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout/item_layout_good_issue.xml" value="0.2484375" />
         <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout/item_layout_invoice.xml" value="0.4" />
+        <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout/item_layout_product_data.xml" value="0.10833333333333334" />
         <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout/item_layout_received_order.xml" value="0.2484375" />
         <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout/item_layout_vehicle.xml" value="0.536" />
-        <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout/item_layout_vehicle_data.xml" value="0.72" />
+        <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout/item_layout_vehicle_data.xml" value="0.176" />
         <entry key="..\:/Android/Projects/CMH/BASReportProject/app/src/main/res/drawable/bg_gradient1.xml" value="0.1065" />
         <entry key="..\:/Android/Projects/CMH/BASReportProject/app/src/main/res/drawable/border.xml" value="0.2275" />
         <entry key="..\:/Android/Projects/CMH/BASReportProject/app/src/main/res/drawable/dashboard_main_content.xml" value="0.12" />

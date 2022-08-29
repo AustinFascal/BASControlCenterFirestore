@@ -30,6 +30,7 @@ import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.adapter.ProductDataManagementAdapter;
 import com.ptbas.controlcenter.adapter.VehicleDataManagementAdapter;
 import com.ptbas.controlcenter.create.AddProductData;
+import com.ptbas.controlcenter.create.AddVehicleActivity;
 import com.ptbas.controlcenter.model.ProductModel;
 import com.ptbas.controlcenter.model.VehicleModel;
 import com.ptbas.controlcenter.utils.LangUtils;
@@ -76,7 +77,7 @@ public class VehicleManagementActivity extends AppCompatActivity {
         showDataDefaultQuery();
 
         fabAddVhlData.setOnClickListener(view -> {
-            Intent i = new Intent(this, AddProductData.class);
+            Intent i = new Intent(this, AddVehicleActivity.class);
             startActivity(i);
         });
     }
@@ -123,15 +124,15 @@ public class VehicleManagementActivity extends AppCompatActivity {
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         int width = displayMetrics.widthPixels;
         if (width<=1080){
-            RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 2);
+            RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 1);
             rv.setLayoutManager(mLayoutManager);
         }
         if (width>1080&&width<1366){
-            RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 4);
+            RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 2);
             rv.setLayoutManager(mLayoutManager);
         }
         if (width>=1366){
-            RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 6);
+            RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 3);
             rv.setLayoutManager(mLayoutManager);
         }
 

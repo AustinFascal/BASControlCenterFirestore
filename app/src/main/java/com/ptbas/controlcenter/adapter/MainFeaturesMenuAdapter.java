@@ -57,7 +57,9 @@ public class MainFeaturesMenuAdapter extends RecyclerView.Adapter<MainFeatureVie
                     Toast.makeText(context, "Coming soon", Toast.LENGTH_SHORT).show();
                 }
                 if (holder.tv1.getText().toString().equals("Manajemen Armada")){
-                    Toast.makeText(context, "Coming soon", Toast.LENGTH_SHORT).show();
+                    Intent intent2 = new Intent(context, VehicleManagementActivity.class);
+                    intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(intent2);
                 }
                 if (holder.tv1.getText().toString().equals("Manajemen Received Order")){
                     Intent intent2 = new Intent(context, ReceivedOrderManagementActivity.class);
