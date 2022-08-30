@@ -13,7 +13,7 @@ import com.ptbas.controlcenter.helper.Helper;
 
 import java.util.Objects;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivityOld extends AppCompatActivity {
 
     Helper helper = new Helper();
 
@@ -25,13 +25,13 @@ public class MainActivity extends AppCompatActivity {
         Objects.requireNonNull(getSupportActionBar()).hide();
         Button btn_login = findViewById(R.id.button_login);
         btn_login.setOnClickListener(view -> {
-            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+            Intent intent = new Intent(MainActivityOld.this, LoginActivity.class);
             startActivity(intent);
         });
 
         TextView textView_register_link = findViewById(R.id.textView_register_link);
         textView_register_link.setOnClickListener(view -> {
-            Intent intent = new Intent(MainActivity.this, RegisterActivity.class);
+            Intent intent = new Intent(MainActivityOld.this, RegisterActivity.class);
             startActivity(intent);
         });
     }
@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         if (helper.getUserId()!=null){
-            startActivity(new Intent(MainActivity.this, LoginActivity.class));
+            startActivity(new Intent(MainActivityOld.this, LoginActivity.class));
             finish();
         }
     }

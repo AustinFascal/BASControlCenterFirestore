@@ -78,7 +78,6 @@ public class VehicleDataManagementAdapter extends RecyclerView.Adapter<VehicleDa
             pd.setMessage("Memproses");
 
             dialogInterface = new DialogInterface();
-            //DecimalFormat df = new DecimalFormat("0.00");
 
             String vhlUID = vehicleModel.getVhlUID();
             String vhlDetails = "P: "+vehicleModel.getVhlLength()+" cm | L: "+vehicleModel.getVhlWidth()+" cm | T: "+vehicleModel.getVhlHeight()+" cm";
@@ -97,25 +96,22 @@ public class VehicleDataManagementAdapter extends RecyclerView.Adapter<VehicleDa
 
             DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
 
-            statusSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                    pd.show();
-                    if (statusSwitch.isChecked()) {
-                        databaseReference.child("VehicleData").child(vhlUID).child("vhlStatus").setValue(true).addOnCompleteListener(task -> {
-                            if (task.isSuccessful()){
-                                pd.dismiss();
-                            }
-                        });
-                    } else{
-                        databaseReference.child("VehicleData").child(vhlUID).child("vhlStatus").setValue(false).addOnCompleteListener(task -> {
-                            if (task.isSuccessful()){
-                                pd.dismiss();
-                            }
-                        });
-                    }
-
+            statusSwitch.setOnCheckedChangeListener((compoundButton, b) -> {
+                pd.show();
+                if (statusSwitch.isChecked()) {
+                    databaseReference.child("VehicleData").child(vhlUID).child("vhlStatus").setValue(true).addOnCompleteListener(task -> {
+                        if (task.isSuccessful()){
+                            pd.dismiss();
+                        }
+                    });
+                } else{
+                    databaseReference.child("VehicleData").child(vhlUID).child("vhlStatus").setValue(false).addOnCompleteListener(task -> {
+                        if (task.isSuccessful()){
+                            pd.dismiss();
+                        }
+                    });
                 }
+
             });
 
             ivShowDetail.setOnClickListener(view -> {

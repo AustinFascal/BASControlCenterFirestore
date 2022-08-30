@@ -30,7 +30,6 @@ import com.google.firebase.firestore.WriteBatch;
 import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.create.AddInvoiceActivity;
 import com.ptbas.controlcenter.create.AddReceivedOrder;
-import com.ptbas.controlcenter.helper.Helper;
 import com.ptbas.controlcenter.management.ReceivedOrderManagementActivity;
 import com.ptbas.controlcenter.model.GoodIssueModel;
 import com.ptbas.controlcenter.model.InvoiceModel;
@@ -43,21 +42,25 @@ import dev.shreyaspatil.MaterialDialog.MaterialDialog;
 import dev.shreyaspatil.MaterialDialog.model.TextAlignment;
 
 public class DialogInterface {
-    Helper helper = new Helper();
 
-    private static final String ALLOWED_CHARACTERS ="0123456789QWERTYUIOPASDFGHJKLZXCVBNM";
+    MaterialDialog md;
+    Helper helper = new Helper();
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    CollectionReference refRO = db.collection("ReceivedOrderData");
+    CollectionReference refInv = db.collection("InvoiceData");
+    CollectionReference refCust = db.collection("CustomerData");
 
     public void fillSearchFilter(Activity activity, SearchView searchView) {
-        MaterialDialog materialDialog = new MaterialDialog.Builder(activity)
-                .setMessage("Mohon lengkapi tipe pencarian dan rentang tanggal dengan benar terlebih dahulu", TextAlignment.START)
+        md = new MaterialDialog.Builder(activity)
+                .setMessage("Mohon lengkapi tipe pencarian dan rentang tanggal dengan benar terlebih dahulu.", TextAlignment.START)
+                .setPositiveButton("OKE", R.drawable.ic_outline_check,
+                        (dialogInterface, which) -> {
+                            searchView.setQuery(null,false);
+                            dialogInterface.dismiss();
+                        })
                 .setCancelable(false)
-                .setPositiveButton("OKE", R.drawable.ic_outline_check, (dialogInterface, which) -> {
-                    searchView.setQuery(null,false);
-                    dialogInterface.dismiss();
-                })
                 .build();
-
-        materialDialog.show();
+        md.show();
     }
 
     public void discardDialogConfirmation(Activity activity) {
@@ -138,20 +141,19 @@ public class DialogInterface {
         } else {
             vibrator.vibrate(100);
         }
-        MaterialDialog mBottomSheetDialog = new MaterialDialog.Builder(activity)
-                .setTitle("Sukses!")
+        md = new MaterialDialog.Builder(activity)
                 .setAnimation(R.raw.lottie_success_2)
+                .setTitle("Sukses!")
                 .setMessage("Berhasil menambahkan data. Mau menambah data lagi?")
-                .setCancelable(false)
                 .setPositiveButton("TAMBAH LAGI", R.drawable.ic_outline_add, (dialogInterface, which) -> dialogInterface.dismiss())
                 .setNegativeButton("SELESAI", R.drawable.ic_outline_close, (dialogInterface, which) -> {
                     dialogInterface.dismiss();
                     activity.finish();
                 })
+                .setCancelable(false)
                 .build();
-
-        mBottomSheetDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
-        mBottomSheetDialog.show();
+        md.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
+        md.show();
     }
 
     public void updatedInformation(Activity activity) {
@@ -162,19 +164,19 @@ public class DialogInterface {
         } else {
             vibrator.vibrate(100);
         }
-        MaterialDialog mBottomSheetDialog = new MaterialDialog.Builder(activity)
-                .setTitle("Sukses!", TextAlignment.START)
+        md = new MaterialDialog.Builder(activity)
                 .setAnimation(R.raw.lottie_success)
+                .setTitle("Sukses!", TextAlignment.START)
                 .setMessage("Data berhasil diperbarui", TextAlignment.START)
-                .setCancelable(false)
                 .setPositiveButton("OKE", (dialogInterface, which) -> {
                     dialogInterface.dismiss();
                     activity.finish();
                 })
+                .setCancelable(false)
                 .build();
 
-        mBottomSheetDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
-        mBottomSheetDialog.show();
+        md.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
+        md.show();
     }
 
     public void noPoNumberInformation(Context context) {
@@ -185,22 +187,17 @@ public class DialogInterface {
         } else {
             vibrator.vibrate(100);
         }
-        MaterialDialog mBottomSheetDialog = new MaterialDialog.Builder((Activity) context)
-                .setTitle("Perhatian!", TextAlignment.START)
+        md = new MaterialDialog.Builder((Activity) context)
                 .setAnimation(R.raw.lottie_attention)
+                .setTitle("Perhatian!", TextAlignment.START)
                 .setMessage("Data Good Issue ini masih belum memiliki nomor PO. Mohon perbarui data tersebut agar dapat melakukan validasi dan dapat muncul saat direkapitulasi.", TextAlignment.START)
-                .setCancelable(true)
                 .setPositiveButton("OKE", (dialogInterface, which) -> dialogInterface.dismiss())
+                .setCancelable(true)
                 .build();
-
-        mBottomSheetDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
-        mBottomSheetDialog.show();
+        md.show();
     }
 
     public void noRoPoNumberInformation(Context context, String roDocumentId) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference refRO = db.collection("ReceivedOrderData");
-
         Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             vibrator.vibrate(VibrationEffect.createOneShot(100,
@@ -208,11 +205,10 @@ public class DialogInterface {
         } else {
             vibrator.vibrate(100);
         }
-        MaterialDialog mBottomSheetDialog = new MaterialDialog.Builder((Activity) context)
-                .setTitle("Perhatian!", TextAlignment.START)
+        md = new MaterialDialog.Builder((Activity) context)
                 .setAnimation(R.raw.lottie_attention)
+                .setTitle("Perhatian!", TextAlignment.START)
                 .setMessage("Data Received Order ini masih belum memiliki nomor PO. Mohon perbarui data tersebut agar dapat melakukan validasi dan dapat muncul saat menambahkan Good Issue.", TextAlignment.START)
-                .setCancelable(true)
                 .setPositiveButton("TAMBAHKAN NOMOR PO", R.drawable.ic_outline_add, (dialogInterface, which) -> {
                     dialogInterface.dismiss();
                 })
@@ -232,30 +228,11 @@ public class DialogInterface {
                             }
                         }
                     });
-                    /*DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("ReceivedOrders");
-                    ValueEventListener valueEventListener = new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            for(DataSnapshot ds : dataSnapshot.getChildren()) {
-                                String key = ds.getKey();
-                                String roUID = dataSnapshot.child(key).child("roUID").getValue(String.class);
-                                if (Objects.equals(roUID, roUIDVal)) {
-                                    databaseReference.child(key).child("roStatus").setValue(true);
-                                    databaseReference.child(key).child("roVerifiedBy").setValue(helper.getUserId());
-                                    dialogInterface.dismiss();
-                                }
-                            }
-                        }
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {}
-                    };
-                    databaseReference.addListenerForSingleValueEvent(valueEventListener);*/
-
                 })
+                .setCancelable(true)
                 .build();
-
-        mBottomSheetDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
-        mBottomSheetDialog.show();
+        md.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
+        md.show();
     }
 
     public void dataCannotBeChangedInformation(Activity activity) {
@@ -266,14 +243,14 @@ public class DialogInterface {
         } else {
             vibrator.vibrate(100);
         }
-        MaterialDialog mBottomSheetDialog = new MaterialDialog.Builder(activity)
+        md = new MaterialDialog.Builder(activity)
                 .setMessage("Anda tidak dapat mengubah data ini", TextAlignment.START)
-                .setCancelable(true)
                 .setPositiveButton("OKE", (dialogInterface, which) -> dialogInterface.dismiss())
+                .setCancelable(true)
                 .build();
 
-        mBottomSheetDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
-        mBottomSheetDialog.show();
+        md.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
+        md.show();
     }
 
     public void mustAddDateRangeInformation(Activity activity) {
@@ -284,14 +261,14 @@ public class DialogInterface {
         } else {
             vibrator.vibrate(100);
         }
-        MaterialDialog mBottomSheetDialog = new MaterialDialog.Builder(activity)
+        md = new MaterialDialog.Builder(activity)
                 .setMessage("Mohon masukkan rentang tanggal dan pilih ID Received Order atau ID Purchase Order Customer", TextAlignment.START)
-                .setCancelable(true)
                 .setPositiveButton("OKE", (dialogInterface, which) -> dialogInterface.dismiss())
+                .setCancelable(true)
                 .build();
 
-        mBottomSheetDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
-        mBottomSheetDialog.show();
+        md.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
+        md.show();
     }
 
     public void roNotActiveYet(Activity activity, String roUIDVal) {
@@ -345,11 +322,10 @@ public class DialogInterface {
             vibrator.vibrate(100);
         }
 
-        MaterialDialog mBottomSheetDialog = new MaterialDialog.Builder(activity)
-                .setTitle("Tidak Ada Received Order")
+        md = new MaterialDialog.Builder(activity)
                 .setAnimation(R.raw.lottie_attention)
+                .setTitle("Tidak Ada Received Order")
                 .setMessage("Anda tidak dapat membuat Good Issue karena tidak memiliki Received Order yang aktif dan sah. Validasi atau tambah Received Order sekarang?")
-                .setCancelable(false)
                 .setPositiveButton("YA", R.drawable.ic_outline_add, (dialogInterface, which) -> {
                     dialogInterface.dismiss();
                     Intent intent = new Intent(activity, ReceivedOrderManagementActivity.class);
@@ -359,10 +335,11 @@ public class DialogInterface {
                     dialogInterface.dismiss();
                     activity.finish();
                 })
+                .setCancelable(false)
                 .build();
 
-        mBottomSheetDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
-        mBottomSheetDialog.show();
+        md.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
+        md.show();
     }
 
     public void approveGiConfirmation(Context context, String giUID) {
@@ -374,11 +351,10 @@ public class DialogInterface {
             vibrator.vibrate(100);
         }
 
-        MaterialDialog mBottomSheetDialog = new MaterialDialog.Builder((Activity) context)
-                .setTitle("Validasi Data")
+        md = new MaterialDialog.Builder((Activity) context)
                 .setAnimation(R.raw.lottie_approval)
+                .setTitle("Validasi Data")
                 .setMessage("Apakah Anda yakin ingin mengesahkan data Good Issue yang Anda pilih? Setelah disahkan, status tidak dapat dikembalikan.")
-                .setCancelable(true)
                 .setPositiveButton("YA", R.drawable.ic_outline_check, (dialogInterface, which) -> {
                     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
                     databaseReference.child("GoodIssueData").child(giUID).child("giStatus").setValue(true);
@@ -386,16 +362,14 @@ public class DialogInterface {
                     dialogInterface.dismiss();
                 })
                 .setNegativeButton("TIDAK", R.drawable.ic_outline_close, (dialogInterface, which) -> dialogInterface.dismiss())
+                .setCancelable(true)
                 .build();
 
-        mBottomSheetDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
-        mBottomSheetDialog.show();
+        md.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
+        md.show();
     }
 
     public void approveRoConfirmation(Context context, String roDocumentId) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference refRO = db.collection("ReceivedOrderData");
-
         Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             vibrator.vibrate(VibrationEffect.createOneShot(100,
@@ -403,11 +377,10 @@ public class DialogInterface {
         } else {
             vibrator.vibrate(100);
         }
-        MaterialDialog mBottomSheetDialog = new MaterialDialog.Builder((Activity) context)
-                .setTitle("Validasi Data")
+        md = new MaterialDialog.Builder((Activity) context)
                 .setAnimation(R.raw.lottie_approval)
+                .setTitle("Validasi Data")
                 .setMessage("Apakah Anda yakin ingin mengesahkan data Received Order yang Anda pilih? Setelah disahkan, status tidak dapat dikembalikan.")
-                .setCancelable(true)
                 .setPositiveButton("YA", R.drawable.ic_outline_check, (dialogInterface, which) -> {
                     refRO.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                         @Override
@@ -424,39 +397,16 @@ public class DialogInterface {
                             }
                         }
                     });
-
-                    /*DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("ReceivedOrders");
-                    ValueEventListener valueEventListener = new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            for(DataSnapshot ds : dataSnapshot.getChildren()) {
-                                String key = ds.getKey();
-                                String roUID = dataSnapshot.child(key).child("roUID").getValue(String.class);
-                                if (Objects.equals(roUID, roUIDVal)) {
-                                    databaseReference.child(key).child("roStatus").setValue(true);
-                                    databaseReference.child(key).child("roVerifiedBy").setValue(helper.getUserId());
-                                    dialogInterface.dismiss();
-                                }
-                            }
-                        }
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {}
-                    };
-                    databaseReference.addListenerForSingleValueEvent(valueEventListener);*/
-
                 })
                 .setNegativeButton("TIDAK", R.drawable.ic_outline_close, (dialogInterface, which) -> dialogInterface.dismiss())
+                .setCancelable(true)
                 .build();
 
-        mBottomSheetDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
-        mBottomSheetDialog.show();
+        md.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
+        md.show();
     }
 
-
     public void approveInvConfirmation(Context context, String invDocumentID) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference refInv = db.collection("InvoiceData");
-
         Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             vibrator.vibrate(VibrationEffect.createOneShot(100,
@@ -464,25 +414,23 @@ public class DialogInterface {
         } else {
             vibrator.vibrate(100);
         }
-        MaterialDialog mBottomSheetDialog = new MaterialDialog.Builder((Activity) context)
-                .setTitle("Invoice Lunas?")
+        md = new MaterialDialog.Builder((Activity) context)
                 .setAnimation(R.raw.lottie_approval)
+                .setTitle("Invoice Lunas?")
                 .setMessage("Apakah Anda yakin ingin mengubah status Invoice yang Anda pilih menjadi lunas? Setelah diubah, status tidak dapat dikembalikan.")
-                .setCancelable(true)
                 .setPositiveButton("YA", R.drawable.ic_outline_check, (dialogInterface, which) -> {
-                    //Toast.makeText(context, invUID, Toast.LENGTH_SHORT).show();
                     refInv.document(invDocumentID).update("invStatus", true);
                     dialogInterface.dismiss();
                 })
                 .setNegativeButton("TIDAK", R.drawable.ic_outline_close, (dialogInterface, which) -> dialogInterface.dismiss())
+                .setCancelable(true)
                 .build();
-
-        mBottomSheetDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
-        mBottomSheetDialog.show();
+        md.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
+        md.show();
     }
 
     public void changePoNumberCustomer(Context context, String roUIDVal) {
-        MaterialDialog mBottomSheetDialog = new MaterialDialog.Builder((Activity) context)
+        md = new MaterialDialog.Builder((Activity) context)
                 .setTitle("Ubah Nomor PO")
                 .setAnimation(R.raw.lottie_attention)
                 .setMessage("Untuk mengubah nomor PO, Anda harus memperbarui data nomor PO di Received Order terpilih. Perbarui sekarang?")
@@ -497,12 +445,12 @@ public class DialogInterface {
                 .setNegativeButton("TIDAK", R.drawable.ic_outline_close, (dialogInterface, which) -> dialogInterface.dismiss())
                 .build();
 
-        mBottomSheetDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
-        mBottomSheetDialog.show();
+        md.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
+        md.show();
     }
 
     public void deleteGiConfirmation(Context context, String giUID) {
-        MaterialDialog mBottomSheetDialog = new MaterialDialog.Builder((Activity) context)
+        md = new MaterialDialog.Builder((Activity) context)
                 .setTitle("Hapus Data")
                 .setAnimation(R.raw.lottie_delete)
                 .setMessage("Apakah Anda yakin ingin menghapus data Good Issue yang Anda pilih? Setelah dihapus, data tidak dapat dikembalikan.")
@@ -515,12 +463,12 @@ public class DialogInterface {
                 .setNegativeButton("TIDAK", R.drawable.ic_outline_close, (dialogInterface, which) -> dialogInterface.dismiss())
                 .build();
 
-        mBottomSheetDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
-        mBottomSheetDialog.show();
+        md.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
+        md.show();
     }
 
     public void deleteProductDataConfirmation(Context context, String productDataUID) {
-        MaterialDialog mBottomSheetDialog = new MaterialDialog.Builder((Activity) context)
+        md = new MaterialDialog.Builder((Activity) context)
                 .setTitle("Hapus Data")
                 .setAnimation(R.raw.lottie_delete)
                 .setMessage("Apakah Anda yakin ingin menghapus data Material yang Anda pilih? Setelah dihapus, data tidak dapat dikembalikan.")
@@ -533,12 +481,12 @@ public class DialogInterface {
                 .setNegativeButton("TIDAK", R.drawable.ic_outline_close, (dialogInterface, which) -> dialogInterface.dismiss())
                 .build();
 
-        mBottomSheetDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
-        mBottomSheetDialog.show();
+        md.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
+        md.show();
     }
 
     public void deleteVehicleDataConfirmation(Context context, String vhlUID) {
-        MaterialDialog mBottomSheetDialog = new MaterialDialog.Builder((Activity) context)
+        md = new MaterialDialog.Builder((Activity) context)
                 .setTitle("Hapus Data")
                 .setAnimation(R.raw.lottie_delete)
                 .setMessage("Apakah Anda yakin ingin menghapus data Armada yang Anda pilih? Setelah dihapus, data tidak dapat dikembalikan.")
@@ -551,18 +499,17 @@ public class DialogInterface {
                 .setNegativeButton("TIDAK", R.drawable.ic_outline_close, (dialogInterface, which) -> dialogInterface.dismiss())
                 .build();
 
-        mBottomSheetDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
-        mBottomSheetDialog.show();
+        md.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
+        md.show();
     }
 
     public void deleteGiFromActivityConfirmation(Activity activity, String giUID) {
-        MaterialDialog mBottomSheetDialog = new MaterialDialog.Builder(activity)
+        md = new MaterialDialog.Builder(activity)
                 .setTitle("Hapus Data")
                 .setAnimation(R.raw.lottie_delete)
                 .setMessage("Apakah Anda yakin ingin menghapus data Good Issue yang Anda pilih? Setelah dihapus, data tidak dapat dikembalikan.")
                 .setCancelable(true)
                 .setPositiveButton("YA", R.drawable.ic_outline_check, (dialogInterface, which) -> {
-
                     dialogInterface.dismiss();
                     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
                     databaseReference.child("GoodIssueData").child(giUID).removeValue();
@@ -571,15 +518,12 @@ public class DialogInterface {
                 .setNegativeButton("TIDAK", R.drawable.ic_outline_close, (dialogInterface, which) -> dialogInterface.dismiss())
                 .build();
 
-        mBottomSheetDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
-        mBottomSheetDialog.show();
+        md.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
+        md.show();
     }
 
     public void deleteRoConfirmation(Context context, String roDocumentId) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference refRO = db.collection("ReceivedOrderData");
-
-        MaterialDialog mBottomSheetDialog = new MaterialDialog.Builder((Activity) context)
+        md = new MaterialDialog.Builder((Activity) context)
                 .setTitle("Hapus Data")
                 .setAnimation(R.raw.lottie_delete)
                 .setMessage("Apakah Anda yakin ingin menghapus data Received Order yang Anda pilih? Setelah dihapus, data tidak dapat dikembalikan.")
@@ -592,49 +536,27 @@ public class DialogInterface {
                                 if (getDocumentID.equals(roDocumentId)){
                                     db.collection("ReceivedOrderData").document(roDocumentId).delete();
                                     dialogInterface.dismiss();
-                                    //helper.refreshRoManagementActivity(context);
                                 }
                             }
                         }
                     });
-                    /* // TODO DETECT USER MODEL - IF SUPER ADMIN, ABLE TO VERIFY
-                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("ReceivedOrders");
-                    ValueEventListener valueEventListener = new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            for(DataSnapshot ds : dataSnapshot.getChildren()) {
-                                String key = ds.getKey();
-                                String roUID = dataSnapshot.child(key).child("roUID").getValue(String.class);
-                                if (Objects.equals(roUID, roUIDVal)) {
-                                    databaseReference.child(key).removeValue();
-                                    dialogInterface.dismiss();
-                                }
-                            }
-                        }
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {}
-                    };
-                    databaseReference.addListenerForSingleValueEvent(valueEventListener);*/
+                    // TODO DETECT USER MODEL - IF SUPER ADMIN, ABLE TO VERIFY
                 })
                 .setNegativeButton("TIDAK", R.drawable.ic_outline_close, (dialogInterface, which) -> dialogInterface.dismiss())
                 .build();
 
-        mBottomSheetDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
-        mBottomSheetDialog.show();
+        md.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
+        md.show();
     }
 
     public void deleteInvConfirmation(Context context, String invDocumentID) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference refInv = db.collection("InvoiceData");
-        CollectionReference documentReference = refInv.document(invDocumentID).collection("GoodIssueData");
-
         MaterialDialog mBottomSheetDialog = new MaterialDialog.Builder((Activity) context)
                 .setTitle("Hapus Data")
                 .setAnimation(R.raw.lottie_delete)
                 .setMessage("Apakah Anda yakin ingin menghapus data Invoice yang Anda pilih? Setelah dihapus, data tidak dapat dikembalikan.")
                 .setCancelable(true)
                 .setPositiveButton("YA", R.drawable.ic_outline_check, (dialogInterface, which) -> {
-                    removeAllItemsFromShoppingCart(invDocumentID);
+                    removeAllItemsFromInvoice(invDocumentID);
                     refInv.document(invDocumentID).delete();
                     dialogInterface.dismiss();
                 })
@@ -645,8 +567,7 @@ public class DialogInterface {
         mBottomSheetDialog.show();
     }
 
-    public void removeAllItemsFromShoppingCart(String invUID) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
+    public void removeAllItemsFromInvoice(String invUID) {
         db.collection("InvoiceData").document(invUID).collection("GoodIssueData")
                 .get()
                 .addOnSuccessListener((querySnapshot) -> {
@@ -665,10 +586,7 @@ public class DialogInterface {
     }
 
     public void deleteCustConfirmation(Context context, String custDocumentId) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference refCust = db.collection("CustomerData");
-
-        MaterialDialog mBottomSheetDialog = new MaterialDialog.Builder((Activity) context)
+        md = new MaterialDialog.Builder((Activity) context)
                 .setTitle("Hapus Data")
                 .setAnimation(R.raw.lottie_delete)
                 .setMessage("Apakah Anda yakin ingin menghapus data Customer yang Anda pilih? Setelah dihapus, data tidak dapat dikembalikan.")
@@ -681,42 +599,24 @@ public class DialogInterface {
                                 if (getDocumentID.equals(custDocumentId)){
                                     db.collection("CustomerData").document(custDocumentId).delete();
                                     dialogInterface.dismiss();
-                                    //helper.refreshRoManagementActivity(context);
                                 }
                             }
                         }
                     });
-                    /* // TODO DETECT USER MODEL - IF SUPER ADMIN, ABLE TO VERIFY
-                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("ReceivedOrders");
-                    ValueEventListener valueEventListener = new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            for(DataSnapshot ds : dataSnapshot.getChildren()) {
-                                String key = ds.getKey();
-                                String roUID = dataSnapshot.child(key).child("roUID").getValue(String.class);
-                                if (Objects.equals(roUID, roUIDVal)) {
-                                    databaseReference.child(key).removeValue();
-                                    dialogInterface.dismiss();
-                                }
-                            }
-                        }
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {}
-                    };
-                    databaseReference.addListenerForSingleValueEvent(valueEventListener);*/
+                    // TODO DETECT USER MODEL - IF SUPER ADMIN, ABLE TO VERIFY
                 })
                 .setNegativeButton("TIDAK", R.drawable.ic_outline_close, (dialogInterface, which) -> dialogInterface.dismiss())
                 .build();
 
-        mBottomSheetDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
-        mBottomSheetDialog.show();
+        md.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
+        md.show();
     }
 
     public void confirmCreateInvoice(Context context, FirebaseFirestore db,
                                      ArrayList<GoodIssueModel> goodIssueModelArrayList,
                                      String invUID, String invPoType, String invCreatedBy, String invDateCreated, String invPoDate, String invPoUID, String invCustName,
                                      Double invTotal, Double invTax1, Double invTax2) {
-        MaterialDialog mBottomSheetDialog = new MaterialDialog.Builder((Activity) context)
+        md = new MaterialDialog.Builder((Activity) context)
                 .setTitle("Buat Invoice")
                 .setAnimation(R.raw.lottie_generate_bill)
                 .setMessage("Apakah Anda yakin ingin membuat Invoice dari data Good Issue terpilih?")
@@ -731,8 +631,8 @@ public class DialogInterface {
                 .setNegativeButton("TIDAK", R.drawable.ic_outline_close, (dialogInterface, which) -> dialogInterface.dismiss())
                 .build();
 
-        mBottomSheetDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
-        mBottomSheetDialog.show();
+        md.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
+        md.show();
     }
 
     public void generatingInvoice(Context context, FirebaseFirestore db,
@@ -740,15 +640,15 @@ public class DialogInterface {
                                   String invUID, String invPoType, String invCreatedBy, String invDateCreated, String invPoDate, String invPoUID, String invCustName,
                                   Double invTotal, Double invTax1, Double invTax2) {
 
-        MaterialDialog generatingInvoiceDialog = new MaterialDialog.Builder((Activity) context)
+        md = new MaterialDialog.Builder((Activity) context)
                 .setTitle("Memproses Permintaan")
                 .setMessage("Invoice sedang diproses. Harap tunggu ...")
                 .setAnimation(R.raw.lottie_generate_bill)
                 .setCancelable(false)
                 .build();
 
-        generatingInvoiceDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
-        generatingInvoiceDialog.show();
+        md.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
+        md.show();
 
         new CountDownTimer(2000, 1000) {
             public void onTick(long millisUntilFinished) {
@@ -774,13 +674,13 @@ public class DialogInterface {
                 }
                 AddInvoiceActivity addInvoiceActivity = (AddInvoiceActivity) context;
                 addInvoiceActivity.createInvPDF(Helper.getAppPath(context)+invUID+".pdf");
-                generatingInvoiceDialog.dismiss();
+                md.dismiss();
             }
         }.start();
     }
 
     public void invoiceGeneratedInformation(Context context, String filepath) {
-        MaterialDialog invoiceGeneratedInformationDialog = new MaterialDialog.Builder((Activity) context)
+        md = new MaterialDialog.Builder((Activity) context)
                 .setTitle("Berhasil!")
                 .setAnimation(R.raw.lottie_bill_generated)
                 .setMessage("Data invoice telah berhasil disimpan ke database dan diekspor menjadi berkas PDF di " + filepath + ". Buka berkas sekarang?")
@@ -792,8 +692,8 @@ public class DialogInterface {
                 .setNegativeButton("TIDAK", R.drawable.ic_outline_close, (dialogInterface, which) -> dialogInterface.dismiss())
                 .build();
 
-        invoiceGeneratedInformationDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
-        invoiceGeneratedInformationDialog.show();
+        md.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
+        md.show();
     }
 
 

@@ -28,7 +28,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.ptbas.controlcenter.helper.Helper;
 import com.squareup.picasso.Picasso;
-import com.ptbas.controlcenter.MainActivity;
+import com.ptbas.controlcenter.MainActivityOld;
 import com.ptbas.controlcenter.R;
 
 public class UploadProfilePicActivity extends AppCompatActivity {
@@ -185,7 +185,7 @@ public class UploadProfilePicActivity extends AppCompatActivity {
         } */else if (id == R.id.menu_logout){
             authProfile.signOut();
             Toast.makeText(this, "Berhasil keluar dari akun", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(UploadProfilePicActivity.this, MainActivity.class);
+            Intent intent = new Intent(UploadProfilePicActivity.this, MainActivityOld.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
             finish();

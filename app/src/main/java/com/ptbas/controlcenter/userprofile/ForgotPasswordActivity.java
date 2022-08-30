@@ -21,7 +21,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 import com.ptbas.controlcenter.helper.Helper;
-import com.ptbas.controlcenter.MainActivity;
+import com.ptbas.controlcenter.MainActivityOld;
 import com.ptbas.controlcenter.R;
 
 public class ForgotPasswordActivity extends AppCompatActivity {
@@ -80,7 +80,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
                 if (task.isSuccessful()){
                     Toast.makeText(ForgotPasswordActivity.this, "Berhasil mengirimkan link untuk mengubah kata sandi. Cek kotak masuk email Anda.", Toast.LENGTH_SHORT).show();
 
-                    Intent intent = new Intent(ForgotPasswordActivity.this, MainActivity.class);
+                    Intent intent = new Intent(ForgotPasswordActivity.this, MainActivityOld.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                     finish();

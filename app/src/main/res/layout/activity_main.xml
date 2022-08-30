@@ -5,8 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/light_grey"
-    android:padding="24dp"
-    tools:context=".MainActivity">
+    android:padding="24dp">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -51,8 +50,9 @@
             android:layout_below="@id/textView_main_head"
             android:layout_alignParentStart="true"
             android:layout_alignParentEnd="true"
-            android:layout_marginVertical="32dp"
             android:layout_marginHorizontal="24dp"
+            android:layout_marginVertical="32dp"
+            android:onClick="login"
             android:text="Login" />
 
         <TextView
@@ -71,6 +71,7 @@
             android:layout_below="@id/textView_register"
             android:text="@string/register"
             android:textAlignment="center"
+            android:onClick="register"
             android:textColor="@color/purple_700" />
 
     </RelativeLayout>

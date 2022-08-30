@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.LayoutTransition;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
@@ -60,7 +61,7 @@ public class DragLinearLayout extends LinearLayout {
      */
     private final SparseArray<DraggableChild> draggableChildren;
 
-    private class DraggableChild {
+    private static class DraggableChild {
         /**
          * If non-null, a reference to an on-going position animation.
          */
@@ -627,6 +628,7 @@ public class DragLinearLayout extends LinearLayout {
         return false;
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(@NonNull MotionEvent event) {
         switch (MotionEventCompat.getActionMasked(event)) {
@@ -680,6 +682,7 @@ public class DragLinearLayout extends LinearLayout {
             this.view = view;
         }
 
+        @SuppressLint("ClickableViewAccessibility")
         @Override
         public boolean onTouch(View v, MotionEvent event) {
             if (MotionEvent.ACTION_DOWN == MotionEventCompat.getActionMasked(event)) {

@@ -55,7 +55,7 @@ import java.util.Objects;
 public class InvoiceManagementActivity extends AppCompatActivity {
 
     String[] searchTypeValue = {"giUID", "giRoUID", "giPoCustNumber", "vhlUID", "giMatName"};
-    String dateStart = "", dateEnd = "", searchTypeData="", monthStrVal, dayStrVal;
+    String dateStart = "", dateEnd = "", monthStrVal, dayStrVal;
 
     ChipGroup chipGroup;
     Chip chip_filter_all, chip_filter_status_valid, chip_filter_status_invalid,
@@ -355,8 +355,6 @@ public class InvoiceManagementActivity extends AppCompatActivity {
                     if (!searchView.getQuery().toString().isEmpty()){
                         dialogInterface.fillSearchFilter(InvoiceManagementActivity.this, searchView);
                     }
-                } else {
-                    //showDataSearchByType(newText, searchTypeData);
                 }
 
                 return true;

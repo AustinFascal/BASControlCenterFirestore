@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.transition.Fade;
 import android.util.DisplayMetrics;
 import android.view.View;
@@ -71,6 +72,8 @@ public class DashboardActivity extends AppCompatActivity {
     public SwipeRefreshLayout swipeContainer;
 
     private static final int LAUNCH_SECOND_ACTIVITY = 0;
+
+    boolean doubleBackToExitPressedOnce = false;
 
 
     CoordinatorLayout coordinatorLayout;
@@ -582,5 +585,18 @@ public class DashboardActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         haveNetworkConnection();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (doubleBackToExitPressedOnce) {
+            finish();
+            return;
+        }
+
+        this.doubleBackToExitPressedOnce = true;
+        Toast.makeText(this, "Tekan kembali sekali lagi untuk keluar", Toast.LENGTH_SHORT).show();
+
+        new Handler(Looper.getMainLooper()).postDelayed(() -> doubleBackToExitPressedOnce=false, 2000);
     }
 }

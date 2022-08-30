@@ -26,7 +26,7 @@ import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.ptbas.controlcenter.helper.Helper;
-import com.ptbas.controlcenter.MainActivity;
+import com.ptbas.controlcenter.MainActivityOld;
 import com.ptbas.controlcenter.R;
 
 public class UpdateEmailActivity extends AppCompatActivity {
@@ -154,7 +154,7 @@ public class UpdateEmailActivity extends AppCompatActivity {
                     firebaseUser.sendEmailVerification();
 
                     Toast.makeText(UpdateEmailActivity.this, "Alamat email telah berhasil diubah. Mohon verifikasi alamat email yang baru. Cek kotak masuk email Anda", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(UpdateEmailActivity.this, MainActivity.class);
+                    Intent intent = new Intent(UpdateEmailActivity.this, MainActivityOld.class);
 
                     authProfile.signOut();
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
