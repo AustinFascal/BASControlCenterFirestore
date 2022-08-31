@@ -11,6 +11,8 @@ import android.text.InputFilter;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
@@ -38,6 +40,7 @@ public class UpdateProductData extends AppCompatActivity {
     FloatingActionButton fabSaveMaterialData;
     RadioGroup radioGroupStatus;
     RadioButton radioStatusSelected;
+    LinearLayout wrapStatusToggle;
 
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("ProductData");
 
@@ -60,6 +63,7 @@ public class UpdateProductData extends AppCompatActivity {
         // SYSTEM UI MODE FOR STANDARD ACTIVITY
         helper.handleUIModeForStandardActivity(this, actionBar);
 
+        wrapStatusToggle = findViewById(R.id.wrapStatusToggle);
         radioGroupStatus = findViewById(R.id.radio_group_status);
         edtProductName = findViewById(R.id.edtProductName);
         edtPriceBuy = findViewById(R.id.edtPriceBuy);
@@ -86,6 +90,12 @@ public class UpdateProductData extends AppCompatActivity {
                         edtProductName.setText(productModel.getProductName());
                         edtPriceBuy.setText(String.valueOf(productModel.getPriceBuy()));
                         edtPriceSell.setText(String.valueOf(productModel.getPriceSell()));
+
+                        if (Objects.requireNonNull(edtProductName.getText()).toString().equals("JASA ANGKUT")){
+                            wrapStatusToggle.setVisibility(View.GONE);
+                        } else {
+                            wrapStatusToggle.setVisibility(View.VISIBLE);
+                        }
 
                         if (productStatus.equals(true)){
                             radioGroupStatus.check(R.id.radio_active);

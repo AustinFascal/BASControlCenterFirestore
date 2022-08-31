@@ -616,7 +616,7 @@ public class DialogInterface {
                                      ArrayList<GoodIssueModel> goodIssueModelArrayList,
                                      String invUID, String invPoType, String invCreatedBy, String invDateCreated, String invPoDate, String invPoUID, String invCustName,
                                      Double invTotal, Double invTax1, Double invTax2) {
-        md = new MaterialDialog.Builder((Activity) context)
+        MaterialDialog materialDialog = new MaterialDialog.Builder((Activity) context)
                 .setTitle("Buat Invoice")
                 .setAnimation(R.raw.lottie_generate_bill)
                 .setMessage("Apakah Anda yakin ingin membuat Invoice dari data Good Issue terpilih?")
@@ -631,8 +631,8 @@ public class DialogInterface {
                 .setNegativeButton("TIDAK", R.drawable.ic_outline_close, (dialogInterface, which) -> dialogInterface.dismiss())
                 .build();
 
-        md.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
-        md.show();
+        materialDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
+        materialDialog.show();
     }
 
     public void generatingInvoice(Context context, FirebaseFirestore db,
@@ -640,15 +640,15 @@ public class DialogInterface {
                                   String invUID, String invPoType, String invCreatedBy, String invDateCreated, String invPoDate, String invPoUID, String invCustName,
                                   Double invTotal, Double invTax1, Double invTax2) {
 
-        md = new MaterialDialog.Builder((Activity) context)
+        MaterialDialog generatingInvoiceDialog = new MaterialDialog.Builder((Activity) context)
                 .setTitle("Memproses Permintaan")
                 .setMessage("Invoice sedang diproses. Harap tunggu ...")
                 .setAnimation(R.raw.lottie_generate_bill)
                 .setCancelable(false)
                 .build();
 
-        md.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
-        md.show();
+        generatingInvoiceDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
+        generatingInvoiceDialog.show();
 
         new CountDownTimer(2000, 1000) {
             public void onTick(long millisUntilFinished) {
@@ -674,13 +674,13 @@ public class DialogInterface {
                 }
                 AddInvoiceActivity addInvoiceActivity = (AddInvoiceActivity) context;
                 addInvoiceActivity.createInvPDF(Helper.getAppPath(context)+invUID+".pdf");
-                md.dismiss();
+                generatingInvoiceDialog.dismiss();
             }
         }.start();
     }
 
     public void invoiceGeneratedInformation(Context context, String filepath) {
-        md = new MaterialDialog.Builder((Activity) context)
+        MaterialDialog invoiceGeneratedInformationDialog = new MaterialDialog.Builder((Activity) context)
                 .setTitle("Berhasil!")
                 .setAnimation(R.raw.lottie_bill_generated)
                 .setMessage("Data invoice telah berhasil disimpan ke database dan diekspor menjadi berkas PDF di " + filepath + ". Buka berkas sekarang?")
@@ -692,8 +692,8 @@ public class DialogInterface {
                 .setNegativeButton("TIDAK", R.drawable.ic_outline_close, (dialogInterface, which) -> dialogInterface.dismiss())
                 .build();
 
-        md.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
-        md.show();
+        invoiceGeneratedInformationDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
+        invoiceGeneratedInformationDialog.show();
     }
 
 

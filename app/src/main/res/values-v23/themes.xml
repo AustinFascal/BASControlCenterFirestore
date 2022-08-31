@@ -32,4 +32,12 @@
         <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
     </style>
 
+    <style name="Theme.SplashTheme" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenAnimatedIcon">@drawable/avd_anim</item>
+        <item name="windowSplashScreenAnimationDuration">1000</item>
+        <item name="windowSplashScreenBackground">@color/white</item>
+        <item name="android:scaleType">fitCenter</item>
+        <item name="postSplashScreenTheme">@style/Theme.TravelPermitBAS.NoActionBar</item>
+    </style>
+
 </resources>

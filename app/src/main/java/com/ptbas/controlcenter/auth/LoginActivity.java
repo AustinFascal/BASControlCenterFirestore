@@ -22,6 +22,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -39,6 +40,7 @@ public class LoginActivity extends AppCompatActivity {
     private TextView textViewForgotPass;
     private ProgressBar progressBar;
     private FirebaseAuth authProfile;
+    LottieAnimationView lavWelcomeAnim;
     private static final String TAG = "LoginActivity";
 
     @Override
@@ -48,16 +50,20 @@ public class LoginActivity extends AppCompatActivity {
 
         //Objects.requireNonNull(getSupportActionBar()).hide();
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setTitle("Masuk");
+        actionBar.hide();
+        //actionBar.setTitle("Masuk");
         // showing the back button in action bar
-        actionBar.setDisplayHomeAsUpEnabled(true);
+        //actionBar.setDisplayHomeAsUpEnabled(true);
 
+        lavWelcomeAnim = findViewById(R.id.lavWelcomeAnim);
         editTextLoginEmail = findViewById(R.id.editText_login_email);
         editTextLoginPass = findViewById(R.id.editText_login_pass);
         progressBar = findViewById(R.id.progressBar);
         textViewForgotPass = findViewById(R.id.textView_forgot_password_link);
 
         authProfile = FirebaseAuth.getInstance();
+
+        lavWelcomeAnim.playAnimation();
 
         ImageView imageViewShowHidePass = findViewById(R.id.imageView_show_hide_pass);
         imageViewShowHidePass.setImageResource(R.drawable.ic_pass_hide);

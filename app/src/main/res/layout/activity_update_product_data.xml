@@ -68,38 +68,44 @@
                     android:inputType="number" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <TextView
+            <LinearLayout
+                android:id="@+id/wrapStatusToggle"
+                android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Status Material" />
-
-            <RadioGroup
-                android:id="@+id/radio_group_status"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/outline_box"
-                android:orientation="horizontal"
-                android:padding="5dp">
-
-                <RadioButton
-                    android:id="@+id/radio_active"
-                    style="@style/Theme.TravelPermitBAS"
+                android:layout_height="wrap_content">
+                <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:checked="true"
-                    android:text="@string/active"
-                    android:textSize="16sp" />
+                    android:text="Status Material" />
 
-                <RadioButton
-                    android:id="@+id/radio_inactive"
-                    style="@style/Theme.TravelPermitBAS"
+                <RadioGroup
+                    android:id="@+id/radio_group_status"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/inactive"
-                    android:textSize="16sp" />
-            </RadioGroup>
+                    android:background="@drawable/outline_box"
+                    android:orientation="horizontal"
+                    android:padding="5dp">
+
+                    <RadioButton
+                        android:id="@+id/radio_active"
+                        style="@style/Theme.TravelPermitBAS"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:checked="true"
+                        android:text="@string/active"
+                        android:textSize="16sp" />
+
+                    <RadioButton
+                        android:id="@+id/radio_inactive"
+                        style="@style/Theme.TravelPermitBAS"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/inactive"
+                        android:textSize="16sp" />
+                </RadioGroup>
+            </LinearLayout>
         </LinearLayout>
 
     </ScrollView>

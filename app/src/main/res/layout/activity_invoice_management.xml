@@ -23,12 +23,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:divider="@drawable/divider_transparent"
+                android:showDividers="middle"
                 android:gravity="center"
                 android:orientation="vertical"
                 android:paddingHorizontal="12dp"
                 android:paddingTop="18dp"
                 android:paddingBottom="12dp"
-                android:showDividers="middle">
+                >
 
                 <LinearLayout
                     android:id="@+id/wrap_search_by_spinner"

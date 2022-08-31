@@ -99,29 +99,24 @@ public class ProductDataManagementAdapter extends RecyclerView.Adapter<ProductDa
                 tvStatus.setText("Tidak Aktif");
             }
 
-            //Toast.makeText(context, productName, Toast.LENGTH_SHORT).show();
             tvProductName.setText(productName);
             tvBuyPrice.setText("Beli: "+productBuyPrice);
             tvPriceSell.setText("Jual: "+productSellPrice);
 
-            statusSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-
-                @Override
-                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                    pd.show();
-                    if (statusSwitch.isChecked()){
-                        databaseReference.child("ProductData").child(productUID).child("productStatus").setValue(true).addOnCompleteListener(task -> {
-                            if (task.isSuccessful()){
-                                pd.dismiss();
-                            }
-                        });
-                    } else {
-                        databaseReference.child("ProductData").child(productUID).child("productStatus").setValue(false).addOnCompleteListener(task -> {
-                            if (task.isSuccessful()){
-                                pd.dismiss();
-                            }
-                        });
-                    }
+            statusSwitch.setOnCheckedChangeListener((compoundButton, b) -> {
+                pd.show();
+                if (statusSwitch.isChecked()){
+                    databaseReference.child("ProductData").child(productUID).child("productStatus").setValue(true).addOnCompleteListener(task -> {
+                        if (task.isSuccessful()){
+                            pd.dismiss();
+                        }
+                    });
+                } else {
+                    databaseReference.child("ProductData").child(productUID).child("productStatus").setValue(false).addOnCompleteListener(task -> {
+                        if (task.isSuccessful()){
+                            pd.dismiss();
+                        }
+                    });
                 }
             });
 
@@ -135,6 +130,7 @@ public class ProductDataManagementAdapter extends RecyclerView.Adapter<ProductDa
 
             if (Objects.equals(productName, "JASA ANGKUT")){
                 btnDeleteWrap.setVisibility(View.GONE);
+                statusSwitch.setEnabled(false);
             }
 
             btn1.setOnClickListener(view ->
