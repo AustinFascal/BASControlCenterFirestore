@@ -46,7 +46,7 @@ public class UploadProfilePicActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_upload_profile_pic);
+        setContentView(R.layout.activity_auth_upload_profile_pic);
 
         ActionBar actionBar = getSupportActionBar();
         // ACTION BAR FOR STANDARD ACTIVITY

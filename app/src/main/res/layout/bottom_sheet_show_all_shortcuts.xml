@@ -57,7 +57,8 @@
                     android:layout_alignParentTop="true"
                     android:layout_alignParentEnd="true"
                     android:layout_marginTop="0dp"
-                    android:src="@drawable/ic_outline_keyboard_arrow_down" />
+                    android:src="@drawable/ic_outline_keyboard_arrow_down"
+                    app:tint="?colorPrimary" />
 
             </RelativeLayout>
 

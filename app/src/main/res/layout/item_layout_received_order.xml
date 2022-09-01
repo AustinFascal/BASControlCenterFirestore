@@ -5,9 +5,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     app:cardCornerRadius="6dp"
     app:cardElevation="2dp"
-    style="@style/Widget.MaterialComponents.CardView"
     android:layout_marginHorizontal="8dp"
     android:layout_marginVertical="4dp"
+    android:id="@+id/cardView"
     app:cardPreventCornerOverlap="false">
 
     <LinearLayout
@@ -18,7 +18,7 @@
         <RelativeLayout
             android:id="@+id/open_detail"
             android:paddingHorizontal="12dp"
-            android:paddingBottom="6dp"
+            android:paddingBottom="12dp"
             android:paddingTop="12dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
@@ -28,7 +28,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
                 android:layout_marginEnd="12dp"
-                android:layout_toStartOf="@+id/iv_show_detail"
+                android:layout_toStartOf="@+id/ivExpandLlHiddenView"
                 android:orientation="vertical">
 
                 <TextView
@@ -71,15 +71,16 @@
                         android:id="@+id/ll_status_approved"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginEnd="4dp"
                         android:background="@drawable/pill_green"
                         android:paddingHorizontal="8dp"
-                        android:layout_marginEnd="4dp"
                         android:paddingVertical="2dp">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="VALID"
+                            android:textColor="@color/dark_green"
                             android:textSize="11sp"
                             android:textStyle="bold" />
                     </LinearLayout>
@@ -93,6 +94,7 @@
                         android:paddingVertical="2dp">
 
                         <TextView
+                            android:textColor="@color/dark_red"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="NOMOR PO BELUM TERSEDIA"
@@ -107,54 +109,25 @@
             </LinearLayout>
 
             <ImageView
-                android:id="@+id/iv_show_detail"
+                android:id="@+id/ivExpandLlHiddenView"
                 style="@style/Widget.Design.FloatingActionButton"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentEnd="true"
                 android:layout_marginTop="12dp"
-                android:src="@drawable/ic_outline_navigate_next"
+                android:src="@drawable/ic_outline_keyboard_arrow_down"
                 app:tint="@color/white" />
 
         </RelativeLayout>
         <LinearLayout
+            android:id="@+id/llHiddenView"
+            android:animateLayoutChanges="true"
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/pure_grey"
             android:orientation="horizontal">
-           <!-- <Button
-                android:tag="DeleteGI"
-                style="@style/MaterialDialog.NegativeButton"
-                android:id="@+id/btn_delete_inv"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:layout_marginEnd="4dp"
-                android:drawableLeft="@drawable/ic_outline_delete_forever"
-                android:text="HAPUS"
-                android:textAllCaps="true" />
-            <Button
-                style="@style/MaterialDialog.NegativeButton"
-                android:id="@+id/btn_approve_inv"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:drawableLeft="@drawable/ic_outline_check"
-                android:text="SAHKAN"
-                android:textAllCaps="true" />-->
-            <!--<Button
-                android:tag="DeleteGI"
-                style="@style/MaterialDialog.NegativeButton"
-                android:id="@+id/btn_delete_gi"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginEnd="4dp"
-                android:drawableLeft="@drawable/ic_outline_delete_forever"
-                android:text="HAPUS"
-                android:textStyle="bold"
-                android:textAllCaps="true" />-->
+
             <RelativeLayout
                 android:id="@+id/btn_delete_inv"
                 android:layout_weight="1"
@@ -171,10 +144,11 @@
                     android:layout_alignEnd="@+id/btn1"
                     android:layout_alignTop="@+id/btn1"
                     android:layout_alignBottom="@+id/btn1"
-                    app:tint="@color/dark_red" />
+                    app:tint="?colorPrimary" />
 
                 <Button
                     android:id="@+id/btn1"
+                    style="@style/MaterialDialog.NegativeButton"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
                     android:layout_alignParentStart="true"
@@ -185,7 +159,6 @@
                     android:layout_marginTop="0dp"
                     android:layout_marginEnd="0dp"
                     android:layout_marginBottom="0dp"
-                    android:background="?attr/selectableItemBackground"
                     android:insetTop="0dp"
                     android:insetBottom="0dp"
                     android:tag="DeleteGI" />
@@ -199,18 +172,9 @@
                 android:layout_height="match_parent"
                 android:gravity="center">
 
-                <ImageView
-                    android:scaleType="center"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_outline_check"
-                    android:layout_alignStart="@+id/btn2"
-                    android:layout_alignEnd="@+id/btn2"
-                    android:layout_alignTop="@+id/btn2"
-                    android:layout_alignBottom="@+id/btn2"/>
-
                 <Button
                     android:id="@+id/btn2"
+                    style="@style/MaterialDialog.PositiveButton"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
                     android:layout_alignParentStart="true"
@@ -221,7 +185,52 @@
                     android:layout_marginTop="0dp"
                     android:layout_marginEnd="0dp"
                     android:layout_marginBottom="0dp"
-                    android:background="?attr/selectableItemBackground"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp" />
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignStart="@+id/btn2"
+                    android:layout_alignTop="@+id/btn2"
+                    android:layout_alignEnd="@+id/btn2"
+                    android:layout_alignBottom="@+id/btn2"
+                    android:scaleType="center"
+                    android:src="@drawable/ic_outline_check"
+                    app:tint="@color/white" />
+
+            </RelativeLayout>
+            <RelativeLayout
+                android:id="@+id/btnShowDetail"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center">
+
+                <ImageView
+                    android:scaleType="center"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_outline_edit"
+                    android:layout_alignStart="@+id/btn3"
+                    android:layout_alignEnd="@+id/btn3"
+                    android:layout_alignTop="@+id/btn3"
+                    android:layout_alignBottom="@+id/btn3"
+                    app:tint="?colorPrimary"/>
+
+                <Button
+                    android:id="@+id/btn3"
+                    style="@style/MaterialDialog.NegativeButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginStart="0dp"
+                    android:layout_marginTop="0dp"
+                    android:layout_marginEnd="0dp"
+                    android:layout_marginBottom="0dp"
                     android:insetTop="0dp"
                     android:insetBottom="0dp" />
 

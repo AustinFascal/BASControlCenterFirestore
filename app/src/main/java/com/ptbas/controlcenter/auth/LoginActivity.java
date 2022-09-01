@@ -37,7 +37,7 @@ import com.ptbas.controlcenter.R;
 public class LoginActivity extends AppCompatActivity {
 
     private EditText editTextLoginEmail, editTextLoginPass;
-    private TextView textViewForgotPass;
+    private TextView textViewForgotPass, textViewRegister;
     private ProgressBar progressBar;
     private FirebaseAuth authProfile;
     LottieAnimationView lavWelcomeAnim;
@@ -46,7 +46,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        setContentView(R.layout.activity_auth_login);
 
         //Objects.requireNonNull(getSupportActionBar()).hide();
         ActionBar actionBar = getSupportActionBar();
@@ -60,6 +60,7 @@ public class LoginActivity extends AppCompatActivity {
         editTextLoginPass = findViewById(R.id.editText_login_pass);
         progressBar = findViewById(R.id.progressBar);
         textViewForgotPass = findViewById(R.id.textView_forgot_password_link);
+        textViewRegister = findViewById(R.id.textView_register_link);
 
         authProfile = FirebaseAuth.getInstance();
 
@@ -110,6 +111,14 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(LoginActivity.this, ForgotPasswordActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        textViewRegister.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
                 startActivity(intent);
             }
         });

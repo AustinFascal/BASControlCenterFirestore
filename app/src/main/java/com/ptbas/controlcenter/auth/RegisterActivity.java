@@ -22,6 +22,8 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
@@ -41,27 +43,27 @@ import java.util.regex.Pattern;
 
 public class RegisterActivity extends AppCompatActivity {
 
-    private EditText editTextRegistFullName, editTextRegistEmail, editTextRegistDoB, editTextRegistPhoneNumber,
+    private TextInputEditText editTextRegistFullName, editTextRegistEmail, editTextRegistDoB, editTextRegistPhoneNumber,
             editTextRegistPass, editTextRegistConfirmPass, editTextRegistAccessCode;
     private ProgressBar progressBar;
     private RadioGroup radioGroupRegistGender;
     private RadioButton radioButtonRegistGenderSelected;
     private DatePickerDialog datePicker;
+    private FloatingActionButton fabBack;
     private static final String TAG = "RegisterActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_register);
+        setContentView(R.layout.activity_auth_register);
 
         //Objects.requireNonNull(getSupportActionBar()).hide();
 
         // calling the action bar
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setTitle("Daftar");
-        // showing the back button in action bar
-        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.hide();
 
+        fabBack = findViewById(R.id.fabBack);
         progressBar = findViewById(R.id.progressBar);
         editTextRegistFullName = findViewById(R.id.editText_register_full_name);
         editTextRegistEmail = findViewById(R.id.editText_register_email);
@@ -93,6 +95,8 @@ public class RegisterActivity extends AppCompatActivity {
                 datePicker.show();
             }
         });
+
+        fabBack.setOnClickListener(view -> finish());
 
         Button btnRegister = findViewById(R.id.button_register);
         btnRegister.setOnClickListener(new View.OnClickListener() {

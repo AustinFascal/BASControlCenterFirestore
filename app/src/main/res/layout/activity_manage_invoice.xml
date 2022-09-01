@@ -121,6 +121,7 @@
                             android:tag="firstView">
 
                             <ImageView
+                                app:tint="?colorAccent"
                                 android:layout_width="24dp"
                                 android:layout_height="match_parent"
                                 android:src="@drawable/ic_outline_drag_indicator" />
@@ -236,6 +237,7 @@
                             android:gravity="center_vertical"
                             android:orientation="horizontal">
                             <ImageView
+                                app:tint="?colorAccent"
                                 android:layout_width="24dp"
                                 android:layout_height="match_parent"
                                 android:src="@drawable/ic_outline_drag_indicator" />
@@ -422,18 +424,6 @@
                 android:paddingBottom="80dp"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:listitem="@layout/item_layout_invoice" />
-
-            <!--<LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:padding="18dp"
-            android:visibility="visible">
-
-
-
-        </LinearLayout>-->
-
         </androidx.core.widget.NestedScrollView>
     </RelativeLayout>
 

@@ -18,6 +18,7 @@
             app:cardCornerRadius="8dp"
             app:cardElevation="8dp"
             android:visibility="visible"
+            style="@style/Widget.MaterialComponents.CardView"
             app:cardPreventCornerOverlap="false">
 
             <LinearLayout
@@ -52,6 +53,7 @@
                             android:orientation="horizontal" android:showDividers="middle"
                             android:tag="firstView">
                             <ImageView
+                                app:tint="?colorPrimary"
                                 android:layout_width="24dp"
                                 android:layout_height="match_parent"
                                 android:src="@drawable/ic_outline_drag_indicator" />
@@ -111,6 +113,7 @@
                             android:showDividers="middle"
                             android:visibility="visible">
                             <ImageView
+                                app:tint="?colorPrimary"
                                 android:layout_width="24dp"
                                 android:layout_height="match_parent"
                                 android:src="@drawable/ic_outline_drag_indicator" />
@@ -185,6 +188,7 @@
                     android:layout_height="40dp"
                     android:drawableEnd="@drawable/ic_outline_keyboard_arrow_up"
                     android:paddingTop="4dp"
+                    android:drawableTint="?colorPrimary"
                     android:text="Tampilkan lebih sedikit"
                     android:visibility="visible" />
 

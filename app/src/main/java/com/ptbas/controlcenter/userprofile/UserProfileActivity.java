@@ -31,7 +31,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.ptbas.controlcenter.MainActivity;
 import com.ptbas.controlcenter.helper.Helper;
 import com.squareup.picasso.Picasso;
-import com.ptbas.controlcenter.MainActivityOld;
 import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.model.UserModel;
 
@@ -52,7 +51,7 @@ public class UserProfileActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_user_profile);
+        setContentView(R.layout.activity_auth_user_profile);
 
 
         ActionBar actionBar = getSupportActionBar();

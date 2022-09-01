@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".management.CustomerManagementActivity">
+    tools:context=".management.ProductDataManagementActivity">
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -45,8 +45,9 @@
                 android:layout_height="wrap_content"
                 android:paddingTop="10dp"
                 android:paddingBottom="80dp"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:listitem="@layout/item_layout_customer_data" />
+                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                app:spanCount="2"
+                tools:listitem="@layout/item_layout_product_data" />
 
             <!--<LinearLayout
             android:layout_width="match_parent"
@@ -63,7 +64,7 @@
     </RelativeLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fabAddCustomerData"
+        android:id="@+id/fabAddMaterialData"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
@@ -73,7 +74,8 @@
         android:layout_marginEnd="24dp"
         android:layout_marginBottom="24dp"
         android:contentDescription="@string/default_content_description"
-        android:src="@drawable/ic_outline_add_circle"
-        app:backgroundTint="@color/pure_orange" />
+        app:tint="@color/white"
+        android:backgroundTint="?attr/colorPrimary"
+        android:src="@drawable/ic_outline_add_circle"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

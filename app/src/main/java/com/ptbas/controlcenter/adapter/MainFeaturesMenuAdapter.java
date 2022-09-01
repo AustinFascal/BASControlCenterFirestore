@@ -11,13 +11,11 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ptbas.controlcenter.R;
-import com.ptbas.controlcenter.create.AddCustomerActivity;
 import com.ptbas.controlcenter.management.CustomerManagementActivity;
 import com.ptbas.controlcenter.management.GoodIssueManagementActivity;
 import com.ptbas.controlcenter.management.InvoiceManagementActivity;
 import com.ptbas.controlcenter.management.ProductDataManagementActivity;
 import com.ptbas.controlcenter.management.ReceivedOrderManagementActivity;
-import com.ptbas.controlcenter.management.UserManagementActivity;
 import com.ptbas.controlcenter.management.VehicleManagementActivity;
 import com.ptbas.controlcenter.model.MainFeatureModel;
 import com.ptbas.controlcenter.viewholder.MainFeatureViewHolder;
@@ -38,7 +36,7 @@ public class MainFeaturesMenuAdapter extends RecyclerView.Adapter<MainFeatureVie
     @Override
     public MainFeatureViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View view = inflater.inflate(R.layout.cardview_main_feature, parent, false);
+        View view = inflater.inflate(R.layout.item_layout_main_feature, parent, false);
         return new MainFeatureViewHolder(view);
     }
 

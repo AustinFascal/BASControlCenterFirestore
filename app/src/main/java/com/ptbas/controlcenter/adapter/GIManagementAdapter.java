@@ -1,5 +1,6 @@
 package com.ptbas.controlcenter.adapter;
 
+import android.animation.LayoutTransition;
 import android.content.Context;
 import android.content.Intent;
 import android.text.Html;
@@ -13,7 +14,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.transition.AutoTransition;
+import androidx.transition.TransitionManager;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -59,15 +63,18 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
 
 
     public class ItemViewHolder extends RecyclerView.ViewHolder {
-        LinearLayout llStatusApproved, llStatusInvoiced, llStatusPOAvailable, llRoNeedsUpdate;
+        LinearLayout llStatusApproved, llStatusInvoiced, llStatusPOAvailable, llRoNeedsUpdate, llHiddenView;
         TextView tvCubication, tvGiDateTime, tvGiUid, tvRoUid, tvGiMatDetail, tvGiVhlDetail,
                 tvVhlUid, tvPoCustNumber;
         RelativeLayout btnDeleteGi, btnApproveGi;
-        Button btn1, btn2;
-        ImageView ivShowDetail;
+        Button btn1, btn2, btn3;
+        ImageView ivExpandLlHiddenView;
+        CardView cardView;
 
         public ItemViewHolder(@NonNull View itemView) {
             super(itemView);
+            cardView = itemView.findViewById(R.id.cardView);
+            llHiddenView = itemView.findViewById(R.id.llHiddenView);
             llStatusApproved = itemView.findViewById(R.id.ll_status_approved);
             llStatusInvoiced = itemView.findViewById(R.id.ll_status_invoiced);
             llStatusPOAvailable = itemView.findViewById(R.id.ll_status_po_unvailable);
@@ -84,7 +91,10 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
             btnApproveGi = itemView.findViewById(R.id.btn_approve_gi);
             btn1 = itemView.findViewById(R.id.btn1);
             btn2 = itemView.findViewById(R.id.btn2);
-            ivShowDetail = itemView.findViewById(R.id.iv_show_detail);
+            btn3 = itemView.findViewById(R.id.btn3);
+            ivExpandLlHiddenView = itemView.findViewById(R.id.ivExpandLlHiddenView);
+
+            llHiddenView.getLayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
         }
 
         public void viewBind(GoodIssueModel goodIssueModel) {
@@ -150,7 +160,20 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
             }
 
 
-            ivShowDetail.setOnClickListener(view -> {
+            ivExpandLlHiddenView.setOnClickListener(view -> {
+                if (llHiddenView.getVisibility() == View.VISIBLE) {
+                    llHiddenView.setVisibility(View.GONE);
+                    TransitionManager.beginDelayedTransition(cardView, new AutoTransition());
+                    ivExpandLlHiddenView.setImageResource(R.drawable.ic_outline_keyboard_arrow_down);
+                }
+                else {
+                    TransitionManager.beginDelayedTransition(cardView, new AutoTransition());
+                    llHiddenView.setVisibility(View.VISIBLE);
+                    ivExpandLlHiddenView.setImageResource(R.drawable.ic_outline_keyboard_arrow_up);
+                }
+            });
+
+            btn3.setOnClickListener(view -> {
                 String giUID1 =goodIssueModel.getGiUID();
                 Intent i = new Intent(context, UpdateGoodIssueActivity.class);
                 i.putExtra("key", giUID1);

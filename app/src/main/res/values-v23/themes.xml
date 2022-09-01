@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="Theme.TravelPermitBAS" parent="Theme.MaterialComponents.Light">
-        <!-- Primary brand color. -->
+   <!-- <style name="Theme.TravelPermitBAS" parent="Theme.MaterialComponents.Light">
+        &lt;!&ndash; Primary brand color. &ndash;&gt;
         <item name="colorPrimary">@color/purple_700</item>
         <item name="colorPrimaryVariant">@color/white</item>
         <item name="colorOnPrimary">@color/purple_700</item>
-        <!-- Secondary brand color. -->
+        &lt;!&ndash; Secondary brand color. &ndash;&gt;
         <item name="colorSecondary">@color/blue_700</item>
         <item name="colorSecondaryVariant">@color/blue_700</item>
         <item name="colorOnSecondary">@color/black</item>
-        <!-- Status bar color. -->
+        &lt;!&ndash; Status bar color. &ndash;&gt;
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <item name="android:windowLightStatusBar" tools:targetApi="l">true</item>
 
@@ -20,7 +20,7 @@
         <item name="material_dialog_positive_button_color">@color/blue_700</item>
         <item name="material_dialog_positive_button_text_color">#FFFFFF</item>
         <item name="material_dialog_negative_button_text_color">@color/blue_700</item>
-    </style>
+    </style>-->
 
     <style name="Theme.TravelPermitBAS.NoActionBar">
         <item name="windowActionBar">false</item>

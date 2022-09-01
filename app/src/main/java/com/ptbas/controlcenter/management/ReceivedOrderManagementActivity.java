@@ -106,7 +106,7 @@ public class ReceivedOrderManagementActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_received_order_management);
+        setContentView(R.layout.activity_manage_received_order);
 
         context = this;
 
@@ -198,7 +198,7 @@ public class ReceivedOrderManagementActivity extends AppCompatActivity {
 
         imgbtnExpandCollapseFilterLayout.setOnClickListener(view -> {
             if (firstViewDataFirstTimeStatus){
-                view = View.inflate(context, R.layout.activity_good_issue_management, null);
+                view = View.inflate(context, R.layout.activity_manage_good_issue, null);
                 firstViewData = view.findViewById(R.id.ll_wrap_filter_by_status);
                 firstViewDataFirstTimeStatus = false;
             }
@@ -381,12 +381,17 @@ public class ReceivedOrderManagementActivity extends AppCompatActivity {
         SearchView searchView = (SearchView) menu.findItem(R.id.search_data).getActionView();
         searchView.setQueryHint("Kata Kunci");
         searchView.setInputType(InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
+        searchView.setMaxWidth(Integer.MAX_VALUE);
         searchView.setOnSearchClickListener(view -> {
             cdvFilter.setVisibility(View.VISIBLE);
             wrapSearchBySpinner.setVisibility(View.VISIBLE);
             wrapFilter.setVisibility(View.GONE);
             imgbtnExpandCollapseFilterLayout.setVisibility(View.GONE);
             TransitionManager.beginDelayedTransition(cdvFilter, new AutoTransition());
+            if (expandStatus){
+                expandStatus=false;
+                menu.findItem(R.id.filter_data).setIcon(R.drawable.ic_outline_filter_alt);
+            }
         });
 
         searchView.setOnCloseListener(() -> {

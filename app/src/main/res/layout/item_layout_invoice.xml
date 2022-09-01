@@ -5,9 +5,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     app:cardCornerRadius="6dp"
     app:cardElevation="2dp"
-    style="@style/Widget.MaterialComponents.CardView"
     android:layout_marginHorizontal="8dp"
     android:layout_marginVertical="4dp"
+    android:id="@+id/cardView"
     app:cardPreventCornerOverlap="false">
 
     <LinearLayout
@@ -18,7 +18,7 @@
         <RelativeLayout
             android:id="@+id/open_detail"
             android:paddingHorizontal="12dp"
-            android:paddingBottom="6dp"
+            android:paddingBottom="12dp"
             android:paddingTop="12dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
@@ -28,7 +28,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
                 android:layout_marginEnd="12dp"
-                android:layout_toStartOf="@+id/iv_show_detail"
+                android:layout_toStartOf="@+id/ivExpandLlHiddenView"
                 android:orientation="vertical">
 
                 <TextView
@@ -66,11 +66,12 @@
                     android:maxLines="1"
                     android:text="Nomor PO Customer dan Tipe PO"
                     android:textSize="14sp" />
+
                 <LinearLayout
                     android:id="@+id/ll_status_unpaid"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/iv_show_detail"
+                    android:layout_below="@+id/ivExpandLlHiddenView"
                     android:layout_alignParentEnd="true"
                     android:layout_marginTop="4dp"
                     android:layout_marginEnd="4dp"
@@ -82,14 +83,16 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="BELUM LUNAS"
+                        android:textColor="@color/dark_red"
                         android:textSize="11sp"
                         android:textStyle="bold" />
                 </LinearLayout>
+
                 <LinearLayout
                     android:id="@+id/ll_status_paid"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/iv_show_detail"
+                    android:layout_below="@+id/ivExpandLlHiddenView"
                     android:layout_alignParentEnd="true"
                     android:layout_marginTop="4dp"
                     android:layout_marginEnd="4dp"
@@ -101,23 +104,22 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="LUNAS"
+                        android:textColor="@color/dark_green"
                         android:textSize="11sp"
                         android:textStyle="bold" />
                 </LinearLayout>
 
 
-
-
             </LinearLayout>
 
             <ImageView
-                android:id="@+id/iv_show_detail"
+                android:id="@+id/ivExpandLlHiddenView"
                 style="@style/Widget.Design.FloatingActionButton"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentEnd="true"
-                android:src="@drawable/ic_outline_navigate_next"
+                android:src="@drawable/ic_outline_keyboard_arrow_down"
                 app:tint="@color/white" />
 
 
@@ -125,21 +127,12 @@
 
         </RelativeLayout>
         <LinearLayout
+            android:id="@+id/llHiddenView"
+            android:animateLayoutChanges="true"
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/pure_grey"
             android:orientation="horizontal">
-            <!--<ImageButton
-                android:tag="DeleteGI"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:id="@+id/btn_delete_inv"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginEnd="4dp"
-                android:src="@drawable/ic_outline_delete_forever"
-                android:text="HAPUS"
-                android:textAllCaps="true" />-->
             <RelativeLayout
                 android:layout_weight="1"
                 android:layout_width="match_parent"
@@ -155,9 +148,10 @@
                     android:layout_alignEnd="@+id/btn_delete_inv"
                     android:layout_alignTop="@+id/btn_delete_inv"
                     android:layout_alignBottom="@+id/btn_delete_inv"
-                    app:tint="@color/dark_red" />
+                    app:tint="?colorPrimary" />
 
                 <Button
+                    style="@style/MaterialDialog.NegativeButton"
                     android:id="@+id/btn_delete_inv"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
@@ -169,11 +163,48 @@
                     android:layout_marginTop="0dp"
                     android:layout_marginEnd="0dp"
                     android:layout_marginBottom="0dp"
-                    android:background="?attr/selectableItemBackground"
                     android:insetTop="0dp"
                     android:insetBottom="0dp" />
 
             </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/wrapBtnApprove"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center">
+
+                <Button
+                    style="@style/MaterialDialog.PositiveButton"
+                    android:id="@+id/btn_approve_inv"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginStart="0dp"
+                    android:layout_marginTop="0dp"
+                    android:layout_marginEnd="0dp"
+                    android:layout_marginBottom="0dp"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp" />
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignStart="@+id/btn_approve_inv"
+                    android:layout_alignTop="@+id/btn_approve_inv"
+                    android:layout_alignEnd="@+id/btn_approve_inv"
+                    android:layout_alignBottom="@+id/btn_approve_inv"
+                    android:scaleType="center"
+                    android:src="@drawable/ic_outline_check"
+                    app:tint="@color/white" />
+
+
+            </RelativeLayout>
+
 
             <RelativeLayout
                 android:layout_weight="1"
@@ -189,9 +220,11 @@
                     android:layout_alignStart="@+id/btn_print_inv"
                     android:layout_alignEnd="@+id/btn_print_inv"
                     android:layout_alignTop="@+id/btn_print_inv"
-                    android:layout_alignBottom="@+id/btn_print_inv"/>
+                    android:layout_alignBottom="@+id/btn_print_inv"
+                    app:tint="?colorPrimary"/>
 
                 <Button
+                    style="@style/MaterialDialog.NegativeButton"
                     android:id="@+id/btn_print_inv"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
@@ -203,65 +236,11 @@
                     android:layout_marginTop="0dp"
                     android:layout_marginEnd="0dp"
                     android:layout_marginBottom="0dp"
-                    android:background="?attr/selectableItemBackground"
                     android:insetTop="0dp"
                     android:insetBottom="0dp" />
 
             </RelativeLayout>
-            <!--<ImageButton
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:id="@+id/btn_print_inv"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginEnd="4dp"
-                android:src="@drawable/ic_outline_print"
-                android:text="CETAK"
-                android:textAllCaps="true" />-->
-            <!--<Button
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:id="@+id/btn_approve_inv"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:background="@drawable/ic_outline_check"
-                android:textAllCaps="true" />-->
 
-            <RelativeLayout
-                android:id="@+id/wrapBtnApprove"
-                android:layout_weight="1"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center">
-
-                <ImageView
-                    android:scaleType="center"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_outline_check"
-                    android:layout_alignStart="@+id/btn_approve_inv"
-                    android:layout_alignEnd="@+id/btn_approve_inv"
-                    android:layout_alignTop="@+id/btn_approve_inv"
-                    android:layout_alignBottom="@+id/btn_approve_inv"/>
-
-                <Button
-                    android:id="@+id/btn_approve_inv"
-                    android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:layout_alignParentStart="true"
-                    android:layout_alignParentTop="true"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentBottom="true"
-                    android:layout_marginStart="0dp"
-                    android:layout_marginTop="0dp"
-                    android:layout_marginEnd="0dp"
-                    android:layout_marginBottom="0dp"
-                    android:background="?attr/selectableItemBackground"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp" />
-
-            </RelativeLayout>
         </LinearLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

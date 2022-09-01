@@ -1,5 +1,6 @@
 package com.ptbas.controlcenter.management;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,11 +14,13 @@ import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.text.InputType;
 import android.transition.AutoTransition;
 import android.transition.TransitionManager;
 import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -90,7 +93,7 @@ public class InvoiceManagementActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_invoice_management);
+        setContentView(R.layout.activity_manage_invoice);
 
         context = this;
 
@@ -121,6 +124,13 @@ public class InvoiceManagementActivity extends AppCompatActivity {
         chip_filter_status_transport_type_curah = findViewById(R.id.chip_filter_status_transport_type_curah);
         chip_filter_status_transport_type_borong = findViewById(R.id.chip_filter_status_transport_type_borong);
 
+        TypedValue typedValue = new TypedValue();
+        Resources.Theme theme = context.getTheme();
+        theme.resolveAttribute(androidx.appcompat.R.attr.colorPrimary, typedValue, true);
+        @ColorInt int color = typedValue.data;
+
+        btnGiSearchByDateReset.setColorFilter(color);
+        btnGiSearchByTypeReset.setColorFilter(color);
 
         ActionBar actionBar = getSupportActionBar();
 
@@ -245,44 +255,6 @@ public class InvoiceManagementActivity extends AppCompatActivity {
     }
 
     private void showDataDefaultQuery() {
-        /*Query query;
-        if (dateStart.isEmpty()||dateEnd.isEmpty()){
-            query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated");
-        } else{
-            query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated").startAt(dateStart).endAt(dateEnd);
-        }
-        query.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                goodIssueModelArrayList.clear();
-                if (snapshot.exists()){
-                    for (DataSnapshot item : snapshot.getChildren()){
-                        GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
-                        if (Objects.equals(item.child("giInvoiced").getValue(), false)) {
-                            goodIssueModelArrayList.add(goodIssueModel);
-                        }
-                    }
-                    llNoData.setVisibility(View.GONE);
-                    nestedScrollView.setVisibility(View.VISIBLE);
-                } else {
-                    llNoData.setVisibility(View.VISIBLE);
-                    nestedScrollView.setVisibility(View.GONE);
-                }
-                Collections.reverse(goodIssueModelArrayList);
-                giManagementAdapter = new GIManagementAdapter(context, goodIssueModelArrayList);
-                rvGoodIssueList.setAdapter(giManagementAdapter);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-
-        if (goodIssueModelArrayList.size()<1){
-            nestedScrollView.setVisibility(View.GONE);
-            llNoData.setVisibility(View.VISIBLE);
-        }*/
 
         db.collection("InvoiceData").orderBy("invDateCreated")
                 .addSnapshotListener((value, error) -> {
@@ -325,12 +297,17 @@ public class InvoiceManagementActivity extends AppCompatActivity {
         menu.findItem(R.id.search_data).setOnActionExpandListener(onActionExpandListener);
         SearchView searchView = (SearchView) menu.findItem(R.id.search_data).getActionView();
         searchView.setQueryHint("Kata Kunci");
+        searchView.setMaxWidth(Integer.MAX_VALUE);
         searchView.setInputType(InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
         searchView.setOnSearchClickListener(view -> {
             ll_wrap_filter_chip_group.setVisibility(View.GONE);
             wrapSearchBySpinner.setVisibility(View.VISIBLE);
             cdvFilter.setVisibility(View.VISIBLE);
             TransitionManager.beginDelayedTransition(cdvFilter, new AutoTransition());
+            if (expandStatus){
+                expandStatus=false;
+                menu.findItem(R.id.filter_data).setIcon(R.drawable.ic_outline_filter_alt);
+            }
         });
 
         searchView.setOnCloseListener(() -> {

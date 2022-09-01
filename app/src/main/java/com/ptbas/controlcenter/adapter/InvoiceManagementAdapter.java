@@ -1,5 +1,6 @@
 package com.ptbas.controlcenter.adapter;
 
+import android.animation.LayoutTransition;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,7 +12,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.transition.AutoTransition;
+import androidx.transition.TransitionManager;
 
 import com.ptbas.controlcenter.helper.DialogInterface;
 import com.ptbas.controlcenter.R;
@@ -49,15 +53,18 @@ public class InvoiceManagementAdapter extends RecyclerView.Adapter<InvoiceManage
 
 
     public class ItemViewHolder extends RecyclerView.ViewHolder {
-        LinearLayout llStatusPaid, llStatusUnpaid;
+        LinearLayout llStatusPaid, llStatusUnpaid, llHiddenView;
         TextView tvInvDateCreated, tvInvUID, tvPoCustNumber, tvPoCustName;
         Button btnDeleteInv, btnApproveInv;
         RelativeLayout rlOpenInvDetail, wrapBtnApprove;
-        ImageView ivShowDetail;
+        ImageView ivExpandLlHiddenView;
+        CardView cardView;
 
         public ItemViewHolder(@NonNull View itemView) {
             super(itemView);
-            ivShowDetail = itemView.findViewById(R.id.iv_show_detail);
+            cardView = itemView.findViewById(R.id.cardView);
+            llHiddenView = itemView.findViewById(R.id.llHiddenView);
+            ivExpandLlHiddenView = itemView.findViewById(R.id.ivExpandLlHiddenView);
             rlOpenInvDetail = itemView.findViewById(R.id.open_detail);
             llStatusPaid = itemView.findViewById(R.id.ll_status_paid);
             llStatusUnpaid = itemView.findViewById(R.id.ll_status_unpaid);
@@ -68,6 +75,9 @@ public class InvoiceManagementAdapter extends RecyclerView.Adapter<InvoiceManage
             btnDeleteInv = itemView.findViewById(R.id.btn_delete_inv);
             btnApproveInv = itemView.findViewById(R.id.btn_approve_inv);
             wrapBtnApprove = itemView.findViewById(R.id.wrapBtnApprove);
+
+            llHiddenView.getLayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
+
         }
 
         public void viewBind(InvoiceModel invoiceModel) {
@@ -93,6 +103,19 @@ public class InvoiceManagementAdapter extends RecyclerView.Adapter<InvoiceManage
                 llStatusUnpaid.setVisibility(View.VISIBLE);
                 wrapBtnApprove.setVisibility(View.VISIBLE);
             }
+
+            ivExpandLlHiddenView.setOnClickListener(view -> {
+                if (llHiddenView.getVisibility() == View.VISIBLE) {
+                    llHiddenView.setVisibility(View.GONE);
+                    TransitionManager.beginDelayedTransition(cardView, new AutoTransition());
+                    ivExpandLlHiddenView.setImageResource(R.drawable.ic_outline_keyboard_arrow_down);
+                }
+                else {
+                    TransitionManager.beginDelayedTransition(cardView, new AutoTransition());
+                    llHiddenView.setVisibility(View.VISIBLE);
+                    ivExpandLlHiddenView.setImageResource(R.drawable.ic_outline_keyboard_arrow_up);
+                }
+            });
 
             btnApproveInv.setOnClickListener(view ->
                     dialogInterface.approveInvConfirmation(context, invDocumentID));

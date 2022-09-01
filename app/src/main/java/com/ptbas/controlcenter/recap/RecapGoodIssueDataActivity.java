@@ -1,5 +1,6 @@
 package com.ptbas.controlcenter.recap;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,6 +17,7 @@ import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.VibrationEffect;
@@ -24,6 +26,7 @@ import android.text.Html;
 import android.transition.AutoTransition;
 import android.transition.TransitionManager;
 import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -145,6 +148,14 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
         btnGiSearchByDateReset = findViewById(R.id.btn_gi_search_date_reset);
         btnGiSearchByRoUIDReset = findViewById(R.id.btn_gi_search_rouid_reset);
         fabCreateGiRecap = findViewById(R.id.fab_create_gi_recap);
+
+        TypedValue typedValue = new TypedValue();
+        Resources.Theme theme = context.getTheme();
+        theme.resolveAttribute(androidx.appcompat.R.attr.colorPrimary, typedValue, true);
+        @ColorInt int color = typedValue.data;
+
+        btnGiSearchByDateReset.setColorFilter(color);
+        btnGiSearchByRoUIDReset.setColorFilter(color);
 
         ActionBar actionBar = getSupportActionBar();
 

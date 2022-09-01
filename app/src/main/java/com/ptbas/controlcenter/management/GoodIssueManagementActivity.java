@@ -1,14 +1,17 @@
 package com.ptbas.controlcenter.management;
 
+import android.animation.LayoutTransition;
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.text.InputType;
 import android.transition.AutoTransition;
 import android.transition.TransitionManager;
 import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -19,6 +22,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -92,7 +96,7 @@ public class GoodIssueManagementActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_good_issue_management);
+        setContentView(R.layout.activity_manage_good_issue);
 
         context = this;
 
@@ -113,6 +117,17 @@ public class GoodIssueManagementActivity extends AppCompatActivity {
         edtGiDateFilterEnd = findViewById(R.id.edt_gi_date_filter_end);
         btnGiSearchByDateReset = findViewById(R.id.btn_gi_search_date_reset);
         btnGiSearchByTypeReset = findViewById(R.id.btn_gi_search_by_type_reset);
+
+        TypedValue typedValue = new TypedValue();
+        Resources.Theme theme = context.getTheme();
+        theme.resolveAttribute(androidx.appcompat.R.attr.colorPrimary, typedValue, true);
+        @ColorInt int color = typedValue.data;
+
+        btnGiSearchByDateReset.setColorFilter(color);
+        btnGiSearchByTypeReset.setColorFilter(color);
+
+        cdvFilter.getLayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
+
 
         chipGroup = findViewById(R.id.chip_group_filter_query);
         chip_filter_all  = findViewById(R.id.chip_filter_all);
@@ -639,11 +654,16 @@ public class GoodIssueManagementActivity extends AppCompatActivity {
         SearchView searchView = (SearchView) menu.findItem(R.id.search_data).getActionView();
         searchView.setQueryHint("Kata Kunci");
         searchView.setInputType(InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
+        searchView.setMaxWidth(Integer.MAX_VALUE);
         searchView.setOnSearchClickListener(view -> {
             ll_wrap_filter_chip_group.setVisibility(View.GONE);
             wrapSearchBySpinner.setVisibility(View.VISIBLE);
             cdvFilter.setVisibility(View.VISIBLE);
             TransitionManager.beginDelayedTransition(cdvFilter, new AutoTransition());
+            if (expandStatus){
+                expandStatus=false;
+                menu.findItem(R.id.filter_data).setIcon(R.drawable.ic_outline_filter_alt);
+            }
         });
 
         searchView.setOnCloseListener(() -> {
@@ -681,6 +701,7 @@ public class GoodIssueManagementActivity extends AppCompatActivity {
     @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
         if (item.getItemId() == R.id.filter_data) {
             if (expandStatus){
                 expandStatus=false;

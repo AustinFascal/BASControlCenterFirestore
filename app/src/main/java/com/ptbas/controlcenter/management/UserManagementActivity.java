@@ -17,7 +17,7 @@ public class UserManagementActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_user_management);
+        setContentView(R.layout.activity_manage_user);
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setTitle("Manajemen Pengguna");

@@ -240,7 +240,6 @@
                             android:id="@+id/radio_group_operation"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:layout_below="@id/textView_register_gender"
                             android:layout_marginTop="5dp"
                             android:layout_toEndOf="@id/imageViewGender"
                             android:layout_weight="2"
@@ -577,7 +576,6 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:ellipsize="end"
-                                android:gravity="center_vertical"
                                 android:text="0 m³"
                                 android:textAlignment="center"
                                 android:textSize="10pt"
@@ -588,7 +586,6 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:ellipsize="end"
-                                android:gravity="center_vertical"
                                 android:text="Kubikasi"
                                 android:textAlignment="center" />
 

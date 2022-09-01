@@ -28,7 +28,7 @@ public class StatisticsAdapter extends RecyclerView.Adapter<StatisticsViewHolder
     @Override
     public StatisticsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View view = inflater.inflate(R.layout.cardview_statistic, parent, false);
+        View view = inflater.inflate(R.layout.item_layout_statistic, parent, false);
         return new StatisticsViewHolder(view);
     }
 

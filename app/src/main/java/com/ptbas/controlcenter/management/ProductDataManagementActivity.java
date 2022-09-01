@@ -47,7 +47,7 @@ public class ProductDataManagementActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_product_data_management);
+        setContentView(R.layout.activity_manage_product_data);
 
         context = this;
 

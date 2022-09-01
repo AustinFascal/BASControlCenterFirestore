@@ -1,5 +1,6 @@
 package com.ptbas.controlcenter.adapter;
 
+import android.animation.LayoutTransition;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,9 +10,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.transition.AutoTransition;
+import androidx.transition.TransitionManager;
 
 import com.ptbas.controlcenter.helper.DialogInterface;
 import com.ptbas.controlcenter.R;
@@ -49,16 +54,19 @@ public class ROManagementAdapter extends RecyclerView.Adapter<ROManagementAdapte
 
 
     public class ItemViewHolder extends RecyclerView.ViewHolder {
-        LinearLayout llStatusApproved, llStatusPOAvailable;
+        LinearLayout llStatusApproved, llStatusPOAvailable, llHiddenView;
         TextView tvRoDateTime, tvRoUid, tvPoCustNumber;
         RelativeLayout btnDeleteRo, btnApproveRo;
         RelativeLayout rlOpenRoDetail;
-        Button btn1, btn2;
-        ImageView ivShowDetail;
+        Button btn1, btn2, btn3;
+        ImageView ivExpandLlHiddenView;
+        CardView cardView;
 
         public ItemViewHolder(@NonNull View itemView) {
             super(itemView);
-            ivShowDetail = itemView.findViewById(R.id.iv_show_detail);
+            cardView = itemView.findViewById(R.id.cardView);
+            llHiddenView = itemView.findViewById(R.id.llHiddenView);
+            ivExpandLlHiddenView = itemView.findViewById(R.id.ivExpandLlHiddenView);
             rlOpenRoDetail = itemView.findViewById(R.id.open_detail);
             llStatusApproved = itemView.findViewById(R.id.ll_status_approved);
             llStatusPOAvailable = itemView.findViewById(R.id.ll_status_po_unvailable);
@@ -69,6 +77,10 @@ public class ROManagementAdapter extends RecyclerView.Adapter<ROManagementAdapte
             btnApproveRo = itemView.findViewById(R.id.btn_approve_inv);
             btn1 = itemView.findViewById(R.id.btn1);
             btn2 = itemView.findViewById(R.id.btn2);
+            btn3 = itemView.findViewById(R.id.btn3);
+            ivExpandLlHiddenView = itemView.findViewById(R.id.ivExpandLlHiddenView);
+
+            llHiddenView.getLayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
         }
 
         public void viewBind(ReceivedOrderModel receivedOrderModel) {
@@ -101,6 +113,23 @@ public class ROManagementAdapter extends RecyclerView.Adapter<ROManagementAdapte
                 Intent i = new Intent(context, UpdateGoodIssueActivity.class);
                 i.putExtra("key", roUID1);
                 context.startActivity(i);*/
+            });
+
+            ivExpandLlHiddenView.setOnClickListener(view -> {
+                if (llHiddenView.getVisibility() == View.VISIBLE) {
+                    llHiddenView.setVisibility(View.GONE);
+                    TransitionManager.beginDelayedTransition(cardView, new AutoTransition());
+                    ivExpandLlHiddenView.setImageResource(R.drawable.ic_outline_keyboard_arrow_down);
+                }
+                else {
+                    TransitionManager.beginDelayedTransition(cardView, new AutoTransition());
+                    llHiddenView.setVisibility(View.VISIBLE);
+                    ivExpandLlHiddenView.setImageResource(R.drawable.ic_outline_keyboard_arrow_up);
+                }
+            });
+
+            btn3.setOnClickListener(view -> {
+                Toast.makeText(context, "Under development", Toast.LENGTH_SHORT).show();
             });
 
             btn2.setOnClickListener(view -> {
