@@ -76,6 +76,7 @@ public class VehicleDataManagementAdapter extends RecyclerView.Adapter<VehicleDa
         public void viewBind(VehicleModel vehicleModel) {
             ProgressDialog pd = new ProgressDialog(context);
             pd.setMessage("Memproses");
+            pd.setCancelable(false);
 
             dialogInterface = new DialogInterface();
 

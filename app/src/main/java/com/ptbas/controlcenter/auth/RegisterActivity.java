@@ -5,16 +5,21 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.text.method.HideReturnsTransformationMethod;
+import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -26,6 +31,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthEmailException;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
@@ -45,17 +51,24 @@ public class RegisterActivity extends AppCompatActivity {
 
     private TextInputEditText editTextRegistFullName, editTextRegistEmail, editTextRegistDoB, editTextRegistPhoneNumber,
             editTextRegistPass, editTextRegistConfirmPass, editTextRegistAccessCode;
-    private ProgressBar progressBar;
     private RadioGroup radioGroupRegistGender;
     private RadioButton radioButtonRegistGenderSelected;
     private DatePickerDialog datePicker;
-    private FloatingActionButton fabBack;
     private static final String TAG = "RegisterActivity";
+
+    ImageView imageViewShowHidePass1, imageViewShowHidePass2;
+    ProgressDialog pd;
+
+    private CheckBox cbTermsCond;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auth_register);
+
+        pd = new ProgressDialog(this);
+        pd.setMessage("Mohon tunggu ...");
+        pd.setCancelable(false);
 
         //Objects.requireNonNull(getSupportActionBar()).hide();
 
@@ -63,8 +76,8 @@ public class RegisterActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         actionBar.hide();
 
-        fabBack = findViewById(R.id.fabBack);
-        progressBar = findViewById(R.id.progressBar);
+        cbTermsCond = findViewById(R.id.checkBox_terms_conditions);
+        FloatingActionButton fabBack = findViewById(R.id.fabBack);
         editTextRegistFullName = findViewById(R.id.editText_register_full_name);
         editTextRegistEmail = findViewById(R.id.editText_register_email);
         editTextRegistDoB = findViewById(R.id.editText_register_dob);
@@ -74,8 +87,38 @@ public class RegisterActivity extends AppCompatActivity {
         editTextRegistAccessCode = findViewById(R.id.editText_access_code);
 
         radioGroupRegistGender = findViewById(R.id.radio_group_register_gender);
-        radioGroupRegistGender.clearCheck();
+        //radioGroupRegistGender.clearCheck();
 
+        imageViewShowHidePass1 = findViewById(R.id.imageView_show_hide_pwd1);
+        imageViewShowHidePass2 = findViewById(R.id.imageView_show_hide_pwd2);
+
+        imageViewShowHidePass1.setImageResource(R.drawable.ic_pass_hide);
+        imageViewShowHidePass1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (editTextRegistPass.getTransformationMethod().equals(HideReturnsTransformationMethod.getInstance())){
+                    editTextRegistPass.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                    imageViewShowHidePass1.setImageResource(R.drawable.ic_pass_hide);
+                } else {
+                    editTextRegistPass.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+                    imageViewShowHidePass1.setImageResource(R.drawable.ic_pass_show);
+                }
+            }
+        });
+
+        imageViewShowHidePass2.setImageResource(R.drawable.ic_pass_hide);
+        imageViewShowHidePass2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (editTextRegistConfirmPass.getTransformationMethod().equals(HideReturnsTransformationMethod.getInstance())){
+                    editTextRegistConfirmPass.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                    imageViewShowHidePass2.setImageResource(R.drawable.ic_pass_hide);
+                } else {
+                    editTextRegistConfirmPass.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+                    imageViewShowHidePass2.setImageResource(R.drawable.ic_pass_show);
+                }
+            }
+        });
 
         editTextRegistDoB.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,6 +133,7 @@ public class RegisterActivity extends AppCompatActivity {
                     @Override
                     public void onDateSet(DatePicker datePicker, int year, int month, int dayOfMonth) {
                         editTextRegistDoB.setText(dayOfMonth + "/" +(month + 1) + "/" + year);
+                        editTextRegistDoB.setError(null);
                     }
                 }, year, month, day);
                 datePicker.show();
@@ -118,6 +162,8 @@ public class RegisterActivity extends AppCompatActivity {
                 Matcher phoneMatcher;
                 Pattern phonePattern = Pattern.compile(phoneRegex);
                 phoneMatcher = phonePattern.matcher(txtMobile);
+
+
 
                 if (TextUtils.isEmpty(txtFullName)){
                     editTextRegistFullName.setError("Nama lengkap tidak boleh kosong");
@@ -158,10 +204,12 @@ public class RegisterActivity extends AppCompatActivity {
                 } else if (radioGroupRegistGender.getCheckedRadioButtonId() == -1){
                     radioButtonRegistGenderSelected.setError("Jenis kelamin tidak boleh kosong");
                     radioButtonRegistGenderSelected.requestFocus();
+                } else if (!cbTermsCond.isChecked()){
+                    Toast.makeText(RegisterActivity.this, "Mohon setujui Ketentuan Layanan dan Kebijakan Privasi terlebih dahulu.", Toast.LENGTH_SHORT).show();
                 } else{
                     txtGender = radioButtonRegistGenderSelected.getText().toString();
-                    progressBar.setVisibility(View.VISIBLE);
-
+                    //progressBar.setVisibility(View.VISIBLE);
+                    pd.show();
                     registerUser(txtFullName, txtEmail, txtDob, txtGender, txtMobile, txtPass, txtAccessCode);
                 }
             }
@@ -200,41 +248,31 @@ public class RegisterActivity extends AppCompatActivity {
                             } else {
                                 Toast.makeText(RegisterActivity.this, "Pendaftaran tidak berhasil", Toast.LENGTH_SHORT).show();
                             }
-                            progressBar.setVisibility(View.GONE);
+                            pd.dismiss();
 
                         }
                     });
 
                 } else{
                     try{
-                        throw task.getException();
+                        throw Objects.requireNonNull(task.getException());
                     } catch (FirebaseAuthWeakPasswordException e){
                         editTextRegistPass.setError("Kata sandi terlalu lemah. Mohon masukkan karakter campuran berupa huruf, angka dan karakter spesial");
                         editTextRegistPass.requestFocus();
                     } catch (FirebaseAuthInvalidCredentialsException e){
-                        editTextRegistPass.setError("Alamat email yang Anda masukkan telah terdaftar.");
-                        editTextRegistPass.requestFocus();
-                    } catch (FirebaseAuthInvalidUserException e){
-                        editTextRegistPass.setError("Pengguna telah terdaftar.");
-                        editTextRegistPass.requestFocus();
+                        editTextRegistEmail.setError("Alamat email yang Anda masukkan telah terdaftar.");
+                        editTextRegistEmail.requestFocus();
+                    } catch (FirebaseAuthEmailException e){
+                        editTextRegistEmail.setError("Pengguna telah terdaftar.");
+                        editTextRegistEmail.requestFocus();
                     } catch (Exception e){
                         Log.e(TAG, e.getMessage());
-                        Toast.makeText(RegisterActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-
+                        Toast.makeText(RegisterActivity.this, "Terjadi kesalahan. Pastikan alamat email yang Anda masukkan belum terdaftar.", Toast.LENGTH_LONG).show();
                     }
-                    progressBar.setVisibility(View.GONE);
+                    pd.dismiss();
                 }
             }
         });
     }
 
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                this.finish();
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
 }

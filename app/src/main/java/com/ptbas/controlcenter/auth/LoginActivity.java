@@ -5,6 +5,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -38,15 +39,20 @@ public class LoginActivity extends AppCompatActivity {
 
     private EditText editTextLoginEmail, editTextLoginPass;
     private TextView textViewForgotPass, textViewRegister;
-    private ProgressBar progressBar;
     private FirebaseAuth authProfile;
     LottieAnimationView lavWelcomeAnim;
     private static final String TAG = "LoginActivity";
+
+    ProgressDialog pd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auth_login);
+
+        pd = new ProgressDialog(this);
+        pd.setMessage("Mohon tunggu ...");
+        pd.setCancelable(false);
 
         //Objects.requireNonNull(getSupportActionBar()).hide();
         ActionBar actionBar = getSupportActionBar();
@@ -58,7 +64,6 @@ public class LoginActivity extends AppCompatActivity {
         lavWelcomeAnim = findViewById(R.id.lavWelcomeAnim);
         editTextLoginEmail = findViewById(R.id.editText_login_email);
         editTextLoginPass = findViewById(R.id.editText_login_pass);
-        progressBar = findViewById(R.id.progressBar);
         textViewForgotPass = findViewById(R.id.textView_forgot_password_link);
         textViewRegister = findViewById(R.id.textView_register_link);
 
@@ -101,7 +106,7 @@ public class LoginActivity extends AppCompatActivity {
                     editTextLoginPass.setError("Kata sandi tidak boleh kurang dari 6 karakter");
                     editTextLoginPass.requestFocus();
                 } else{
-                    progressBar.setVisibility(View.VISIBLE);
+                    pd.show();
                     loginUser(txtEmail, txtPass);
                 }
             }
@@ -153,7 +158,7 @@ public class LoginActivity extends AppCompatActivity {
                     }
                     Toast.makeText(LoginActivity.this, "Terjadi kesalahan", Toast.LENGTH_SHORT).show();
                 }
-                progressBar.setVisibility(View.GONE);
+                pd.dismiss();
             }
         });
     }
@@ -191,18 +196,6 @@ public class LoginActivity extends AppCompatActivity {
                 authProfile.signOut();
                 showAlertEmailVerification();
             }
-        } /*else {
-            Toast.makeText(this, "Anda bisa masuk sekarang", Toast.LENGTH_SHORT).show();
-        }*/
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                this.finish();
-                return true;
         }
-        return super.onOptionsItemSelected(item);
     }
 }

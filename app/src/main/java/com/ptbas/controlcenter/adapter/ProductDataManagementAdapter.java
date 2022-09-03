@@ -78,6 +78,7 @@ public class ProductDataManagementAdapter extends RecyclerView.Adapter<ProductDa
         public void viewBind(ProductModel productModel) {
             ProgressDialog pd = new ProgressDialog(context);
             pd.setMessage("Memproses");
+            pd.setCancelable(false);
             DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
 
 

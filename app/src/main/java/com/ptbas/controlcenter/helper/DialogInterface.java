@@ -342,6 +342,35 @@ public class DialogInterface {
         md.show();
     }
 
+    public void roNotExistsDialogForInvoice(Activity activity) {
+        Vibrator vibrator = (Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            vibrator.vibrate(VibrationEffect.createOneShot(100,
+                    VibrationEffect.DEFAULT_AMPLITUDE));
+        } else {
+            vibrator.vibrate(100);
+        }
+
+        md = new MaterialDialog.Builder(activity)
+                .setAnimation(R.raw.lottie_attention)
+                .setTitle("Tidak Ada Received Order")
+                .setMessage("Anda tidak dapat membuat Invoice karena tidak memiliki Received Order yang aktif dan sah. Validasi atau tambah Received Order sekarang?")
+                .setPositiveButton("YA", R.drawable.ic_outline_add, (dialogInterface, which) -> {
+                    dialogInterface.dismiss();
+                    Intent intent = new Intent(activity, ReceivedOrderManagementActivity.class);
+                    activity.startActivity(intent);
+                })
+                .setNegativeButton("TIDAK", R.drawable.ic_outline_close, (dialogInterface, which) -> {
+                    dialogInterface.dismiss();
+                    activity.finish();
+                })
+                .setCancelable(false)
+                .build();
+
+        md.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
+        md.show();
+    }
+
     public void approveGiConfirmation(Context context, String giUID) {
         Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

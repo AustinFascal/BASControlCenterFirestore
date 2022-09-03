@@ -323,7 +323,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
                             spinnerRoUID.setAdapter(arrayAdapter);
                         } else {
                             if(!this.isFinishing()) {
-                                dialogInterface.roNotExistsDialog(AddInvoiceActivity.this);
+                                dialogInterface.roNotExistsDialogForInvoice(AddInvoiceActivity.this);
                             }
                         }
                     }

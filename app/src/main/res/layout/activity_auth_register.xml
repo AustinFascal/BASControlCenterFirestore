@@ -76,8 +76,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="Nama Lengkap"
-                        android:inputType="textCapWords"
-                        android:textSize="16sp" />
+                        android:inputType="textCapWords" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -86,14 +85,13 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginBottom="10dp"
-                    app:startIconDrawable="@drawable/ic_outline_person">
+                    app:startIconDrawable="@drawable/ic_outline_email">
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/editText_register_email"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="Alamat Email"
-                        android:inputType="textEmailAddress"
-                        android:textSize="16sp" />
+                        android:inputType="textEmailAddress" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -102,96 +100,130 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginBottom="10dp"
-                    app:startIconDrawable="@drawable/ic_outline_person">
+                    app:startIconDrawable="@drawable/ic_outline_today">
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/editText_register_dob"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:focusable="false"
                         android:hint="Tanggal Lahir"
-                        android:inputType="date"
-                        android:textSize="16sp" />
+                        android:inputType="date" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <RadioGroup
-                    android:id="@+id/radio_group_register_gender"
+                <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:layout_height="wrap_content">
 
-                    <RadioButton
-                        android:id="@+id/radio_female"
+                    <RadioGroup
+                        android:layout_marginTop="8dp"
+                        android:padding="5dp"
+                        android:background="@drawable/outline_box"
+                        android:id="@+id/radio_group_register_gender"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <RadioButton
+                            android:checked="true"
+                            android:id="@+id/radio_male"
+                            android:layout_weight="1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Laki-Laki"
+                            android:textSize="16sp" />
+
+                        <RadioButton
+                            android:layout_weight="1"
+                            android:id="@+id/radio_female"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Perempuan"
+                            android:textSize="16sp" />
+
+                    </RadioGroup>
+
+                    <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Perempuan"
-                        android:textSize="16sp" />
-
-                    <RadioButton
-                        android:id="@+id/radio_male"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="20dp"
-                        android:text="Laki-Laki"
-                        android:textSize="16sp" />
-
-                </RadioGroup>
+                        android:layout_marginStart="12dp"
+                        android:background="@color/white"
+                        android:text="Jenis Kelamin"
+                        android:textColor="?colorPrimary"/>
+                </RelativeLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:layout_marginTop="10dp"
                     android:layout_marginBottom="10dp"
                     app:prefixText="+62"
-                    app:startIconDrawable="@drawable/ic_outline_person">
+                    app:startIconDrawable="@drawable/ic_outline_phone">
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/editText_register_mobile"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="Nomor Telepon (tanpa +62 atau 0)"
-                        android:inputType="phone"
-                        android:textSize="16sp" />
+                        android:inputType="phone" />
                 </com.google.android.material.textfield.TextInputLayout>
-                <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                <RelativeLayout
+                    android:gravity="center"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginBottom="10dp"
-                    app:startIconDrawable="@drawable/ic_outline_person">
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/editText_register_password"
+                    android:layout_height="wrap_content">
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Kata Sandi"
-                        android:inputType="textPassword"
-                        android:textSize="16sp" />
-                </com.google.android.material.textfield.TextInputLayout>
-                <ImageView
-                    android:id="@+id/imageView_show_hide_pwd"
-                    android:layout_width="33dp"
-                    android:layout_height="33dp" />
+                        android:layout_marginBottom="10dp"
+                        app:startIconDrawable="@drawable/ic_outline_lock">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/editText_register_password"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="Kata Sandi"
+                            android:inputType="textPassword" />
+                    </com.google.android.material.textfield.TextInputLayout>
+                    <ImageView
+                        android:id="@+id/imageView_show_hide_pwd1"
+                        android:layout_width="33dp"
+                        android:layout_height="33dp"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignParentEnd="true"
+                        android:src="@drawable/ic_pass_show"
+                        android:layout_margin="15dp"
+                        app:tint="?colorPrimary"/>
+                </RelativeLayout>
 
-                <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                <RelativeLayout
+                    android:gravity="center"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginBottom="10dp"
-                    app:startIconDrawable="@drawable/ic_outline_person">
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/editText_register_password_confirm"
+                    android:layout_height="wrap_content">
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Masukkan Ulang Kata Sandi"
-                        android:inputType="textPassword"
-                        android:textSize="16sp" />
-                </com.google.android.material.textfield.TextInputLayout>
+                        android:layout_weight="1"
+                        android:layout_marginBottom="10dp"
+                        app:startIconDrawable="@drawable/ic_outline_lock">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/editText_register_password_confirm"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="Masukkan Ulang Kata Sandi"
+                            android:inputType="textPassword" />
+                    </com.google.android.material.textfield.TextInputLayout>
+                    <ImageView
+                        android:id="@+id/imageView_show_hide_pwd2"
+                        android:layout_width="33dp"
+                        android:layout_height="33dp"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignParentEnd="true"
+                        android:src="@drawable/ic_pass_show"
+                        android:layout_margin="15dp"
+                        app:tint="?colorPrimary" />
+                </RelativeLayout>
 
-                <ImageView
-                    android:id="@+id/imageView_show_hide_pwd2"
-                    android:layout_width="33dp"
-                    android:layout_height="33dp" />
 
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -199,13 +231,13 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginBottom="10dp"
-                    app:startIconDrawable="@drawable/ic_outline_person">
+                    app:startIconDrawable="@drawable/ic_outline_card_membership">
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/editText_access_code"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="Kode Akses"
-                        android:inputType="number"
+                        android:inputType="numberPassword"
                         android:textSize="16sp" />
                 </com.google.android.material.textfield.TextInputLayout>
                 <CheckBox
@@ -215,8 +247,9 @@
                     android:layout_below="@id/RL_accsess_code"
                     android:layout_marginTop="10dp"
                     android:focusable="true"
+                    android:paddingStart="8dp"
                     android:focusableInTouchMode="true"
-                    android:text="I agree with the Terms of Service and Privacy Policy" />
+                    android:text="Saya setuju dengan Ketentuan Layanan dan Kebijakan Privasi" />
 
                 <Button
                     style="@style/MaterialDialog.PositiveButton"
@@ -227,16 +260,8 @@
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="50dp"
                     android:layout_marginBottom="50dp"
-                    android:text="@string/register" />
+                    android:text="DAFTAR" />
 
-                <ProgressBar
-                    android:id="@+id/progressBar"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:layout_centerVertical="true"
-                    android:elevation="10dp"
-                    android:visibility="gone" />
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

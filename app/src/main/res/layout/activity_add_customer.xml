@@ -17,7 +17,7 @@
         android:layout_marginBottom="24dp"
         android:contentDescription="Proceed"
         app:tint="@color/white"
-        android:backgroundTint="?attr/colorPrimary"
+        android:backgroundTint="?colorPrimary"
         android:src="@drawable/ic_outline_save" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
