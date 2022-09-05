@@ -10,12 +10,12 @@ public class GoodIssueModel implements Parcelable {
             giDateCreated, giTimeCreted;
     Integer vhlLength, vhlWidth, vhlHeight, vhlHeightCorrection, vhlHeightAfterCorrection;
     Float giVhlCubication;
-    Boolean giStatus, giInvoiced;
+    Boolean giStatus, giInvoiced, giCashedOut;
 
     public GoodIssueModel() {
     }
 
-    public GoodIssueModel(String giUID, String giCreatedBy, String giVerifiedBy, String giRoUID, String giPoCustNumber, String giMatName, String giMatType, String vhlUID, String giDateCreated, String giTimeCreted, Integer vhlLength, Integer vhlWidth, Integer vhlHeight, Integer vhlHeightCorrection, Integer vhlHeightAfterCorrection, Float giVhlCubication, Boolean giStatus, Boolean giInvoiced) {
+    public GoodIssueModel(String giUID, String giCreatedBy, String giVerifiedBy, String giRoUID, String giPoCustNumber, String giMatName, String giMatType, String vhlUID, String giDateCreated, String giTimeCreted, Integer vhlLength, Integer vhlWidth, Integer vhlHeight, Integer vhlHeightCorrection, Integer vhlHeightAfterCorrection, Float giVhlCubication, Boolean giStatus, Boolean giInvoiced, Boolean giCashedOut) {
         this.giUID = giUID;
         this.giCreatedBy = giCreatedBy;
         this.giVerifiedBy = giVerifiedBy;
@@ -34,6 +34,7 @@ public class GoodIssueModel implements Parcelable {
         this.giVhlCubication = giVhlCubication;
         this.giStatus = giStatus;
         this.giInvoiced = giInvoiced;
+        this.giCashedOut = giCashedOut;
     }
 
     protected GoodIssueModel(Parcel in) {
@@ -81,6 +82,8 @@ public class GoodIssueModel implements Parcelable {
         giStatus = tmpGiStatus == 0 ? null : tmpGiStatus == 1;
         byte tmpGiInvoiced = in.readByte();
         giInvoiced = tmpGiInvoiced == 0 ? null : tmpGiInvoiced == 1;
+        byte tmpGiCashedOut = in.readByte();
+        giCashedOut = tmpGiCashedOut == 0 ? null : tmpGiCashedOut == 1;
     }
 
     public static final Parcelable.Creator<GoodIssueModel> CREATOR = new Parcelable.Creator<GoodIssueModel>() {
@@ -94,6 +97,14 @@ public class GoodIssueModel implements Parcelable {
             return new GoodIssueModel[size];
         }
     };
+
+    public Boolean getGiCashedOut() {
+        return giCashedOut;
+    }
+
+    public void setGiCashedOut(Boolean giCashedOut) {
+        this.giCashedOut = giCashedOut;
+    }
 
     public String getGiUID() {
         return giUID;
@@ -294,5 +305,6 @@ public class GoodIssueModel implements Parcelable {
         }
         parcel.writeByte((byte) (giStatus == null ? 0 : giStatus ? 1 : 2));
         parcel.writeByte((byte) (giInvoiced == null ? 0 : giInvoiced ? 1 : 2));
+        parcel.writeByte((byte) (giCashedOut == null ? 0 : giCashedOut ? 1 : 2));
     }
 }

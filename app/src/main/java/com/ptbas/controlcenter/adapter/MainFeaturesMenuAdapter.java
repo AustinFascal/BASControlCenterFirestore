@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.management.CustomerManagementActivity;
 import com.ptbas.controlcenter.management.GoodIssueManagementActivity;
-import com.ptbas.controlcenter.management.InvoiceManagementActivity;
+import com.ptbas.controlcenter.management.CashOutManagementActivity;
 import com.ptbas.controlcenter.management.ProductDataManagementActivity;
 import com.ptbas.controlcenter.management.ReceivedOrderManagementActivity;
 import com.ptbas.controlcenter.management.VehicleManagementActivity;
@@ -74,12 +74,18 @@ public class MainFeaturesMenuAdapter extends RecyclerView.Adapter<MainFeatureVie
                     intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(intent2);
                 }
-                if (holder.tv1.getText().toString().equals("Manajemen Invoice")){
-                    Intent intent2 = new Intent(context, InvoiceManagementActivity.class);
+                if (holder.tv1.getText().toString().equals("Manajemen BKK")){
+                    Intent intent2 = new Intent(context, CashOutManagementActivity.class);
                     intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(intent2);
                 }
                 if (holder.tv1.getText().toString().equals("Manajemen Material")){
+                    Intent intent2 = new Intent(context, ProductDataManagementActivity.class);
+                    intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(intent2);
+                }
+
+                if (holder.tv1.getText().toString().equals("Manajemen Invoice")){
                     Intent intent2 = new Intent(context, ProductDataManagementActivity.class);
                     intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(intent2);

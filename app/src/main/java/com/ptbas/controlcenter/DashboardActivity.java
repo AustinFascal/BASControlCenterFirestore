@@ -52,7 +52,7 @@ import com.ptbas.controlcenter.adapter.MainFeaturesMenuAdapter;
 import com.ptbas.controlcenter.adapter.StatisticsAdapter;
 import com.ptbas.controlcenter.create.AddCustomerActivity;
 import com.ptbas.controlcenter.create.AddGoodIssueActivity;
-import com.ptbas.controlcenter.create.AddInvoiceActivity;
+import com.ptbas.controlcenter.create.AddBkkActivity;
 import com.ptbas.controlcenter.create.AddProductData;
 import com.ptbas.controlcenter.create.AddReceivedOrder;
 import com.ptbas.controlcenter.create.AddVehicleActivity;
@@ -78,7 +78,7 @@ public class DashboardActivity extends AppCompatActivity {
 
     CoordinatorLayout coordinatorLayout;
     ConstraintLayout bottomSheet;
-    LinearLayout linearLayout, llAddGi, llShowOthers, llAddRo, llAddInvoice, llTopView, llWrapShortcuts, llWrapProfilePic;
+    LinearLayout linearLayout, llAddGi, llShowOthers, llAddRo, llAddBKK, llTopView, llWrapShortcuts, llWrapProfilePic;
     TextView title;
     RecyclerView rvMainFeatures, rvStatistics;
     NestedScrollView nestedscrollview;
@@ -86,7 +86,7 @@ public class DashboardActivity extends AppCompatActivity {
     ImageView imageViewProfilePic;
 
     FirebaseAuth authProfile;
-    String finalCountMaterial, finalCountUser, finalCountActiveReceivedOrderData, finalCountActiveGoodIssueDataToInvoiced, finalCountActiveGoodIssueData, finalCountCustomer;
+    String finalCountMaterial, finalCountUser, finalCountActiveReceivedOrderData, finalCountActiveGoodIssueDataToBKK, finalCountActiveGoodIssueData, finalCountCustomer;
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
 
     MainFeaturesMenuAdapter mainFeaturesMenuAdapter;
@@ -120,7 +120,7 @@ public class DashboardActivity extends AppCompatActivity {
         llAddGi =  findViewById(R.id.ll_add_gi);
         llShowOthers = findViewById(R.id.ll_show_other);
         llAddRo = findViewById(R.id.ll_add_po);
-        llAddInvoice = findViewById(R.id.ll_add_invoice);
+        llAddBKK = findViewById(R.id.ll_add_bkk);
 
         // HANDLING SDK VERSION
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
@@ -252,8 +252,8 @@ public class DashboardActivity extends AppCompatActivity {
             Intent intent = new Intent(DashboardActivity.this, AddGoodIssueActivity.class);
             startActivity(intent);
         });
-        llAddInvoice.setOnClickListener(view -> {
-            Intent intent = new Intent(DashboardActivity.this, AddInvoiceActivity.class);
+        llAddBKK.setOnClickListener(view -> {
+            Intent intent = new Intent(DashboardActivity.this, AddBkkActivity.class);
             startActivity(intent);
         });
         llShowOthers.setOnClickListener(view -> bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED));
@@ -335,7 +335,7 @@ public class DashboardActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 int countFinal = Integer.parseInt(String.valueOf(dataSnapshot.getChildrenCount()));
-                getActivefinalCountActiveGoodIssueDataToInvoicedCount(String.valueOf(countFinal));
+                getActivefinalCountActiveGoodIssueDataToBKKCount(String.valueOf(countFinal));
             }
 
             @Override
@@ -371,8 +371,8 @@ public class DashboardActivity extends AppCompatActivity {
         showStatistics();
     }
 
-    private void getActivefinalCountActiveGoodIssueDataToInvoicedCount(String countFinal) {
-        finalCountActiveGoodIssueDataToInvoiced = countFinal;
+    private void getActivefinalCountActiveGoodIssueDataToBKKCount(String countFinal) {
+        finalCountActiveGoodIssueDataToBKK = countFinal;
         showStatistics();
     }
     private void getActiveGoodIssueDataCount(String countFinal) {
@@ -439,8 +439,8 @@ public class DashboardActivity extends AppCompatActivity {
         holder.add(mGI);
 
         MainFeatureModel mInv = new MainFeatureModel();
-        mInv.setHeader("Manajemen Invoice");
-        mInv.setImgName(R.drawable.ic_invoice);
+        mInv.setHeader("Manajemen BKK");
+        mInv.setImgName(R.drawable.ic_bkk);
         holder.add(mInv);
 
         MainFeatureModel mMat = new MainFeatureModel();
@@ -463,6 +463,12 @@ public class DashboardActivity extends AppCompatActivity {
         ob5.setImgName(R.drawable.ic_manage_customers);
         holder.add(ob5);
 
+        MainFeatureModel ob6 = new MainFeatureModel();
+        ob6.setHeader("Manajemen Invoice");
+        ob6.setImgName(R.drawable.ic_invoice);
+        holder.add(ob6);
+
+
         return holder;
     }
 
@@ -482,7 +488,7 @@ public class DashboardActivity extends AppCompatActivity {
         holder2.add(ob2);
 
         StatisticsModel ob3 = new StatisticsModel();
-        ob3.setHeader(finalCountActiveGoodIssueDataToInvoiced);
+        ob3.setHeader(finalCountActiveGoodIssueDataToBKK);
         ob3.setDesc("GI Perlu Ditagihkan");
         holder2.add(ob3);
 

@@ -57,7 +57,7 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
     String monthStrVal, dayStrVal;
     Integer giYear = 0, giMonth = 0, giDay = 0;
 
-    TextView tvHeightCorrection, tvVhlVolume, tvGiCreatedBy, tvGiModifiedBy, tvGiInvoicedStatus;
+    TextView tvHeightCorrection, tvVhlVolume, tvGiCreatedBy, tvGiModifiedBy, tvGiCashedOutStatus, tvGiInvoicedStatus;
     TextInputEditText edtGiDate, edtGiTime, edtPoNumberCust, edtVhlLength, edtVhlWidth, edtVhlHeight,
             edtHeightCorrection;
     AutoCompleteTextView spinnerRoNumber, spinnerMatName,
@@ -81,7 +81,7 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
 
     String giUIDVal, giCreatedBy, giVerifiedBy;
 
-    Boolean giStatus, giInvoiced;
+    Boolean giStatus, giInvoiced, giCashedOut;
 
     public FirebaseAuth authProfile;
 
@@ -137,6 +137,7 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
         tvGiCreatedBy = findViewById(R.id.tv_gi_created_by);
         tvGiModifiedBy = findViewById(R.id.tv_gi_modified_by);
         tvGiInvoicedStatus = findViewById(R.id.tv_gi_invoiced_status);
+        tvGiCashedOutStatus = findViewById(R.id.tv_gi_cashed_out_tatus);
 
 
         fabSaveGIData = findViewById(R.id.fab_save_gi_data);
@@ -174,6 +175,7 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
                         float giVhlCubication = goodIssueModel.getGiVhlCubication();
                         giStatus = goodIssueModel.getGiStatus();
                         giInvoiced = goodIssueModel.getGiInvoiced();
+                        giCashedOut = goodIssueModel.getGiCashedOut();
 
                         db.collection("ReceivedOrderData").whereEqualTo("roUID", roNumber).get()
                                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
@@ -213,10 +215,18 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
                         });
 
                         if (giInvoiced.equals(true)){
-                            tvGiInvoicedStatus.setText("Status Ditagihkan: SUDAH DITAGIHKAN");
+                            tvGiInvoicedStatus.setText("Status Ditagihkan ke Customer: SUDAH");
                             fabSaveFormIsEmpty();
                         } else{
-                            tvGiInvoicedStatus.setText("Status Ditagihkan: BELUM DITAGIHKAN");
+                            tvGiInvoicedStatus.setText("Status Ditagihkan ke Customer: BELUM");
+                            fabSaveBtnFormIsNotEmpty();
+                        }
+
+                        if (giCashedOut.equals(true)){
+                            tvGiCashedOutStatus.setText("Status BKK: SUDAH");
+                            fabSaveFormIsEmpty();
+                        } else{
+                            tvGiCashedOutStatus.setText("Status BKK: BELUM");
                             fabSaveBtnFormIsNotEmpty();
                         }
 
@@ -545,7 +555,7 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
                         Integer.parseInt(radioOperation+giHeightCorrection.replaceAll("[^0-9]", "")),
                         Integer.parseInt(tvHeightCorrection.getText().toString().replaceAll("[^0-9]", "")),
                         Float.parseFloat(df.format(Float.parseFloat(giVhlCubication.replaceAll("[^0-9.]", "")))),
-                        giStatus, giInvoiced);
+                        giStatus, giInvoiced, giCashedOut);
             }
 
         });
@@ -556,7 +566,7 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
                             String vhlUID, String giDateCreated, String giTimeCreted,
                             int vhlLength, int vhlWidth, int vhlHeight,
                             int vhlHeightCorrection, int vhlHeightAfterCorrection,
-                            float giVhlCubication, Boolean giStatus, Boolean giInvoiced) {
+                            float giVhlCubication, Boolean giStatus, Boolean giInvoiced, Boolean giCashedOut) {
         VehicleModel vehicleModel =
                 new VehicleModel(vhlUID, true, vhlLength, vhlWidth, vhlHeight,
                         "", "", "", "");
@@ -577,7 +587,7 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
 
         GoodIssueModel goodIssueModel = new GoodIssueModel(giUID, giCreatedBy, giVerifiedBy, giRoUID, giPoCustNumber,
                 giMatName, giMatType, vhlUID, giDateCreated, giTimeCreted, vhlLength,
-                vhlWidth, vhlHeight, vhlHeightCorrection, vhlHeightAfterCorrection, giVhlCubication, giStatus, giInvoiced);
+                vhlWidth, vhlHeight, vhlHeightCorrection, vhlHeightAfterCorrection, giVhlCubication, giStatus, giInvoiced, giCashedOut);
 
         DatabaseReference refGI = FirebaseDatabase.getInstance().getReference("GoodIssueData");
         refGI.child(giUID).setValue(goodIssueModel).addOnCompleteListener(task -> {

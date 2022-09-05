@@ -28,7 +28,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.WriteBatch;
 import com.ptbas.controlcenter.R;
-import com.ptbas.controlcenter.create.AddInvoiceActivity;
+import com.ptbas.controlcenter.create.AddBkkActivity;
 import com.ptbas.controlcenter.create.AddReceivedOrder;
 import com.ptbas.controlcenter.management.ReceivedOrderManagementActivity;
 import com.ptbas.controlcenter.model.GoodIssueModel;
@@ -701,8 +701,8 @@ public class DialogInterface {
                     refGI.collection("GoodIssueData").document(goodIssueModelArrayList.get(i).getGiUID()).set(goodIssueModel);
                     databaseReferenceGI.child("GoodIssueData").child(goodIssueModelArrayList.get(i).getGiUID()).child("giInvoiced").setValue(true);
                 }
-                AddInvoiceActivity addInvoiceActivity = (AddInvoiceActivity) context;
-                addInvoiceActivity.createInvPDF(Helper.getAppPath(context)+invUID+".pdf");
+                AddBkkActivity addBkkActivity = (AddBkkActivity) context;
+                addBkkActivity.createInvPDF(Helper.getAppPath(context)+invUID+".pdf");
                 generatingInvoiceDialog.dismiss();
             }
         }.start();

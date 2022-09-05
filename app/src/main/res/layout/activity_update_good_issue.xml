@@ -48,6 +48,13 @@
                     android:ellipsize="end"
                     android:maxLines="2"
                     android:text="Status Ditagihkan: null" />
+                <TextView
+                    android:id="@+id/tv_gi_cashed_out_tatus"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="2"
+                    android:text="Status BKK: null" />
             </LinearLayout>
 
             <LinearLayout

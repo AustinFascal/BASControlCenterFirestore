@@ -23,26 +23,26 @@ import com.ptbas.controlcenter.model.InvoiceModel;
 
 import java.util.ArrayList;
 
-public class InvoiceManagementAdapter extends RecyclerView.Adapter<InvoiceManagementAdapter.ItemViewHolder> {
+public class BKKManagementAdapter extends RecyclerView.Adapter<BKKManagementAdapter.ItemViewHolder> {
 
     Context context;
     ArrayList<InvoiceModel> invoiceModelArrayList;
     DialogInterface dialogInterface;
 
-    public InvoiceManagementAdapter(Context context, ArrayList<InvoiceModel> invoiceModelArrayList) {
+    public BKKManagementAdapter(Context context, ArrayList<InvoiceModel> invoiceModelArrayList) {
         this.context = context;
         this.invoiceModelArrayList = invoiceModelArrayList;
     }
 
     @NonNull
     @Override
-    public InvoiceManagementAdapter.ItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public BKKManagementAdapter.ItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_layout_invoice, parent, false);
         return new ItemViewHolder(itemView);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull InvoiceManagementAdapter.ItemViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull BKKManagementAdapter.ItemViewHolder holder, int position) {
         holder.viewBind(invoiceModelArrayList.get(position));
     }
 

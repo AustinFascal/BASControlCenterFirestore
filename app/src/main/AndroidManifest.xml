@@ -49,7 +49,7 @@
             android:name=".create.AddCustomerActivity"
             android:exported="false" />
         <activity
-            android:name=".management.InvoiceManagementActivity"
+            android:name=".management.CashOutManagementActivity"
             android:exported="false" />
         <activity
             android:name=".management.CustomerManagementActivity"
@@ -66,6 +66,10 @@
         <activity
             android:name=".management.UserManagementActivity"
             android:exported="false" />
+        <activity
+            android:name=".create.AddBkkActivity"
+            android:exported="false"
+            android:noHistory="true" />
         <activity
             android:name=".create.AddInvoiceActivity"
             android:exported="false"

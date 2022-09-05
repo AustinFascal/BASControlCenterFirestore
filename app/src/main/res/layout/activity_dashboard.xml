@@ -215,7 +215,7 @@
                         </LinearLayout>
 
                         <LinearLayout
-                            android:id="@+id/ll_add_invoice"
+                            android:id="@+id/ll_add_bkk"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -227,14 +227,14 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="48dp"
                                 android:layout_marginBottom="4dp"
-                                android:src="@drawable/ic_add_invoice" />
+                                android:src="@drawable/ic_add_bkk" />
 
                             <TextView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:ellipsize="end"
                                 android:maxLines="2"
-                                android:text="Buat Invoice"
+                                android:text="Buat BKK"
                                 android:textAlignment="center" />
 
                         </LinearLayout>

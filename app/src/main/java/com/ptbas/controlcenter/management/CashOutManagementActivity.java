@@ -1,5 +1,15 @@
 package com.ptbas.controlcenter.management;
 
+import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
+import androidx.cardview.widget.CardView;
+import androidx.core.widget.NestedScrollView;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.content.Context;
@@ -20,16 +30,6 @@ import android.widget.AutoCompleteTextView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
-import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SearchView;
-import androidx.cardview.widget.CardView;
-import androidx.core.widget.NestedScrollView;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.android.material.chip.Chip;
@@ -39,14 +39,14 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.ptbas.controlcenter.R;
-import com.ptbas.controlcenter.adapter.BKKManagementAdapter;
-import com.ptbas.controlcenter.create.AddGoodIssueActivity;
 import com.ptbas.controlcenter.helper.DialogInterface;
 import com.ptbas.controlcenter.helper.DragLinearLayout;
 import com.ptbas.controlcenter.helper.Helper;
-import com.ptbas.controlcenter.model.InvoiceModel;
+import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.recap.RecapGoodIssueDataActivity;
+import com.ptbas.controlcenter.adapter.BKKManagementAdapter;
+import com.ptbas.controlcenter.create.AddGoodIssueActivity;
+import com.ptbas.controlcenter.model.InvoiceModel;
 import com.ptbas.controlcenter.utils.LangUtils;
 
 import java.util.ArrayList;
@@ -55,7 +55,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-public class InvoiceManagementActivity extends AppCompatActivity {
+public class CashOutManagementActivity extends AppCompatActivity {
 
     String[] searchTypeValue = {"giUID", "giRoUID", "giPoCustNumber", "vhlUID", "giMatName"};
     String dateStart = "", dateEnd = "", monthStrVal, dayStrVal;
@@ -155,13 +155,13 @@ public class InvoiceManagementActivity extends AppCompatActivity {
 
         // GO TO ADD GOOD ISSUE ACTIVITY
         fabActionCreateGi.setOnClickListener(view -> {
-            Intent intent = new Intent(InvoiceManagementActivity.this, AddGoodIssueActivity.class);
+            Intent intent = new Intent(CashOutManagementActivity.this, AddGoodIssueActivity.class);
             startActivity(intent);
         });
 
         // GO TO RECAP GOOD ISSUE ACTIVITY
         fabActionRecapData.setOnClickListener(view -> {
-            Intent intent = new Intent(InvoiceManagementActivity.this, RecapGoodIssueDataActivity.class);
+            Intent intent = new Intent(CashOutManagementActivity.this, RecapGoodIssueDataActivity.class);
             startActivity(intent);
         });
 
@@ -192,7 +192,7 @@ public class InvoiceManagementActivity extends AppCompatActivity {
             monthStrVal = String.valueOf(calendar.get(Calendar.MONTH));
             String yearStrVal = String.valueOf(calendar.get(Calendar.YEAR));
 
-            datePicker = new DatePickerDialog(InvoiceManagementActivity.this,
+            datePicker = new DatePickerDialog(CashOutManagementActivity.this,
                     (datePicker, year, month, dayOfMonth) -> {
                         int monthInt = month + 1;
 
@@ -225,7 +225,7 @@ public class InvoiceManagementActivity extends AppCompatActivity {
             monthStrVal = String.valueOf(calendar.get(Calendar.MONTH));
             String yearStrVal = String.valueOf(calendar.get(Calendar.YEAR));
 
-            datePicker = new DatePickerDialog(InvoiceManagementActivity.this,
+            datePicker = new DatePickerDialog(CashOutManagementActivity.this,
                     (datePicker, year, month, dayOfMonth) -> {
 
                         int monthInt = month + 1;
@@ -330,7 +330,7 @@ public class InvoiceManagementActivity extends AppCompatActivity {
                         Objects.requireNonNull(edtGiDateFilterStart.getText()).toString().isEmpty() ||
                         Objects.requireNonNull(edtGiDateFilterEnd.getText()).toString().isEmpty()){
                     if (!searchView.getQuery().toString().isEmpty()){
-                        dialogInterface.fillSearchFilter(InvoiceManagementActivity.this, searchView);
+                        dialogInterface.fillSearchFilter(CashOutManagementActivity.this, searchView);
                     }
                 }
 

@@ -51,7 +51,6 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query.Direction;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.itextpdf.text.BadElementException;
 import com.itextpdf.text.BaseColor;
@@ -69,13 +68,13 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.text.pdf.draw.LineSeparator;
-import com.ptbas.controlcenter.R;
-import com.ptbas.controlcenter.adapter.GIManagementAdapter;
 import com.ptbas.controlcenter.helper.DialogInterface;
 import com.ptbas.controlcenter.helper.DragLinearLayout;
 import com.ptbas.controlcenter.helper.Helper;
 import com.ptbas.controlcenter.helper.ImageAndPositionRenderer;
 import com.ptbas.controlcenter.helper.NumberToWords;
+import com.ptbas.controlcenter.R;
+import com.ptbas.controlcenter.adapter.GIManagementAdapter;
 import com.ptbas.controlcenter.model.CustomerModel;
 import com.ptbas.controlcenter.model.GoodIssueModel;
 import com.ptbas.controlcenter.model.ProductItems;
@@ -97,8 +96,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Random;
+import com.google.firebase.firestore.Query.Direction;
 
-public class AddInvoiceActivity extends AppCompatActivity {
+public class AddBkkActivity extends AppCompatActivity {
 
     private static final String ALLOWED_CHARACTERS = "0123456789QWERTYUIOPASDFGHJKLZXCVBNM";
 
@@ -241,7 +241,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
             monthStrVal = String.valueOf(calendar.get(Calendar.MONTH));
             String yearStrVal = String.valueOf(calendar.get(Calendar.YEAR));
 
-            datePicker = new DatePickerDialog(AddInvoiceActivity.this,
+            datePicker = new DatePickerDialog(AddBkkActivity.this,
                     (datePicker, year, month, dayOfMonth) -> {
                         int monthInt = month + 1;
 
@@ -272,7 +272,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
             monthStrVal = String.valueOf(calendar.get(Calendar.MONTH));
             String yearStrVal = String.valueOf(calendar.get(Calendar.YEAR));
 
-            datePicker = new DatePickerDialog(AddInvoiceActivity.this,
+            datePicker = new DatePickerDialog(AddBkkActivity.this,
                     (datePicker, year, month, dayOfMonth) -> {
                         int monthInt = month + 1;
 
@@ -319,12 +319,12 @@ public class AddInvoiceActivity extends AppCompatActivity {
                                 String spinnerPurchaseOrders = Objects.requireNonNull(d.get("roUID")).toString();
                                 arrayListRoUID.add(spinnerPurchaseOrders);
                             }
-                            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddInvoiceActivity.this, R.layout.style_spinner, arrayListRoUID);
+                            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddBkkActivity.this, R.layout.style_spinner, arrayListRoUID);
                             arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
                             spinnerRoUID.setAdapter(arrayAdapter);
                         } else {
                             if(!this.isFinishing()) {
-                                dialogInterface.roNotExistsDialogForInvoice(AddInvoiceActivity.this);
+                                dialogInterface.roNotExistsDialogForInvoice(AddBkkActivity.this);
                             }
                         }
                     }
@@ -363,7 +363,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
         fabCreateGiRecap.hide();
 
         btnSearchData.setOnClickListener(view -> {
-            View viewLayout = AddInvoiceActivity.this.getCurrentFocus();
+            View viewLayout = AddBkkActivity.this.getCurrentFocus();
             if (viewLayout != null) {
                 InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(viewLayout.getWindowToken(), 0);

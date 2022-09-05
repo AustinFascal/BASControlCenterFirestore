@@ -511,7 +511,7 @@ public class AddGoodIssueActivity extends AppCompatActivity {
 
         GoodIssueModel goodIssueModel = new GoodIssueModel(giUID, giCreatedBy, giVerifiedBy, giRoUID, giPoCustNumber,
                 giMatName, giMatType, vhlUID, giDateCreated, giTimeCreted, vhlLength,
-                vhlWidth, vhlHeight, vhlHeightCorrection, vhlHeightAfterCorrection, giVhlCubication, giStatus, giInvoiced);
+                vhlWidth, vhlHeight, vhlHeightCorrection, vhlHeightAfterCorrection, giVhlCubication, giStatus, giInvoiced, false);
 
         VehicleModel vehicleModel =
                 new VehicleModel(vhlUID, true, vhlLength, vhlWidth, vhlHeight,
