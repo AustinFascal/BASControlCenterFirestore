@@ -26,6 +26,8 @@ import java.util.List;
 
 public class Helper {
 
+    public static String ACTIVITY_NAME = null;
+
     public FirebaseAuth authProfile;
 
     public static String getAppPath(Context context) {

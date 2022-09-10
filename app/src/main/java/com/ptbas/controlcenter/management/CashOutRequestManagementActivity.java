@@ -43,8 +43,7 @@ import com.ptbas.controlcenter.helper.DialogInterface;
 import com.ptbas.controlcenter.helper.DragLinearLayout;
 import com.ptbas.controlcenter.helper.Helper;
 import com.ptbas.controlcenter.R;
-import com.ptbas.controlcenter.recap.RecapGoodIssueDataActivity;
-import com.ptbas.controlcenter.adapter.BKKManagementAdapter;
+import com.ptbas.controlcenter.adapter.CashOutRequestManagementAdapter;
 import com.ptbas.controlcenter.create.AddGoodIssueActivity;
 import com.ptbas.controlcenter.model.InvoiceModel;
 import com.ptbas.controlcenter.utils.LangUtils;
@@ -55,7 +54,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-public class CashOutManagementActivity extends AppCompatActivity {
+public class CashOutRequestManagementActivity extends AppCompatActivity {
 
     String[] searchTypeValue = {"giUID", "giRoUID", "giPoCustNumber", "vhlUID", "giMatName"};
     String dateStart = "", dateEnd = "", monthStrVal, dayStrVal;
@@ -82,7 +81,7 @@ public class CashOutManagementActivity extends AppCompatActivity {
     Helper helper = new Helper();
     ArrayList<InvoiceModel> invoiceModelArrayList = new ArrayList<>();
 
-    BKKManagementAdapter invManagementAdapter;
+    CashOutRequestManagementAdapter invManagementAdapter;
 
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
     DialogInterface dialogInterface = new DialogInterface();
@@ -93,7 +92,7 @@ public class CashOutManagementActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_manage_invoice);
+        setContentView(R.layout.activity_manage_cashout);
 
         context = this;
 
@@ -105,7 +104,7 @@ public class CashOutManagementActivity extends AppCompatActivity {
         nestedScrollView = findViewById(R.id.nestedScrollView);
         spinnerSearchType = findViewById(R.id.spinner_search_type);
         wrapSearchBySpinner = findViewById(R.id.wrap_search_by_spinner);
-        wrapFilter = findViewById(R.id.wrap_filter);
+        wrapFilter = findViewById(R.id.llWrapFilter);
         llWrapFilterByDateRange = findViewById(R.id.ll_wrap_filter_by_date_range);
         llNoData = findViewById(R.id.ll_no_data);
         ll_wrap_filter_chip_group = findViewById(R.id.ll_wrap_filter_chip_group);
@@ -130,14 +129,14 @@ public class CashOutManagementActivity extends AppCompatActivity {
         @ColorInt int color = typedValue.data;
 
         btnGiSearchByDateReset.setColorFilter(color);
-        btnGiSearchByTypeReset.setColorFilter(color);
+        //btnGiSearchByTypeReset.setColorFilter(color);
 
         ActionBar actionBar = getSupportActionBar();
 
         // ACTION BAR FOR STANDARD ACTIVITY
         assert actionBar != null;
         helper.handleActionBarConfigForStandardActivity(
-                this, actionBar, "Manajemen Invoice");
+                this, actionBar, "Manajemen Cash-Out Proof");
 
         // SYSTEM UI MODE FOR STANDARD ACTIVITY
         helper.handleUIModeForStandardActivity(this, actionBar);
@@ -155,15 +154,15 @@ public class CashOutManagementActivity extends AppCompatActivity {
 
         // GO TO ADD GOOD ISSUE ACTIVITY
         fabActionCreateGi.setOnClickListener(view -> {
-            Intent intent = new Intent(CashOutManagementActivity.this, AddGoodIssueActivity.class);
+            Intent intent = new Intent(CashOutRequestManagementActivity.this, AddGoodIssueActivity.class);
             startActivity(intent);
         });
 
-        // GO TO RECAP GOOD ISSUE ACTIVITY
+        /*// GO TO RECAP GOOD ISSUE ACTIVITY
         fabActionRecapData.setOnClickListener(view -> {
             Intent intent = new Intent(CashOutManagementActivity.this, RecapGoodIssueDataActivity.class);
             startActivity(intent);
-        });
+        });*/
 
         // SHOW DATA FROM DEFAULT QUERY
         showDataDefaultQuery();
@@ -192,7 +191,7 @@ public class CashOutManagementActivity extends AppCompatActivity {
             monthStrVal = String.valueOf(calendar.get(Calendar.MONTH));
             String yearStrVal = String.valueOf(calendar.get(Calendar.YEAR));
 
-            datePicker = new DatePickerDialog(CashOutManagementActivity.this,
+            datePicker = new DatePickerDialog(CashOutRequestManagementActivity.this,
                     (datePicker, year, month, dayOfMonth) -> {
                         int monthInt = month + 1;
 
@@ -225,7 +224,7 @@ public class CashOutManagementActivity extends AppCompatActivity {
             monthStrVal = String.valueOf(calendar.get(Calendar.MONTH));
             String yearStrVal = String.valueOf(calendar.get(Calendar.YEAR));
 
-            datePicker = new DatePickerDialog(CashOutManagementActivity.this,
+            datePicker = new DatePickerDialog(CashOutRequestManagementActivity.this,
                     (datePicker, year, month, dayOfMonth) -> {
 
                         int monthInt = month + 1;
@@ -271,7 +270,7 @@ public class CashOutManagementActivity extends AppCompatActivity {
                         nestedScrollView.setVisibility(View.GONE);
                     }
                     Collections.reverse(invoiceModelArrayList);
-                    invManagementAdapter = new BKKManagementAdapter(context, invoiceModelArrayList);
+                    invManagementAdapter = new CashOutRequestManagementAdapter(context, invoiceModelArrayList);
                     rvInvoiceList.setAdapter(invManagementAdapter);
                 });
     }
@@ -330,7 +329,7 @@ public class CashOutManagementActivity extends AppCompatActivity {
                         Objects.requireNonNull(edtGiDateFilterStart.getText()).toString().isEmpty() ||
                         Objects.requireNonNull(edtGiDateFilterEnd.getText()).toString().isEmpty()){
                     if (!searchView.getQuery().toString().isEmpty()){
-                        dialogInterface.fillSearchFilter(CashOutManagementActivity.this, searchView);
+                        dialogInterface.fillSearchFilter(CashOutRequestManagementActivity.this, searchView);
                     }
                 }
 

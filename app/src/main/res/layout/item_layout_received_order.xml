@@ -28,7 +28,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
                 android:layout_marginEnd="12dp"
-                android:layout_toStartOf="@+id/ivExpandLlHiddenView"
+                android:layout_toStartOf="@+id/cbSelectItem"
                 android:orientation="vertical">
 
                 <TextView
@@ -94,10 +94,10 @@
                         android:paddingVertical="2dp">
 
                         <TextView
-                            android:textColor="@color/dark_red"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="NOMOR PO BELUM TERSEDIA"
+                            android:textColor="@color/dark_red"
                             android:textSize="11sp"
                             android:textStyle="bold" />
                     </LinearLayout>
@@ -108,22 +108,17 @@
 
             </LinearLayout>
 
-            <ImageView
-                android:id="@+id/ivExpandLlHiddenView"
-                style="@style/Widget.Design.FloatingActionButton"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
+            <CheckBox
+                android:id="@+id/cbSelectItem"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
-                android:layout_alignParentEnd="true"
-                android:layout_marginTop="12dp"
-                android:src="@drawable/ic_outline_keyboard_arrow_down"
-                app:tint="@color/white" />
-
+                android:layout_alignParentEnd="true" />
         </RelativeLayout>
         <LinearLayout
             android:id="@+id/llHiddenView"
             android:animateLayoutChanges="true"
-            android:visibility="gone"
+            android:visibility="visible"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal">
@@ -165,6 +160,43 @@
 
             </RelativeLayout>
 
+
+            <RelativeLayout
+                android:id="@+id/btnShowDetail"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center">
+
+                <ImageView
+                    android:scaleType="center"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_outline_info"
+                    android:layout_alignStart="@+id/btn3"
+                    android:layout_alignEnd="@+id/btn3"
+                    android:layout_alignTop="@+id/btn3"
+                    android:layout_alignBottom="@+id/btn3"
+                    app:tint="?colorPrimary"/>
+
+                <Button
+                    android:id="@+id/btn3"
+                    style="@style/MaterialDialog.NegativeButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginStart="0dp"
+                    android:layout_marginTop="0dp"
+                    android:layout_marginEnd="0dp"
+                    android:layout_marginBottom="0dp"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp" />
+
+            </RelativeLayout>
+
             <RelativeLayout
                 android:id="@+id/btn_approve_inv"
                 android:layout_weight="1"
@@ -196,43 +228,8 @@
                     android:layout_alignEnd="@+id/btn2"
                     android:layout_alignBottom="@+id/btn2"
                     android:scaleType="center"
-                    android:src="@drawable/ic_outline_check"
+                    android:src="@drawable/ic_outline_verified"
                     app:tint="@color/white" />
-
-            </RelativeLayout>
-            <RelativeLayout
-                android:id="@+id/btnShowDetail"
-                android:layout_weight="1"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center">
-
-                <ImageView
-                    android:scaleType="center"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_outline_edit"
-                    android:layout_alignStart="@+id/btn3"
-                    android:layout_alignEnd="@+id/btn3"
-                    android:layout_alignTop="@+id/btn3"
-                    android:layout_alignBottom="@+id/btn3"
-                    app:tint="?colorPrimary"/>
-
-                <Button
-                    android:id="@+id/btn3"
-                    style="@style/MaterialDialog.NegativeButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:layout_alignParentStart="true"
-                    android:layout_alignParentTop="true"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentBottom="true"
-                    android:layout_marginStart="0dp"
-                    android:layout_marginTop="0dp"
-                    android:layout_marginEnd="0dp"
-                    android:layout_marginBottom="0dp"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp" />
 
             </RelativeLayout>
         </LinearLayout>

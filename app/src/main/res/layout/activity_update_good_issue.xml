@@ -54,7 +54,7 @@
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
                     android:maxLines="2"
-                    android:text="Status BKK: null" />
+                    android:text="Status Pengajuan: null" />
             </LinearLayout>
 
             <LinearLayout
@@ -181,33 +181,55 @@
                         android:maxLines="1" />
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+            <LinearLayout
+                android:id="@+id/llDetailGoodIssue1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:placeholderText="Contoh: L4332AAD"
-                app:startIconDrawable="@drawable/ic_100">
-
-                <AutoCompleteTextView
-                    android:id="@+id/spinner_vhl_uid"
+                android:divider="@drawable/divider_transparent"
+                android:orientation="vertical"
+                android:visibility="gone"
+                android:showDividers="middle">
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
-                    android:hint="@string/inputRegistNumber"
-                    android:inputType="textFilter|textCapCharacters"
-                    android:maxLines="1" />
-            </com.google.android.material.textfield.TextInputLayout>
+                    app:startIconDrawable="@drawable/ic_outline_receipt">
 
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edtPoTransportServiceQuantity"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:focusable="false"
+                        android:hint="Kuantitas Kubikasi"
+                        android:inputType="none"
+                        android:maxLines="1" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </LinearLayout>
             <LinearLayout
-                android:id="@+id/ll_detail_type_curah"
+                android:id="@+id/llDetailGoodIssue2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="100dp"
                 android:divider="@drawable/divider_transparent"
                 android:orientation="vertical"
                 android:showDividers="middle">
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:placeholderText="Contoh: L4332AAD"
+                    app:startIconDrawable="@drawable/ic_100">
 
+                    <AutoCompleteTextView
+                        android:id="@+id/spinner_vhl_uid"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
+                        android:hint="@string/inputRegistNumber"
+                        android:inputType="textFilter|textCapCharacters"
+                        android:maxLines="1" />
+                </com.google.android.material.textfield.TextInputLayout>
                 <LinearLayout
                     android:id="@+id/ll_height_correction_feature"
                     android:layout_width="match_parent"

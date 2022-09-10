@@ -40,6 +40,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.ptbas.controlcenter.helper.DialogInterface;
 import com.ptbas.controlcenter.R;
+import com.ptbas.controlcenter.helper.Helper;
 import com.ptbas.controlcenter.model.GoodIssueModel;
 import com.ptbas.controlcenter.model.ReceivedOrderModel;
 import com.ptbas.controlcenter.model.VehicleModel;
@@ -85,6 +86,8 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
 
     public FirebaseAuth authProfile;
 
+    Helper helper = new Helper();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,7 +96,7 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
         LangUtils.setLocale(this, "en");
 
         ActionBar actionBar = getSupportActionBar();
-        Objects.requireNonNull(actionBar).setTitle("Perbarui Data Good Issue");
+        Objects.requireNonNull(actionBar).setTitle("Rincian Data Good Issue");
         actionBar.setDisplayHomeAsUpEnabled(true);
 
         int nightModeFlags =
@@ -223,10 +226,10 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
                         }
 
                         if (giCashedOut.equals(true)){
-                            tvGiCashedOutStatus.setText("Status BKK: SUDAH");
+                            tvGiCashedOutStatus.setText("Status Pengajuan: SUDAH");
                             fabSaveFormIsEmpty();
                         } else{
-                            tvGiCashedOutStatus.setText("Status BKK: BELUM");
+                            tvGiCashedOutStatus.setText("Status Pengajuan: BELUM");
                             fabSaveBtnFormIsNotEmpty();
                         }
 
@@ -636,8 +639,14 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(@NonNull Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.delete, menu);
+        inflater.inflate(R.menu.delete_update_status, menu);
+        menu.findItem(R.id.menu_verify).setVisible(giStatus.equals(false));
 
+        if (Objects.requireNonNull(edtPoNumberCust.getText()).toString().equals(":")){
+            menu.findItem(R.id.menu_verify).setVisible(giStatus.equals(false));
+        } else {
+            menu.findItem(R.id.menu_verify).setVisible(giStatus.equals(true));
+        }
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -645,6 +654,8 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.menu_delete) {
             dialogInterface.deleteGiFromActivityConfirmation(UpdateGoodIssueActivity.this, giUIDVal);
+        } else if (item.getItemId() == R.id.menu_verify) {
+            dialogInterface.approveGiConfirmationFromUpdateActivity(UpdateGoodIssueActivity.this, giUIDVal, item);
         } else {
             onBackPressed();
         }
@@ -654,7 +665,7 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+        finish();
     }
 
 }

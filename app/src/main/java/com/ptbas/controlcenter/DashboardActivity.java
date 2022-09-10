@@ -52,9 +52,10 @@ import com.ptbas.controlcenter.adapter.MainFeaturesMenuAdapter;
 import com.ptbas.controlcenter.adapter.StatisticsAdapter;
 import com.ptbas.controlcenter.create.AddCustomerActivity;
 import com.ptbas.controlcenter.create.AddGoodIssueActivity;
-import com.ptbas.controlcenter.create.AddBkkActivity;
+import com.ptbas.controlcenter.create.AddCashOutRequestActivity;
 import com.ptbas.controlcenter.create.AddProductData;
 import com.ptbas.controlcenter.create.AddReceivedOrder;
+import com.ptbas.controlcenter.create.AddSupplierActivity;
 import com.ptbas.controlcenter.create.AddVehicleActivity;
 import com.ptbas.controlcenter.helper.Helper;
 import com.ptbas.controlcenter.model.MainFeatureModel;
@@ -179,6 +180,7 @@ public class DashboardActivity extends AppCompatActivity {
         LinearLayout llAddVehicleFromBottomSheet = bottomSheet.findViewById(R.id.ll_add_vehicle);
         LinearLayout llAddCustomerFromBottomSheet = bottomSheet.findViewById(R.id.ll_add_customer);
         LinearLayout llAddMaterialFromBottomSheet = bottomSheet.findViewById(R.id.ll_add_material);
+        LinearLayout llAddSupplierFromBottomSheet = bottomSheet.findViewById(R.id.ll_add_supplier);
         ImageView ivExpandCollapseFromBottomSheet = bottomSheet.findViewById(R.id.iv_expand_collapse);
 
         bottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
@@ -222,6 +224,11 @@ public class DashboardActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+        llAddSupplierFromBottomSheet.setOnClickListener(view -> {
+            Intent intent = new Intent(DashboardActivity.this, AddSupplierActivity.class);
+            startActivity(intent);
+        });
+
         title.setText(R.string.app_name);
 
         imageViewProfilePic.setOnClickListener(view -> {
@@ -253,7 +260,7 @@ public class DashboardActivity extends AppCompatActivity {
             startActivity(intent);
         });
         llAddBKK.setOnClickListener(view -> {
-            Intent intent = new Intent(DashboardActivity.this, AddBkkActivity.class);
+            Intent intent = new Intent(DashboardActivity.this, AddCashOutRequestActivity.class);
             startActivity(intent);
         });
         llShowOthers.setOnClickListener(view -> bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED));
@@ -439,7 +446,7 @@ public class DashboardActivity extends AppCompatActivity {
         holder.add(mGI);
 
         MainFeatureModel mInv = new MainFeatureModel();
-        mInv.setHeader("Manajemen BKK");
+        mInv.setHeader("Manajemen Cash Out");
         mInv.setImgName(R.drawable.ic_bkk);
         holder.add(mInv);
 

@@ -138,7 +138,7 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
         edtDateStart = findViewById(R.id.edt_gi_date_filter_start);
         edtDateEnd = findViewById(R.id.edt_gi_date_filter_end);
         rvGoodIssueList = findViewById(R.id.rv_good_issue_list);
-        imgbtnExpandCollapseFilterLayout = findViewById(R.id.imgbtn_expand_collapse_filter_layout);
+        imgbtnExpandCollapseFilterLayout = findViewById(R.id.imgbtnExpandCollapseFilterLayout);
         llWrapFilterByDateRange = findViewById(R.id.ll_wrap_filter_by_date_range);
         llWrapFilterByRouid = findViewById(R.id.ll_wrap_filter_by_rouid);
 
@@ -146,8 +146,8 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
         nestedScrollView = findViewById(R.id.nestedScrollView);
 
         btnGiSearchByDateReset = findViewById(R.id.btn_gi_search_date_reset);
-        btnGiSearchByRoUIDReset = findViewById(R.id.btn_gi_search_rouid_reset);
-        fabCreateGiRecap = findViewById(R.id.fab_create_gi_recap);
+        btnGiSearchByRoUIDReset = findViewById(R.id.btnResetRouid);
+        fabCreateGiRecap = findViewById(R.id.fabCreateCOR);
 
         TypedValue typedValue = new TypedValue();
         Resources.Theme theme = context.getTheme();

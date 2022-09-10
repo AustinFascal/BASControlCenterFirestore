@@ -1,12 +1,16 @@
 package com.ptbas.controlcenter.management;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.LayoutTransition;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.InputType;
 import android.transition.AutoTransition;
 import android.transition.TransitionManager;
@@ -17,10 +21,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
@@ -60,7 +67,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import dev.shreyaspatil.MaterialDialog.MaterialDialog;
+
 public class GoodIssueManagementActivity extends AppCompatActivity {
+
+    GIManagementAdapter.ItemViewHolder itemViewHolder;
 
     String[] searchTypeValue = {"giUID", "giRoUID", "giPoCustNumber", "vhlUID", "giMatName"};
     String dateStart = "", dateEnd = "", searchTypeData="", monthStrVal, dayStrVal;
@@ -70,7 +81,7 @@ public class GoodIssueManagementActivity extends AppCompatActivity {
             chip_filter_status_invoiced, chip_filter_status_not_yet_invoiced,
             chip_filter_status_transport_type_curah, chip_filter_status_transport_type_borong;
     LinearLayout llNoData, ll_wrap_filter_chip_group, wrapSearchBySpinner, wrapFilter,
-            llWrapFilterByDateRange;
+            llWrapFilterByDateRange, llBottomSelectionOptions;
     Context context;
     CardView cdvFilter;
     FloatingActionsMenu fabExpandMenu;
@@ -78,9 +89,10 @@ public class GoodIssueManagementActivity extends AppCompatActivity {
     NestedScrollView nestedScrollView;
     TextInputEditText edtGiDateFilterStart, edtGiDateFilterEnd;
     AutoCompleteTextView spinnerSearchType;
-    ImageButton btnGiSearchByDateReset, btnGiSearchByTypeReset;
+    ImageButton btnGiSearchByDateReset, btnGiSearchByTypeReset, btnExitSelection, btnDeleteSelected, btnSelectAll, btnVerifySelected;
     DatePickerDialog datePicker;
     RecyclerView rvGoodIssueList;
+    TextView tvTotalSelectedItem;
 
     Boolean expandStatus = true;
     List<String> arrayListMaterialName, arrayListCompanyName;
@@ -100,15 +112,24 @@ public class GoodIssueManagementActivity extends AppCompatActivity {
 
         context = this;
 
+        helper.ACTIVITY_NAME = "GIM";
+
         fabExpandMenu = findViewById(R.id.fab_expand_menu);
         fabActionCreateGi = findViewById(R.id.fab_action_create_ro);
         fabActionRecapData = findViewById(R.id.fab_action_recap_data);
+
+        llBottomSelectionOptions = findViewById(R.id.llBottomSelectionOptions);
+        tvTotalSelectedItem = findViewById(R.id.tvTotalSelectedItem);
+        btnExitSelection = findViewById(R.id.btnExitSelection);
+        btnDeleteSelected = findViewById(R.id.btnDeleteSelected);
+        btnSelectAll = findViewById(R.id.btnSelectAll);
+        btnVerifySelected = findViewById(R.id.btnVerifySelected);
 
         cdvFilter = findViewById(R.id.cdv_filter);
         nestedScrollView = findViewById(R.id.nestedScrollView);
         spinnerSearchType = findViewById(R.id.spinner_search_type);
         wrapSearchBySpinner = findViewById(R.id.wrap_search_by_spinner);
-        wrapFilter = findViewById(R.id.wrap_filter);
+        wrapFilter = findViewById(R.id.llWrapFilter);
         llWrapFilterByDateRange = findViewById(R.id.ll_wrap_filter_by_date_range);
         llNoData = findViewById(R.id.ll_no_data);
         ll_wrap_filter_chip_group = findViewById(R.id.ll_wrap_filter_chip_group);
@@ -326,6 +347,138 @@ public class GoodIssueManagementActivity extends AppCompatActivity {
                 showDataDefaultQuery();
             }
         });
+
+        giManagementAdapter = new GIManagementAdapter(this, goodIssueModelArrayList);
+
+        /*if (giManagementAdapter.getSelected().size() > 0) {
+         */
+
+
+                /*} else {
+
+                }*/
+
+
+
+
+        btnDeleteSelected.setOnClickListener(view -> {
+            int size = giManagementAdapter.getSelected().size();
+            MaterialDialog md = new MaterialDialog.Builder(GoodIssueManagementActivity.this)
+                    .setTitle("Hapus Data Terpilih")
+                    .setAnimation(R.raw.lottie_delete)
+                    .setMessage("Apakah Anda yakin ingin menghapus "+size+" data Good Issue yang terpilih? Setelah dihapus, data tidak dapat dikembalikan.")
+                    .setCancelable(true)
+                    .setPositiveButton("YA", R.drawable.ic_outline_check, (dialogInterface, which) -> {
+                        dialogInterface.dismiss();
+                        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+                        for (int i = 0; i < giManagementAdapter.getSelected().size(); i++) {
+                            databaseReference.child("GoodIssueData").child(giManagementAdapter.getSelected().get(i).getGiUID()).removeValue();
+                        }
+
+                    })
+                    .setNegativeButton("TIDAK", R.drawable.ic_outline_close, (dialogInterface, which) -> dialogInterface.dismiss())
+                    .build();
+
+            md.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
+            md.show();
+        });
+
+        btnVerifySelected.setOnClickListener(view -> {
+            int size = giManagementAdapter.getSelected().size();
+            MaterialDialog md = new MaterialDialog.Builder((Activity) context)
+                    .setAnimation(R.raw.lottie_approval)
+                    .setTitle("Validasi Data Terpilih")
+                    .setMessage("Apakah Anda yakin ingin mengesahkan "+size+" data Good Issue yang terpilih? Setelah disahkan, status tidak dapat dikembalikan.")
+                    .setPositiveButton("YA", R.drawable.ic_outline_check, (dialogInterface, which) -> {
+                        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+                        String giUIDVal;
+                        for (int i = 0; i < giManagementAdapter.getSelected().size(); i++) {
+                            giUIDVal = giManagementAdapter.getSelected().get(i).getGiUID();
+                            databaseReference.child("GoodIssueData").child(giUIDVal).child("giStatus").setValue(true);
+                            databaseReference.child("GoodIssueData").child(giUIDVal).child("giVerifiedBy").setValue(helper.getUserId());
+                        }
+                        dialogInterface.dismiss();
+                    })
+                    .setNegativeButton("TIDAK", R.drawable.ic_outline_close, (dialogInterface, which) -> dialogInterface.dismiss())
+                    .setCancelable(true)
+                    .build();
+
+            md.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
+            md.show();
+        });
+
+        /*btnSelectAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                for (int i = 0; i < giManagementAdapter.getSelected().size(); i++) {
+                    giManagementAdapter.selectAll().get(i).setChecked(true);
+                }
+            }
+        });*/
+        btnSelectAll.setVisibility(View.GONE);
+
+        btnExitSelection.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                giManagementAdapter.clearSelection();
+
+                llBottomSelectionOptions.animate()
+                        .translationY(llBottomSelectionOptions.getHeight()).alpha(0.0f)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                super.onAnimationEnd(animation);
+                                llBottomSelectionOptions.setVisibility(View.GONE);
+                            }
+                        });
+            }
+        });
+
+
+
+        final Handler handler = new Handler();
+        Runnable runnable = new Runnable() {
+            public void run() {
+                int itemSelectedSize = giManagementAdapter.getSelected().size();
+                if (giManagementAdapter.getSelected().size()>0){
+
+                    fabExpandMenu.animate().translationY(800).setDuration(100).start();
+                    fabExpandMenu.collapse();
+
+                    tvTotalSelectedItem.setText(itemSelectedSize+" item terpilih");
+
+                    llBottomSelectionOptions.animate()
+                            .translationY(0).alpha(1.0f)
+                            .setDuration(100)
+                            .setListener(new AnimatorListenerAdapter() {
+                                @Override
+                                public void onAnimationStart(Animator animation) {
+                                    super.onAnimationStart(animation);
+                                    llBottomSelectionOptions.setVisibility(View.VISIBLE);
+                                }
+                            });
+
+                } else {
+                    fabExpandMenu.animate().translationY(0).setDuration(100).start();
+
+                    llBottomSelectionOptions.animate()
+                            .translationY(llBottomSelectionOptions.getHeight()).alpha(0.0f)
+                            .setListener(new AnimatorListenerAdapter() {
+                                @Override
+                                public void onAnimationEnd(Animator animation) {
+                                    super.onAnimationEnd(animation);
+                                    llBottomSelectionOptions.setVisibility(View.GONE);
+                                }
+                            });
+                }
+                handler.postDelayed(this, 100);
+            }
+        };
+        runnable.run();
+
+
+
     }
 
     private void checkSelectedChipFilter() {
@@ -682,11 +835,14 @@ public class GoodIssueManagementActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
+                View viewLayout = GoodIssueManagementActivity.this.getCurrentFocus();
                 if (spinnerSearchType.getText().toString().isEmpty() ||
                         Objects.requireNonNull(edtGiDateFilterStart.getText()).toString().isEmpty() ||
                         Objects.requireNonNull(edtGiDateFilterEnd.getText()).toString().isEmpty()){
                     if (!searchView.getQuery().toString().isEmpty()){
                         dialogInterface.fillSearchFilter(GoodIssueManagementActivity.this, searchView);
+                        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(viewLayout.getWindowToken(), 0);
                     }
                 } else {
                     showDataSearchByType(newText, searchTypeData);
@@ -747,6 +903,6 @@ public class GoodIssueManagementActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         helper.refreshDashboard(this.getApplicationContext());
-        finish();
+        super.onBackPressed();
     }
 }

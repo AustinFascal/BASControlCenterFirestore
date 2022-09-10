@@ -7,8 +7,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.CountDownTimer;
+import android.os.Handler;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
+import android.view.MenuItem;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -28,7 +30,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.WriteBatch;
 import com.ptbas.controlcenter.R;
-import com.ptbas.controlcenter.create.AddBkkActivity;
+import com.ptbas.controlcenter.adapter.GIManagementAdapter;
+import com.ptbas.controlcenter.create.AddCashOutRequestActivity;
+import com.ptbas.controlcenter.create.AddInvoiceActivity;
 import com.ptbas.controlcenter.create.AddReceivedOrder;
 import com.ptbas.controlcenter.management.ReceivedOrderManagementActivity;
 import com.ptbas.controlcenter.model.GoodIssueModel;
@@ -179,7 +183,7 @@ public class DialogInterface {
         md.show();
     }
 
-    public void noPoNumberInformation(Context context) {
+    /*public void noPoNumberInformation(Context context) {
         Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             vibrator.vibrate(VibrationEffect.createOneShot(100,
@@ -195,7 +199,7 @@ public class DialogInterface {
                 .setCancelable(true)
                 .build();
         md.show();
-    }
+    }*/
 
     public void noRoPoNumberInformation(Context context, String roDocumentId) {
         Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
@@ -371,7 +375,7 @@ public class DialogInterface {
         md.show();
     }
 
-    public void approveGiConfirmation(Context context, String giUID) {
+    /*public void approveGiConfirmation(Context context, String giUID) {
         Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             vibrator.vibrate(VibrationEffect.createOneShot(100,
@@ -388,6 +392,37 @@ public class DialogInterface {
                     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
                     databaseReference.child("GoodIssueData").child(giUID).child("giStatus").setValue(true);
                     databaseReference.child("GoodIssueData").child(giUID).child("giVerifiedBy").setValue(helper.getUserId());
+                    dialogInterface.dismiss();
+                })
+                .setNegativeButton("TIDAK", R.drawable.ic_outline_close, (dialogInterface, which) -> dialogInterface.dismiss())
+                .setCancelable(true)
+                .build();
+
+        md.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
+        md.show();
+    }*/
+
+    public void approveGiConfirmationFromUpdateActivity(Context context, String giUID, MenuItem item) {
+        Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            vibrator.vibrate(VibrationEffect.createOneShot(100,
+                    VibrationEffect.DEFAULT_AMPLITUDE));
+        } else {
+            vibrator.vibrate(100);
+        }
+
+        md = new MaterialDialog.Builder((Activity) context)
+                .setAnimation(R.raw.lottie_approval)
+                .setTitle("Validasi Data")
+                .setMessage("Apakah Anda yakin ingin mengesahkan data Good Issue yang Anda pilih? Setelah disahkan, status tidak dapat dikembalikan.")
+                .setPositiveButton("YA", R.drawable.ic_outline_check, (dialogInterface, which) -> {
+                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+                    databaseReference.child("GoodIssueData").child(giUID).child("giStatus").setValue(true);
+                    databaseReference.child("GoodIssueData").child(giUID).child("giVerifiedBy").setValue(helper.getUserId());
+                    if (item.getItemId()==R.id.menu_verify){
+                        item.setVisible(false);
+                    }
+
                     dialogInterface.dismiss();
                 })
                 .setNegativeButton("TIDAK", R.drawable.ic_outline_close, (dialogInterface, which) -> dialogInterface.dismiss())
@@ -478,7 +513,7 @@ public class DialogInterface {
         md.show();
     }
 
-    public void deleteGiConfirmation(Context context, String giUID) {
+    /*public void deleteGiConfirmation(Context context, String giUID) {
         md = new MaterialDialog.Builder((Activity) context)
                 .setTitle("Hapus Data")
                 .setAnimation(R.raw.lottie_delete)
@@ -494,7 +529,7 @@ public class DialogInterface {
 
         md.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
         md.show();
-    }
+    }*/
 
     public void deleteProductDataConfirmation(Context context, String productDataUID) {
         md = new MaterialDialog.Builder((Activity) context)
@@ -543,6 +578,24 @@ public class DialogInterface {
                     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
                     databaseReference.child("GoodIssueData").child(giUID).removeValue();
                     activity.finish();
+                })
+                .setNegativeButton("TIDAK", R.drawable.ic_outline_close, (dialogInterface, which) -> dialogInterface.dismiss())
+                .build();
+
+        md.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
+        md.show();
+    }
+
+    public void deleteGiFromSelectedList(Activity activity, String giUID, int size) {
+        md = new MaterialDialog.Builder(activity)
+                .setTitle("Hapus Data Terpilih")
+                .setAnimation(R.raw.lottie_delete)
+                .setMessage("Apakah Anda yakin ingin menghapus "+size+" data Good Issue yang terpilih? Setelah dihapus, data tidak dapat dikembalikan.")
+                .setCancelable(true)
+                .setPositiveButton("YA", R.drawable.ic_outline_check, (dialogInterface, which) -> {
+                    dialogInterface.dismiss();
+                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+                    databaseReference.child("GoodIssueData").child(giUID).removeValue();
                 })
                 .setNegativeButton("TIDAK", R.drawable.ic_outline_close, (dialogInterface, which) -> dialogInterface.dismiss())
                 .build();
@@ -648,10 +701,33 @@ public class DialogInterface {
         MaterialDialog materialDialog = new MaterialDialog.Builder((Activity) context)
                 .setTitle("Buat Invoice")
                 .setAnimation(R.raw.lottie_generate_bill)
-                .setMessage("Apakah Anda yakin ingin membuat Invoice dari data Good Issue terpilih?")
+                .setMessage("Apakah Anda yakin ingin membuat Invoice dari data Cash-Out terpilih?")
                 .setCancelable(true)
                 .setPositiveButton("YA", R.drawable.ic_outline_check, (dialogInterface, which) -> {
                     generatingInvoice(context, db,
+                            goodIssueModelArrayList,
+                            invUID, invPoType, invCreatedBy, invDateCreated, invPoDate, invPoUID, invCustName,
+                            invTotal, invTax1, invTax2);
+                    dialogInterface.dismiss();
+                })
+                .setNegativeButton("TIDAK", R.drawable.ic_outline_close, (dialogInterface, which) -> dialogInterface.dismiss())
+                .build();
+
+        materialDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
+        materialDialog.show();
+    }
+
+    public void confirmCreateCashOutProof(Context context, FirebaseFirestore db,
+                                     ArrayList<GoodIssueModel> goodIssueModelArrayList,
+                                     String invUID, String invPoType, String invCreatedBy, String invDateCreated, String invPoDate, String invPoUID, String invCustName,
+                                     Double invTotal, Double invTax1, Double invTax2) {
+        MaterialDialog materialDialog = new MaterialDialog.Builder((Activity) context)
+                .setTitle("Buat Cash-Out Proof")
+                .setAnimation(R.raw.lottie_generate_bill)
+                .setMessage("Apakah Anda yakin ingin membuat Cash-Out dari data Good Issue terpilih?")
+                .setCancelable(true)
+                .setPositiveButton("YA", R.drawable.ic_outline_check, (dialogInterface, which) -> {
+                    generatingCashOut(context, db,
                             goodIssueModelArrayList,
                             invUID, invPoType, invCreatedBy, invDateCreated, invPoDate, invPoUID, invCustName,
                             invTotal, invTax1, invTax2);
@@ -701,9 +777,65 @@ public class DialogInterface {
                     refGI.collection("GoodIssueData").document(goodIssueModelArrayList.get(i).getGiUID()).set(goodIssueModel);
                     databaseReferenceGI.child("GoodIssueData").child(goodIssueModelArrayList.get(i).getGiUID()).child("giInvoiced").setValue(true);
                 }
-                AddBkkActivity addBkkActivity = (AddBkkActivity) context;
-                addBkkActivity.createInvPDF(Helper.getAppPath(context)+invUID+".pdf");
+                AddInvoiceActivity addInvoiceActivity = (AddInvoiceActivity) context;
+                addInvoiceActivity.createInvPDF(Helper.getAppPath(context)+invUID+".pdf");
                 generatingInvoiceDialog.dismiss();
+            }
+        }.start();
+    }
+
+    public void generatingCashOut(Context context, FirebaseFirestore db,
+                                  ArrayList<GoodIssueModel> goodIssueModelArrayList,
+                                  String invUID, String invPoType, String invCreatedBy, String invDateCreated, String invPoDate, String invPoUID, String invCustName,
+                                  Double invTotal, Double invTax1, Double invTax2) {
+
+
+        GIManagementAdapter giManagementAdapter;
+
+        giManagementAdapter = new GIManagementAdapter(context, goodIssueModelArrayList);
+        //int itemSelectedSize = giManagementAdapter.getSelected().size();
+
+
+
+        MaterialDialog generatingCashOutProofDialog = new MaterialDialog.Builder((Activity) context)
+                .setTitle("Memproses Permintaan")
+                .setMessage("Cash-Out Proof sedang diproses. Harap tunggu ...")
+                .setAnimation(R.raw.lottie_generate_bill)
+                .setCancelable(false)
+                .build();
+
+        generatingCashOutProofDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
+        generatingCashOutProofDialog.show();
+
+        new CountDownTimer(2000, 1000) {
+            public void onTick(long millisUntilFinished) {
+            }
+
+            public void onFinish() {
+
+                DatabaseReference databaseReferenceGI = FirebaseDatabase.getInstance().getReference();
+                /*DocumentReference refRO = db.collection("CashOutData").document();
+                String invDocumentID = refRO.getId();
+
+                InvoiceModel invoiceModel = new InvoiceModel(
+                        invDocumentID, invUID, invPoType, invCreatedBy, invDateCreated, invPoUID,
+                        invPoDate, invCustName, invTotal, invTax1, invTax2, false);
+
+                refRO.set(invoiceModel);*/
+
+                //DocumentReference refGI = db.collection("CashOutData").document(invDocumentID);
+                /*for (int i = 0; i < goodIssueModelArrayList.size(); i++) {
+                    GoodIssueModel goodIssueModel = goodIssueModelArrayList.get(i);
+                    //refGI.collection("GoodIssueData").document(goodIssueModelArrayList.get(i).getGiUID()).set(goodIssueModel);
+                    databaseReferenceGI.child("GoodIssueData").child(goodIssueModelArrayList.get(i).getGiUID()).child("giCashedOut").setValue(true);
+                }*/
+
+                for (int i = 0; i < giManagementAdapter.getSelected().size(); i++) {
+                    databaseReferenceGI.child("GoodIssueData").child(giManagementAdapter.getSelected().get(i).getGiUID()).child("giCashedOut").setValue(true);
+                }
+                AddCashOutRequestActivity addCashOutRequestActivity = (AddCashOutRequestActivity) context;
+                addCashOutRequestActivity.createCashOutProofPDF(Helper.getAppPath(context)+invUID+".pdf");
+                generatingCashOutProofDialog.dismiss();
             }
         }.start();
     }
@@ -713,6 +845,22 @@ public class DialogInterface {
                 .setTitle("Berhasil!")
                 .setAnimation(R.raw.lottie_bill_generated)
                 .setMessage("Data invoice telah berhasil disimpan ke database dan diekspor menjadi berkas PDF di " + filepath + ". Buka berkas sekarang?")
+                .setCancelable(true)
+                .setPositiveButton("YA", R.drawable.ic_outline_check, (dialogInterface, which) -> {
+                    Helper.openFilePDF(context, new File(filepath));
+                    dialogInterface.dismiss();
+                })
+                .setNegativeButton("TIDAK", R.drawable.ic_outline_close, (dialogInterface, which) -> dialogInterface.dismiss())
+                .build();
+
+        invoiceGeneratedInformationDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
+        invoiceGeneratedInformationDialog.show();
+    }
+    public void cashOutProofGeneratedInformation(Context context, String filepath) {
+        MaterialDialog invoiceGeneratedInformationDialog = new MaterialDialog.Builder((Activity) context)
+                .setTitle("Berhasil!")
+                .setAnimation(R.raw.lottie_bill_generated)
+                .setMessage("Data Cash-Out Proof telah berhasil disimpan ke database dan diekspor menjadi berkas PDF di " + filepath + ". Buka berkas sekarang?")
                 .setCancelable(true)
                 .setPositiveButton("YA", R.drawable.ic_outline_check, (dialogInterface, which) -> {
                     Helper.openFilePDF(context, new File(filepath));

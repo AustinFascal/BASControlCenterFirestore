@@ -91,7 +91,7 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/wrap_filter"
+                    android:id="@+id/llWrapFilter"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:divider="@drawable/divider_transparent"
@@ -385,38 +385,117 @@
         </LinearLayout>-->
 
         </androidx.core.widget.NestedScrollView>
+
+        <LinearLayout
+            android:visibility="gone"
+            android:translationY="0.0dp"
+            android:id="@+id/llBottomSelectionOptions"
+            android:layout_width="match_parent"
+            android:layout_height="?actionBarSize"
+            android:background="?material_dialog_background"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:orientation="vertical" >
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="4dp"
+                android:background="@drawable/top_shadow_gradient" />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingHorizontal="12dp"
+                android:gravity="center_vertical">
+
+                <ImageButton
+                    android:id="@+id/btnExitSelection"
+                    style="@style/MaterialDialog.NegativeButton"
+                    android:layout_width="32dp"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentStart="true"
+                    android:src="@drawable/ic_outline_close"
+                    app:tint="?colorPrimary" />
+
+                <TextView
+                    android:id="@+id/tvTotalSelectedItem"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_toStartOf="@+id/btnSelectAll"
+                    android:layout_toEndOf="@+id/btnExitSelection"
+                    android:gravity="center_vertical"
+                    android:textSize="17sp" />
+
+                <ImageButton
+                    android:id="@+id/btnSelectAll"
+                    style="@style/MaterialDialog.NegativeButton"
+                    android:layout_width="32dp"
+                    android:layout_height="match_parent"
+                    android:layout_toStartOf="@+id/btnDeleteSelected"
+                    android:src="@drawable/ic_outline_check_all"
+                    app:tint="?colorPrimary" />
+
+                <ImageButton
+                    android:id="@+id/btnDeleteSelected"
+                    style="@style/MaterialDialog.NegativeButton"
+                    android:layout_width="32dp"
+                    android:layout_height="match_parent"
+                    android:layout_toStartOf="@+id/btnVerifySelected"
+                    android:src="@drawable/ic_outline_delete_forever"
+                    app:tint="?colorPrimary" />
+
+                <ImageButton
+                    android:id="@+id/btnVerifySelected"
+                    style="@style/MaterialDialog.NegativeButton"
+                    android:layout_width="32dp"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentEnd="true"
+                    android:src="@drawable/ic_outline_verified"
+                    app:tint="?colorPrimary" />
+            </RelativeLayout>
+
+
+        </LinearLayout>
+        <com.getbase.floatingactionbutton.FloatingActionsMenu
+            android:id="@+id/fab_expand_menu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginEnd="14dp"
+            android:layout_marginBottom="14dp"
+            app:fab_addButtonColorNormal="?colorPrimary"
+            app:fab_addButtonColorPressed="?colorPrimary"
+            app:fab_labelStyle="@style/customFAB"
+            app:fab_labelsPosition="left"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:ignore="RelativeOverlap">
+
+            <com.getbase.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fab_action_recap_data"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:fab_colorNormal="@color/white"
+                app:fab_colorPressed="@color/light_grey"
+                app:fab_icon="@drawable/ic_recap_data"
+                app:fab_title="Buat Rekap Data Valid" />
+
+            <com.getbase.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fab_action_create_ro"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:fab_colorNormal="@color/white"
+                app:fab_colorPressed="@color/light_grey"
+                app:fab_icon="@drawable/ic_add_good_issue"
+                app:fab_title="Buat Good Issue" />
+        </com.getbase.floatingactionbutton.FloatingActionsMenu>
+
     </RelativeLayout>
 
-    <com.getbase.floatingactionbutton.FloatingActionsMenu
-        android:id="@+id/fab_expand_menu"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_gravity="end|bottom"
-        android:layout_marginEnd="14dp"
-        android:layout_marginBottom="12dp"
-        app:fab_addButtonColorNormal="?colorPrimary"
-        app:fab_addButtonColorPressed="?colorPrimary"
-        app:fab_labelStyle="@style/customFAB"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-        <com.getbase.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab_action_recap_data"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:fab_colorNormal="@color/white"
-            app:fab_colorPressed="@color/light_grey"
-            app:fab_icon="@drawable/ic_recap_data"
-            app:fab_title="Buat Rekap Data Valid" />
-        <com.getbase.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab_action_create_ro"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:fab_colorNormal="@color/white"
-            app:fab_colorPressed="@color/light_grey"
-            app:fab_icon="@drawable/ic_add_good_issue"
-            app:fab_title="Buat Good Issue" />
-    </com.getbase.floatingactionbutton.FloatingActionsMenu>
+
+
+
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

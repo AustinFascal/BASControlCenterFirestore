@@ -87,7 +87,7 @@ public class AddCustomerActivity extends AppCompatActivity {
         edtCustomerNpwp = findViewById(R.id.edt_customer_npwp);
         edtCustomerPhone = findViewById(R.id.edt_customer_phone);
         spinnerCustType = findViewById(R.id.spinner_cust_type);
-        fabProceed = findViewById(R.id.fab_save_cust_data);
+        fabProceed = findViewById(R.id.fabSaveData);
 
         edtCustomerName.setFilters(new InputFilter[] {new InputFilter.AllCaps()});
 

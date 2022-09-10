@@ -14,8 +14,10 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -60,6 +62,8 @@ public class AddGoodIssueActivity extends AppCompatActivity {
     String vhlData = "", matName = "", matType = "", roNumber ="", roKey ="";
     String monthStrVal, dayStrVal;
     Integer giYear = 0, giMonth = 0, giDay = 0;
+
+    LinearLayout llDetailTypeCurah;
 
     TextView tvHeightCorrection, tvVhlVolume;
     TextInputEditText edtGiDate, edtGiTime, edtPoNumberCust, edtVhlLength, edtVhlWidth, edtVhlHeight,
@@ -131,6 +135,8 @@ public class AddGoodIssueActivity extends AppCompatActivity {
         edtHeightCorrection = findViewById(R.id.edt_vhl_height_correction);
         tvHeightCorrection = findViewById(R.id.tv_vhl_height_correction);
         tvVhlVolume = findViewById(R.id.tv_vhl_volume);
+
+        llDetailTypeCurah = findViewById(R.id.ll_detail_type_curah);
 
         DecimalFormat df = new DecimalFormat("0.00");
 
@@ -299,7 +305,7 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                     .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                         @Override
                         public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                            String matNameStr = "";
+                            //String matNameStr = "";
                             matNameList.clear();
                             for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots){
                                 ReceivedOrderModel receivedOrderModel = documentSnapshot.toObject(ReceivedOrderModel.class);
@@ -312,19 +318,29 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                                 spinnerMatType.setText(roMatType);
                                 edtPoNumberCust.setText(roPoCustNumber);
 
-                                HashMap<String, List<ProductItems>> map = receivedOrderModel.getRoOrderedItems();
+                                /*HashMap<String, List<ProductItems>> map = receivedOrderModel.getRoOrderedItems();
                                 for (HashMap.Entry<String, List<ProductItems>> e : map.entrySet()) {
                                     for (ProductItems productItems : e.getValue()) {
                                         matNameStr = productItems.getMatName();
                                     }
-                                }
+                                }*/
 
+                                matNameList.addAll(receivedOrderModel.getRoOrderedItems().keySet());
 
-                                matNameList.addAll(Collections.singleton(matNameStr));
+                                //matNameList.addAll(Collections.singleton(matNameStr));
                                 int matNameListSize = matNameList.size();
-                                if (matNameListSize > 1 && matNameList.get(0).equals("JASA ANGKUT")){
+                                if (matNameListSize > 1){
                                     matNameList.remove("JASA ANGKUT");
                                 }
+
+                                if (receivedOrderModel.getRoType().equals(2)){
+                                    llDetailTypeCurah.setVisibility(View.GONE);
+                                } else {
+                                    llDetailTypeCurah.setVisibility(View.VISIBLE);
+                                }
+                                /*if (matNameList.get(0).equals("JASA ANGKUT")){
+
+                                }*/
 
                                 ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddGoodIssueActivity.this, R.layout.style_spinner, matNameList);
                                 arrayAdapter.setDropDownViewResource(R.layout.style_spinner);

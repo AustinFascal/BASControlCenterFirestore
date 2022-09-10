@@ -30,7 +30,7 @@
                 android:paddingTop="18dp">
 
                 <LinearLayout
-                    android:id="@+id/wrap_filter"
+                    android:id="@+id/llWrapFilter"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
@@ -158,7 +158,7 @@
 
 
                             <ImageButton
-                                android:id="@+id/btn_gi_search_rouid_reset"
+                                android:id="@+id/btnResetRouid"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:layout_gravity="center_vertical"
@@ -182,7 +182,7 @@
                 </LinearLayout>
 
                 <Button
-                    android:id="@+id/imgbtn_expand_collapse_filter_layout"
+                    android:id="@+id/imgbtnExpandCollapseFilterLayout"
                     style="@style/MaterialDialog.NegativeButton"
                     android:layout_width="wrap_content"
                     android:layout_height="40dp"
@@ -238,7 +238,7 @@
     </RelativeLayout>
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        android:id="@+id/fab_create_gi_recap"
+        android:id="@+id/fabCreateCOR"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:icon="@drawable/ic_outline_add_circle"

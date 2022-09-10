@@ -1,6 +1,8 @@
 package com.ptbas.controlcenter.create;
 
 import android.Manifest;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DatePickerDialog;
@@ -9,15 +11,16 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.VibrationEffect;
+import android.os.Handler;
 import android.os.Vibrator;
 import android.text.Html;
+import android.text.InputFilter;
 import android.transition.AutoTransition;
 import android.transition.TransitionManager;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -28,6 +31,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.ColorInt;
@@ -69,7 +73,6 @@ import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.text.pdf.draw.LineSeparator;
 import com.ptbas.controlcenter.helper.DialogInterface;
-import com.ptbas.controlcenter.helper.DragLinearLayout;
 import com.ptbas.controlcenter.helper.Helper;
 import com.ptbas.controlcenter.helper.ImageAndPositionRenderer;
 import com.ptbas.controlcenter.helper.NumberToWords;
@@ -79,6 +82,8 @@ import com.ptbas.controlcenter.model.CustomerModel;
 import com.ptbas.controlcenter.model.GoodIssueModel;
 import com.ptbas.controlcenter.model.ProductItems;
 import com.ptbas.controlcenter.model.ReceivedOrderModel;
+import com.ptbas.controlcenter.model.SupplierModel;
+import com.ptbas.controlcenter.update.UpdateGoodIssueActivity;
 import com.ptbas.controlcenter.utils.LangUtils;
 
 import java.io.ByteArrayOutputStream;
@@ -90,28 +95,30 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Random;
-import com.google.firebase.firestore.Query.Direction;
 
-public class AddBkkActivity extends AppCompatActivity {
+public class AddCashOutRequestActivity extends AppCompatActivity {
 
     private static final String ALLOWED_CHARACTERS = "0123456789QWERTYUIOPASDFGHJKLZXCVBNM";
 
-    double matSellPrice, transportServiceSellPrice, invTax1 = 0, invTax2 =0;
-    String dateStartVal = "", dateEndVal = "", rouidVal= "", currencyVal = "", pouidVal = "",
+    double matBuyPrice, transportServiceSellPrice, invTax1 = 0, invTax2 =0;
+    String dateStartVal = "", dateEndVal = "", rouidVal= "", suppplieruidVal = "", currencyVal = "", pouidVal = "",
             monthStrVal, dayStrVal, roPoCustNumber, matTypeVal, matNameVal, transportServiceNameVal,
             invPoDate = "", invCustName = "", invPoUID = "", custNameVal = "",
-            custAddressVal = "", invUID="", invPotypeVal = "";
+            custAddressVal = "", roUID ="", invPotypeVal = "", coCreatedBy="";
+
+    String supplierPayee, supplierBankAndAccountNumber, supplierAccountOwnerName;
     int invPoType;
 
     Button btnSearchData, imgbtnExpandCollapseFilterLayout;
-    AutoCompleteTextView spinnerRoUID;
-    TextInputEditText edtPoUID, edtDateStart, edtDateEnd;
+    AutoCompleteTextView spinnerRoUID, spinnerCustName, spinnerSupplierName;
+    TextInputEditText edtPoUID, edtDateStart, edtDateEnd, edtBankNameAndAccountNumber, edtAccountOwnerName, edtPayee;
     DatePickerDialog datePicker;
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
     ArrayList<GoodIssueModel> goodIssueModelArrayList = new ArrayList<>();
@@ -124,14 +131,16 @@ public class AddBkkActivity extends AppCompatActivity {
     View firstViewData;
     NestedScrollView nestedScrollView;
 
-    List<String> arrayListRoUID, arrayListPoUID;
+    List<String> arrayListRoUID, arrayListPoUID, arrayListSupplierUID;
     List<ProductItems> productItemsList;
+    List<String> customerName, supplierName;
 
-    LinearLayout llWrapFilterByDateRange, llWrapFilterByRouid, llNoData;
 
-    ImageButton btnGiSearchByDateReset, btnGiSearchByRoUIDReset;
+    LinearLayout llWrapFilterByDateRange, llWrapFilterByRouid, llNoData, llWrapFilter, llShowSpinnerRoAndEdtPo, llWrapSupplierDetail;
 
-    ExtendedFloatingActionButton fabCreateGiRecap;
+    ImageButton btnGiSearchByDateReset, btnResetRouid, btnResetCustomer, btnResetSupplier;
+
+    ExtendedFloatingActionButton fabCreateCOR;
 
     DialogInterface dialogInterface = new DialogInterface();
 
@@ -145,10 +154,27 @@ public class AddBkkActivity extends AppCompatActivity {
     DecimalFormat df = new DecimalFormat("0.00");
     DecimalFormat dfRound = new DecimalFormat("0");
 
+    String customerData = "", customerID ="", supplierData= "", randomString="NULL";
+    LinearLayout llBottomSelectionOptions;
+    ImageButton btnExitSelection;
+    //btnDeleteSelected, btnSelectAll, btnVerifySelected;
+    TextView tvTotalSelectedItem;
+
+    float totalUnit;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_bkk);
+        setContentView(R.layout.activity_add_cash_out_request);
+
+        helper.ACTIVITY_NAME = "COR";
+
+        customerName = new ArrayList<>();
+        supplierName = new ArrayList<>();
+
+        tvTotalSelectedItem = findViewById(R.id.tvTotalSelectedItem);
+        btnExitSelection = findViewById(R.id.btnExitSelection);
+        llBottomSelectionOptions = findViewById(R.id.llBottomSelectionOptions);
 
         LangUtils.setLocale(this, "en");
 
@@ -180,16 +206,30 @@ public class AddBkkActivity extends AppCompatActivity {
         edtDateStart = findViewById(R.id.edt_gi_date_filter_start);
         edtDateEnd = findViewById(R.id.edt_gi_date_filter_end);
         rvGoodIssueList = findViewById(R.id.rv_good_issue_list);
-        imgbtnExpandCollapseFilterLayout = findViewById(R.id.imgbtn_expand_collapse_filter_layout);
-        llWrapFilterByDateRange = findViewById(R.id.ll_wrap_filter_by_date_range);
-        llWrapFilterByRouid = findViewById(R.id.ll_wrap_filter_by_rouid);
+        imgbtnExpandCollapseFilterLayout = findViewById(R.id.imgbtnExpandCollapseFilterLayout);
+        //llWrapFilterByDateRange = findViewById(R.id.ll_wrap_filter_by_date_range);
+        //llWrapFilterByRouid = findViewById(R.id.ll_wrap_filter_by_rouid);
+        llWrapSupplierDetail = findViewById(R.id.llWrapSupplierDetail);
+        llWrapFilter = findViewById(R.id.llWrapFilter);
+        llShowSpinnerRoAndEdtPo = findViewById(R.id.llShowSpinnerRoAndEdtPo);
+        spinnerCustName = findViewById(R.id.spinnerCustName);
+        spinnerSupplierName = findViewById(R.id.spinnerSupplierName);
+        edtBankNameAndAccountNumber = findViewById(R.id.edtBankNameAndAccountNumber);
+        edtAccountOwnerName = findViewById(R.id.edtAccountOwnerName);
+        edtPayee = findViewById(R.id.edtPayee);
+
+        spinnerSupplierName.setFilters(new InputFilter[] {new InputFilter.AllCaps()});
+        spinnerCustName.setFilters(new InputFilter[] {new InputFilter.AllCaps()});
+        spinnerRoUID.setFilters(new InputFilter[] {new InputFilter.AllCaps()});
 
         llNoData = findViewById(R.id.ll_no_data);
         nestedScrollView = findViewById(R.id.nestedScrollView);
 
         btnGiSearchByDateReset = findViewById(R.id.btn_gi_search_date_reset);
-        btnGiSearchByRoUIDReset = findViewById(R.id.btn_gi_search_rouid_reset);
-        fabCreateGiRecap = findViewById(R.id.fab_create_gi_recap);
+        btnResetRouid = findViewById(R.id.btnResetRouid);
+        btnResetCustomer = findViewById(R.id.btnResetCustomer);
+        btnResetSupplier = findViewById(R.id.btnResetSupplier);
+        fabCreateCOR = findViewById(R.id.fabCreateCOR);
 
         TypedValue typedValue = new TypedValue();
         Resources.Theme theme = context.getTheme();
@@ -197,7 +237,9 @@ public class AddBkkActivity extends AppCompatActivity {
         @ColorInt int color = typedValue.data;
 
         btnGiSearchByDateReset.setColorFilter(color);
-        btnGiSearchByRoUIDReset.setColorFilter(color);
+        btnResetRouid.setColorFilter(color);
+        btnResetCustomer.setColorFilter(color);
+        btnResetSupplier.setColorFilter(color);
 
         ActionBar actionBar = getSupportActionBar();
 
@@ -206,20 +248,20 @@ public class AddBkkActivity extends AppCompatActivity {
         // ACTION BAR FOR STANDARD ACTIVITY
         assert actionBar != null;
         helper.handleActionBarConfigForStandardActivity(
-                this, actionBar, "Buat BKK");
+                this, actionBar, "Buat Cash-Out");
 
         // SYSTEM UI MODE FOR STANDARD ACTIVITY
         helper.handleUIModeForStandardActivity(this, actionBar);
 
         // DRAGLINEARLAYOUT FOR FILTERING
-        DragLinearLayout dragLinearLayout = findViewById(R.id.drag_linear_layout);
+        /*DragLinearLayout dragLinearLayout = findViewById(R.id.drag_linear_layout);
         for(int i = 0; i < dragLinearLayout.getChildCount(); i++){
             View child = dragLinearLayout.getChildAt(i);
             // the child will act as its own drag handle
             dragLinearLayout.setViewDraggable(child, child);
-        }
+        }*/
 
-        dragLinearLayout.setOnViewSwapListener((firstView, firstPosition,
+        /*dragLinearLayout.setOnViewSwapListener((firstView, firstPosition,
                                                 secondView, secondPosition) -> {
             // Vibrate for 500 milliseconds
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -230,10 +272,123 @@ public class AddBkkActivity extends AppCompatActivity {
                 vibrator.vibrate(100);
             }
             firstViewData = firstView;
-        });
+        });*/
 
         // SET DEFAULT LANG CODE TO ENGLISH
         LangUtils.setLocale(this, "en");
+
+
+        db.collection("CustomerData").whereEqualTo("custStatus", true)
+                .addSnapshotListener((value, error) -> {
+                    customerName.clear();
+                    if (value != null) {
+                        if (!value.isEmpty()) {
+                            for (DocumentSnapshot d : value.getDocuments()) {
+                                String spinnerCustUID = Objects.requireNonNull(d.get("custUID")).toString();
+                                String spinnerCustName = Objects.requireNonNull(d.get("custName")).toString();
+                                customerName.add(spinnerCustUID+" - "+spinnerCustName);
+                            }
+                            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddCashOutRequestActivity.this, R.layout.style_spinner, customerName);
+                            arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
+                            spinnerCustName.setAdapter(arrayAdapter);
+                        } else {
+                            Toast.makeText(AddCashOutRequestActivity.this, "Not exists", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+
+        db.collection("SupplierData").whereEqualTo("supplierStatus", true)
+                .addSnapshotListener((value, error) -> {
+                    supplierName.clear();
+                    if (value != null) {
+                        if (!value.isEmpty()) {
+                            for (DocumentSnapshot d : value.getDocuments()) {
+                                String spinnerSupplierName = Objects.requireNonNull(d.get("supplierName")).toString();
+                                supplierName.add(spinnerSupplierName);
+                            }
+                            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddCashOutRequestActivity.this, R.layout.style_spinner, supplierName);
+                            arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
+                            spinnerSupplierName.setAdapter(arrayAdapter);
+                        } else {
+                            Toast.makeText(AddCashOutRequestActivity.this, "Not exists", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+
+
+        btnResetCustomer.setOnClickListener(view -> {
+            btnResetCustomer.setVisibility(View.GONE);
+            btnResetRouid.setVisibility(View.GONE);
+            spinnerCustName.setText(null);
+            customerData = null;
+            clearRoPoData();
+            llShowSpinnerRoAndEdtPo.setVisibility(View.GONE);
+        });
+
+        btnResetSupplier.setOnClickListener(view -> {
+            btnResetSupplier.setVisibility(View.GONE);
+            llWrapSupplierDetail.setVisibility(View.GONE);
+            spinnerSupplierName.setText(null);
+            edtBankNameAndAccountNumber.setText(null);
+            edtAccountOwnerName.setText(null);
+            edtPayee.setText(null);
+        });
+
+
+
+
+
+        spinnerCustName.setOnItemClickListener((adapterView, view, position, l) -> {
+            String selectedSpinnerCustomerName = (String) adapterView.getItemAtPosition(position);
+            customerData = selectedSpinnerCustomerName;
+            spinnerCustName.setError(null);
+            String[] custID =  selectedSpinnerCustomerName.split("-");
+            customerID = custID[0];
+            randomString = getRandomString2(5);
+
+            btnResetCustomer.setVisibility(View.VISIBLE);
+            clearRoPoData();
+
+
+            db.collection("ReceivedOrderData").whereEqualTo("roStatus", true)
+                    .addSnapshotListener((value, error) -> {
+                        arrayListRoUID.clear();
+                        if (value != null) {
+                            if (!value.isEmpty()) {
+                                for (DocumentSnapshot d : value.getDocuments()) {
+                                    String spinnerPurchaseOrders = Objects.requireNonNull(d.get("roUID")).toString();
+                                    String roCustName = Objects.requireNonNull(d.get("roCustName")).toString();
+                                    if (roCustName.equals(spinnerCustName.getText().toString())){
+                                        arrayListRoUID.add(spinnerPurchaseOrders);
+                                    }
+
+                                }
+                                ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddCashOutRequestActivity.this, R.layout.style_spinner, arrayListRoUID);
+                                arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
+                                spinnerRoUID.setAdapter(arrayAdapter);
+                            } else {
+                                if(!this.isFinishing()) {
+                                    dialogInterface.roNotExistsDialogForInvoice(AddCashOutRequestActivity.this);
+                                }
+                            }
+                        }
+                    });
+
+            llShowSpinnerRoAndEdtPo.setVisibility(View.VISIBLE);
+        });
+
+        spinnerCustName.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View view, int i, KeyEvent keyEvent) {
+                if (spinnerCustName.getText().toString().equals("")){
+                    llShowSpinnerRoAndEdtPo.setVisibility(View.GONE);
+                }
+                return false;
+            }
+        });
+
+        spinnerCustName.setOnFocusChangeListener((view, b) -> spinnerCustName.setText(customerData));
+
 
         edtDateStart.setOnClickListener(view -> {
             final Calendar calendar = Calendar.getInstance();
@@ -241,7 +396,7 @@ public class AddBkkActivity extends AppCompatActivity {
             monthStrVal = String.valueOf(calendar.get(Calendar.MONTH));
             String yearStrVal = String.valueOf(calendar.get(Calendar.YEAR));
 
-            datePicker = new DatePickerDialog(AddBkkActivity.this,
+            datePicker = new DatePickerDialog(AddCashOutRequestActivity.this,
                     (datePicker, year, month, dayOfMonth) -> {
                         int monthInt = month + 1;
 
@@ -272,7 +427,7 @@ public class AddBkkActivity extends AppCompatActivity {
             monthStrVal = String.valueOf(calendar.get(Calendar.MONTH));
             String yearStrVal = String.valueOf(calendar.get(Calendar.YEAR));
 
-            datePicker = new DatePickerDialog(AddBkkActivity.this,
+            datePicker = new DatePickerDialog(AddCashOutRequestActivity.this,
                     (datePicker, year, month, dayOfMonth) -> {
                         int monthInt = month + 1;
 
@@ -309,30 +464,44 @@ public class AddBkkActivity extends AppCompatActivity {
 
         arrayListRoUID = new ArrayList<>();
         arrayListPoUID = new ArrayList<>();
+        arrayListSupplierUID = new ArrayList<>();
 
-        db.collection("ReceivedOrderData").whereEqualTo("roStatus", true)
-                .addSnapshotListener((value, error) -> {
-                    arrayListRoUID.clear();
-                    if (value != null) {
-                        if (!value.isEmpty()) {
-                            for (DocumentSnapshot d : value.getDocuments()) {
-                                String spinnerPurchaseOrders = Objects.requireNonNull(d.get("roUID")).toString();
-                                arrayListRoUID.add(spinnerPurchaseOrders);
-                            }
-                            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddBkkActivity.this, R.layout.style_spinner, arrayListRoUID);
-                            arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
-                            spinnerRoUID.setAdapter(arrayAdapter);
-                        } else {
-                            if(!this.isFinishing()) {
-                                dialogInterface.roNotExistsDialogForInvoice(AddBkkActivity.this);
-                            }
+
+        spinnerSupplierName.setOnItemClickListener((adapterView, view, i, l) -> {
+            spinnerSupplierName.setError(null);
+            String selectedSpinnerSupplierID = (String) adapterView.getItemAtPosition(i);
+
+            //Toast.makeText(context, selectedSpinnerSupplierID, Toast.LENGTH_SHORT).show();
+
+            llWrapSupplierDetail.setVisibility(View.VISIBLE);
+            btnResetSupplier.setVisibility(View.VISIBLE);
+
+            db.collection("SupplierData").whereEqualTo("supplierName", selectedSpinnerSupplierID).get()
+                    .addOnSuccessListener(queryDocumentSnapshots -> {
+                        for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots){
+                            SupplierModel supplierModel = documentSnapshot.toObject(SupplierModel.class);
+                            supplierModel.setSupplierID(documentSnapshot.getId());
+                            suppplieruidVal = selectedSpinnerSupplierID;
+
+
+                            supplierPayee = supplierModel.getSupplierPayeeName();
+                            String bankAlias = supplierModel.getBankName();
+                            String bankAliasReplace = bankAlias.replace(" - ","-");
+                            int indexBankAliasVal = bankAliasReplace.lastIndexOf('-');
+                            supplierBankAndAccountNumber = bankAliasReplace.substring(0, indexBankAliasVal) + " - " + supplierModel.getBankAccountNumber() ;
+                            supplierAccountOwnerName = supplierModel.getBankAccountOwnerName();
                         }
-                    }
-                });
+                        edtBankNameAndAccountNumber.setText(supplierBankAndAccountNumber);
+                        edtAccountOwnerName.setText(supplierAccountOwnerName);
+                        edtPayee.setText(supplierPayee);
+                    });
+        });
 
         spinnerRoUID.setOnItemClickListener((adapterView, view, i, l) -> {
             spinnerRoUID.setError(null);
             String selectedSpinnerPoPtBasNumber = (String) adapterView.getItemAtPosition(i);
+
+            btnResetRouid.setVisibility(View.VISIBLE);
 
             db.collection("ReceivedOrderData").whereEqualTo("roUID", selectedSpinnerPoPtBasNumber).get()
                     .addOnSuccessListener(queryDocumentSnapshots -> {
@@ -346,6 +515,8 @@ public class AddBkkActivity extends AppCompatActivity {
                     });
         });
 
+        spinnerRoUID.setOnFocusChangeListener((view, b) -> spinnerRoUID.setText(rouidVal));
+
         btnGiSearchByDateReset.setOnClickListener(view -> {
             edtDateStart.setText(null);
             edtDateEnd.setText(null);
@@ -354,50 +525,131 @@ public class AddBkkActivity extends AppCompatActivity {
             btnGiSearchByDateReset.setVisibility(View.GONE);
         });
 
-        btnGiSearchByRoUIDReset.setOnClickListener(view -> {
+        btnResetRouid.setOnClickListener(view -> {
             spinnerRoUID.setText(null);
-            spinnerRoUID.clearFocus();
-            btnGiSearchByRoUIDReset.setVisibility(View.GONE);
+            rouidVal = null;
+            edtPoUID.setText(null);
+            btnResetRouid.setVisibility(View.GONE);
+            btnResetCustomer.setVisibility(View.GONE);
         });
 
-        fabCreateGiRecap.hide();
-
         btnSearchData.setOnClickListener(view -> {
-            View viewLayout = AddBkkActivity.this.getCurrentFocus();
+            View viewLayout = AddCashOutRequestActivity.this.getCurrentFocus();
             if (viewLayout != null) {
                 InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(viewLayout.getWindowToken(), 0);
             }
-            if (!Objects.requireNonNull(edtDateStart.getText()).toString().isEmpty()&&
+            if (spinnerCustName.getText().toString().isEmpty()){
+                spinnerCustName.setError("");
+            } else{
+                spinnerCustName.setError(null);
+            }
+
+            if (spinnerRoUID.getText().toString().isEmpty()){
+                spinnerRoUID.setError("");
+            } else{
+                spinnerRoUID.setError(null);
+            }
+
+            if (Objects.requireNonNull(edtPoUID.getText()).toString().isEmpty()){
+                edtPoUID.setError("");
+            } else{
+                edtPoUID.setError(null);
+            }
+
+            if (spinnerSupplierName.getText().toString().isEmpty()){
+                spinnerSupplierName.setError("");
+            } else{
+                spinnerSupplierName.setError(null);
+            }
+
+            if (Objects.requireNonNull(edtBankNameAndAccountNumber.getText()).toString().isEmpty()){
+                edtBankNameAndAccountNumber.setError("");
+            } else{
+                edtBankNameAndAccountNumber.setError(null);
+            }
+
+            if (Objects.requireNonNull(edtAccountOwnerName.getText()).toString().isEmpty()){
+                edtAccountOwnerName.setError("");
+            } else{
+                edtAccountOwnerName.setError(null);
+            }
+
+            if (Objects.requireNonNull(edtPayee.getText()).toString().isEmpty()){
+                edtPayee.setError("");
+            } else{
+                edtPayee.setError(null);
+            }
+
+            if (Objects.requireNonNull(edtDateStart.getText()).toString().isEmpty()){
+                edtDateStart.setError("");
+            } else{
+                edtDateStart.setError(null);
+            }
+
+            if (Objects.requireNonNull(edtDateEnd.getText()).toString().isEmpty()){
+                edtDateEnd.setError("");
+            } else{
+                edtDateEnd.setError(null);
+            }
+
+            if (!spinnerCustName.getText().toString().isEmpty()&&
+                    !spinnerRoUID.getText().toString().isEmpty()&&
+                    !spinnerSupplierName.getText().toString().isEmpty()&&
+                    !edtPoUID.getText().toString().isEmpty()&&
+                    !edtBankNameAndAccountNumber.getText().toString().isEmpty()&&
+                    !edtAccountOwnerName.getText().toString().isEmpty()&&
+                    !edtPayee.getText().toString().isEmpty()&&
+                    !Objects.requireNonNull(edtDateStart.getText()).toString().isEmpty()&&
                     !Objects.requireNonNull(edtDateEnd.getText()).toString().isEmpty()){
                 searchQuery();
-            } else {
-                nestedScrollView.setVisibility(View.GONE);
-                dialogInterface.mustAddDateRangeInformation(this);
             }
         });
 
-        fabCreateGiRecap.setOnClickListener(view -> {
+        final String userId = helper.getUserId();
+        DatabaseReference referenceProfile = FirebaseDatabase.getInstance("https://bas-delivery-report-default-rtdb.asia-southeast1.firebasedatabase.app").getReference("RegisteredUser");
+        referenceProfile.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                coCreatedBy = snapshot.child(userId).child("fullName").getValue(String.class);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(AddCashOutRequestActivity.this, "Terjadi kesalahan.", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        fabCreateCOR.setOnClickListener(view -> {
             if (ContextCompat.checkSelfPermission(context,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE)!=
                     PackageManager.PERMISSION_GRANTED){
                 ActivityCompat.requestPermissions((Activity) context,
                         new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 10);
             } else {
-                float totalUnit = 0;
+                for (int i = 0; i < giManagementAdapter.getSelected().size(); i++) {
+                    totalUnit += giManagementAdapter.getSelected().get(i).getGiVhlCubication();
+                }
+
+                //Toast.makeText(context, String.valueOf(totalUnit), Toast.LENGTH_SHORT).show();
+
+                /*totalUnit = 0;
                 for (int i = 0; i < goodIssueModelArrayList.size(); i++){
                     totalUnit += goodIssueModelArrayList.get(i).getGiVhlCubication();
-                }
-                double totalIDR = matSellPrice *Double.parseDouble(df.format(totalUnit));
+                }*/
 
-                String roUIDValNoSpace = rouidVal.replaceAll("\\s","");
-                invUID = getRandomString()+"-INV-"+roUIDValNoSpace;
+
+                double totalIDR = matBuyPrice *Double.parseDouble(df.format(totalUnit));
+
+                //Toast.makeText(context, String.valueOf(totalUnit), Toast.LENGTH_SHORT).show();*/
 
                 String invDateCreated = new SimpleDateFormat("dd/MM/yyyy", Locale.US).format(new Date());
-                String invCreatedBy = helper.getUserId();
 
-                dialogInterface.confirmCreateInvoice(context, db, goodIssueModelArrayList,
-                        invUID, invPotypeVal, invCreatedBy, invDateCreated, invPoDate, invPoUID, invCustName, totalIDR, invTax1, invTax2);
+                //String roUIDValNoSpace = rouidVal.replaceAll("\\s","");
+                //roUID = getRandomString()+"-COP-"+roUIDValNoSpace;
+
+                dialogInterface.confirmCreateCashOutProof(context, db, goodIssueModelArrayList,
+                        rouidVal, invPotypeVal, coCreatedBy, invDateCreated, invPoDate, invPoUID, invCustName, totalIDR, invTax1, invTax2);
 
                 String custNameValReplace = custNameVal.replace(" - ","-");
                 int indexCustNameVal = custNameValReplace.lastIndexOf('-');
@@ -411,7 +663,88 @@ public class AddBkkActivity extends AppCompatActivity {
             }
         });
 
+
+        // SHOW INIT DATA ON CREATE
         searchQueryAll();
+
+        // CREATE GI MANAGEMENT ADAPTER
+        giManagementAdapter = new GIManagementAdapter(this, goodIssueModelArrayList);
+
+        // HIDE FAB CREATE COR ON CREATE
+        fabCreateCOR.animate().translationY(800).setDuration(100).start();
+
+        // NOTIFY REAL-TIME CHANGES AS USER CHOOSE THE ITEM
+        final Handler handler = new Handler();
+        Runnable runnable = new Runnable() {
+            public void run() {
+                // CHECK IF DATE AND RO/PO NUMBER IS SELECTED
+                if (!Objects.requireNonNull(edtDateStart.getText()).toString().isEmpty()
+                        && !Objects.requireNonNull(edtDateEnd.getText()).toString().isEmpty()
+                        && !spinnerRoUID.getText().toString().isEmpty()
+                        && !Objects.requireNonNull(edtPoUID.getText()).toString().isEmpty()){
+
+                    int itemSelectedSize = giManagementAdapter.getSelected().size();
+                    String itemSelectedSizeVal = String.valueOf(itemSelectedSize).concat(" item terpilih");
+                    if (giManagementAdapter.getSelected().size()>0){
+
+                        fabCreateCOR.animate().translationY(0).setDuration(100).start();
+
+                        tvTotalSelectedItem.setText(itemSelectedSizeVal);
+                        llBottomSelectionOptions.animate()
+                                .translationY(0).alpha(1.0f)
+                                .setDuration(100)
+                                .setListener(new AnimatorListenerAdapter() {
+                                    @Override
+                                    public void onAnimationStart(Animator animation) {
+                                        super.onAnimationStart(animation);
+                                        llBottomSelectionOptions.setVisibility(View.VISIBLE);
+                                    }
+                                });
+
+
+                    } else {
+                        totalUnit = 0;
+                        fabCreateCOR.animate().translationY(800).setDuration(100).start();
+                        llBottomSelectionOptions.animate()
+                                .translationY(llBottomSelectionOptions.getHeight()).alpha(0.0f)
+                                .setListener(new AnimatorListenerAdapter() {
+                                    @Override
+                                    public void onAnimationEnd(Animator animation) {
+                                        super.onAnimationEnd(animation);
+                                        llBottomSelectionOptions.setVisibility(View.GONE);
+                                    }
+                                });
+                    }
+                }
+
+                handler.postDelayed(this, 100);
+            }
+        };
+        runnable.run();
+
+        btnExitSelection.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                giManagementAdapter.clearSelection();
+                llBottomSelectionOptions.animate()
+                        .translationY(llBottomSelectionOptions.getHeight()).alpha(0.0f)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                super.onAnimationEnd(animation);
+                                llBottomSelectionOptions.setVisibility(View.GONE);
+                            }
+                        });
+            }
+        });
+    }
+
+    private void clearRoPoData(){
+        rouidVal = null;
+        pouidVal = null;
+
+        spinnerRoUID.setText(null);
+        edtPoUID.setText(null);
     }
 
     private static String getRandomString() {
@@ -422,12 +755,33 @@ public class AddBkkActivity extends AppCompatActivity {
         return sb.toString();
     }
 
-    public void createInvPDF(String dest){
+    private static String getRandomString2(final int sizeOfRandomString)
+    {
+        final Random random=new Random();
+        final StringBuilder sb=new StringBuilder(sizeOfRandomString);
+        for(int i=0;i<sizeOfRandomString;++i)
+            sb.append(ALLOWED_CHARACTERS.charAt(random.nextInt(ALLOWED_CHARACTERS.length())));
+        return sb.toString();
+    }
+
+    public void createCashOutProofPDF(String dest){
         if (new File(dest).exists()){
             new File(dest).deleteOnExit();
         }
 
         try {
+            // RECAP DATA
+            /*float width = mmToPt(248);
+            float height = mmToPt(157);
+            Rectangle f4Landscape = new Rectangle(width, height);
+            Document document = new Document(f4Landscape, 10, 10, 10, 10);
+            PdfWriter.getInstance(document, new FileOutputStream(dest));
+            document.open();
+            document.addAuthor("PT BAS");
+            document.addCreator("BAS Control Center");
+            document.addCreationDate();
+            addInvTtl(document);
+            addInvMainContent(document);*/
             Document document = new Document();
             PdfWriter.getInstance(document, new FileOutputStream(dest));
             document.open();
@@ -436,19 +790,10 @@ public class AddBkkActivity extends AppCompatActivity {
             document.addCreator("BAS Control Center");
             document.addCreationDate();
             // CREATE INVOICE PAGE
-            addUpperSpc(document);
-            addInvTtl(document);
-            addInvMainContent(document);
-            // CREATE SUMMARY OF INVOICE PAGE IF PO TYPE != 2 (JASA ANGKUT SAJA)
-            if (invPoType == 0 || invPoType == 1){
-                document.newPage();
-                addGiRcpTtl(document);
-                addGiRcpMainContent(document);
-            }
+            addCoTtl(document);
+            addCoMainContent(document);
             document.close();
-
-            // OPEN GENERATED FILE
-            dialogInterface.invoiceGeneratedInformation(context, dest);
+            dialogInterface.cashOutProofGeneratedInformation(context, dest);
 
         } catch (DocumentException | FileNotFoundException e) {
             e.printStackTrace();
@@ -456,19 +801,9 @@ public class AddBkkActivity extends AppCompatActivity {
         }
     }
 
-    private void addUpperSpc(Document document) throws DocumentException {
-        Paragraph preface0 = new Paragraph();
-        Chunk title = new Chunk(" ", fontTransparent);
-        Paragraph paragraphTitle = new Paragraph(title);
-        paragraphTitle.setAlignment(Element.ALIGN_LEFT);
-        document.add(paragraphTitle);
-        preface0.setAlignment(Element.ALIGN_CENTER);
-        preface0.setSpacingAfter(120);
-        document.add(preface0);
-    }
-    private void addInvTtl(Document document) throws DocumentException {
+    private void addCoTtl(Document document) throws DocumentException {
         Paragraph preface1 = new Paragraph();
-        Chunk title = new Chunk("INVOICE", fontBold);
+        Chunk title = new Chunk("CASH-OUT (KEPERLUAN INTERNAL)", fontBold);
         Paragraph paragraphTitle = new Paragraph(title);
         paragraphTitle.setAlignment(Element.ALIGN_LEFT);
         document.add(paragraphTitle);
@@ -536,6 +871,17 @@ public class AddBkkActivity extends AppCompatActivity {
         cell.setPadding(5);
         return cell;
     }
+
+    public static PdfPCell cellTxtBrdrNrmlMainContent(Paragraph paragraph, int alignment) throws DocumentException {
+        paragraph.setAlignment(alignment);
+        paragraph.setLeading(0, 1);
+        PdfPCell cell = new PdfPCell();
+        cell.addElement(paragraph);
+        cell.setHorizontalAlignment(alignment);
+        cell.setVerticalAlignment(Element.ALIGN_LEFT);
+        cell.setPadding(5);
+        return cell;
+    }
     public static PdfPCell cellTxtBrdrTopNrmlMainContent(Paragraph paragraph, int alignment) throws DocumentException {
         paragraph.setAlignment(alignment);
         paragraph.setLeading(0, 1);
@@ -587,7 +933,7 @@ public class AddBkkActivity extends AppCompatActivity {
         cell.setPaddingLeft(7);
         return cell;
     }
-    private void addInvMainContent(Document document) throws DocumentException{
+    private void addCoMainContent(Document document) throws DocumentException{
         try {
             String invDateCreated =
                     new SimpleDateFormat("dd/MM/yyyy", Locale.US).format(new Date());
@@ -597,8 +943,8 @@ public class AddBkkActivity extends AppCompatActivity {
             Paragraph paragraphBlank = new Paragraph(" ");
 
             Paragraph paragraphInvDateCreated =
-                    new Paragraph("Terakhir diperbarui: "
-                            +invDateCreated+" "+invTimeCreated+" WIB", fontNormalSmallItalic);
+                    new Paragraph("Tanggal cetak: "
+                            +invDateCreated+" "+invTimeCreated+" WIB, oleh: "+coCreatedBy, fontNormalSmallItalic);
             paragraphInvDateCreated.setAlignment(Element.ALIGN_RIGHT);
             paragraphInvDateCreated.setSpacingAfter(5);
 
@@ -616,33 +962,38 @@ public class AddBkkActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
 
-            // TOTAL UNIT CALCULATION
-            float totalUnit = 0;
-            for (int i = 0; i < goodIssueModelArrayList.size(); i++){
-                totalUnit += goodIssueModelArrayList.get(i).getGiVhlCubication();
+// TOTAL UNIT CALCULATION
+            float totalUnitFinal = 0;
+            for (int i = 0; i < giManagementAdapter.getSelected().size(); i++) {
+                totalUnitFinal += giManagementAdapter.getSelected().get(i).getGiVhlCubication();
             }
+            // TOTAL UNIT CALCULATION
+            //float totalUnitFinal = totalUnit;
+            /*for (int i = 0; i < goodIssueModelArrayList.size(); i++){
+                totalUnitFinal += goodIssueModelArrayList.get(i).getGiVhlCubication();
+            }*/
 
             // TOTAL AMOUNT CALCULATION
-            double totalAmountForMaterials = matSellPrice*totalUnit;
-            double totalAmountForTransportService = transportServiceSellPrice*totalUnit;
-            double taxPPN = (0.11)*totalAmountForMaterials;
-            double taxPPH = (0.02)*totalAmountForTransportService;
-            double totalDue = totalAmountForMaterials+totalAmountForTransportService+taxPPN-taxPPH;
-            double totalDueForTransportService = totalAmountForTransportService-taxPPH;
+            double totalAmountForMaterials = matBuyPrice *totalUnitFinal;
+            double totalAmountForTransportService = transportServiceSellPrice*totalUnitFinal;
+            /*double taxPPN = (0.11)*totalAmountForMaterials;
+            double taxPPH = (0.02)*totalAmountForTransportService;*/
+            double totalDue = totalAmountForMaterials+totalAmountForTransportService;
+            //double totalDueForTransportService = totalAmountForTransportService-taxPPH;
 
             // INIT TABLE
             PdfPTable tblInvSection1 = new PdfPTable(7);
             PdfPTable tblInvSection2 = new PdfPTable(7);
             PdfPTable tblInvSection3 = new PdfPTable(7);
             PdfPTable tblInvSection4 = new PdfPTable(7);
-            PdfPTable tblInvSection5 = new PdfPTable(5);
-            PdfPTable tblInvSection6 = new PdfPTable(5);
-            PdfPTable tblInvSection7 = new PdfPTable(5);
-            PdfPTable tblInvSection8 = new PdfPTable(5);
-            PdfPTable tblInvSection9 = new PdfPTable(5);
+            PdfPTable tblInvSection5 = new PdfPTable(4);
+            PdfPTable tblInvSection6 = new PdfPTable(4);
+            PdfPTable tblInvSection7 = new PdfPTable(4);
+            PdfPTable tblInvSection8 = new PdfPTable(4);
+            PdfPTable tblInvSection9 = new PdfPTable(4);
             PdfPTable tblInvSection10 = new PdfPTable(2);
             PdfPTable tblInvSection11 = new PdfPTable(2);
-            PdfPTable tblInvSection12 = new PdfPTable(6);
+            PdfPTable tblInvSection12 = new PdfPTable(5);
             PdfPTable tblInvSection13 = new PdfPTable(6);
 
             // WIDTH PERCENTAGE CONFIG
@@ -661,23 +1012,23 @@ public class AddBkkActivity extends AppCompatActivity {
             tblInvSection13.setWidthPercentage(100);
 
             // WIDTH FLOAT CONFIG
-            tblInvSection1.setWidths(new float[]{5,1,7,1,6,1,9}); //7 COLS
-            tblInvSection2.setWidths(new float[]{3,1,9,1,4,1,11}); //7 COLS
-            tblInvSection3.setWidths(new float[]{3,1,9,1,4,1,11}); //7 COLS
-            tblInvSection4.setWidths(new float[]{3,1,9,1,4,1,11}); //5 COLS
-            tblInvSection5.setWidths(new float[]{3,2,2,3,4}); //5 COLS
-            tblInvSection6.setWidths(new float[]{3,2,2,3,4}); //5 COLS
-            tblInvSection7.setWidths(new float[]{3,2,2,3,4}); //5 COLS
-            tblInvSection8.setWidths(new float[]{3,2,2,3,4}); //5 COLS
-            tblInvSection9.setWidths(new float[]{3,2,2,3,4}); //5 COLS
+            tblInvSection1.setWidths(new float[]{6,1,7,1,6,1,9}); //7 COLS
+            tblInvSection2.setWidths(new float[]{4,1,9,1,4,1,11}); //7 COLS
+            tblInvSection3.setWidths(new float[]{4,1,9,1,4,1,11}); //7 COLS
+            tblInvSection4.setWidths(new float[]{4,1,9,1,4,1,11}); //5 COLS
+            tblInvSection5.setWidths(new float[]{3,3,3,4}); //5 COLS
+            tblInvSection6.setWidths(new float[]{3,3,3,4}); //5 COLS
+            tblInvSection7.setWidths(new float[]{3,3,3,4}); //5 COLS
+            tblInvSection8.setWidths(new float[]{3,3,3,4}); //5 COLS
+            tblInvSection9.setWidths(new float[]{3,3,3,4}); //5 COLS
             tblInvSection10.setWidths(new float[]{2,10}); //2 COLS
             tblInvSection11.setWidths(new float[]{9,1}); //2 COLS
-            tblInvSection12.setWidths(new float[]{3,3,1,4,1,9}); //6 COLS
-            tblInvSection13.setWidths(new float[]{5,2,5,3,1,5}); //6 COLS
+            tblInvSection12.setWidths(new float[]{4,4,4,4,4}); //6 COLS
+            tblInvSection13.setWidths(new float[]{2,2,4,4,4,4,}); //6 COLS
 
             // ADD CELL TO RESPECTIVE TABLES
             tblInvSection1.addCell(cellColHeaderNoBrdr(
-                    new Paragraph("DITAGIH KE", fontMediumWhite),
+                    new Paragraph("PEMBAYARAN", fontMediumWhite),
                     Element.ALIGN_LEFT));
             tblInvSection1.addCell(cellTxtNoBrdrNrml(
                     new Paragraph("", fontMediumWhite),
@@ -689,7 +1040,7 @@ public class AddBkkActivity extends AppCompatActivity {
                     new Paragraph("", fontMediumWhite),
                     Element.ALIGN_LEFT));
             tblInvSection1.addCell(cellColHeaderNoBrdr(
-                    new Paragraph("DETAIL TAGIHAN", fontMediumWhite),
+                    new Paragraph("DETAIL CO", fontMediumWhite),
                     Element.ALIGN_LEFT));
             tblInvSection1.addCell(cellTxtNoBrdrNrml(
                     new Paragraph("", fontMediumWhite),
@@ -699,35 +1050,35 @@ public class AddBkkActivity extends AppCompatActivity {
                     Element.ALIGN_LEFT));
 
             tblInvSection2.addCell(cellTxtNoBrdrNrml(
-                    new Paragraph("Nama", fontNormal),
+                    new Paragraph("KE REKENING", fontNormal),
                     Element.ALIGN_LEFT));
             tblInvSection2.addCell(cellTxtNoBrdrNrml(
                     new Paragraph(":", fontNormal),
                     Element.ALIGN_LEFT));
             tblInvSection2.addCell(cellTxtNoBrdrNrml(
-                    new Paragraph(custNameVal, fontNormal),
+                    new Paragraph(supplierBankAndAccountNumber, fontNormal),
                     Element.ALIGN_LEFT));
             tblInvSection2.addCell(cellTxtNoBrdrNrml(
                     new Paragraph("", fontMediumWhite),
                     Element.ALIGN_LEFT));
             tblInvSection2.addCell(cellTxtNoBrdrNrml(
-                    new Paragraph("Kode Unik Tagihan", fontNormal),
+                    new Paragraph("No. RO", fontNormal),
                     Element.ALIGN_LEFT));
             tblInvSection2.addCell(cellTxtNoBrdrNrml(
                     new Paragraph(":", fontNormal),
                     Element.ALIGN_LEFT));
             tblInvSection2.addCell(cellTxtNoBrdrNrml(
-                    new Paragraph(invUID, fontNormal),
+                    new Paragraph(rouidVal, fontNormal),
                     Element.ALIGN_LEFT));
 
             tblInvSection3.addCell(cellTxtNoBrdrNrml(
-                    new Paragraph("Alamat", fontNormal),
+                    new Paragraph("REK. A/N - DIBAYAR KE", fontNormal),
                     Element.ALIGN_LEFT));
             tblInvSection3.addCell(cellTxtNoBrdrNrml(
                     new Paragraph(":", fontNormal),
                     Element.ALIGN_LEFT));
             tblInvSection3.addCell(cellTxtNoBrdrNrml(
-                    new Paragraph(custAddressVal, fontNormal),
+                    new Paragraph(supplierAccountOwnerName + " - " + supplierPayee , fontNormal),
                     Element.ALIGN_LEFT));
             tblInvSection3.addCell(cellTxtNoBrdrNrml(
                     new Paragraph("", fontMediumWhite),
@@ -749,53 +1100,30 @@ public class AddBkkActivity extends AppCompatActivity {
             tblInvSection5.addCell(cellColHeader(
                     new Paragraph("Jumlah (Unit)", fontMedium), Element.ALIGN_RIGHT));
             tblInvSection5.addCell(cellColHeader(
-                    new Paragraph("Pajak", fontMedium), Element.ALIGN_RIGHT));
-            tblInvSection5.addCell(cellColHeader(
                     new Paragraph("Jumlah", fontMedium), Element.ALIGN_RIGHT));
 
             for (int i = 0; i<productItemsList.size();i++){
                 tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
                         new Paragraph(matNameVal, fontNormal), Element.ALIGN_LEFT));
                 tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
-                        new Paragraph(currencyVal+" "+currencyFormat(df.format(matSellPrice)), fontNormal), Element.ALIGN_RIGHT));
+                        new Paragraph(currencyVal+" "+currencyFormat(df.format(matBuyPrice)), fontNormal), Element.ALIGN_RIGHT));
                 tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
-                        new Paragraph(df.format(totalUnit), fontNormal), Element.ALIGN_RIGHT));
-                tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
-                        new Paragraph(currencyVal+" "+currencyFormat(df.format(taxPPN)), fontNormal), Element.ALIGN_RIGHT));
+                        new Paragraph(df.format(totalUnitFinal), fontNormal), Element.ALIGN_RIGHT));
                 tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
                         new Paragraph(currencyVal+" "+currencyFormat(df.format(totalAmountForMaterials)), fontNormal), Element.ALIGN_RIGHT));
             }
+
+
 
             tblInvSection7.addCell(cellTxtNoBrdrNrmlMainContent(
                     new Paragraph(transportServiceNameVal, fontNormal), Element.ALIGN_LEFT));
             tblInvSection7.addCell(cellTxtNoBrdrNrmlMainContent(
                     new Paragraph(currencyVal+" "+currencyFormat(df.format(transportServiceSellPrice)), fontNormal), Element.ALIGN_RIGHT));
             tblInvSection7.addCell(cellTxtNoBrdrNrmlMainContent(
-                    new Paragraph(df.format(totalUnit), fontNormal), Element.ALIGN_RIGHT));
-            tblInvSection7.addCell(cellTxtNoBrdrNrmlMainContent(
-                    new Paragraph(currencyVal+" "+currencyFormat(df.format(taxPPH)), fontNormal), Element.ALIGN_RIGHT));
+                    new Paragraph(df.format(totalUnitFinal), fontNormal), Element.ALIGN_RIGHT));
             tblInvSection7.addCell(cellTxtNoBrdrNrmlMainContent(
                     new Paragraph(currencyVal+" "+currencyFormat(df.format(totalAmountForTransportService)), fontNormal), Element.ALIGN_RIGHT));
 
-            tblInvSection8.addCell(cellTxtBrdrTopNrmlMainContent(
-                    new Paragraph("", fontMedium), Element.ALIGN_LEFT));
-            tblInvSection8.addCell(cellTxtBrdrTopNrmlMainContent(
-                    new Paragraph("", fontNormal), Element.ALIGN_LEFT));
-            tblInvSection8.addCell(cellTxtBrdrTopNrmlMainContent(
-                    new Paragraph("", fontMedium), Element.ALIGN_LEFT));
-            tblInvSection8.addCell(cellTxtBrdrTopNrmlMainContent(
-                    new Paragraph("Sub Total :"+"\n"+"Diskon :"+"\n"+"PPN 11% :"+"\n"+"PPh 23 :"+"\n"+"Total Tagihan:", fontNormal), Element.ALIGN_RIGHT));
-            if (invPoType == 2){
-                taxPPN = 0;
-                tblInvSection8.addCell(cellTxtBrdrTopNrmlMainContent(
-                        new Paragraph(currencyVal+" "+currencyFormat(df.format(totalAmountForTransportService))+"\n"+currencyVal+" "+"0"+"\n"+currencyVal+" "+currencyFormat(df.format(taxPPN))+"\n"+"("+currencyVal+" "+currencyFormat(df.format(taxPPH))+")"+"\n"+currencyVal+" "+currencyFormat(df.format(totalDueForTransportService)), fontNormal), Element.ALIGN_RIGHT));
-            } else if (invPoType == 1){
-                tblInvSection8.addCell(cellTxtBrdrTopNrmlMainContent(
-                        new Paragraph(currencyVal+" "+currencyFormat(df.format(totalAmountForMaterials))+"\n"+currencyVal+" "+"0"+"\n"+currencyVal+" "+currencyFormat(df.format(taxPPN))+"\n"+"("+currencyVal+" "+currencyFormat(df.format(taxPPH))+")"+"\n"+currencyVal+" "+currencyFormat(df.format(totalDue)), fontNormal), Element.ALIGN_RIGHT));
-            } else if (invPoType == 0){
-                tblInvSection8.addCell(cellTxtBrdrTopNrmlMainContent(
-                        new Paragraph(currencyVal+" "+currencyFormat(df.format(totalAmountForMaterials+totalAmountForTransportService   ))+"\n"+currencyVal+" "+"0"+"\n"+currencyVal+" "+currencyFormat(df.format(taxPPN))+"\n"+"("+currencyVal+" "+currencyFormat(df.format(taxPPH))+")"+"\n"+currencyVal+" "+currencyFormat(df.format(totalDue)), fontNormal), Element.ALIGN_RIGHT));
-            }
 
 
             tblInvSection9.addCell(cellColHeader(
@@ -803,11 +1131,9 @@ public class AddBkkActivity extends AppCompatActivity {
             tblInvSection9.addCell(cellColHeader(
                     new Paragraph("", fontNormal), Element.ALIGN_LEFT));
             tblInvSection9.addCell(cellColHeader(
-                    new Paragraph("", fontMedium), Element.ALIGN_LEFT));
+                    new Paragraph("JUMLAH PEMBAYARAN (PEMBULATAN)", fontMedium), Element.ALIGN_LEFT));
             tblInvSection9.addCell(cellColHeader(
-                    new Paragraph("TOTAL TAGIHAN (PEMBULATAN)", fontMedium), Element.ALIGN_RIGHT));
-            tblInvSection9.addCell(cellColHeader(
-                    new Paragraph(currencyVal+" "+currencyFormat(dfRound.format(totalDue)), fontMedium), Element.ALIGN_RIGHT));
+                    new Paragraph(currencyVal+" "+currencyFormat(df.format(math(totalDue))), fontMedium), Element.ALIGN_RIGHT));
 
             tblInvSection10.addCell(cellColHeaderNoBrdr(
                     new Paragraph("TERBILANG", fontMediumWhite),
@@ -816,98 +1142,58 @@ public class AddBkkActivity extends AppCompatActivity {
                     new Paragraph("", fontMediumWhite),
                     Element.ALIGN_LEFT));
 
+
+
+
+            //String totalDueVal = dfRound.format(totalDue);
+            //int indexTotalDueComaVal = totalDueVal.lastIndexOf('.');
+
+
             tblInvSection11.addCell(cellTxtNoBrdrNrml(
-                    new Paragraph(NumberToWords.convert(Long.parseLong(dfRound.format(totalDue)))+" Rupiah", fontMedium),
+                    new Paragraph(
+                            NumberToWords.convert(math(totalDue)) +
+                                    " Rupiah", fontMedium),
                     Element.ALIGN_LEFT));
             tblInvSection11.addCell(cellTxtNoBrdrNrml(
                     new Paragraph("", fontMediumWhite),
                     Element.ALIGN_LEFT));
 
-            tblInvSection12.addCell(cellImgQrSqr(img));
-            tblInvSection12.addCell(cellTxtNoBrdrNrmlWthPadLft(
-                    new Paragraph("Transfer Melalui", fontNormalSmall),
-                    Element.ALIGN_LEFT));
-            tblInvSection12.addCell(cellTxtNoBrdrNrml(
-                    new Paragraph(":", fontNormalSmall),
-                    Element.ALIGN_RIGHT));
-            tblInvSection12.addCell(cellTxtNoBrdrNrml(
-                    new Paragraph("BANK CENTRAL ASIA (BCA)", fontNormalSmall),
-                    Element.ALIGN_LEFT));
-            tblInvSection12.addCell(cellTxtNoBrdrNrml(
-                    new Paragraph("", fontNormalSmall),
-                    Element.ALIGN_LEFT));
-            tblInvSection12.addCell(cellTxtSpan4RowList());
 
-            tblInvSection12.addCell(cellTxtNoBrdrNrmlWthPadLft(
-                    new Paragraph("Atas Nama", fontNormalSmall),
+            tblInvSection12.addCell(cellColHeader(
+                    new Paragraph("PEMBUKUAN", fontMedium),
                     Element.ALIGN_LEFT));
-            tblInvSection12.addCell(cellTxtNoBrdrNrml(
-                    new Paragraph(":", fontNormalSmall),
-                    Element.ALIGN_RIGHT));
-            tblInvSection12.addCell(cellTxtNoBrdrNrml(
-                    new Paragraph("PT BINTANG ANDALAN SEMESTA", fontNormalSmall),
+            tblInvSection12.addCell(cellColHeader(
+                    new Paragraph("MENGETAHUI", fontMedium),
                     Element.ALIGN_LEFT));
-            tblInvSection12.addCell(cellTxtNoBrdrNrml(
-                    new Paragraph("", fontNormalSmall),
+            tblInvSection12.addCell(cellColHeader(
+                    new Paragraph("MENYETUJUI", fontMedium),
+                    Element.ALIGN_LEFT));
+            tblInvSection12.addCell(cellColHeader(
+                    new Paragraph("KASIR", fontMedium),
+                    Element.ALIGN_LEFT));
+            tblInvSection12.addCell(cellColHeader(
+                    new Paragraph("PENERIMA", fontMedium),
                     Element.ALIGN_LEFT));
 
-            tblInvSection12.addCell(cellTxtNoBrdrNrmlWthPadLft(
-                    new Paragraph("No. Rekening", fontNormalSmall),
+            tblInvSection13.addCell(cellTxtBrdrNrmlMainContent(
+                    new Paragraph("\n\n\n\n", fontMedium),
                     Element.ALIGN_LEFT));
-            tblInvSection12.addCell(cellTxtNoBrdrNrml(
-                    new Paragraph(":", fontNormalSmall),
-                    Element.ALIGN_RIGHT));
-            tblInvSection12.addCell(cellTxtNoBrdrNrml(
-                    new Paragraph("010-556-5777", fontNormalSmall),
+            tblInvSection13.addCell(cellTxtBrdrNrmlMainContent(
+                    new Paragraph("\n\n\n\n", fontMedium),
                     Element.ALIGN_LEFT));
-            tblInvSection12.addCell(cellTxtNoBrdrNrml(
-                    new Paragraph("", fontNormalSmall),
+            tblInvSection13.addCell(cellTxtBrdrNrmlMainContent(
+                    new Paragraph("\n\n\n\n", fontMedium),
                     Element.ALIGN_LEFT));
-
-            tblInvSection12.addCell(cellTxtNoBrdrNrmlWthPadLft(
-                    new Paragraph("Kode SWIFT", fontNormalSmall),
+            tblInvSection13.addCell(cellTxtBrdrNrmlMainContent(
+                    new Paragraph("\n\n\n\n", fontMedium),
                     Element.ALIGN_LEFT));
-            tblInvSection12.addCell(cellTxtNoBrdrNrml(
-                    new Paragraph(":", fontNormalSmall),
-                    Element.ALIGN_RIGHT));
-            tblInvSection12.addCell(cellTxtNoBrdrNrml(
-                    new Paragraph("CENAIDJAXXX", fontNormalSmall),
+            tblInvSection13.addCell(cellTxtBrdrNrmlMainContent(
+                    new Paragraph("\n\n\n\n", fontMedium),
                     Element.ALIGN_LEFT));
-            tblInvSection12.addCell(cellTxtNoBrdrNrml(
-                    new Paragraph("", fontNormalSmall),
+            tblInvSection13.addCell(cellTxtBrdrNrmlMainContent(
+                    new Paragraph("\n\n\n\n", fontMedium),
                     Element.ALIGN_LEFT));
 
-            tblInvSection12.addCell(cellTxtNoBrdrNrmlWthPadLft(
-                    new Paragraph("Status", fontMedium),
-                    Element.ALIGN_LEFT));
-            tblInvSection12.addCell(cellTxtNoBrdrNrml(
-                    new Paragraph(":", fontMedium),
-                    Element.ALIGN_RIGHT));
-            tblInvSection12.addCell(cellTxtNoBrdrNrml(
-                    new Paragraph("BELUM LUNAS", fontMedium),
-                    Element.ALIGN_LEFT));
-            tblInvSection12.addCell(cellTxtNoBrdrNrml(
-                    new Paragraph("", fontNormalSmall),
-                    Element.ALIGN_LEFT));
-
-            tblInvSection13.addCell(cellColHeaderNoBrdr(
-                    new Paragraph("DETAIL PEMBAYARAN", fontMediumWhite),
-                    Element.ALIGN_LEFT));
-            tblInvSection13.addCell(cellTxtNoBrdrNrml(
-                    new Paragraph("", fontNormalSmall),
-                    Element.ALIGN_RIGHT));
-            tblInvSection13.addCell(cellTxtNoBrdrNrml(
-                    new Paragraph("", fontNormalSmall),
-                    Element.ALIGN_RIGHT));
-            tblInvSection13.addCell(cellColHeaderNoBrdr(
-                    new Paragraph("CATATAN", fontMediumWhite),
-                    Element.ALIGN_LEFT));
-            tblInvSection13.addCell(cellTxtNoBrdrNrml(
-                    new Paragraph("", fontNormalSmall),
-                    Element.ALIGN_LEFT));
-            tblInvSection13.addCell(cellTxtNoBrdrNrml(
-                    new Paragraph("", fontNormalSmall),
-                    Element.ALIGN_LEFT));
 
             document.add(tblInvSection1);
             document.add(tblInvSection2);
@@ -924,14 +1210,13 @@ public class AddBkkActivity extends AppCompatActivity {
             if (invPoType == 2){
                 document.add(tblInvSection7);
             }
-            document.add(tblInvSection8);
             document.add(tblInvSection9);
             document.add(paragraphBlank); // SPACE SEPARATOR
             document.add(tblInvSection10);
             document.add(tblInvSection11);
             document.add(paragraphBlank); // SPACE SEPARATOR
-            document.add(tblInvSection13);
             document.add(tblInvSection12);
+            document.add(tblInvSection13);
             document.add(paragraphBlank); // SPACE SEPARATOR
             document.add(paragraphInvDateCreated);
 
@@ -1058,7 +1343,7 @@ public class AddBkkActivity extends AppCompatActivity {
             }
 
             String totalCubicationStrVal = df.format(totalCubication);
-            double totalIDR = matSellPrice*Double.parseDouble(df.format(totalCubication))    ;
+            double totalIDR = matBuyPrice *Double.parseDouble(df.format(totalCubication))    ;
             String totalIDRStrVal = currencyVal+" "+currencyFormat(df.format(totalIDR));
 
             table2.addCell(cellColHeader(
@@ -1090,9 +1375,23 @@ public class AddBkkActivity extends AppCompatActivity {
         return formatter.format(Double.parseDouble(amount));
     }
 
+    public static int math(double d) {
+        int c = (int) ((d) + 0.5d);
+        double n = d + 0.5d;
+        return (n - c) % 2 == 0 ? (int) d : c;
+    }
+
     private void searchQuery(){
+
+        showHideFilterComponents(false);
+
+        expandFilterViewValidation();
+        TransitionManager.beginDelayedTransition(cdvFilter, new AutoTransition());
+
         rouidVal = spinnerRoUID.getText().toString();
         pouidVal = Objects.requireNonNull(edtPoUID.getText()).toString();
+
+        //fabCreateCOR.animate().translationY(0).setDuration(100).start();
 
         db.collection("ReceivedOrderData").whereEqualTo("roUID", rouidVal).get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
@@ -1100,7 +1399,7 @@ public class AddBkkActivity extends AppCompatActivity {
                         productItemsList.clear();
                     }
                     transportServiceSellPrice = 0;
-                    matSellPrice = 0;
+                    matBuyPrice = 0;
 
                     for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots){
                         ReceivedOrderModel receivedOrderModel = documentSnapshot.toObject(ReceivedOrderModel.class);
@@ -1131,10 +1430,10 @@ public class AddBkkActivity extends AppCompatActivity {
                             for (int i = 0; i<productItemsList.size();i++){
                                 if (productItemsList.get(0).getMatName().equals("JASA ANGKUT")){
                                     transportServiceNameVal = productItemsList.get(0).getMatName();
-                                    transportServiceSellPrice = productItemsList.get(0).getMatSellPrice();
+                                    transportServiceSellPrice = productItemsList.get(0).getMatBuyPrice();
                                 } else {
                                     matNameVal = productItemsList.get(i).getMatName();
-                                    matSellPrice = productItemsList.get(i).getMatSellPrice();
+                                    matBuyPrice = productItemsList.get(i).getMatBuyPrice();
                                 }
                             }
 
@@ -1153,10 +1452,10 @@ public class AddBkkActivity extends AppCompatActivity {
                             if (Objects.requireNonNull(item.child("giRoUID").getValue()).toString().equals(rouidVal) &&
                                     !pouidVal.equals("-")) {
                                 if (Objects.equals(item.child("giStatus").getValue(), true)) {
-                                    if (Objects.equals(item.child("giInvoiced").getValue(), false)) {
+                                    if (Objects.equals(item.child("giCashedOut").getValue(), false)) {
                                         GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
                                         goodIssueModelArrayList.add(goodIssueModel);
-                                        fabCreateGiRecap.show();
+                                        //fabCreateGiRecap.show();
                                         nestedScrollView.setVisibility(View.VISIBLE);
                                         llNoData.setVisibility(View.GONE);
                                     }
@@ -1167,13 +1466,13 @@ public class AddBkkActivity extends AppCompatActivity {
 
                     }
                     if (goodIssueModelArrayList.size()==0) {
-                        fabCreateGiRecap.hide();
+                        fabCreateCOR.hide();
                         nestedScrollView.setVisibility(View.GONE);
                         llNoData.setVisibility(View.VISIBLE);
                     }
 
                 } else  {
-                    fabCreateGiRecap.hide();
+                    fabCreateCOR.hide();
                     nestedScrollView.setVisibility(View.GONE);
                     llNoData.setVisibility(View.VISIBLE);
                 }
@@ -1190,10 +1489,10 @@ public class AddBkkActivity extends AppCompatActivity {
     }
 
     private void searchQueryAll(){
-        rouidVal = spinnerRoUID.getText().toString();
-        pouidVal = Objects.requireNonNull(edtPoUID.getText()).toString();
+        //rouidVal = spinnerRoUID.getText().toString();
+        //pouidVal = Objects.requireNonNull(edtPoUID.getText()).toString();
 
-        db.collection("ReceivedOrderData").orderBy("invDateCreated", Direction.DESCENDING).get()
+        /*db.collection("ReceivedOrderData").orderBy("invDateCreated", Direction.DESCENDING).get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     if (productItemsList != null){
                         productItemsList.clear();
@@ -1239,44 +1538,37 @@ public class AddBkkActivity extends AppCompatActivity {
 
                         }
                     }
-                });
+                });*/
 
-        Query query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated").startAt(dateStartVal).endAt(dateEndVal);
+        Query query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated");
         query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 goodIssueModelArrayList.clear();
                 if (snapshot.exists()){
                     for (DataSnapshot item : snapshot.getChildren()) {
-                        if (!rouidVal.isEmpty()){
-                            if (Objects.requireNonNull(item.child("giRoUID").getValue()).toString().equals(rouidVal) &&
-                                    !pouidVal.equals("-")) {
-                                if (Objects.equals(item.child("giStatus").getValue(), true)) {
-                                    if (Objects.equals(item.child("giInvoiced").getValue(), false)) {
-                                        GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
-                                        goodIssueModelArrayList.add(goodIssueModel);
-                                        fabCreateGiRecap.show();
-                                        nestedScrollView.setVisibility(View.VISIBLE);
-                                        llNoData.setVisibility(View.GONE);
-                                    }
-                                }
+                        if (Objects.equals(item.child("giStatus").getValue(), true)) {
+                            if (Objects.equals(item.child("giCashedOut").getValue(), false)) {
+                                GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
+                                goodIssueModelArrayList.add(goodIssueModel);
+                                //fabCreateGiRecap.show();
+                                nestedScrollView.setVisibility(View.VISIBLE);
+                                llNoData.setVisibility(View.GONE);
                             }
-
                         }
-
                     }
                     if (goodIssueModelArrayList.size()==0) {
-                        fabCreateGiRecap.hide();
+                        fabCreateCOR.hide();
                         nestedScrollView.setVisibility(View.GONE);
                         llNoData.setVisibility(View.VISIBLE);
                     }
 
                 } else  {
-                    fabCreateGiRecap.hide();
+                    fabCreateCOR.hide();
                     nestedScrollView.setVisibility(View.GONE);
                     llNoData.setVisibility(View.VISIBLE);
                 }
-
+                Collections.reverse(goodIssueModelArrayList);
                 giManagementAdapter = new GIManagementAdapter(context, goodIssueModelArrayList);
                 rvGoodIssueList.setAdapter(giManagementAdapter);
             }
@@ -1305,19 +1597,9 @@ public class AddBkkActivity extends AppCompatActivity {
 
     private void showHideFilterComponents(Boolean expandStatus) {
         if (expandStatus){
-            if (firstViewData.getId()==R.id.ll_wrap_filter_by_date_range){
-                llWrapFilterByRouid.setVisibility(View.GONE);
-            }
-            if (firstViewData.getId()==R.id.ll_wrap_filter_by_rouid){
-                llWrapFilterByDateRange.setVisibility(View.GONE);
-            }
+            llWrapFilter.setVisibility(View.GONE);
         } else {
-            if (firstViewData.getId()==R.id.ll_wrap_filter_by_date_range){
-                llWrapFilterByRouid.setVisibility(View.VISIBLE);
-            }
-            if (firstViewData.getId()==R.id.ll_wrap_filter_by_rouid){
-                llWrapFilterByDateRange.setVisibility(View.VISIBLE);
-            }
+            llWrapFilter.setVisibility(View.VISIBLE);
         }
     }
 
@@ -1343,9 +1625,21 @@ public class AddBkkActivity extends AppCompatActivity {
             }
             return true;
         }
-
         finish();
+        helper.ACTIVITY_NAME = null;
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        helper.ACTIVITY_NAME = null;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        helper.ACTIVITY_NAME = null;
     }
 
     @Override

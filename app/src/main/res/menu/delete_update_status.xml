@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:title="Hapus"
+        android:icon="@drawable/ic_outline_delete_forever"
+        android:alphabeticShortcut="d"
+        android:orderInCategory="1"
+        app:iconTint="?colorAccent"
+        app:showAsAction="always"
+        android:id="@+id/menu_delete" />
+
+    <item
+        android:title="Setujui"
+        android:icon="@drawable/ic_outline_verified"
+        android:alphabeticShortcut="s"
+        android:orderInCategory="2"
+        app:iconTint="?colorAccent"
+        android:id="@+id/menu_verify"
+        app:showAsAction="always" />
+
+</menu>

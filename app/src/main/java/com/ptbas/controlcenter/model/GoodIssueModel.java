@@ -5,12 +5,14 @@ import android.os.Parcelable;
 
 public class GoodIssueModel implements Parcelable {
 
+    private boolean isChecked = false;
     //MANDATORY
     String giUID, giCreatedBy, giVerifiedBy, giRoUID, giPoCustNumber, giMatName, giMatType, vhlUID,
             giDateCreated, giTimeCreted;
     Integer vhlLength, vhlWidth, vhlHeight, vhlHeightCorrection, vhlHeightAfterCorrection;
     Float giVhlCubication;
     Boolean giStatus, giInvoiced, giCashedOut;
+    private boolean isSelected;
 
     public GoodIssueModel() {
     }
@@ -307,4 +309,13 @@ public class GoodIssueModel implements Parcelable {
         parcel.writeByte((byte) (giInvoiced == null ? 0 : giInvoiced ? 1 : 2));
         parcel.writeByte((byte) (giCashedOut == null ? 0 : giCashedOut ? 1 : 2));
     }
+
+    public boolean isChecked() {
+        return isChecked;
+    }
+
+    public void setChecked(boolean checked) {
+        isChecked = checked;
+    }
+
 }

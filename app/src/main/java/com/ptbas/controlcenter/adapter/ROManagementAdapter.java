@@ -59,14 +59,14 @@ public class ROManagementAdapter extends RecyclerView.Adapter<ROManagementAdapte
         RelativeLayout btnDeleteRo, btnApproveRo;
         RelativeLayout rlOpenRoDetail;
         Button btn1, btn2, btn3;
-        ImageView ivExpandLlHiddenView;
+        //ImageView ivExpandLlHiddenView;
         CardView cardView;
 
         public ItemViewHolder(@NonNull View itemView) {
             super(itemView);
             cardView = itemView.findViewById(R.id.cardView);
             llHiddenView = itemView.findViewById(R.id.llHiddenView);
-            ivExpandLlHiddenView = itemView.findViewById(R.id.ivExpandLlHiddenView);
+            //ivExpandLlHiddenView = itemView.findViewById(R.id.ivExpandLlHiddenView);
             rlOpenRoDetail = itemView.findViewById(R.id.open_detail);
             llStatusApproved = itemView.findViewById(R.id.ll_status_approved);
             llStatusPOAvailable = itemView.findViewById(R.id.ll_status_po_unvailable);
@@ -78,9 +78,9 @@ public class ROManagementAdapter extends RecyclerView.Adapter<ROManagementAdapte
             btn1 = itemView.findViewById(R.id.btn1);
             btn2 = itemView.findViewById(R.id.btn2);
             btn3 = itemView.findViewById(R.id.btn3);
-            ivExpandLlHiddenView = itemView.findViewById(R.id.ivExpandLlHiddenView);
+            //ivExpandLlHiddenView = itemView.findViewById(R.id.ivExpandLlHiddenView);
 
-            llHiddenView.getLayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
+            //llHiddenView.getLayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
         }
 
         public void viewBind(ReceivedOrderModel receivedOrderModel) {
@@ -115,7 +115,7 @@ public class ROManagementAdapter extends RecyclerView.Adapter<ROManagementAdapte
                 context.startActivity(i);*/
             });
 
-            ivExpandLlHiddenView.setOnClickListener(view -> {
+            /*ivExpandLlHiddenView.setOnClickListener(view -> {
                 if (llHiddenView.getVisibility() == View.VISIBLE) {
                     llHiddenView.setVisibility(View.GONE);
                     TransitionManager.beginDelayedTransition(cardView, new AutoTransition());
@@ -126,7 +126,7 @@ public class ROManagementAdapter extends RecyclerView.Adapter<ROManagementAdapte
                     llHiddenView.setVisibility(View.VISIBLE);
                     ivExpandLlHiddenView.setImageResource(R.drawable.ic_outline_keyboard_arrow_up);
                 }
-            });
+            });*/
 
             btn3.setOnClickListener(view -> {
                 Toast.makeText(context, "Under development", Toast.LENGTH_SHORT).show();

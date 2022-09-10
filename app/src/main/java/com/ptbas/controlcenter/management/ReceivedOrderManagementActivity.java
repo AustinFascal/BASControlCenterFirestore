@@ -117,7 +117,7 @@ public class ReceivedOrderManagementActivity extends AppCompatActivity {
 
         cdvFilter = findViewById(R.id.cdv_filter);
         nestedScrollView = findViewById(R.id.nestedScrollView);
-        wrapFilter = findViewById(R.id.wrap_filter);
+        wrapFilter = findViewById(R.id.llWrapFilter);
 
         wrapSearchBySpinner = findViewById(R.id.wrap_search_by_spinner);
 
@@ -132,7 +132,7 @@ public class ReceivedOrderManagementActivity extends AppCompatActivity {
         spinnerMaterialType = findViewById(R.id.spinner_mat_type);
         spinnerCompanyName = findViewById(R.id.spinner_company_name);
 
-        imgbtnExpandCollapseFilterLayout = findViewById(R.id.imgbtn_expand_collapse_filter_layout);
+        imgbtnExpandCollapseFilterLayout = findViewById(R.id.imgbtnExpandCollapseFilterLayout);
 
 
         rvReceivedOrderList = findViewById(R.id.rv_received_order_list);

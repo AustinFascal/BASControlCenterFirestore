@@ -72,7 +72,7 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/wrap_filter"
+                    android:id="@+id/llWrapFilter"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:divider="@drawable/divider_transparent"
@@ -258,7 +258,7 @@
                 </LinearLayout>
 
                 <Button
-                    android:id="@+id/imgbtn_expand_collapse_filter_layout"
+                    android:id="@+id/imgbtnExpandCollapseFilterLayout"
                     style="@style/MaterialDialog.NegativeButton"
                     android:layout_width="wrap_content"
                     android:layout_height="40dp"

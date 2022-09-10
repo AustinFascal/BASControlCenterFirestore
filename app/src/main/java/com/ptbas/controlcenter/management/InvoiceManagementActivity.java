@@ -40,13 +40,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.ptbas.controlcenter.R;
-import com.ptbas.controlcenter.adapter.BKKManagementAdapter;
-import com.ptbas.controlcenter.create.AddGoodIssueActivity;
+import com.ptbas.controlcenter.adapter.CashOutRequestManagementAdapter;
+import com.ptbas.controlcenter.create.AddInvoiceActivity;
 import com.ptbas.controlcenter.helper.DialogInterface;
 import com.ptbas.controlcenter.helper.DragLinearLayout;
 import com.ptbas.controlcenter.helper.Helper;
 import com.ptbas.controlcenter.model.InvoiceModel;
-import com.ptbas.controlcenter.recap.RecapGoodIssueDataActivity;
 import com.ptbas.controlcenter.utils.LangUtils;
 
 import java.util.ArrayList;
@@ -69,7 +68,7 @@ public class InvoiceManagementActivity extends AppCompatActivity {
     Context context;
     CardView cdvFilter;
     FloatingActionsMenu fabExpandMenu;
-    FloatingActionButton fabActionCreateGi, fabActionRecapData;
+    FloatingActionButton fabActionCreateInv, fabActionRecapData;
     NestedScrollView nestedScrollView;
     TextInputEditText edtGiDateFilterStart, edtGiDateFilterEnd;
     AutoCompleteTextView spinnerSearchType;
@@ -82,7 +81,7 @@ public class InvoiceManagementActivity extends AppCompatActivity {
     Helper helper = new Helper();
     ArrayList<InvoiceModel> invoiceModelArrayList = new ArrayList<>();
 
-    BKKManagementAdapter invManagementAdapter;
+    CashOutRequestManagementAdapter invManagementAdapter;
 
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
     DialogInterface dialogInterface = new DialogInterface();
@@ -98,14 +97,14 @@ public class InvoiceManagementActivity extends AppCompatActivity {
         context = this;
 
         fabExpandMenu = findViewById(R.id.fab_expand_menu);
-        fabActionCreateGi = findViewById(R.id.fab_action_create_ro);
+        fabActionCreateInv = findViewById(R.id.fab_action_create_ro);
         fabActionRecapData = findViewById(R.id.fab_action_recap_data);
 
         cdvFilter = findViewById(R.id.cdv_filter);
         nestedScrollView = findViewById(R.id.nestedScrollView);
         spinnerSearchType = findViewById(R.id.spinner_search_type);
         wrapSearchBySpinner = findViewById(R.id.wrap_search_by_spinner);
-        wrapFilter = findViewById(R.id.wrap_filter);
+        wrapFilter = findViewById(R.id.llWrapFilter);
         llWrapFilterByDateRange = findViewById(R.id.ll_wrap_filter_by_date_range);
         llNoData = findViewById(R.id.ll_no_data);
         ll_wrap_filter_chip_group = findViewById(R.id.ll_wrap_filter_chip_group);
@@ -153,15 +152,9 @@ public class InvoiceManagementActivity extends AppCompatActivity {
         // SET DEFAULT LANG CODE TO ENGLISH
         LangUtils.setLocale(this, "en");
 
-        // GO TO ADD GOOD ISSUE ACTIVITY
-        fabActionCreateGi.setOnClickListener(view -> {
-            Intent intent = new Intent(InvoiceManagementActivity.this, AddGoodIssueActivity.class);
-            startActivity(intent);
-        });
-
-        // GO TO RECAP GOOD ISSUE ACTIVITY
-        fabActionRecapData.setOnClickListener(view -> {
-            Intent intent = new Intent(InvoiceManagementActivity.this, RecapGoodIssueDataActivity.class);
+        // GO TO ADD INVOICE ACTIVITY
+        fabActionCreateInv.setOnClickListener(view -> {
+            Intent intent = new Intent(InvoiceManagementActivity.this, AddInvoiceActivity.class);
             startActivity(intent);
         });
 
@@ -271,7 +264,7 @@ public class InvoiceManagementActivity extends AppCompatActivity {
                         nestedScrollView.setVisibility(View.GONE);
                     }
                     Collections.reverse(invoiceModelArrayList);
-                    invManagementAdapter = new BKKManagementAdapter(context, invoiceModelArrayList);
+                    invManagementAdapter = new CashOutRequestManagementAdapter(context, invoiceModelArrayList);
                     rvInvoiceList.setAdapter(invManagementAdapter);
                 });
     }

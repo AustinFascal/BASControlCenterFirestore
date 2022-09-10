@@ -1,12 +1,12 @@
 package com.ptbas.controlcenter.model;
 
-public class CashOutModel {
+public class CashOutRequestModel {
 
     String coDateCreated, coApprovedBy, coTotal, coSendToAcc, coCustomer;
     String coDateApproved;
     Boolean coStatus;
 
-    public CashOutModel(String coDateCreated, String coApprovedBy, String coTotal, String coSendToAcc, String coCustomer) {
+    public CashOutRequestModel(String coDateCreated, String coApprovedBy, String coTotal, String coSendToAcc, String coCustomer) {
         this.coDateCreated = coDateCreated;
         this.coApprovedBy = coApprovedBy;
         this.coTotal = coTotal;

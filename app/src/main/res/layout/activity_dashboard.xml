@@ -47,9 +47,9 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentBottom="true"
+                android:layout_marginStart="18dp"
                 android:layout_toStartOf="@+id/wrap_profile_pic"
                 android:layout_weight="3"
-                android:layout_marginStart="18dp"
                 android:gravity="center_vertical"
                 android:text="APPNAME"
                 android:textAlignment="gravity"
@@ -234,7 +234,7 @@
                                 android:layout_height="wrap_content"
                                 android:ellipsize="end"
                                 android:maxLines="2"
-                                android:text="Buat BKK"
+                                android:text="Buat CO Baru"
                                 android:textAlignment="center" />
 
                         </LinearLayout>

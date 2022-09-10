@@ -51,7 +51,6 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query.Direction;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.itextpdf.text.BadElementException;
 import com.itextpdf.text.BaseColor;
@@ -91,6 +90,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -148,7 +148,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_bkk);
+        setContentView(R.layout.activity_add_invoice);
 
         LangUtils.setLocale(this, "en");
 
@@ -180,7 +180,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
         edtDateStart = findViewById(R.id.edt_gi_date_filter_start);
         edtDateEnd = findViewById(R.id.edt_gi_date_filter_end);
         rvGoodIssueList = findViewById(R.id.rv_good_issue_list);
-        imgbtnExpandCollapseFilterLayout = findViewById(R.id.imgbtn_expand_collapse_filter_layout);
+        imgbtnExpandCollapseFilterLayout = findViewById(R.id.imgbtnExpandCollapseFilterLayout);
         llWrapFilterByDateRange = findViewById(R.id.ll_wrap_filter_by_date_range);
         llWrapFilterByRouid = findViewById(R.id.ll_wrap_filter_by_rouid);
 
@@ -188,8 +188,8 @@ public class AddInvoiceActivity extends AppCompatActivity {
         nestedScrollView = findViewById(R.id.nestedScrollView);
 
         btnGiSearchByDateReset = findViewById(R.id.btn_gi_search_date_reset);
-        btnGiSearchByRoUIDReset = findViewById(R.id.btn_gi_search_rouid_reset);
-        fabCreateGiRecap = findViewById(R.id.fab_create_gi_recap);
+        btnGiSearchByRoUIDReset = findViewById(R.id.btnResetRouid);
+        fabCreateGiRecap = findViewById(R.id.fabCreateCOR);
 
         TypedValue typedValue = new TypedValue();
         Resources.Theme theme = context.getTheme();
@@ -206,7 +206,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
         // ACTION BAR FOR STANDARD ACTIVITY
         assert actionBar != null;
         helper.handleActionBarConfigForStandardActivity(
-                this, actionBar, "Buat BKK");
+                this, actionBar, "Buat Invoice");
 
         // SYSTEM UI MODE FOR STANDARD ACTIVITY
         helper.handleUIModeForStandardActivity(this, actionBar);
@@ -711,7 +711,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
                     new Paragraph("", fontMediumWhite),
                     Element.ALIGN_LEFT));
             tblInvSection2.addCell(cellTxtNoBrdrNrml(
-                    new Paragraph("Kode Unik Tagihan", fontNormal),
+                    new Paragraph("Nomor Tagihan", fontNormal),
                     Element.ALIGN_LEFT));
             tblInvSection2.addCell(cellTxtNoBrdrNrml(
                     new Paragraph(":", fontNormal),
@@ -807,7 +807,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
             tblInvSection9.addCell(cellColHeader(
                     new Paragraph("TOTAL TAGIHAN (PEMBULATAN)", fontMedium), Element.ALIGN_RIGHT));
             tblInvSection9.addCell(cellColHeader(
-                    new Paragraph(currencyVal+" "+currencyFormat(dfRound.format(totalDue)), fontMedium), Element.ALIGN_RIGHT));
+                    new Paragraph(currencyVal+" "+currencyFormat(df.format(math(totalDue))), fontMedium), Element.ALIGN_RIGHT));
 
             tblInvSection10.addCell(cellColHeaderNoBrdr(
                     new Paragraph("TERBILANG", fontMediumWhite),
@@ -817,7 +817,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
                     Element.ALIGN_LEFT));
 
             tblInvSection11.addCell(cellTxtNoBrdrNrml(
-                    new Paragraph(NumberToWords.convert(Long.parseLong(dfRound.format(totalDue)))+" Rupiah", fontMedium),
+                    new Paragraph(NumberToWords.convert(math(totalDue))+" Rupiah", fontMedium),
                     Element.ALIGN_LEFT));
             tblInvSection11.addCell(cellTxtNoBrdrNrml(
                     new Paragraph("", fontMediumWhite),
@@ -939,6 +939,12 @@ public class AddInvoiceActivity extends AppCompatActivity {
             e.printStackTrace();
             Toast.makeText(context, e.toString(), Toast.LENGTH_LONG).show();
         }
+    }
+
+    public static int math(double d) {
+        int c = (int) ((d) + 0.5d);
+        double n = d + 0.5d;
+        return (n - c) % 2 == 0 ? (int) d : c;
     }
 
     private void addGiRcpTtl(Document document) throws DocumentException {
@@ -1190,10 +1196,8 @@ public class AddInvoiceActivity extends AppCompatActivity {
     }
 
     private void searchQueryAll(){
-        rouidVal = spinnerRoUID.getText().toString();
-        pouidVal = Objects.requireNonNull(edtPoUID.getText()).toString();
-
-        db.collection("ReceivedOrderData").orderBy("invDateCreated", Direction.DESCENDING).get()
+/*
+        db.collection("ReceivedOrderData").orderBy("invDateCreated").get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     if (productItemsList != null){
                         productItemsList.clear();
@@ -1240,28 +1244,23 @@ public class AddInvoiceActivity extends AppCompatActivity {
                         }
                     }
                 });
+*/
 
-        Query query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated").startAt(dateStartVal).endAt(dateEndVal);
+        Query query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated");
         query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 goodIssueModelArrayList.clear();
                 if (snapshot.exists()){
                     for (DataSnapshot item : snapshot.getChildren()) {
-                        if (!rouidVal.isEmpty()){
-                            if (Objects.requireNonNull(item.child("giRoUID").getValue()).toString().equals(rouidVal) &&
-                                    !pouidVal.equals("-")) {
-                                if (Objects.equals(item.child("giStatus").getValue(), true)) {
-                                    if (Objects.equals(item.child("giInvoiced").getValue(), false)) {
-                                        GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
-                                        goodIssueModelArrayList.add(goodIssueModel);
-                                        fabCreateGiRecap.show();
-                                        nestedScrollView.setVisibility(View.VISIBLE);
-                                        llNoData.setVisibility(View.GONE);
-                                    }
-                                }
+                        if (Objects.equals(item.child("giStatus").getValue(), true)) {
+                            if (Objects.equals(item.child("giCashedOut").getValue(), true)) {
+                                GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
+                                goodIssueModelArrayList.add(goodIssueModel);
+                                fabCreateGiRecap.show();
+                                nestedScrollView.setVisibility(View.VISIBLE);
+                                llNoData.setVisibility(View.GONE);
                             }
-
                         }
 
                     }
@@ -1277,6 +1276,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
                     llNoData.setVisibility(View.VISIBLE);
                 }
 
+                Collections.reverse(goodIssueModelArrayList);
                 giManagementAdapter = new GIManagementAdapter(context, goodIssueModelArrayList);
                 rvGoodIssueList.setAdapter(giManagementAdapter);
             }
