@@ -313,7 +313,7 @@
                                 style="@style/MaterialDialog.PositiveButton"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="PILIH DATA GOOD ISSUE" />
+                                android:text="CARI DATA GOOD ISSUE" />
 
                         </LinearLayout>
                         <Button
@@ -323,7 +323,7 @@
                             android:layout_height="40dp"
                             android:drawableEnd="@drawable/ic_outline_keyboard_arrow_up"
                             android:drawableTint="?colorPrimary"
-                            android:text="Tampilkan lebih sedikit"
+                            android:text="Sembunyikan Filter"
                             android:visibility="visible" />
                     </LinearLayout>
                 </ScrollView>

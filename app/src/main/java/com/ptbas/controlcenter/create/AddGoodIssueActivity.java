@@ -49,11 +49,14 @@ import com.ptbas.controlcenter.model.VehicleModel;
 import com.ptbas.controlcenter.utils.LangUtils;
 
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Random;
 
@@ -446,8 +449,8 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                 edtGiDate.setError("Mohon masukkan tanggal pembuatan");
                 edtGiDate.requestFocus();
             }
-            if (TextUtils.isEmpty(giTime)){
-                edtGiTime.setText("-");
+            if (giTime.equals("-")){
+                giTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
             }
             if (TextUtils.isEmpty(giRONumber)){
                 spinnerRoNumber.setError("Mohon masukkan nomor RO");

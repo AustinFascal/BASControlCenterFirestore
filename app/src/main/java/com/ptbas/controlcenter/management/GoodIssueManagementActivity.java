@@ -759,9 +759,7 @@ public class GoodIssueManagementActivity extends AppCompatActivity {
                 if (snapshot.exists()){
                     for (DataSnapshot item : snapshot.getChildren()){
                         GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
-                        if (Objects.equals(item.child("giInvoiced").getValue(), false)) {
-                            goodIssueModelArrayList.add(goodIssueModel);
-                        }
+                        goodIssueModelArrayList.add(goodIssueModel);
                     }
                     llNoData.setVisibility(View.GONE);
                     nestedScrollView.setVisibility(View.VISIBLE);

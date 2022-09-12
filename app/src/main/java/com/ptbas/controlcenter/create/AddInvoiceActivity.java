@@ -127,7 +127,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
     List<String> arrayListRoUID, arrayListPoUID;
     List<ProductItems> productItemsList;
 
-    LinearLayout llWrapFilterByDateRange, llWrapFilterByRouid, llNoData;
+    LinearLayout llWrapFilterByDateRange, llWrapFilterByRouid, llNoData, llWrapFilter;
 
     ImageButton btnGiSearchByDateReset, btnGiSearchByRoUIDReset;
 
@@ -145,12 +145,20 @@ public class AddInvoiceActivity extends AppCompatActivity {
     DecimalFormat df = new DecimalFormat("0.00");
     DecimalFormat dfRound = new DecimalFormat("0");
 
+    Vibrator vibrator;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_invoice);
 
+        vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         LangUtils.setLocale(this, "en");
+
+        helper.ACTIVITY_NAME = "UPDATE";
+
+        Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+
 
         baseColorBluePale = new BaseColor(22,169,242);
         baseColorLightGrey = new BaseColor(237, 237, 237);
@@ -183,6 +191,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
         imgbtnExpandCollapseFilterLayout = findViewById(R.id.imgbtnExpandCollapseFilterLayout);
         llWrapFilterByDateRange = findViewById(R.id.ll_wrap_filter_by_date_range);
         llWrapFilterByRouid = findViewById(R.id.ll_wrap_filter_by_rouid);
+        llWrapFilter = findViewById(R.id.llWrapFilter);
 
         llNoData = findViewById(R.id.ll_no_data);
         nestedScrollView = findViewById(R.id.nestedScrollView);
@@ -201,7 +210,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
 
         ActionBar actionBar = getSupportActionBar();
 
-        Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+
 
         // ACTION BAR FOR STANDARD ACTIVITY
         assert actionBar != null;
@@ -211,26 +220,6 @@ public class AddInvoiceActivity extends AppCompatActivity {
         // SYSTEM UI MODE FOR STANDARD ACTIVITY
         helper.handleUIModeForStandardActivity(this, actionBar);
 
-        // DRAGLINEARLAYOUT FOR FILTERING
-        DragLinearLayout dragLinearLayout = findViewById(R.id.drag_linear_layout);
-        for(int i = 0; i < dragLinearLayout.getChildCount(); i++){
-            View child = dragLinearLayout.getChildAt(i);
-            // the child will act as its own drag handle
-            dragLinearLayout.setViewDraggable(child, child);
-        }
-
-        dragLinearLayout.setOnViewSwapListener((firstView, firstPosition,
-                                                secondView, secondPosition) -> {
-            // Vibrate for 500 milliseconds
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                vibrator.vibrate(VibrationEffect.createOneShot(100,
-                        VibrationEffect.DEFAULT_AMPLITUDE));
-            } else {
-                //deprecated in API 26
-                vibrator.vibrate(100);
-            }
-            firstViewData = firstView;
-        });
 
         // SET DEFAULT LANG CODE TO ENGLISH
         LangUtils.setLocale(this, "en");
@@ -332,6 +321,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
 
         spinnerRoUID.setOnItemClickListener((adapterView, view, i, l) -> {
             spinnerRoUID.setError(null);
+            btnGiSearchByRoUIDReset.setVisibility(View.VISIBLE);
             String selectedSpinnerPoPtBasNumber = (String) adapterView.getItemAtPosition(i);
 
             db.collection("ReceivedOrderData").whereEqualTo("roUID", selectedSpinnerPoPtBasNumber).get()
@@ -357,6 +347,8 @@ public class AddInvoiceActivity extends AppCompatActivity {
         btnGiSearchByRoUIDReset.setOnClickListener(view -> {
             spinnerRoUID.setText(null);
             spinnerRoUID.clearFocus();
+            edtPoUID.setText(null);
+            edtPoUID.clearFocus();
             btnGiSearchByRoUIDReset.setVisibility(View.GONE);
         });
 
@@ -1097,6 +1089,19 @@ public class AddInvoiceActivity extends AppCompatActivity {
     }
 
     private void searchQuery(){
+        showHideFilterComponents(false);
+        // Vibrate for 500 milliseconds
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            vibrator.vibrate(VibrationEffect.createOneShot(100,
+                    VibrationEffect.DEFAULT_AMPLITUDE));
+        } else {
+            //deprecated in API 26
+            vibrator.vibrate(100);
+        }
+
+        expandFilterViewValidation();
+        TransitionManager.beginDelayedTransition(cdvFilter, new AutoTransition());
+
         rouidVal = spinnerRoUID.getText().toString();
         pouidVal = Objects.requireNonNull(edtPoUID.getText()).toString();
 
@@ -1160,11 +1165,13 @@ public class AddInvoiceActivity extends AppCompatActivity {
                                     !pouidVal.equals("-")) {
                                 if (Objects.equals(item.child("giStatus").getValue(), true)) {
                                     if (Objects.equals(item.child("giInvoiced").getValue(), false)) {
-                                        GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
-                                        goodIssueModelArrayList.add(goodIssueModel);
-                                        fabCreateGiRecap.show();
-                                        nestedScrollView.setVisibility(View.VISIBLE);
-                                        llNoData.setVisibility(View.GONE);
+                                        if (Objects.equals(item.child("giCashedOut").getValue(), true)) {
+                                            GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
+                                            goodIssueModelArrayList.add(goodIssueModel);
+                                            fabCreateGiRecap.show();
+                                            nestedScrollView.setVisibility(View.VISIBLE);
+                                            llNoData.setVisibility(View.GONE);
+                                        }
                                     }
                                 }
                             }
@@ -1254,12 +1261,14 @@ public class AddInvoiceActivity extends AppCompatActivity {
                 if (snapshot.exists()){
                     for (DataSnapshot item : snapshot.getChildren()) {
                         if (Objects.equals(item.child("giStatus").getValue(), true)) {
-                            if (Objects.equals(item.child("giCashedOut").getValue(), true)) {
-                                GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
-                                goodIssueModelArrayList.add(goodIssueModel);
-                                fabCreateGiRecap.show();
-                                nestedScrollView.setVisibility(View.VISIBLE);
-                                llNoData.setVisibility(View.GONE);
+                            if (Objects.equals(item.child("giInvoiced").getValue(), false)) {
+                                if (Objects.equals(item.child("giCashedOut").getValue(), true)) {
+                                    GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
+                                    goodIssueModelArrayList.add(goodIssueModel);
+                                    fabCreateGiRecap.show();
+                                    nestedScrollView.setVisibility(View.VISIBLE);
+                                    llNoData.setVisibility(View.GONE);
+                                }
                             }
                         }
 
@@ -1305,19 +1314,9 @@ public class AddInvoiceActivity extends AppCompatActivity {
 
     private void showHideFilterComponents(Boolean expandStatus) {
         if (expandStatus){
-            if (firstViewData.getId()==R.id.ll_wrap_filter_by_date_range){
-                llWrapFilterByRouid.setVisibility(View.GONE);
-            }
-            if (firstViewData.getId()==R.id.ll_wrap_filter_by_rouid){
-                llWrapFilterByDateRange.setVisibility(View.GONE);
-            }
+            llWrapFilter.setVisibility(View.GONE);
         } else {
-            if (firstViewData.getId()==R.id.ll_wrap_filter_by_date_range){
-                llWrapFilterByRouid.setVisibility(View.VISIBLE);
-            }
-            if (firstViewData.getId()==R.id.ll_wrap_filter_by_rouid){
-                llWrapFilterByDateRange.setVisibility(View.VISIBLE);
-            }
+            llWrapFilter.setVisibility(View.VISIBLE);
         }
     }
 
@@ -1344,6 +1343,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
             return true;
         }
 
+        helper.ACTIVITY_NAME = null;
         finish();
         return super.onOptionsItemSelected(item);
     }
@@ -1368,5 +1368,17 @@ public class AddInvoiceActivity extends AppCompatActivity {
             RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 3);
             rvGoodIssueList.setLayoutManager(mLayoutManager);
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        helper.ACTIVITY_NAME = null;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        helper.ACTIVITY_NAME = null;
     }
 }

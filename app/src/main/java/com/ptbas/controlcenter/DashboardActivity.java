@@ -475,6 +475,16 @@ public class DashboardActivity extends AppCompatActivity {
         ob6.setImgName(R.drawable.ic_invoice);
         holder.add(ob6);
 
+        MainFeatureModel ob7 = new MainFeatureModel();
+        ob7.setHeader("Manajemen Bank");
+        ob7.setImgName(R.drawable.ic_bank);
+        holder.add(ob7);
+
+        MainFeatureModel ob8 = new MainFeatureModel();
+        ob8.setHeader("Manajemen Rekening Bank");
+        ob8.setImgName(R.drawable.ic_bank_account);
+        holder.add(ob8);
+
 
         return holder;
     }

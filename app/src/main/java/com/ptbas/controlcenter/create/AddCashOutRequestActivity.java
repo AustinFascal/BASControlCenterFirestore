@@ -11,8 +11,10 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.text.Html;
 import android.text.InputFilter;
@@ -160,6 +162,8 @@ public class AddCashOutRequestActivity extends AppCompatActivity {
     //btnDeleteSelected, btnSelectAll, btnVerifySelected;
     TextView tvTotalSelectedItem;
 
+    Vibrator vibrator;
+
     float totalUnit;
 
     @Override
@@ -167,7 +171,9 @@ public class AddCashOutRequestActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_cash_out_request);
 
-        helper.ACTIVITY_NAME = "COR";
+        vibrator  = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+
+        helper.ACTIVITY_NAME = "UPDATE";
 
         customerName = new ArrayList<>();
         supplierName = new ArrayList<>();
@@ -243,7 +249,7 @@ public class AddCashOutRequestActivity extends AppCompatActivity {
 
         ActionBar actionBar = getSupportActionBar();
 
-        Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+
 
         // ACTION BAR FOR STANDARD ACTIVITY
         assert actionBar != null;
@@ -1382,6 +1388,13 @@ public class AddCashOutRequestActivity extends AppCompatActivity {
     }
 
     private void searchQuery(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            vibrator.vibrate(VibrationEffect.createOneShot(100,
+                    VibrationEffect.DEFAULT_AMPLITUDE));
+        } else {
+            //deprecated in API 26
+            vibrator.vibrate(100);
+        }
 
         showHideFilterComponents(false);
 

@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ptbas.controlcenter.R;
+import com.ptbas.controlcenter.create.AddBankAccountActivity;
 import com.ptbas.controlcenter.management.CustomerManagementActivity;
 import com.ptbas.controlcenter.management.GoodIssueManagementActivity;
 import com.ptbas.controlcenter.management.CashOutRequestManagementActivity;
@@ -90,6 +91,15 @@ public class MainFeaturesMenuAdapter extends RecyclerView.Adapter<MainFeatureVie
                     Intent intent2 = new Intent(context, InvoiceManagementActivity.class);
                     intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(intent2);
+                }
+                if (holder.tv1.getText().toString().equals("Manajemen Rekening Bank")){
+                    Intent intent2 = new Intent(context, AddBankAccountActivity.class);
+                    intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(intent2);
+                }
+
+                if (holder.tv1.getText().toString().equals("Manajemen Bank")){
+                    Toast.makeText(context, "Coming Soon", Toast.LENGTH_SHORT).show();
                 }
             }
         });

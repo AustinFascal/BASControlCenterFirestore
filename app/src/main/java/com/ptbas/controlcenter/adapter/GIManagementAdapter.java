@@ -124,7 +124,7 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
         public void viewBind(final GoodIssueModel goodIssueModel) {
             cbSelectItem.setChecked(false);
 
-            if (Objects.equals(helper.ACTIVITY_NAME, "COR")){
+            if (Objects.equals(helper.ACTIVITY_NAME, "UPDATE")){
                 btnDeleteGi.setVisibility(View.GONE);
             }
 
@@ -222,7 +222,7 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
             }
 
             btn3.setOnClickListener(view -> {
-                if (!helper.ACTIVITY_NAME.equals("COR")){
+                if (!helper.ACTIVITY_NAME.equals("UPDATE")){
                     String giUID1 =goodIssueModel.getGiUID();
                     Intent i = new Intent(context, UpdateGoodIssueActivity.class);
                     i.putExtra("key", giUID1);
