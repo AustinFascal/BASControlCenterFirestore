@@ -160,7 +160,7 @@ public class AddCashOutRequestActivity extends AppCompatActivity {
     LinearLayout llBottomSelectionOptions;
     ImageButton btnExitSelection;
     //btnDeleteSelected, btnSelectAll, btnVerifySelected;
-    TextView tvTotalSelectedItem;
+    TextView tvTotalSelectedItem, tvTotalSelectedItem2;
 
     Vibrator vibrator;
 
@@ -179,6 +179,7 @@ public class AddCashOutRequestActivity extends AppCompatActivity {
         supplierName = new ArrayList<>();
 
         tvTotalSelectedItem = findViewById(R.id.tvTotalSelectedItem);
+        tvTotalSelectedItem2 = findViewById(R.id.tvTotalSelectedItem2);
         btnExitSelection = findViewById(R.id.btnExitSelection);
         llBottomSelectionOptions = findViewById(R.id.llBottomSelectionOptions);
 
@@ -690,12 +691,19 @@ public class AddCashOutRequestActivity extends AppCompatActivity {
                         && !Objects.requireNonNull(edtPoUID.getText()).toString().isEmpty()){
 
                     int itemSelectedSize = giManagementAdapter.getSelected().size();
+                    float itemSelectedVolume = giManagementAdapter.getSelectedVolume();
+                    //float itemSelectedBuyPrice = giManagementAdapter.getSelectedVolBuyPrice();
+                    //String itemSelectedBuyPriceVal = df.format(itemSelectedBuyPrice);
                     String itemSelectedSizeVal = String.valueOf(itemSelectedSize).concat(" item terpilih");
+                    String itemSelectedVolumeAndBuyPriceVal = df.format(itemSelectedVolume).concat(" m3");
+                            //.concat("IDR "+itemSelectedBuyPriceVal);
+
                     if (giManagementAdapter.getSelected().size()>0){
 
                         fabCreateCOR.animate().translationY(0).setDuration(100).start();
 
                         tvTotalSelectedItem.setText(itemSelectedSizeVal);
+                        tvTotalSelectedItem2.setText(itemSelectedVolumeAndBuyPriceVal);
                         llBottomSelectionOptions.animate()
                                 .translationY(0).alpha(1.0f)
                                 .setDuration(100)

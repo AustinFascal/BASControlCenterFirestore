@@ -1,6 +1,8 @@
 package com.ptbas.controlcenter.create;
 
 import android.Manifest;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DatePickerDialog;
@@ -11,6 +13,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.text.Html;
@@ -28,6 +31,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.ColorInt;
@@ -124,12 +128,14 @@ public class AddInvoiceActivity extends AppCompatActivity {
     View firstViewData;
     NestedScrollView nestedScrollView;
 
+    TextView tvTotalSelectedItem, tvTotalSelectedItem2;
+
     List<String> arrayListRoUID, arrayListPoUID;
     List<ProductItems> productItemsList;
 
-    LinearLayout llWrapFilterByDateRange, llWrapFilterByRouid, llNoData, llWrapFilter;
+    LinearLayout llWrapFilterByDateRange, llWrapFilterByRouid, llNoData, llWrapFilter, llBottomSelectionOptions;
 
-    ImageButton btnGiSearchByDateReset, btnGiSearchByRoUIDReset;
+    ImageButton btnGiSearchByDateReset, btnGiSearchByRoUIDReset, btnExitSelection;
 
     ExtendedFloatingActionButton fabCreateGiRecap;
 
@@ -146,6 +152,8 @@ public class AddInvoiceActivity extends AppCompatActivity {
     DecimalFormat dfRound = new DecimalFormat("0");
 
     Vibrator vibrator;
+
+    float totalUnit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -195,6 +203,11 @@ public class AddInvoiceActivity extends AppCompatActivity {
 
         llNoData = findViewById(R.id.ll_no_data);
         nestedScrollView = findViewById(R.id.nestedScrollView);
+
+        tvTotalSelectedItem = findViewById(R.id.tvTotalSelectedItem);
+        tvTotalSelectedItem2 = findViewById(R.id.tvTotalSelectedItem2);
+        btnExitSelection = findViewById(R.id.btnExitSelection);
+        llBottomSelectionOptions = findViewById(R.id.llBottomSelectionOptions);
 
         btnGiSearchByDateReset = findViewById(R.id.btn_gi_search_date_reset);
         btnGiSearchByRoUIDReset = findViewById(R.id.btnResetRouid);
@@ -284,6 +297,74 @@ public class AddInvoiceActivity extends AppCompatActivity {
                         btnGiSearchByDateReset.setVisibility(View.VISIBLE);
                     }, Integer.parseInt(yearStrVal), Integer.parseInt(monthStrVal), Integer.parseInt(dayStrVal));
             datePicker.show();
+        });
+
+        // NOTIFY REAL-TIME CHANGES AS USER CHOOSE THE ITEM
+        final Handler handler = new Handler();
+        Runnable runnable = new Runnable() {
+            public void run() {
+                // CHECK IF DATE AND RO/PO NUMBER IS SELECTED
+                if (!Objects.requireNonNull(edtDateStart.getText()).toString().isEmpty()
+                        && !Objects.requireNonNull(edtDateEnd.getText()).toString().isEmpty()
+                        && !spinnerRoUID.getText().toString().isEmpty()
+                        && !Objects.requireNonNull(edtPoUID.getText()).toString().isEmpty()){
+
+                    int itemSelectedSize = giManagementAdapter.getSelected().size();
+                    float itemSelectedVolume = giManagementAdapter.getSelectedVolume();
+                    String itemSelectedSizeVal = String.valueOf(itemSelectedSize).concat(" item terpilih");
+                    String itemSelectedVolumeAndBuyPriceVal = df.format(itemSelectedVolume).concat(" m3");
+                    if (giManagementAdapter.getSelected().size()>0){
+
+                        fabCreateGiRecap.animate().translationY(0).setDuration(100).start();
+
+                        tvTotalSelectedItem.setText(itemSelectedSizeVal);
+                        tvTotalSelectedItem2.setText(itemSelectedVolumeAndBuyPriceVal);
+                        llBottomSelectionOptions.animate()
+                                .translationY(0).alpha(1.0f)
+                                .setDuration(100)
+                                .setListener(new AnimatorListenerAdapter() {
+                                    @Override
+                                    public void onAnimationStart(Animator animation) {
+                                        super.onAnimationStart(animation);
+                                        llBottomSelectionOptions.setVisibility(View.VISIBLE);
+                                    }
+                                });
+
+
+                    } else {
+                        totalUnit = 0;
+                        fabCreateGiRecap.animate().translationY(800).setDuration(100).start();
+                        llBottomSelectionOptions.animate()
+                                .translationY(llBottomSelectionOptions.getHeight()).alpha(0.0f)
+                                .setListener(new AnimatorListenerAdapter() {
+                                    @Override
+                                    public void onAnimationEnd(Animator animation) {
+                                        super.onAnimationEnd(animation);
+                                        llBottomSelectionOptions.setVisibility(View.GONE);
+                                    }
+                                });
+                    }
+                }
+
+                handler.postDelayed(this, 100);
+            }
+        };
+        runnable.run();
+
+        btnExitSelection.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                giManagementAdapter.clearSelection();
+                llBottomSelectionOptions.animate()
+                        .translationY(llBottomSelectionOptions.getHeight()).alpha(0.0f)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                super.onAnimationEnd(animation);
+                                llBottomSelectionOptions.setVisibility(View.GONE);
+                            }
+                        });
+            }
         });
 
         imgbtnExpandCollapseFilterLayout.setOnClickListener(view -> {
@@ -376,9 +457,8 @@ public class AddInvoiceActivity extends AppCompatActivity {
                 ActivityCompat.requestPermissions((Activity) context,
                         new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 10);
             } else {
-                float totalUnit = 0;
-                for (int i = 0; i < goodIssueModelArrayList.size(); i++){
-                    totalUnit += goodIssueModelArrayList.get(i).getGiVhlCubication();
+                for (int i = 0; i < giManagementAdapter.getSelected().size(); i++) {
+                    totalUnit += giManagementAdapter.getSelected().get(i).getGiVhlCubication();
                 }
                 double totalIDR = matSellPrice *Double.parseDouble(df.format(totalUnit));
 

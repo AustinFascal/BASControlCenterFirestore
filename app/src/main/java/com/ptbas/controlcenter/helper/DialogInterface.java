@@ -745,6 +745,12 @@ public class DialogInterface {
                                   String invUID, String invPoType, String invCreatedBy, String invDateCreated, String invPoDate, String invPoUID, String invCustName,
                                   Double invTotal, Double invTax1, Double invTax2) {
 
+        GIManagementAdapter giManagementAdapter;
+
+        giManagementAdapter = new GIManagementAdapter(context, goodIssueModelArrayList);
+        //int itemSelectedSize = giManagementAdapter.getSelected().size();
+
+
         MaterialDialog generatingInvoiceDialog = new MaterialDialog.Builder((Activity) context)
                 .setTitle("Memproses Permintaan")
                 .setMessage("Invoice sedang diproses. Harap tunggu ...")
@@ -771,6 +777,7 @@ public class DialogInterface {
 
                 refRO.set(invoiceModel);
 
+                /*
                 DocumentReference refGI = db.collection("InvoiceData").document(invDocumentID);
                 for (int i = 0; i < goodIssueModelArrayList.size(); i++) {
                     GoodIssueModel goodIssueModel = goodIssueModelArrayList.get(i);
@@ -779,9 +786,33 @@ public class DialogInterface {
                 }
                 AddInvoiceActivity addInvoiceActivity = (AddInvoiceActivity) context;
                 addInvoiceActivity.createInvPDF(Helper.getAppPath(context)+invUID+".pdf");
+                generatingInvoiceDialog.dismiss();*/
+
+                for (int i = 0; i < giManagementAdapter.getSelected().size(); i++) {
+                    databaseReferenceGI.child("GoodIssueData").child(giManagementAdapter.getSelected().get(i).getGiUID()).child("giInvoiced").setValue(true);
+                }
+                AddInvoiceActivity addInvoiceActivity = (AddInvoiceActivity) context;
+                addInvoiceActivity.createInvPDF(Helper.getAppPath(context)+invUID+".pdf");
                 generatingInvoiceDialog.dismiss();
             }
         }.start();
+    }
+
+    public void invoiceGeneratedInformation(Context context, String filepath) {
+        MaterialDialog invoiceGeneratedInformationDialog = new MaterialDialog.Builder((Activity) context)
+                .setTitle("Berhasil!")
+                .setAnimation(R.raw.lottie_bill_generated)
+                .setMessage("Data invoice telah berhasil disimpan ke database dan diekspor menjadi berkas PDF di " + filepath + ". Buka berkas sekarang?")
+                .setCancelable(true)
+                .setPositiveButton("YA", R.drawable.ic_outline_check, (dialogInterface, which) -> {
+                    Helper.openFilePDF(context, new File(filepath));
+                    dialogInterface.dismiss();
+                })
+                .setNegativeButton("TIDAK", R.drawable.ic_outline_close, (dialogInterface, which) -> dialogInterface.dismiss())
+                .build();
+
+        invoiceGeneratedInformationDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
+        invoiceGeneratedInformationDialog.show();
     }
 
     public void generatingCashOut(Context context, FirebaseFirestore db,
@@ -840,22 +871,6 @@ public class DialogInterface {
         }.start();
     }
 
-    public void invoiceGeneratedInformation(Context context, String filepath) {
-        MaterialDialog invoiceGeneratedInformationDialog = new MaterialDialog.Builder((Activity) context)
-                .setTitle("Berhasil!")
-                .setAnimation(R.raw.lottie_bill_generated)
-                .setMessage("Data invoice telah berhasil disimpan ke database dan diekspor menjadi berkas PDF di " + filepath + ". Buka berkas sekarang?")
-                .setCancelable(true)
-                .setPositiveButton("YA", R.drawable.ic_outline_check, (dialogInterface, which) -> {
-                    Helper.openFilePDF(context, new File(filepath));
-                    dialogInterface.dismiss();
-                })
-                .setNegativeButton("TIDAK", R.drawable.ic_outline_close, (dialogInterface, which) -> dialogInterface.dismiss())
-                .build();
-
-        invoiceGeneratedInformationDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
-        invoiceGeneratedInformationDialog.show();
-    }
     public void cashOutProofGeneratedInformation(Context context, String filepath) {
         MaterialDialog invoiceGeneratedInformationDialog = new MaterialDialog.Builder((Activity) context)
                 .setTitle("Berhasil!")
@@ -872,6 +887,9 @@ public class DialogInterface {
         invoiceGeneratedInformationDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
         invoiceGeneratedInformationDialog.show();
     }
+
+
+
 
 
 }

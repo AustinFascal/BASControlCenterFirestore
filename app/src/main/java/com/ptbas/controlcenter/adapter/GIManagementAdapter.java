@@ -23,21 +23,23 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.dynamic.IFragmentWrapper;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.itextpdf.text.pdf.AcroFields;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.helper.DialogInterface;
 import com.ptbas.controlcenter.helper.Helper;
 import com.ptbas.controlcenter.model.GoodIssueModel;
+import com.ptbas.controlcenter.model.ProductItems;
 import com.ptbas.controlcenter.model.ReceivedOrderModel;
 import com.ptbas.controlcenter.update.UpdateGoodIssueActivity;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Objects;
 
 import dev.shreyaspatil.MaterialDialog.MaterialDialog;
@@ -341,6 +343,21 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
         }
         return selected;
     }
+    public float getSelectedVolume() {
+        float selected = 0;
+        //ArrayList<GoodIssueModel> selected = new ArrayList<>();
+        for (int i = 0; i < goodIssueModelArrayList.size(); i++) {
+            if (goodIssueModelArrayList.get(i).isChecked()) {
+                selected += goodIssueModelArrayList.get(i).getGiVhlCubication();
+                if (!goodIssueModelArrayList.get(i).isChecked()){
+                    selected -= goodIssueModelArrayList.get(i).getGiVhlCubication();
+                }
+            }
+        }
+        return selected;
+    }
+
+
 
 
 

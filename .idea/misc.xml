@@ -9,7 +9,9 @@
         <entry key="..\:/AUSTINFASCALISKANDAR/Projects/TravelPermitBAS/app/src/main/res/layout/activity_main.xml" value="0.22" />
         <entry key="..\:/AUSTINFASCALISKANDAR/Projects/TravelPermitBAS/app/src/main/res/layout/activity_register.xml" value="0.22" />
         <entry key="..\:/AUSTINFASCALISKANDAR/Projects/TravelPermitBAS/app/src/main/res/layout/activity_user_profile.xml" value="0.1" />
+        <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout/activity_add_cash_out_request.xml" value="0.264" />
         <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout/activity_add_good_issue.xml" value="0.12082066869300911" />
+        <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout/activity_add_invoice.xml" value="0.264" />
         <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout/activity_good_issue_management.xml" value="0.12082066869300911" />
         <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout/activity_invoice_management.xml" value="0.16799999999999998" />
         <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout/activity_update_good_issue.xml" value="0.17255434782608695" />
@@ -97,7 +99,6 @@
         <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/drawable/splash_inset.xml" value="0.1935" />
         <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/drawable/top_shadow_gradient.xml" value="0.1545" />
         <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/drawable/unselected.xml" value="0.229" />
-        <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/layout/activity_add_bank_account.xml" value="0.2" />
         <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/layout/activity_add_cash_out_request.xml" value="0.264" />
         <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/layout/activity_add_co.xml" value="0.1" />
         <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/layout/activity_add_customer.xml" value="0.1585144927536232" />
