@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".management.GoodIssueManagementActivity">
+    tools:context=".management.ManageGoodIssueActivity">
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -457,6 +457,7 @@
 
 
         </LinearLayout>
+
         <com.getbase.floatingactionbutton.FloatingActionsMenu
             android:id="@+id/fab_expand_menu"
             android:layout_width="wrap_content"
@@ -493,9 +494,4 @@
         </com.getbase.floatingactionbutton.FloatingActionsMenu>
 
     </RelativeLayout>
-
-
-
-
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

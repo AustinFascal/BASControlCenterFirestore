@@ -16,7 +16,6 @@
         android:orientation="vertical">
 
         <RelativeLayout
-            android:id="@+id/open_detail"
             android:paddingHorizontal="12dp"
             android:paddingBottom="12dp"
             android:paddingTop="12dp"

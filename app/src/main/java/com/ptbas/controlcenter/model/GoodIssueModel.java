@@ -7,7 +7,7 @@ public class GoodIssueModel implements Parcelable {
 
     private boolean isChecked = false;
     //MANDATORY
-    String giUID, giCreatedBy, giVerifiedBy, giRoUID, giPoCustNumber, giMatName, giMatType, vhlUID,
+    String giUID, giCreatedBy, giVerifiedBy, giRoUID, giPoCustNumber, giMatName, giMatType, giNoteNumber, vhlUID,
             giDateCreated, giTimeCreted;
     Integer vhlLength, vhlWidth, vhlHeight, vhlHeightCorrection, vhlHeightAfterCorrection;
     Float giVhlCubication;
@@ -17,7 +17,13 @@ public class GoodIssueModel implements Parcelable {
     public GoodIssueModel() {
     }
 
-    public GoodIssueModel(String giUID, String giCreatedBy, String giVerifiedBy, String giRoUID, String giPoCustNumber, String giMatName, String giMatType, String vhlUID, String giDateCreated, String giTimeCreted, Integer vhlLength, Integer vhlWidth, Integer vhlHeight, Integer vhlHeightCorrection, Integer vhlHeightAfterCorrection, Float giVhlCubication, Boolean giStatus, Boolean giInvoiced, Boolean giCashedOut) {
+    public GoodIssueModel(String giUID, String giCreatedBy, String giVerifiedBy,
+                          String giRoUID, String giPoCustNumber, String giMatName,
+                          String giMatType, String giNoteNumber, String vhlUID,
+                          String giDateCreated, String giTimeCreted, Integer vhlLength,
+                          Integer vhlWidth, Integer vhlHeight, Integer vhlHeightCorrection,
+                          Integer vhlHeightAfterCorrection, Float giVhlCubication, Boolean giStatus,
+                          Boolean giInvoiced, Boolean giCashedOut) {
         this.giUID = giUID;
         this.giCreatedBy = giCreatedBy;
         this.giVerifiedBy = giVerifiedBy;
@@ -25,6 +31,7 @@ public class GoodIssueModel implements Parcelable {
         this.giPoCustNumber = giPoCustNumber;
         this.giMatName = giMatName;
         this.giMatType = giMatType;
+        this.giNoteNumber = giNoteNumber;
         this.vhlUID = vhlUID;
         this.giDateCreated = giDateCreated;
         this.giTimeCreted = giTimeCreted;
@@ -47,6 +54,7 @@ public class GoodIssueModel implements Parcelable {
         giPoCustNumber = in.readString();
         giMatName = in.readString();
         giMatType = in.readString();
+        giNoteNumber = in.readString();
         vhlUID = in.readString();
         giDateCreated = in.readString();
         giTimeCreted = in.readString();
@@ -99,6 +107,14 @@ public class GoodIssueModel implements Parcelable {
             return new GoodIssueModel[size];
         }
     };
+
+    public String getGiNoteNumber() {
+        return giNoteNumber;
+    }
+
+    public void setGiNoteNumber(String giNoteNumber) {
+        this.giNoteNumber = giNoteNumber;
+    }
 
     public Boolean getGiCashedOut() {
         return giCashedOut;
@@ -266,6 +282,7 @@ public class GoodIssueModel implements Parcelable {
         parcel.writeString(giPoCustNumber);
         parcel.writeString(giMatName);
         parcel.writeString(giMatType);
+        parcel.writeString(giNoteNumber);
         parcel.writeString(vhlUID);
         parcel.writeString(giDateCreated);
         parcel.writeString(giTimeCreted);

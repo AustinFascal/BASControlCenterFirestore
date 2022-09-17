@@ -63,26 +63,59 @@
 
             </LinearLayout>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:divider="@drawable/divider_transparent"
+                android:gravity="top"
+                android:orientation="horizontal"
+                android:showDividers="middle"
+                android:visibility="visible">
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    app:startIconDrawable="@drawable/ic_outline_person">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/spinnerCustUID"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Pilih Customer"
+                        android:inputType="textCapCharacters" />
+                </com.google.android.material.textfield.TextInputLayout>
+                <ImageButton
+                    android:id="@+id/btnResetCustomer"
+                    android:layout_width="55dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="4dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginBottom="1dp"
+                    android:background="@drawable/outline_box"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/ic_outline_restore"
+                    android:visibility="gone" />
+            </LinearLayout>
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:prefixText="RO-"
                 app:startIconDrawable="@drawable/ic_outline_receipt">
 
                 <AutoCompleteTextView
                     android:id="@+id/spinner_ro_number"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890/"
-                    android:hint="@string/inputPoNumberPtBas"
-                    android:inputType="textFilter|textCapCharacters" />
+                    android:hint="@string/inputPoNumberCustomer"
+                    android:inputType="textCapCharacters" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                app:prefixText="RO-"
                 app:startIconDrawable="@drawable/ic_outline_receipt">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -90,7 +123,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:focusable="false"
-                    android:hint="@string/inputPoNumberCustomer"
+                    android:hint="@string/inputPoNumberPtBas"
                     android:inputType="none"
                     android:maxLines="1" />
             </com.google.android.material.textfield.TextInputLayout>
@@ -146,6 +179,22 @@
                 android:divider="@drawable/divider_transparent"
                 android:orientation="vertical"
                 android:showDividers="middle">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:startIconDrawable="@drawable/ic_outline_receipt">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edtGiNoteNumber"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Nomor Nota"
+                        android:inputType="textCapCharacters"
+                        android:maxLines="1" />
+                </com.google.android.material.textfield.TextInputLayout>
+
 
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"

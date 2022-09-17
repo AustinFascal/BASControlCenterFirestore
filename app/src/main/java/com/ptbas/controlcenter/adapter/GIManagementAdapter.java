@@ -11,6 +11,7 @@ import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
@@ -20,15 +21,23 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.ptbas.controlcenter.R;
+import com.ptbas.controlcenter.create.AddGoodIssueActivity;
 import com.ptbas.controlcenter.helper.DialogInterface;
 import com.ptbas.controlcenter.helper.Helper;
 import com.ptbas.controlcenter.model.GoodIssueModel;
@@ -86,11 +95,12 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
     public class ItemViewHolder extends RecyclerView.ViewHolder {
         LinearLayout llStatusApproved, llStatusInvoiced, llCashedOutStatus, llStatusPOAvailable, llRoNeedsUpdate, llHiddenView, llWrapGiStatus;
         TextView tvCubication, tvGiDateTime, tvGiUid, tvRoUid, tvGiMatDetail, tvGiVhlDetail,
-                tvVhlUid, tvPoCustNumber;
+                tvVhlUid, tvPoCustNumber, tvCustomerName;
         RelativeLayout btnDeleteGi, btnApproveGi;
         Button btn1, btn2, btn3;
         CardView cardView;
         CheckBox cbSelectItem;
+        String customerNameVal;
 
         public ItemViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -110,6 +120,7 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
             tvGiMatDetail = itemView.findViewById(R.id.tv_gi_mat_detail);
             tvGiVhlDetail = itemView.findViewById(R.id.tv_gi_vhl_detail);
             tvVhlUid = itemView.findViewById(R.id.tv_vhl_uid);
+            tvCustomerName = itemView.findViewById(R.id.tvCustomerName);
             btnDeleteGi = itemView.findViewById(R.id.btn_delete_gi);
             btnApproveGi = itemView.findViewById(R.id.btn_approve_gi);
             btn1 = itemView.findViewById(R.id.btn1);
@@ -152,11 +163,34 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
             DecimalFormat df = new DecimalFormat("0.00");
             float cubication = goodIssueModel.getGiVhlCubication();
             String dateNTime = goodIssueModel.getGiDateCreated()+" | "+goodIssueModel.getGiTimeCreted();
-            String giUID = "GI-"+goodIssueModel.getGiUID();
-            String roUID = "RO-"+goodIssueModel.getGiRoUID();
+
+            String[] partGiUID = goodIssueModel.getGiUID().split("-");
+            String giUID = partGiUID[0];
+
+            String[] partRoUID = goodIssueModel.getGiRoUID().split(" - ");
+            String roUID = "RO: "+ partRoUID[2];
+
+            String customerName = partRoUID[0];
+            FirebaseFirestore db1 = FirebaseFirestore.getInstance();
+            db1.collection("ReceivedOrderData").whereEqualTo("roStatus", true)
+                    .addSnapshotListener((value, error) -> {
+                        if (value != null) {
+                            if (!value.isEmpty()) {
+                                for (DocumentSnapshot d : value.getDocuments()) {
+                                    String spinnerPurchaseOrders = Objects.requireNonNull(d.get("roCustName")).toString();
+                                    if (Objects.requireNonNull(d.get("roCustName")).toString().contains(customerName)) {
+                                        tvCustomerName.setText(spinnerPurchaseOrders);
+                                    }
+                                }
+
+                            }
+                        }
+
+                    });
+
             String poCustNumb = "PO: "+goodIssueModel.getGiPoCustNumber();
 
-            String matDetail = goodIssueModel.getGiMatType()+" | "+goodIssueModel.getGiMatName();
+            String matDetail = goodIssueModel.getGiMatType()+" - "+goodIssueModel.getGiMatName();
             String vhlDetail = "(P) "+goodIssueModel.getVhlLength().toString()+" (L) "+goodIssueModel.getVhlWidth().toString()+" (T) "+goodIssueModel.getVhlHeight().toString()+" | "+"(K) "+goodIssueModel.getVhlHeightCorrection().toString()+" (TK) "+goodIssueModel.getVhlHeightAfterCorrection().toString();
             String vhlUID = goodIssueModel.getVhlUID();
             boolean giStatus = goodIssueModel.getGiStatus();
@@ -167,6 +201,7 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
             tvGiDateTime.setText(dateNTime);
             tvGiUid.setText(giUID);
             tvRoUid.setText(roUID);
+            //tvCustomerName.setText(customerNameVal);
             tvPoCustNumber.setText(poCustNumb);
             tvGiMatDetail.setText(matDetail);
             tvGiVhlDetail.setText(vhlDetail);

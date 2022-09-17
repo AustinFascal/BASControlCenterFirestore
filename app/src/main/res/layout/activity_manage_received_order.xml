@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/coordinatorLayout"
-    tools:context=".management.ReceivedOrderManagementActivity">
+    tools:context=".management.ManageReceivedOrderActivity">
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -16,7 +16,7 @@
             android:layout_height="wrap_content"
             app:cardCornerRadius="8dp"
             app:cardElevation="8dp"
-            android:visibility="gone"
+            android:visibility="visible"
             app:cardPreventCornerOverlap="false">
 
             <LinearLayout
@@ -27,6 +27,7 @@
                 android:orientation="vertical"
                 android:paddingHorizontal="12dp"
                 android:paddingTop="18dp"
+                android:paddingBottom="12dp"
                 android:showDividers="middle">
 
                 <LinearLayout
@@ -56,7 +57,7 @@
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <ImageButton
-                        android:id="@+id/btn_gi_search_by_type_reset"
+                        android:id="@+id/btnRoSearchByTypeReset"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_gravity="center_vertical"
@@ -112,7 +113,7 @@
                                 app:startIconDrawable="@drawable/ic_outline_today">
 
                                 <com.google.android.material.textfield.TextInputEditText
-                                    android:id="@+id/edt_gi_date_filter_start"
+                                    android:id="@+id/edtRoFilterDateStart"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:focusable="false"
@@ -128,7 +129,7 @@
                                 app:startIconDrawable="@drawable/ic_outline_today">
 
                                 <com.google.android.material.textfield.TextInputEditText
-                                    android:id="@+id/edt_gi_date_filter_end"
+                                    android:id="@+id/edtRoFilterDateEnd"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:focusable="false"
@@ -137,7 +138,7 @@
                             </com.google.android.material.textfield.TextInputLayout>
 
                             <ImageButton
-                                android:id="@+id/btn_gi_search_date_reset"
+                                android:id="@+id/btnRoSearchDateReset"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:layout_gravity="center_vertical"
@@ -151,108 +152,83 @@
                         </LinearLayout>
 
                         <LinearLayout
-                            android:id="@+id/ll_wrap_filter_by_status"
+                            android:id="@+id/ll_wrap_filter_chip_group"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:divider="@drawable/divider_transparent"
                             android:gravity="center_vertical"
-                            android:orientation="horizontal"
-                            android:showDividers="middle"
-                            android:visibility="visible">
-
+                            android:orientation="horizontal">
                             <ImageView
+                                app:tint="?colorAccent"
                                 android:layout_width="24dp"
                                 android:layout_height="match_parent"
                                 android:src="@drawable/ic_outline_drag_indicator" />
+                            <HorizontalScrollView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="10dp">
+                                <com.google.android.material.chip.ChipGroup
+                                    android:id="@+id/chip_group_filter_query"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    app:singleLine="true"
+                                    app:singleSelection="true"
+                                    app:chipSpacingHorizontal="8dp">
+                                    <com.google.android.material.chip.Chip
+                                        android:id="@+id/chipFilterAll"
+                                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                                        android:checked="true"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="SEMUA"/>
+                                    <com.google.android.material.chip.Chip
+                                        android:id="@+id/chipFilterStatusValid"
+                                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="VALID"/>
+                                    <com.google.android.material.chip.Chip
+                                        android:id="@+id/chipFilterStatusInvalid"
+                                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="BELUM VALID"/>
+                                    <com.google.android.material.chip.Chip
+                                        android:id="@+id/chipFilterType0"
+                                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="JASA ANGKUT + MATERIAL"/>
+                                    <com.google.android.material.chip.Chip
+                                        android:id="@+id/chipFilterType1"
+                                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="MATERIAL SAJA"/>
+                                    <com.google.android.material.chip.Chip
+                                        android:id="@+id/chipFilterType2"
+                                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="JASA ANGKUT SAJA"/>
 
-                            <com.google.android.material.textfield.TextInputLayout
-                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:layout_weight="1">
+                                    <com.google.android.material.chip.Chip
+                                        android:id="@+id/chipFilterStatusTransportTypeCurah"
+                                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="CURAH"/>
+                                    <com.google.android.material.chip.Chip
+                                        android:id="@+id/chipFilterStatusTransportTypeBorong"
+                                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="BORONG"/>
 
-                                <AutoCompleteTextView
-                                    android:id="@+id/spinner_approval_status"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:hint="Status Disahkan"
-                                    android:inputType="none" />
-                            </com.google.android.material.textfield.TextInputLayout>
-
-                            <com.google.android.material.textfield.TextInputLayout
-                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:layout_weight="1">
-
-                                <AutoCompleteTextView
-                                    android:id="@+id/spinner_mat_type"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:hint="Tipe Material"
-                                    android:inputType="none" />
-                            </com.google.android.material.textfield.TextInputLayout>
-
-                            <ImageButton
-                                android:id="@+id/btn_gi_search_status_reset"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:layout_gravity="center_vertical"
-                                android:layout_marginTop="3dp"
-                                android:layout_marginBottom="1dp"
-                                android:layout_weight="1.3"
-                                android:background="@drawable/outline_box"
-                                android:scaleType="centerInside"
-                                android:src="@drawable/ic_outline_restore"
-                                android:visibility="gone" />
-
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:id="@+id/ll_wrap_filter_by_company"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:divider="@drawable/divider_transparent"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal"
-                            android:showDividers="middle"
-                            android:visibility="visible">
-
-                            <ImageView
-                                android:layout_width="24dp"
-                                android:layout_height="match_parent"
-                                android:src="@drawable/ic_outline_drag_indicator" />
-
-                            <com.google.android.material.textfield.TextInputLayout
-                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:layout_weight="1">
-
-                                <AutoCompleteTextView
-                                    android:id="@+id/spinner_company_name"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:hint="Perusahaan"
-                                    android:digits="QWERTYUIOPASDFGHJKLZXCVBNM1234567890-, "
-                                    android:inputType="textFilter|textCapCharacters" />
-                            </com.google.android.material.textfield.TextInputLayout>
-
-
-                            <ImageButton
-                                android:id="@+id/btn_gi_search_company_reset"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:layout_gravity="center_vertical"
-                                android:layout_marginTop="3dp"
-                                android:layout_marginBottom="1dp"
-                                android:layout_weight="1.3"
-                                android:background="@drawable/outline_box"
-                                android:scaleType="centerInside"
-                                android:src="@drawable/ic_outline_restore"
-                                android:visibility="gone" />
+                                </com.google.android.material.chip.ChipGroup>
+                            </HorizontalScrollView>
 
                         </LinearLayout>
+
 
                     </com.ptbas.controlcenter.helper.DragLinearLayout>
                 </LinearLayout>
@@ -299,9 +275,9 @@
             android:id="@+id/nestedScrollView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scrollbars="vertical"
+            android:layout_below="@+id/cdv_filter"
             android:fillViewport="true"
-            android:layout_below="@+id/cdv_filter">
+            android:scrollbars="vertical">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_received_order_list"
@@ -310,7 +286,7 @@
                 android:paddingTop="10dp"
                 android:paddingBottom="80dp"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:listitem="@layout/item_layout_good_issue" />
+                tools:listitem="@layout/item_layout_received_order" />
 
             <!--<LinearLayout
             android:layout_width="match_parent"
@@ -324,38 +300,112 @@
         </LinearLayout>-->
 
         </androidx.core.widget.NestedScrollView>
+
+        <LinearLayout
+            android:visibility="gone"
+            android:translationY="0.0dp"
+            android:id="@+id/llBottomSelectionOptions"
+            android:layout_width="match_parent"
+            android:layout_height="?actionBarSize"
+            android:background="?material_dialog_background"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:orientation="vertical" >
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="4dp"
+                android:background="@drawable/top_shadow_gradient" />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingHorizontal="12dp"
+                android:gravity="center_vertical">
+
+                <ImageButton
+                    android:id="@+id/btnExitSelection"
+                    style="@style/MaterialDialog.NegativeButton"
+                    android:layout_width="32dp"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentStart="true"
+                    android:src="@drawable/ic_outline_close"
+                    app:tint="?colorPrimary" />
+
+                <TextView
+                    android:id="@+id/tvTotalSelectedItem"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_toStartOf="@+id/btnSelectAll"
+                    android:layout_toEndOf="@+id/btnExitSelection"
+                    android:gravity="center_vertical"
+                    android:textSize="17sp" />
+
+                <ImageButton
+                    android:id="@+id/btnSelectAll"
+                    style="@style/MaterialDialog.NegativeButton"
+                    android:layout_width="32dp"
+                    android:layout_height="match_parent"
+                    android:layout_toStartOf="@+id/btnDeleteSelected"
+                    android:src="@drawable/ic_outline_check_all"
+                    app:tint="?colorPrimary" />
+
+                <ImageButton
+                    android:id="@+id/btnDeleteSelected"
+                    style="@style/MaterialDialog.NegativeButton"
+                    android:layout_width="32dp"
+                    android:layout_height="match_parent"
+                    android:layout_toStartOf="@+id/btnVerifySelected"
+                    android:src="@drawable/ic_outline_delete_forever"
+                    app:tint="?colorPrimary" />
+
+                <ImageButton
+                    android:id="@+id/btnVerifySelected"
+                    style="@style/MaterialDialog.NegativeButton"
+                    android:layout_width="32dp"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentEnd="true"
+                    android:src="@drawable/ic_outline_verified"
+                    app:tint="?colorPrimary" />
+            </RelativeLayout>
+
+
+        </LinearLayout>
+
+        <com.getbase.floatingactionbutton.FloatingActionsMenu
+            android:id="@+id/fab_expand_menu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_gravity="end|bottom"
+            android:layout_marginEnd="14dp"
+            android:layout_marginBottom="12dp"
+            app:fab_addButtonColorNormal="?colorPrimary"
+            app:fab_addButtonColorPressed="?colorPrimary"
+            app:fab_labelStyle="@style/customFAB"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+            <com.getbase.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fab_action_archived_data"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:fab_colorNormal="@color/white"
+                app:fab_colorPressed="@color/light_grey"
+                app:fab_icon="@drawable/ic_recap_data"
+                app:fab_title="Data RO Diarsipkan" />
+            <com.getbase.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fab_action_create_ro"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:fab_colorNormal="@color/white"
+                app:fab_colorPressed="@color/light_grey"
+                app:fab_icon="@drawable/ic_add_received_order"
+                app:fab_title="Buat Received Order" />
+        </com.getbase.floatingactionbutton.FloatingActionsMenu>
+
     </RelativeLayout>
 
-    <com.getbase.floatingactionbutton.FloatingActionsMenu
-        android:id="@+id/fab_expand_menu"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_gravity="end|bottom"
-        android:layout_marginEnd="14dp"
-        android:layout_marginBottom="12dp"
-        app:fab_addButtonColorNormal="?colorPrimary"
-        app:fab_addButtonColorPressed="?colorPrimary"
-        app:fab_labelStyle="@style/customFAB"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-        <com.getbase.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab_action_archived_data"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:fab_colorNormal="@color/white"
-            app:fab_colorPressed="@color/light_grey"
-            app:fab_icon="@drawable/ic_recap_data"
-            app:fab_title="Data RO Diarsipkan" />
-        <com.getbase.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab_action_create_ro"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:fab_colorNormal="@color/white"
-            app:fab_colorPressed="@color/light_grey"
-            app:fab_icon="@drawable/ic_add_received_order"
-            app:fab_title="Buat Received Order" />
-    </com.getbase.floatingactionbutton.FloatingActionsMenu>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

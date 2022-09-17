@@ -12,6 +12,8 @@ public class ReceivedOrderModel {
     Double roSubTotalBuy, roSubTotalSell, roVATPPN, roTotalSellFinal, roEstProfit;
     Boolean roStatus;
     HashMap<String, List<ProductItems>> roOrderedItems;
+    private boolean isSelected;
+    private boolean isChecked = false;
 
     public ReceivedOrderModel() {
     }
@@ -174,6 +176,16 @@ public class ReceivedOrderModel {
 
     public HashMap<String, List<ProductItems>> getRoOrderedItems() {
         return roOrderedItems;
+    }
+
+
+
+    public boolean isChecked() {
+        return isChecked;
+    }
+
+    public void setChecked(boolean checked) {
+        isChecked = checked;
     }
 }
 

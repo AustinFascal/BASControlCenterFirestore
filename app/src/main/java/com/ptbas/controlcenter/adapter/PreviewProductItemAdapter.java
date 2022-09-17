@@ -45,7 +45,7 @@ public class PreviewProductItemAdapter extends RecyclerView.Adapter<PreviewProdu
 
             holder.tvNumber.setText(String.valueOf(position+1));
             holder.tvItemName.setText(productItems.getMatName());
-            holder.tvItemQty.setText(String.valueOf(productItems.getMatQuantity()));
+            holder.tvItemQty.setText(currencyFormat(String.valueOf(productItems.getMatQuantity())));
             holder.tvItemTotalBuy.setText(currencyFormat(String.valueOf(productItems.getMatTotalBuyPrice())));
             holder.tvItemTotalSell.setText(currencyFormat(String.valueOf(productItems.getMatTotalSellPrice())));
         } else {

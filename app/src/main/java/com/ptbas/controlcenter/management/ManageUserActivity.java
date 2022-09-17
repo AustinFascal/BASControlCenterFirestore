@@ -12,7 +12,7 @@ import android.view.MenuItem;
 
 import com.ptbas.controlcenter.R;
 
-public class UserManagementActivity extends AppCompatActivity {
+public class ManageUserActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +50,7 @@ public class UserManagementActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        finish();
+        //finish();
         return super.onOptionsItemSelected(item);
     }
 }

@@ -80,7 +80,7 @@ public class DashboardActivity extends AppCompatActivity {
     CoordinatorLayout coordinatorLayout;
     ConstraintLayout bottomSheet;
     LinearLayout linearLayout, llAddGi, llShowOthers, llAddRo, llAddBKK, llTopView, llWrapShortcuts, llWrapProfilePic;
-    TextView title;
+    TextView title, tvShowAllMenu;
     RecyclerView rvMainFeatures, rvStatistics;
     NestedScrollView nestedscrollview;
     CardView crdviewWrapShortcuts;
@@ -110,6 +110,7 @@ public class DashboardActivity extends AppCompatActivity {
         nestedscrollview = findViewById(R.id.nestedscrollview);
         llTopView = findViewById(R.id.ll_top_view);
         title = findViewById(R.id.title);
+        tvShowAllMenu = findViewById(R.id.tvShowAllMenu);
         imageViewProfilePic = findViewById(R.id.imgbtn_profile);
         swipeContainer = findViewById(R.id.swipeContainerDashboard);
         crdviewWrapShortcuts = findViewById(R.id.crdview_wrap_shortcuts);
@@ -209,6 +210,14 @@ public class DashboardActivity extends AppCompatActivity {
             }
         });
 
+        tvShowAllMenu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(DashboardActivity.this, AllManagementMenus.class);
+                startActivity(intent);
+            }
+        });
+
         llAddVehicleFromBottomSheet.setOnClickListener(view -> {
             Intent intent = new Intent(DashboardActivity.this, AddVehicleActivity.class);
             startActivity(intent);
@@ -291,7 +300,7 @@ public class DashboardActivity extends AppCompatActivity {
             RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 6);
             rvMainFeatures.setLayoutManager(mLayoutManager);
         }
-        mainFeaturesMenuAdapter = new MainFeaturesMenuAdapter(dataQueue(),getApplicationContext());
+        mainFeaturesMenuAdapter = new MainFeaturesMenuAdapter(dataQueue(),getApplicationContext(), 1);
         rvMainFeatures.setAdapter(mainFeaturesMenuAdapter);
 
         // REFRESH DASHBOARD'S CONTENTS
@@ -436,55 +445,24 @@ public class DashboardActivity extends AppCompatActivity {
         ArrayList<MainFeatureModel> holder = new ArrayList<>();
 
         MainFeatureModel mRO = new MainFeatureModel();
-        mRO.setHeader("Manajemen Received Order");
+        mRO.setHeader("Manajemen\nReceived Order");
         mRO.setImgName(R.drawable.ic_purchase_order);
         holder.add(mRO);
 
         MainFeatureModel mGI = new MainFeatureModel();
-        mGI.setHeader("Manajemen Good Issue");
+        mGI.setHeader("Manajemen\nGood Issue");
         mGI.setImgName(R.drawable.ic_good_issue);
         holder.add(mGI);
 
+        MainFeatureModel mCO = new MainFeatureModel();
+        mCO.setHeader("Manajemen\nCash Out");
+        mCO.setImgName(R.drawable.ic_bkk);
+        holder.add(mCO);
+
         MainFeatureModel mInv = new MainFeatureModel();
-        mInv.setHeader("Manajemen Cash Out");
-        mInv.setImgName(R.drawable.ic_bkk);
+        mInv.setHeader("Manajemen\nInvoice");
+        mInv.setImgName(R.drawable.ic_invoice);
         holder.add(mInv);
-
-        MainFeatureModel mMat = new MainFeatureModel();
-        mMat.setHeader("Manajemen Material");
-        mMat.setImgName(R.drawable.ic_material);
-        holder.add(mMat);
-
-        MainFeatureModel mUsr = new MainFeatureModel();
-        mUsr.setHeader("Manajemen Pengguna");
-        mUsr.setImgName(R.drawable.ic_manage_user);
-        holder.add(mUsr);
-
-        MainFeatureModel mVhl = new MainFeatureModel();
-        mVhl.setHeader("Manajemen Armada");
-        mVhl.setImgName(R.drawable.ic_manage_vehicle);
-        holder.add(mVhl);
-
-        MainFeatureModel ob5 = new MainFeatureModel();
-        ob5.setHeader("Manajemen Customer");
-        ob5.setImgName(R.drawable.ic_manage_customers);
-        holder.add(ob5);
-
-        MainFeatureModel ob6 = new MainFeatureModel();
-        ob6.setHeader("Manajemen Invoice");
-        ob6.setImgName(R.drawable.ic_invoice);
-        holder.add(ob6);
-
-        MainFeatureModel ob7 = new MainFeatureModel();
-        ob7.setHeader("Manajemen Bank");
-        ob7.setImgName(R.drawable.ic_bank);
-        holder.add(ob7);
-
-        MainFeatureModel ob8 = new MainFeatureModel();
-        ob8.setHeader("Manajemen Rekening Bank");
-        ob8.setImgName(R.drawable.ic_bank_account);
-        holder.add(ob8);
-
 
         return holder;
     }

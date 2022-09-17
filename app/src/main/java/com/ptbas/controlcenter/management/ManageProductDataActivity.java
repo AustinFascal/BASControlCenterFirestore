@@ -11,41 +11,43 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.ptbas.controlcenter.helper.Helper;
 import com.ptbas.controlcenter.R;
-import com.ptbas.controlcenter.adapter.CustomerManagementAdapter;
-import com.ptbas.controlcenter.create.AddCustomerActivity;
-import com.ptbas.controlcenter.model.CustomerModel;
+import com.ptbas.controlcenter.adapter.ProductDataManagementAdapter;
+import com.ptbas.controlcenter.create.AddProductData;
+import com.ptbas.controlcenter.model.ProductModel;
 import com.ptbas.controlcenter.utils.LangUtils;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
-public class CustomerManagementActivity extends AppCompatActivity {
+public class ManageProductDataActivity extends AppCompatActivity {
 
-    CustomerManagementAdapter customerManagementAdapter;
+    ProductDataManagementAdapter productDataManagementAdapter;
     Helper helper = new Helper();
     LinearLayout llNoData;
-    FloatingActionButton fabAddCustomerData;
+    FloatingActionButton fabAddMaterialData;
     NestedScrollView nestedScrollView;
     RecyclerView rv;
-    FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-    ArrayList<CustomerModel> customerModelArrayList = new ArrayList<>();
+    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("ProductData");
+    ArrayList<ProductModel> productModelArrayList = new ArrayList<>();
     Context context;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_manage_customer);
+        setContentView(R.layout.activity_manage_product_data);
 
         context = this;
 
@@ -54,7 +56,7 @@ public class CustomerManagementActivity extends AppCompatActivity {
         // ACTION BAR FOR STANDARD ACTIVITY
         assert actionBar != null;
         helper.handleActionBarConfigForStandardActivity(
-                this, actionBar, "Manajemen Customer");
+                this, actionBar, "Manajemen Material");
 
         // SYSTEM UI MODE FOR STANDARD ACTIVITY
         helper.handleUIModeForStandardActivity(this, actionBar);
@@ -62,49 +64,50 @@ public class CustomerManagementActivity extends AppCompatActivity {
         // SET DEFAULT LANG CODE TO ENGLISH
         LangUtils.setLocale(this, "en");
 
-        fabAddCustomerData = findViewById(R.id.fabAddCustomerData);
+        fabAddMaterialData = findViewById(R.id.fabAddMaterialData);
         nestedScrollView = findViewById(R.id.nestedScrollView);
         llNoData = findViewById(R.id.ll_no_data);
         rv = findViewById(R.id.rvList);
 
         showDataDefaultQuery();
 
-        fabAddCustomerData.setOnClickListener(view -> {
-            Intent i = new Intent(this, AddCustomerActivity.class);
+        fabAddMaterialData.setOnClickListener(view -> {
+            Intent i = new Intent(this, AddProductData.class);
             startActivity(i);
         });
     }
 
     private void showDataDefaultQuery() {
-        db.collection("CustomerData").orderBy("custUID")
-                .addSnapshotListener((value, error) -> {
-                    customerModelArrayList.clear();
-                    if (!value.isEmpty()){
-                        for (DocumentSnapshot d : value.getDocuments()) {
-                            CustomerModel customerModel = d.toObject(CustomerModel.class);
-                            customerModelArrayList.add(customerModel);
-                        }
-                        llNoData.setVisibility(View.GONE);
-                        nestedScrollView.setVisibility(View.VISIBLE);
-                    } else{
-                        llNoData.setVisibility(View.VISIBLE);
-                        nestedScrollView.setVisibility(View.GONE);
+        Query query = databaseReference;
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                productModelArrayList.clear();
+                if (snapshot.exists()){
+                    for (DataSnapshot item : snapshot.getChildren()){
+                        ProductModel productModel = item.getValue(ProductModel.class);
+                        productModelArrayList.add(productModel);
                     }
-                    Collections.reverse(customerModelArrayList);
-                    customerManagementAdapter = new CustomerManagementAdapter(context, customerModelArrayList);
-                    rv.setAdapter(customerManagementAdapter);
-                });
-    }
+                    llNoData.setVisibility(View.GONE);
+                    nestedScrollView.setVisibility(View.VISIBLE);
+                } else {
+                    llNoData.setVisibility(View.VISIBLE);
+                    nestedScrollView.setVisibility(View.GONE);
+                }
+                productDataManagementAdapter = new ProductDataManagementAdapter(context, productModelArrayList);
+                rv.setAdapter(productDataManagementAdapter);
+            }
 
-    @Override
-    public boolean onCreateOptionsMenu(@NonNull Menu menu) {
-        return super.onCreateOptionsMenu(menu);
-    }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
 
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        onBackPressed();
-        return super.onOptionsItemSelected(item);
+            }
+        });
+
+        if (productModelArrayList.size()<1){
+            nestedScrollView.setVisibility(View.GONE);
+            llNoData.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -132,9 +135,15 @@ public class CustomerManagementActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        onBackPressed();
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public void onBackPressed() {
-        helper.refreshDashboard(this.getApplicationContext());
-        finish();
+        /*helper.refreshDashboard(this.getApplicationContext());
+        finish();*/
         super.onBackPressed();
     }
 }

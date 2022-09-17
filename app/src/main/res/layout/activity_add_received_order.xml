@@ -141,19 +141,17 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/txt_input_edt_po_number_customer"
-                    android:visibility="gone"
-                    app:placeholderText="Apabila kosong, isi dengan tanda '-'"
+                    app:placeholderText="Biarkan kosong apabila belum tersedia"
                     app:startIconDrawable="@drawable/ic_outline_receipt">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/edt_po_number_customer"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="-"
-                        android:hint="@string/inputPoNumberCustomer2"
+                        android:hint="@string/inputPoNumberCustomer"
                         android:inputType="textCapCharacters" />
                 </com.google.android.material.textfield.TextInputLayout>
-                <LinearLayout
+                <!--<LinearLayout
                     android:id="@+id/ll_po_number_availability"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -166,14 +164,14 @@
                         android:drawableLeft="@drawable/ic_outline_add_circle"
                         android:text="Tambah Nomor PO"
                         android:textAllCaps="true" />
-                </LinearLayout>
+                </LinearLayout>-->
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/wrap_edt_po_number_ptbas"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:prefixText="RO-"
+                    app:prefixText="RO: "
                     app:startIconDrawable="@drawable/ic_outline_receipt">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -221,12 +219,13 @@
                         android:text="Daftar Item" />
 
                     <HorizontalScrollView
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
+                        android:minWidth="200dp"
                         android:layout_height="wrap_content">
 
                         <LinearLayout
                             android:id="@+id/layout_list"
-                            android:layout_width="match_parent"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:orientation="vertical" />
                     </HorizontalScrollView>

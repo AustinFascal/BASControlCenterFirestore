@@ -54,7 +54,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-public class InvoiceManagementActivity extends AppCompatActivity {
+public class ManageInvoiceActivity extends AppCompatActivity {
 
     String[] searchTypeValue = {"giUID", "giRoUID", "giPoCustNumber", "vhlUID", "giMatName"};
     String dateStart = "", dateEnd = "", monthStrVal, dayStrVal;
@@ -154,7 +154,7 @@ public class InvoiceManagementActivity extends AppCompatActivity {
 
         // GO TO ADD INVOICE ACTIVITY
         fabActionCreateInv.setOnClickListener(view -> {
-            Intent intent = new Intent(InvoiceManagementActivity.this, AddInvoiceActivity.class);
+            Intent intent = new Intent(ManageInvoiceActivity.this, AddInvoiceActivity.class);
             startActivity(intent);
         });
 
@@ -185,7 +185,7 @@ public class InvoiceManagementActivity extends AppCompatActivity {
             monthStrVal = String.valueOf(calendar.get(Calendar.MONTH));
             String yearStrVal = String.valueOf(calendar.get(Calendar.YEAR));
 
-            datePicker = new DatePickerDialog(InvoiceManagementActivity.this,
+            datePicker = new DatePickerDialog(ManageInvoiceActivity.this,
                     (datePicker, year, month, dayOfMonth) -> {
                         int monthInt = month + 1;
 
@@ -218,7 +218,7 @@ public class InvoiceManagementActivity extends AppCompatActivity {
             monthStrVal = String.valueOf(calendar.get(Calendar.MONTH));
             String yearStrVal = String.valueOf(calendar.get(Calendar.YEAR));
 
-            datePicker = new DatePickerDialog(InvoiceManagementActivity.this,
+            datePicker = new DatePickerDialog(ManageInvoiceActivity.this,
                     (datePicker, year, month, dayOfMonth) -> {
 
                         int monthInt = month + 1;
@@ -323,7 +323,7 @@ public class InvoiceManagementActivity extends AppCompatActivity {
                         Objects.requireNonNull(edtGiDateFilterStart.getText()).toString().isEmpty() ||
                         Objects.requireNonNull(edtGiDateFilterEnd.getText()).toString().isEmpty()){
                     if (!searchView.getQuery().toString().isEmpty()){
-                        dialogInterface.fillSearchFilter(InvoiceManagementActivity.this, searchView);
+                        dialogInterface.fillSearchFilter(ManageInvoiceActivity.this, searchView);
                     }
                 }
 
@@ -379,7 +379,8 @@ public class InvoiceManagementActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        helper.refreshDashboard(this.getApplicationContext());
-        finish();
+        /*helper.refreshDashboard(this.getApplicationContext());
+        finish();*/
+        super.onBackPressed();
     }
 }

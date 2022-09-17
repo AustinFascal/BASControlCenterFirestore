@@ -53,6 +53,7 @@ import com.ptbas.controlcenter.helper.DialogInterface;
 import com.ptbas.controlcenter.helper.Helper;
 import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.adapter.PreviewProductItemAdapter;
+import com.ptbas.controlcenter.helper.NumberTextWatcher;
 import com.ptbas.controlcenter.model.ProductItems;
 import com.ptbas.controlcenter.model.ProductModel;
 import com.ptbas.controlcenter.model.ReceivedOrderModel;
@@ -72,8 +73,8 @@ public class AddReceivedOrder extends AppCompatActivity {
     CoordinatorLayout coordinatorLayout;
     LinearLayout llList,llAddItem, llInputAllData, llPoNumberAvailability;
     String monthStrVal, dayStrVal;
-    Button btnAddRow, btnLockRow, btnUnlockRow, btnNoPoNumber, btnPoNumberAvailable;
-    TextInputEditText edtPoDate, edtPoTOP, edtPoNumberCustomer, edtPoNumberPtbas;
+    Button btnAddRow, btnLockRow, btnUnlockRow, btnNoPoNumber;
+    TextInputEditText edtPoDate, edtPoTOP, edtPoNumberCustomer, edtRoNumber;
     TextInputLayout wrapEdtPoNumberPtBas, txtInputEdtPoNumberCustomer;
     AutoCompleteTextView spinnerPoTransportType, spinnerPoCustName, spinnerPoCurrency, spinnerRoType;
     List<String> productName, transportTypeName, customerName, currencyName;
@@ -187,6 +188,7 @@ public class AddReceivedOrder extends AppCompatActivity {
         }
 
 
+
         coordinatorLayout = findViewById(R.id.coordinatorLayout);
         llInputAllData = findViewById(R.id.ll_input_all_data);
         llList = findViewById(R.id.layout_list);
@@ -194,7 +196,7 @@ public class AddReceivedOrder extends AppCompatActivity {
         btnAddRow = findViewById(R.id.btn_add_list);
         btnLockRow = findViewById(R.id.btn_lock_row);
         btnUnlockRow = findViewById(R.id.btn_unlock_row);
-        edtPoNumberPtbas = findViewById(R.id.edt_po_number_ptbas);
+        edtRoNumber = findViewById(R.id.edt_po_number_ptbas);
         wrapEdtPoNumberPtBas = findViewById(R.id.wrap_edt_po_number_ptbas);
         edtPoDate = findViewById(R.id.edt_po_date);
         edtPoTOP = findViewById(R.id.edt_po_TOP);
@@ -216,16 +218,6 @@ public class AddReceivedOrder extends AppCompatActivity {
         spinnerPoTransportType.setFilters(new InputFilter[] {new InputFilter.AllCaps()});
 
         txtInputEdtPoNumberCustomer = findViewById(R.id.txt_input_edt_po_number_customer);
-        btnPoNumberAvailable = findViewById(R.id.btn_po_number_available);
-
-        txtInputEdtPoNumberCustomer.setVisibility(View.GONE);
-
-        btnPoNumberAvailable.setOnClickListener(view -> {
-            edtPoNumberCustomer.setText("");
-            btnPoNumberAvailable.setVisibility(View.GONE);
-            txtInputEdtPoNumberCustomer.setVisibility(View.VISIBLE);
-            //llPoNumberAvailability.setVisibility(View.GONE);
-        });
 
         spinnerPoCurrency.setText(R.string.default_currency);
 
@@ -369,13 +361,13 @@ public class AddReceivedOrder extends AppCompatActivity {
         Runnable runnable = new Runnable() {
             public void run() {
                 if (transportData.isEmpty() || poMonth==0 || poYear==0 || customerID.isEmpty() || spinnerPoCurrency.getText().toString().isEmpty()){
-                    edtPoNumberPtbas.setText("");
+                    edtRoNumber.setText("");
                 } else{
                     String poNumberCustomer = Objects.requireNonNull(edtPoNumberCustomer.getText()).toString();
                     if (poNumberCustomer.isEmpty() || poNumberCustomer.equals("-")){
-                        edtPoNumberPtbas.setText(customerID +"- "+transportData.substring(0, 3)+" - "+randomString+" "+poYear+monthStrVal);
+                        edtRoNumber.setText(customerID +"- "+transportData.substring(0, 3)+" - "+randomString+" "+poYear+monthStrVal);
                     } else {
-                        edtPoNumberPtbas.setText(customerID +"- "+transportData.substring(0, 3)+" - "+poNumberCustomer);
+                        edtRoNumber.setText(customerID +"- "+transportData.substring(0, 3)+" - "+poNumberCustomer);
                     }
 
                 }
@@ -412,7 +404,12 @@ public class AddReceivedOrder extends AppCompatActivity {
             String roCurrency = Objects.requireNonNull(spinnerPoCurrency.getText()).toString();
             String roCustName = Objects.requireNonNull(spinnerPoCustName.getText()).toString();
             String roPoCustNumber = Objects.requireNonNull(edtPoNumberCustomer.getText()).toString();
-            String roUID = Objects.requireNonNull(edtPoNumberPtbas.getText()).toString();
+            String roUID = Objects.requireNonNull(edtRoNumber.getText()).toString();
+
+            String roUIDReplace = roUID.replace(" - ","-");
+            int roUIDSize = roUIDReplace.length();
+            int indexLastRoUIDVal = roUIDReplace.lastIndexOf('-');
+            String poUID = roUIDReplace.substring(indexLastRoUIDVal+1, roUIDSize);
 
             if (TextUtils.isEmpty(roDateCreated)) {
                 edtPoDate.setError("Mohon masukkan tanggal order");
@@ -426,8 +423,8 @@ public class AddReceivedOrder extends AppCompatActivity {
             }
 
             if (edtPoNumberCustomer.getText().toString().equals("")) {
-                edtPoNumberCustomer.setText("-");
-                roPoCustNumber = "-";
+                edtPoNumberCustomer.setText(poUID);
+                roPoCustNumber = poUID;
             }
 
             if (TextUtils.isEmpty(roMatTransport)) {
@@ -447,8 +444,119 @@ public class AddReceivedOrder extends AppCompatActivity {
 
             if (!TextUtils.isEmpty(roDateCreated)&&!TextUtils.isEmpty(roMatTransport)&&!TextUtils.isEmpty(roCurrency)&&
                     !TextUtils.isEmpty(roCustName)&&!TextUtils.isEmpty(roUID)){
-                insertData(roUID, roCreatedBy, roDateCreated, roTOP, roMatTransport, roCurrency, roPoCustNumber,
-                        roCustName, roType,false);
+                /*insertData(roUID, roCreatedBy, roDateCreated, roTOP, roMatTransport, roCurrency, roPoCustNumber,
+                        roCustName, roType,false);*/
+
+                RelativeLayout wrapTitle = bottomSheet.findViewById(R.id.wrapTitle);
+                TextView tvPoCurrency = bottomSheet.findViewById(R.id.tvPoCurrency);
+                TextView tvPoPtBasNumber = bottomSheet.findViewById(R.id.tvPoPtBasNumber);
+                TextView tvPoDate = bottomSheet.findViewById(R.id.tvPoDate);
+                TextView tvPoTOP = bottomSheet.findViewById(R.id.tvPoTOP);
+                TextView tvPoTransportType = bottomSheet.findViewById(R.id.tvPoTransportType);
+                TextView tvPoCustomerName = bottomSheet.findViewById(R.id.tvPoCustomerName);
+                TextView tvPoCustomerNumber = bottomSheet.findViewById(R.id.tvPoCustomerNumber);
+                ImageView ivCloseBottomSheetDetail = bottomSheet.findViewById(R.id.ivCloseBottomSheetDetail);
+
+                TextView tvSubTotalBuy = bottomSheet.findViewById(R.id.tvSubTotalBuy);
+                TextView tvSubTotalSell = bottomSheet.findViewById(R.id.tvSubTotalSell);
+                TextView tvTotalVAT = bottomSheet.findViewById(R.id.tvTotalVAT);
+                TextView tvTotalSellFinal = bottomSheet.findViewById(R.id.tvTotalSellFinal);
+                TextView tvEstProfit = bottomSheet.findViewById(R.id.tvEstProfit);
+
+                double poSubTotalBuy = 0, poSubTotalSell = 0, poVAT = 0, poTotalSellFinal = 0, poEstProfit = 0;
+
+                ivCloseBottomSheetDetail.setOnClickListener(view1 -> {
+                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+                    bottomSheetCollapsed();
+                });
+
+                wrapTitle.setOnClickListener(view1 -> {
+                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+                    bottomSheetCollapsed();
+                });
+
+                if (checkIfValidAndProceed()) {
+                    tvPoCurrency.setText(roCurrency);
+                    tvPoPtBasNumber.setText(roUID);
+                    tvPoDate.setText(roDateCreated);
+                    tvPoTOP.setText(roTOP);
+                    tvPoTransportType.setText(roMatTransport);
+                    tvPoCustomerName.setText(roCustName);
+                    tvPoCustomerNumber.setText(poUID);
+
+                    try{
+                        double sumSubTotalBuy = 0, sumSubTotalSell = 0, sumTotalVAT = 0, sumTotalSellFinal = 0, sumEstProfit = 0;
+                        for(ProductItems productItems : productItemsArrayList) {
+                            sumSubTotalBuy += productItems.matTotalBuyPrice;
+                            sumSubTotalSell += productItems.matTotalSellPrice;
+                            sumTotalVAT = (0.11)*(sumSubTotalSell);
+                            sumTotalSellFinal = sumSubTotalSell+sumTotalVAT;
+                            sumEstProfit = sumSubTotalSell-sumSubTotalBuy;
+
+                            poSubTotalBuy = sumSubTotalBuy;
+                            poSubTotalSell = sumSubTotalSell;
+                            poVAT = sumTotalVAT;
+                            poTotalSellFinal = sumTotalSellFinal;
+                            poEstProfit = sumEstProfit;
+                        }
+
+                        tvSubTotalBuy.setText(currencyFormat(String.valueOf(sumSubTotalBuy)));
+                        tvSubTotalSell.setText(currencyFormat(String.valueOf(sumSubTotalSell)));
+                        tvTotalVAT.setText(currencyFormat(String.valueOf(sumTotalVAT)));
+                        tvTotalSellFinal.setText(currencyFormat(String.valueOf(sumTotalSellFinal)));
+                        tvEstProfit.setText(currencyFormat(String.valueOf(sumEstProfit)));
+
+                        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                        RecyclerView rvItems = bottomSheet.findViewById(R.id.rvItems);
+                        rvItems.setHasFixedSize(true);
+                        rvItems.setLayoutManager(new LinearLayoutManager(this));
+
+                        previewProductItemAdapter = new PreviewProductItemAdapter(this, getList());
+                        rvItems.setAdapter(previewProductItemAdapter);
+
+                        HashMap<String, List<ProductItems>> productItemsHashMap = new HashMap<>();
+                        for(int i=0; i<productItemsArrayList.size(); i++) {
+                            String sortID = productItemsArrayList.get(i).getMatName();
+                            List<ProductItems> objectList = productItemsHashMap.get(sortID);
+                            if(objectList == null) {
+                                objectList = new ArrayList<>();
+                            }
+                            objectList.add(productItemsArrayList.get(i));
+                            productItemsHashMap.put(sortID, objectList);
+                        }
+
+                        // Create RO object
+                        String roDocumentID = refRO.getId();
+                        ReceivedOrderModel receivedOrderModel = new ReceivedOrderModel(
+                                roDocumentID, roUID, roCreatedBy, roDateCreated, roTOP, roMatTransport, roCurrency,
+                                roPoCustNumber, roCustName, roType, poSubTotalBuy, poSubTotalSell, poVAT,
+                                poTotalSellFinal, poEstProfit, false, productItemsHashMap);
+
+                        fabActionSaveCloud.setOnClickListener(view1 -> {
+                            if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED){
+                                refRO.set(receivedOrderModel)
+                                        .addOnSuccessListener(unused -> {
+                                            Intent intent = new Intent();
+                                            intent.putExtra("addedStatus", "true");
+                                            intent.putExtra("activityType", "RO");
+                                            setResult(RESULT_OK, intent);
+                                            finish();
+                                        }).addOnFailureListener(e ->
+                                                Toast.makeText(AddReceivedOrder.this, "FAILED", Toast.LENGTH_SHORT).show());
+
+                            }
+                        });
+
+                        fabActionUpdateData.setOnClickListener(view1 -> {
+                            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                            bottomSheetCollapsed();
+                        });
+
+                    } catch (Exception e) {
+                        Log.e(TAG, e.getMessage());
+                        Toast.makeText(AddReceivedOrder.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                }
             }
 
         });
@@ -500,123 +608,14 @@ public class AddReceivedOrder extends AppCompatActivity {
     }
 
     // Get passed data and save to cloud
-    private void insertData(String roUID, String roCreatedBy, String roDateCreated,
+   /* private void insertData(String roUID, String roCreatedBy, String roDateCreated,
                             String roTOP, String roMatTransport, String roCurrency,
                             String roPoCustNumber, String roCustName, Integer roType, Boolean roSatus) {
 
-        RelativeLayout wrapTitle = bottomSheet.findViewById(R.id.wrapTitle);
-        TextView tvPoCurrency = bottomSheet.findViewById(R.id.tvPoCurrency);
-        TextView tvPoPtBasNumber = bottomSheet.findViewById(R.id.tvPoPtBasNumber);
-        TextView tvPoDate = bottomSheet.findViewById(R.id.tvPoDate);
-        TextView tvPoTOP = bottomSheet.findViewById(R.id.tvPoTOP);
-        TextView tvPoTransportType = bottomSheet.findViewById(R.id.tvPoTransportType);
-        TextView tvPoCustomerName = bottomSheet.findViewById(R.id.tvPoCustomerName);
-        TextView tvPoCustomerNumber = bottomSheet.findViewById(R.id.tvPoCustomerNumber);
-        ImageView ivCloseBottomSheetDetail = bottomSheet.findViewById(R.id.ivCloseBottomSheetDetail);
-
-        TextView tvSubTotalBuy = bottomSheet.findViewById(R.id.tvSubTotalBuy);
-        TextView tvSubTotalSell = bottomSheet.findViewById(R.id.tvSubTotalSell);
-        TextView tvTotalVAT = bottomSheet.findViewById(R.id.tvTotalVAT);
-        TextView tvTotalSellFinal = bottomSheet.findViewById(R.id.tvTotalSellFinal);
-        TextView tvEstProfit = bottomSheet.findViewById(R.id.tvEstProfit);
-
-        double poSubTotalBuy = 0, poSubTotalSell = 0, poVAT = 0, poTotalSellFinal = 0, poEstProfit = 0;
-
-        ivCloseBottomSheetDetail.setOnClickListener(view -> {
-            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-            bottomSheetCollapsed();
-        });
-
-        wrapTitle.setOnClickListener(view -> {
-            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-            bottomSheetCollapsed();
-        });
-
-        if (checkIfValidAndProceed()) {
-            tvPoCurrency.setText(roCurrency);
-            tvPoPtBasNumber.setText(roUID);
-            tvPoDate.setText(roDateCreated);
-            tvPoTOP.setText(roTOP);
-            tvPoTransportType.setText(roMatTransport);
-            tvPoCustomerName.setText(roCustName);
-            tvPoCustomerNumber.setText(roPoCustNumber);
-
-            try{
-                double sumSubTotalBuy = 0, sumSubTotalSell = 0, sumTotalVAT = 0, sumTotalSellFinal = 0, sumEstProfit = 0;
-                for(ProductItems productItems : productItemsArrayList) {
-                    sumSubTotalBuy += productItems.matTotalBuyPrice;
-                    sumSubTotalSell += productItems.matTotalSellPrice;
-                    sumTotalVAT = (0.11)*(sumSubTotalSell);
-                    sumTotalSellFinal = sumSubTotalSell+sumTotalVAT;
-                    sumEstProfit = sumSubTotalSell-sumSubTotalBuy;
-
-                    poSubTotalBuy = sumSubTotalBuy;
-                    poSubTotalSell = sumSubTotalSell;
-                    poVAT = sumTotalVAT;
-                    poTotalSellFinal = sumTotalSellFinal;
-                    poEstProfit = sumEstProfit;
-                }
-
-                tvSubTotalBuy.setText(currencyFormat(String.valueOf(sumSubTotalBuy)));
-                tvSubTotalSell.setText(currencyFormat(String.valueOf(sumSubTotalSell)));
-                tvTotalVAT.setText(currencyFormat(String.valueOf(sumTotalVAT)));
-                tvTotalSellFinal.setText(currencyFormat(String.valueOf(sumTotalSellFinal)));
-                tvEstProfit.setText(currencyFormat(String.valueOf(sumEstProfit)));
-
-                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-                RecyclerView rvItems = bottomSheet.findViewById(R.id.rvItems);
-                rvItems.setHasFixedSize(true);
-                rvItems.setLayoutManager(new LinearLayoutManager(this));
-
-                previewProductItemAdapter = new PreviewProductItemAdapter(this, getList());
-                rvItems.setAdapter(previewProductItemAdapter);
-
-                HashMap<String, List<ProductItems>> productItemsHashMap = new HashMap<>();
-                for(int i=0; i<productItemsArrayList.size(); i++) {
-                    String sortID = productItemsArrayList.get(i).getMatName();
-                    List<ProductItems> objectList = productItemsHashMap.get(sortID);
-                    if(objectList == null) {
-                        objectList = new ArrayList<>();
-                    }
-                    objectList.add(productItemsArrayList.get(i));
-                    productItemsHashMap.put(sortID, objectList);
-                }
-
-                // Create RO object
-                String roDocumentID = refRO.getId();
-                ReceivedOrderModel receivedOrderModel = new ReceivedOrderModel(
-                        roDocumentID, roUID, roCreatedBy, roDateCreated, roTOP, roMatTransport, roCurrency,
-                        roPoCustNumber, roCustName, roType, poSubTotalBuy, poSubTotalSell, poVAT,
-                        poTotalSellFinal, poEstProfit, roSatus, productItemsHashMap);
-
-                fabActionSaveCloud.setOnClickListener(view -> {
-                    if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED){
-                        refRO.set(receivedOrderModel)
-                                .addOnSuccessListener(unused -> {
-                                    Intent intent = new Intent();
-                                    intent.putExtra("addedStatus", "true");
-                                    intent.putExtra("activityType", "RO");
-                                    setResult(RESULT_OK, intent);
-                                    finish();
-                                }).addOnFailureListener(e ->
-                                        Toast.makeText(AddReceivedOrder.this, "FAILED", Toast.LENGTH_SHORT).show());
-
-                    }
-                });
-
-                fabActionUpdateData.setOnClickListener(view -> {
-                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                    bottomSheetCollapsed();
-                });
-
-            } catch (Exception e) {
-                Log.e(TAG, e.getMessage());
-                Toast.makeText(AddReceivedOrder.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        }
 
 
-    }
+
+    }*/
 
     public static String currencyFormat(String amount) {
         DecimalFormat formatter = new DecimalFormat("###,###,##0.00");
@@ -644,6 +643,8 @@ public class AddReceivedOrder extends AppCompatActivity {
             TextInputEditText edtPoTotalSellPrice = productItemView.findViewById(R.id.edt_po_total_sell_price);
             TextInputEditText edtPoTotalBuyPrice = productItemView.findViewById(R.id.edt_po_total_buy_price);
 
+
+
             ProductItems productItems = new ProductItems();
 
             if (!spinnerMaterialName.getText().toString().equals("")){
@@ -654,42 +655,42 @@ public class AddReceivedOrder extends AppCompatActivity {
             }
 
             if (!edtPoQuantity.getText().toString().equals("")){
-                productItems.setMatQuantity(Integer.parseInt(edtPoQuantity.getText().toString()));
+                productItems.setMatQuantity(Integer.parseInt(NumberTextWatcher.trimCommaOfString(edtPoQuantity.getText().toString())));
             }else{
                 result = false;
                 break;
             }
 
             if (!edtPoQuantity.getText().toString().equals("0")){
-                productItems.setMatQuantity(Integer.parseInt(edtPoQuantity.getText().toString()));
+                productItems.setMatQuantity(Integer.parseInt(NumberTextWatcher.trimCommaOfString(edtPoQuantity.getText().toString())));
             }else{
                 result = false;
                 break;
             }
 
             if (!edtSalePrice.getText().toString().equals("")){
-                productItems.setMatSellPrice(Double.valueOf(edtSalePrice.getText().toString()));
+                productItems.setMatSellPrice(Double.valueOf(NumberTextWatcher.trimCommaOfString(edtSalePrice.getText().toString())));
             } else{
                 result = false;
                 break;
             }
 
             if (!edtBuyPrice.getText().toString().equals("")){
-                productItems.setMatBuyPrice(Double.valueOf(edtBuyPrice.getText().toString()));
+                productItems.setMatBuyPrice(Double.valueOf(NumberTextWatcher.trimCommaOfString(edtBuyPrice.getText().toString())));
             } else{
                 result = false;
                 break;
             }
 
             if (!edtPoTotalSellPrice.getText().toString().equals("")){
-                productItems.setMatTotalSellPrice(Double.valueOf(edtPoTotalSellPrice.getText().toString()));
+                productItems.setMatTotalSellPrice(Double.valueOf(NumberTextWatcher.trimCommaOfString(edtPoTotalSellPrice.getText().toString())));
             } else{
                 result = false;
                 break;
             }
 
             if (!edtPoTotalBuyPrice.getText().toString().equals("")){
-                productItems.setMatTotalBuyPrice(Double.valueOf(edtPoTotalBuyPrice.getText().toString()));
+                productItems.setMatTotalBuyPrice(Double.valueOf(NumberTextWatcher.trimCommaOfString(edtPoTotalBuyPrice.getText().toString())));
             } else{
                 result = false;
                 break;
@@ -753,6 +754,14 @@ public class AddReceivedOrder extends AppCompatActivity {
         TextInputEditText edtPoTotalBuyPrice = materialView.findViewById(R.id.edt_po_total_buy_price);
         ImageView imgDeleteRow = materialView.findViewById(R.id.img_remove_row);
 
+
+        edtPoQuantity.addTextChangedListener(new NumberTextWatcher(edtPoQuantity));
+        edtBuyPrice.addTextChangedListener(new NumberTextWatcher(edtBuyPrice));
+        edtSalePrice.addTextChangedListener(new NumberTextWatcher(edtSalePrice));
+        edtPoTotalBuyPrice.addTextChangedListener(new NumberTextWatcher(edtPoTotalBuyPrice));
+        edtPoTotalSellPrice.addTextChangedListener(new NumberTextWatcher(edtPoTotalSellPrice));
+
+
         databaseReference.child("ProductData").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -807,18 +816,18 @@ public class AddReceivedOrder extends AppCompatActivity {
                             Runnable runnable = new Runnable() {
                                 public void run() {
                                     if(!edtPoQuantity.getText().toString().equals("")){
-                                        double quantity = Double.parseDouble(edtPoQuantity.getText().toString());
+                                        double quantity = Double.parseDouble(NumberTextWatcher.trimCommaOfString(edtPoQuantity.getText().toString()));
                                         if (edtBuyPrice.getText().toString().equals("")){
                                             totalBuyPrice = quantity*0;
                                         } else {
-                                            double buyPrice = Double.parseDouble(edtBuyPrice.getText().toString());
+                                            double buyPrice = Double.parseDouble(NumberTextWatcher.trimCommaOfString(edtBuyPrice.getText().toString()));
                                             totalBuyPrice = quantity*buyPrice;
                                         }
 
                                         if (edtSalePrice.getText().toString().equals("")){
                                             totalSellPrice = quantity*0;
                                         } else {
-                                            double salePrice = Double.parseDouble(edtSalePrice.getText().toString());
+                                            double salePrice = Double.parseDouble(NumberTextWatcher.trimCommaOfString(edtSalePrice.getText().toString()));
                                             totalSellPrice = quantity*salePrice;
                                         }
 
@@ -841,8 +850,8 @@ public class AddReceivedOrder extends AppCompatActivity {
                                         return false;
                                     });*/
 
-                                    edtPoTotalBuyPrice.setText(String.format("%.2f", totalBuyPrice));
-                                    edtPoTotalSellPrice.setText(String.format("%.2f", totalSellPrice));
+                                    edtPoTotalBuyPrice.setText(currencyFormat(String.format("%.2f", totalBuyPrice)));
+                                    edtPoTotalSellPrice.setText(currencyFormat(String.format("%.2f", totalSellPrice)));
                                     handler.postDelayed(this, 500);
 
                                 }
@@ -901,6 +910,13 @@ public class AddReceivedOrder extends AppCompatActivity {
 
         spinnerMaterialName.setText("JASA ANGKUT");
 
+
+        edtPoQuantity.addTextChangedListener(new NumberTextWatcher(edtPoQuantity));
+        edtBuyPrice.addTextChangedListener(new NumberTextWatcher(edtBuyPrice));
+        edtSalePrice.addTextChangedListener(new NumberTextWatcher(edtSalePrice));
+        edtPoTotalBuyPrice.addTextChangedListener(new NumberTextWatcher(edtPoTotalBuyPrice));
+        edtPoTotalSellPrice.addTextChangedListener(new NumberTextWatcher(edtPoTotalSellPrice));
+
         DatabaseReference databaseReferenceJasaAngkut = FirebaseDatabase.getInstance().getReference("ProductData/jasaangkut");
         databaseReferenceJasaAngkut.addValueEventListener(new ValueEventListener() {
             @Override
@@ -916,18 +932,18 @@ public class AddReceivedOrder extends AppCompatActivity {
                     Runnable runnable = new Runnable() {
                         public void run() {
                             if(!edtPoQuantity.getText().toString().equals("")){
-                                double quantity = Double.parseDouble(edtPoQuantity.getText().toString());
+                                double quantity = Double.parseDouble(NumberTextWatcher.trimCommaOfString(edtPoQuantity.getText().toString()));
                                 if (edtBuyPrice.getText().toString().equals("")){
                                     totalBuyPrice = quantity*0;
                                 } else {
-                                    double buyPrice = Double.parseDouble(edtBuyPrice.getText().toString());
+                                    double buyPrice = Double.parseDouble(NumberTextWatcher.trimCommaOfString(edtBuyPrice.getText().toString()));
                                     totalBuyPrice = quantity*buyPrice;
                                 }
 
                                 if (edtSalePrice.getText().toString().equals("")){
                                     totalSellPrice = quantity*0;
                                 } else {
-                                    double salePrice = Double.parseDouble(edtSalePrice.getText().toString());
+                                    double salePrice = Double.parseDouble(NumberTextWatcher.trimCommaOfString(edtSalePrice.getText().toString()));
                                     totalSellPrice = quantity*salePrice;
                                 }
 
@@ -950,8 +966,8 @@ public class AddReceivedOrder extends AppCompatActivity {
                                 return false;
                             });*/
 
-                            edtPoTotalBuyPrice.setText(String.format("%.2f", totalBuyPrice));
-                            edtPoTotalSellPrice.setText(String.format("%.2f", totalSellPrice));
+                            edtPoTotalBuyPrice.setText(currencyFormat(String.format("%.2f", totalBuyPrice)));
+                            edtPoTotalSellPrice.setText(currencyFormat(String.format("%.2f", totalSellPrice)));
                             handler.postDelayed(this, 500);
 
                         }

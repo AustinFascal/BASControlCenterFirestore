@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.CountDownTimer;
-import android.os.Handler;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.view.MenuItem;
@@ -34,7 +33,7 @@ import com.ptbas.controlcenter.adapter.GIManagementAdapter;
 import com.ptbas.controlcenter.create.AddCashOutRequestActivity;
 import com.ptbas.controlcenter.create.AddInvoiceActivity;
 import com.ptbas.controlcenter.create.AddReceivedOrder;
-import com.ptbas.controlcenter.management.ReceivedOrderManagementActivity;
+import com.ptbas.controlcenter.management.ManageReceivedOrderActivity;
 import com.ptbas.controlcenter.model.GoodIssueModel;
 import com.ptbas.controlcenter.model.InvoiceModel;
 
@@ -332,7 +331,7 @@ public class DialogInterface {
                 .setMessage("Anda tidak dapat membuat Good Issue karena tidak memiliki Received Order yang aktif dan sah. Validasi atau tambah Received Order sekarang?")
                 .setPositiveButton("YA", R.drawable.ic_outline_add, (dialogInterface, which) -> {
                     dialogInterface.dismiss();
-                    Intent intent = new Intent(activity, ReceivedOrderManagementActivity.class);
+                    Intent intent = new Intent(activity, ManageReceivedOrderActivity.class);
                     activity.startActivity(intent);
                 })
                 .setNegativeButton("TIDAK", R.drawable.ic_outline_close, (dialogInterface, which) -> {
@@ -361,7 +360,7 @@ public class DialogInterface {
                 .setMessage("Anda tidak dapat membuat Invoice karena tidak memiliki Received Order yang aktif dan sah. Validasi atau tambah Received Order sekarang?")
                 .setPositiveButton("YA", R.drawable.ic_outline_add, (dialogInterface, which) -> {
                     dialogInterface.dismiss();
-                    Intent intent = new Intent(activity, ReceivedOrderManagementActivity.class);
+                    Intent intent = new Intent(activity, ManageReceivedOrderActivity.class);
                     activity.startActivity(intent);
                 })
                 .setNegativeButton("TIDAK", R.drawable.ic_outline_close, (dialogInterface, which) -> {
@@ -845,14 +844,14 @@ public class DialogInterface {
             public void onFinish() {
 
                 DatabaseReference databaseReferenceGI = FirebaseDatabase.getInstance().getReference();
-                /*DocumentReference refRO = db.collection("CashOutData").document();
+                DocumentReference refRO = db.collection("CashOutData").document();
                 String invDocumentID = refRO.getId();
 
                 InvoiceModel invoiceModel = new InvoiceModel(
                         invDocumentID, invUID, invPoType, invCreatedBy, invDateCreated, invPoUID,
                         invPoDate, invCustName, invTotal, invTax1, invTax2, false);
 
-                refRO.set(invoiceModel);*/
+                refRO.set(invoiceModel);
 
                 //DocumentReference refGI = db.collection("CashOutData").document(invDocumentID);
                 /*for (int i = 0; i < goodIssueModelArrayList.size(); i++) {

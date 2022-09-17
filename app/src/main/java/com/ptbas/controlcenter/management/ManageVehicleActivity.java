@@ -24,30 +24,29 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.ptbas.controlcenter.helper.Helper;
 import com.ptbas.controlcenter.R;
-import com.ptbas.controlcenter.adapter.ProductDataManagementAdapter;
-import com.ptbas.controlcenter.create.AddProductData;
-import com.ptbas.controlcenter.model.ProductModel;
+import com.ptbas.controlcenter.adapter.VehicleDataManagementAdapter;
+import com.ptbas.controlcenter.create.AddVehicleActivity;
+import com.ptbas.controlcenter.model.VehicleModel;
 import com.ptbas.controlcenter.utils.LangUtils;
 
 import java.util.ArrayList;
 
-public class ProductDataManagementActivity extends AppCompatActivity {
+public class ManageVehicleActivity extends AppCompatActivity {
 
-    ProductDataManagementAdapter productDataManagementAdapter;
+    VehicleDataManagementAdapter vehicleDataManagementAdapter;
     Helper helper = new Helper();
     LinearLayout llNoData;
-    FloatingActionButton fabAddMaterialData;
+    FloatingActionButton fabAddVhlData;
     NestedScrollView nestedScrollView;
     RecyclerView rv;
-    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("ProductData");
-    ArrayList<ProductModel> productModelArrayList = new ArrayList<>();
+    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("VehicleData");
+    ArrayList<VehicleModel> vehicleModelArrayList = new ArrayList<>();
     Context context;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_manage_product_data);
+        setContentView(R.layout.activity_vehicle_management);
 
         context = this;
 
@@ -56,7 +55,7 @@ public class ProductDataManagementActivity extends AppCompatActivity {
         // ACTION BAR FOR STANDARD ACTIVITY
         assert actionBar != null;
         helper.handleActionBarConfigForStandardActivity(
-                this, actionBar, "Manajemen Material");
+                this, actionBar, "Manajemen Armada");
 
         // SYSTEM UI MODE FOR STANDARD ACTIVITY
         helper.handleUIModeForStandardActivity(this, actionBar);
@@ -64,15 +63,15 @@ public class ProductDataManagementActivity extends AppCompatActivity {
         // SET DEFAULT LANG CODE TO ENGLISH
         LangUtils.setLocale(this, "en");
 
-        fabAddMaterialData = findViewById(R.id.fabAddMaterialData);
+        fabAddVhlData = findViewById(R.id.fabAddVhlData);
         nestedScrollView = findViewById(R.id.nestedScrollView);
         llNoData = findViewById(R.id.ll_no_data);
         rv = findViewById(R.id.rvList);
 
         showDataDefaultQuery();
 
-        fabAddMaterialData.setOnClickListener(view -> {
-            Intent i = new Intent(this, AddProductData.class);
+        fabAddVhlData.setOnClickListener(view -> {
+            Intent i = new Intent(this, AddVehicleActivity.class);
             startActivity(i);
         });
     }
@@ -82,11 +81,11 @@ public class ProductDataManagementActivity extends AppCompatActivity {
         query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                productModelArrayList.clear();
+                vehicleModelArrayList.clear();
                 if (snapshot.exists()){
                     for (DataSnapshot item : snapshot.getChildren()){
-                        ProductModel productModel = item.getValue(ProductModel.class);
-                        productModelArrayList.add(productModel);
+                        VehicleModel vehicleModel = item.getValue(VehicleModel.class);
+                        vehicleModelArrayList.add(vehicleModel);
                     }
                     llNoData.setVisibility(View.GONE);
                     nestedScrollView.setVisibility(View.VISIBLE);
@@ -94,8 +93,8 @@ public class ProductDataManagementActivity extends AppCompatActivity {
                     llNoData.setVisibility(View.VISIBLE);
                     nestedScrollView.setVisibility(View.GONE);
                 }
-                productDataManagementAdapter = new ProductDataManagementAdapter(context, productModelArrayList);
-                rv.setAdapter(productDataManagementAdapter);
+                vehicleDataManagementAdapter = new VehicleDataManagementAdapter(context, vehicleModelArrayList);
+                rv.setAdapter(vehicleDataManagementAdapter);
             }
 
             @Override
@@ -104,7 +103,7 @@ public class ProductDataManagementActivity extends AppCompatActivity {
             }
         });
 
-        if (productModelArrayList.size()<1){
+        if (vehicleModelArrayList.size()<1){
             nestedScrollView.setVisibility(View.GONE);
             llNoData.setVisibility(View.VISIBLE);
         }
@@ -142,7 +141,8 @@ public class ProductDataManagementActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        helper.refreshDashboard(this.getApplicationContext());
-        finish();
+        /*helper.refreshDashboard(this.getApplicationContext());
+        finish();*/
+        super.onBackPressed();
     }
 }

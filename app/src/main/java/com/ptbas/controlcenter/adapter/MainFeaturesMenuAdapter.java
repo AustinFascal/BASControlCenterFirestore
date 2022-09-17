@@ -12,13 +12,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.create.AddBankAccountActivity;
-import com.ptbas.controlcenter.management.CustomerManagementActivity;
-import com.ptbas.controlcenter.management.GoodIssueManagementActivity;
-import com.ptbas.controlcenter.management.CashOutRequestManagementActivity;
-import com.ptbas.controlcenter.management.InvoiceManagementActivity;
-import com.ptbas.controlcenter.management.ProductDataManagementActivity;
-import com.ptbas.controlcenter.management.ReceivedOrderManagementActivity;
-import com.ptbas.controlcenter.management.VehicleManagementActivity;
+import com.ptbas.controlcenter.management.ManageCustomerActivity;
+import com.ptbas.controlcenter.management.ManageGoodIssueActivity;
+import com.ptbas.controlcenter.management.ManageCashOutActivity;
+import com.ptbas.controlcenter.management.ManageInvoiceActivity;
+import com.ptbas.controlcenter.management.ManageProductDataActivity;
+import com.ptbas.controlcenter.management.ManageReceivedOrderActivity;
+import com.ptbas.controlcenter.management.ManageVehicleActivity;
 import com.ptbas.controlcenter.model.MainFeatureModel;
 import com.ptbas.controlcenter.viewholder.MainFeatureViewHolder;
 
@@ -28,18 +28,26 @@ public class MainFeaturesMenuAdapter extends RecyclerView.Adapter<MainFeatureVie
 
     ArrayList<MainFeatureModel> mainFeatureData;
     Context context;
+    int viewTypeVal;
 
-    public MainFeaturesMenuAdapter(ArrayList<MainFeatureModel> mainFeatureData, Context context) {
+    public MainFeaturesMenuAdapter(ArrayList<MainFeatureModel> mainFeatureData, Context context, int viewTypeVal) {
         this.mainFeatureData = mainFeatureData;
         this.context = context;
+        this.viewTypeVal = viewTypeVal;
     }
 
     @NonNull
     @Override
     public MainFeatureViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View view = inflater.inflate(R.layout.item_layout_main_feature, parent, false);
+        View view;
+        if (viewTypeVal == 0){
+            view = inflater.inflate(R.layout.item_layout_main_feature, parent, false);
+        }else {
+            view = inflater.inflate(R.layout.item_layout_main_feature_2, parent, false);
+        }
         return new MainFeatureViewHolder(view);
+
     }
 
     @Override
@@ -53,52 +61,52 @@ public class MainFeaturesMenuAdapter extends RecyclerView.Adapter<MainFeatureVie
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (holder.tv1.getText().toString().equals("Manajemen Pengguna")){
+                if (holder.tv1.getText().toString().equals("Manajemen\nPengguna")){
                     Toast.makeText(context, "Coming soon", Toast.LENGTH_SHORT).show();
                 }
-                if (holder.tv1.getText().toString().equals("Manajemen Armada")){
-                    Intent intent2 = new Intent(context, VehicleManagementActivity.class);
+                if (holder.tv1.getText().toString().equals("Manajemen\nArmada")){
+                    Intent intent2 = new Intent(context, ManageVehicleActivity.class);
                     intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(intent2);
                 }
-                if (holder.tv1.getText().toString().equals("Manajemen Received Order")){
-                    Intent intent2 = new Intent(context, ReceivedOrderManagementActivity.class);
+                if (holder.tv1.getText().toString().equals("Manajemen\nReceived Order")){
+                    Intent intent2 = new Intent(context, ManageReceivedOrderActivity.class);
                     intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(intent2);
                 }
-                if (holder.tv1.getText().toString().equals("Manajemen Good Issue")){
-                    Intent intent2 = new Intent(context, GoodIssueManagementActivity.class);
+                if (holder.tv1.getText().toString().equals("Manajemen\nGood Issue")){
+                    Intent intent2 = new Intent(context, ManageGoodIssueActivity.class);
                     intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(intent2);
                 }
-                if (holder.tv1.getText().toString().equals("Manajemen Customer")){
-                    Intent intent2 = new Intent(context, CustomerManagementActivity.class);
+                if (holder.tv1.getText().toString().equals("Manajemen\nCustomer")){
+                    Intent intent2 = new Intent(context, ManageCustomerActivity.class);
                     intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(intent2);
                 }
-                if (holder.tv1.getText().toString().equals("Manajemen Cash Out")){
-                    Intent intent2 = new Intent(context, CashOutRequestManagementActivity.class);
+                if (holder.tv1.getText().toString().equals("Manajemen\nCash Out")){
+                    Intent intent2 = new Intent(context, ManageCashOutActivity.class);
                     intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(intent2);
                 }
-                if (holder.tv1.getText().toString().equals("Manajemen Material")){
-                    Intent intent2 = new Intent(context, ProductDataManagementActivity.class);
+                if (holder.tv1.getText().toString().equals("Manajemen\nMaterial")){
+                    Intent intent2 = new Intent(context, ManageProductDataActivity.class);
                     intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(intent2);
                 }
 
-                if (holder.tv1.getText().toString().equals("Manajemen Invoice")){
-                    Intent intent2 = new Intent(context, InvoiceManagementActivity.class);
+                if (holder.tv1.getText().toString().equals("Manajemen\nInvoice")){
+                    Intent intent2 = new Intent(context, ManageInvoiceActivity.class);
                     intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(intent2);
                 }
-                if (holder.tv1.getText().toString().equals("Manajemen Rekening Bank")){
+                if (holder.tv1.getText().toString().equals("Manajemen\nRekening Bank")){
                     Intent intent2 = new Intent(context, AddBankAccountActivity.class);
                     intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(intent2);
                 }
 
-                if (holder.tv1.getText().toString().equals("Manajemen Bank")){
+                if (holder.tv1.getText().toString().equals("Manajemen\nBank")){
                     Toast.makeText(context, "Coming Soon", Toast.LENGTH_SHORT).show();
                 }
             }

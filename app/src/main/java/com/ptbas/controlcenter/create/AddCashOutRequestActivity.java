@@ -100,10 +100,12 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Random;
+import java.util.Set;
 
 public class AddCashOutRequestActivity extends AppCompatActivity {
 
@@ -113,7 +115,7 @@ public class AddCashOutRequestActivity extends AppCompatActivity {
     String dateStartVal = "", dateEndVal = "", rouidVal= "", suppplieruidVal = "", currencyVal = "", pouidVal = "",
             monthStrVal, dayStrVal, roPoCustNumber, matTypeVal, matNameVal, transportServiceNameVal,
             invPoDate = "", invCustName = "", invPoUID = "", custNameVal = "",
-            custAddressVal = "", roUID ="", invPotypeVal = "", coCreatedBy="";
+            custAddressVal = "", roUID ="", coUID="", invPotypeVal = "", coCreatedBy="";
 
     String supplierPayee, supplierBankAndAccountNumber, supplierAccountOwnerName;
     int invPoType;
@@ -529,6 +531,8 @@ public class AddCashOutRequestActivity extends AppCompatActivity {
             edtDateEnd.setText(null);
             edtDateStart.clearFocus();
             edtDateEnd.clearFocus();
+            dateStartVal = "";
+            dateEndVal = "";
             btnGiSearchByDateReset.setVisibility(View.GONE);
         });
 
@@ -588,7 +592,7 @@ public class AddCashOutRequestActivity extends AppCompatActivity {
                 edtPayee.setError(null);
             }
 
-            if (Objects.requireNonNull(edtDateStart.getText()).toString().isEmpty()){
+            /*if (Objects.requireNonNull(edtDateStart.getText()).toString().isEmpty()){
                 edtDateStart.setError("");
             } else{
                 edtDateStart.setError(null);
@@ -598,7 +602,7 @@ public class AddCashOutRequestActivity extends AppCompatActivity {
                 edtDateEnd.setError("");
             } else{
                 edtDateEnd.setError(null);
-            }
+            }*/
 
             if (!spinnerCustName.getText().toString().isEmpty()&&
                     !spinnerRoUID.getText().toString().isEmpty()&&
@@ -606,9 +610,7 @@ public class AddCashOutRequestActivity extends AppCompatActivity {
                     !edtPoUID.getText().toString().isEmpty()&&
                     !edtBankNameAndAccountNumber.getText().toString().isEmpty()&&
                     !edtAccountOwnerName.getText().toString().isEmpty()&&
-                    !edtPayee.getText().toString().isEmpty()&&
-                    !Objects.requireNonNull(edtDateStart.getText()).toString().isEmpty()&&
-                    !Objects.requireNonNull(edtDateEnd.getText()).toString().isEmpty()){
+                    !edtPayee.getText().toString().isEmpty()){
                 searchQuery();
             }
         });
@@ -634,11 +636,12 @@ public class AddCashOutRequestActivity extends AppCompatActivity {
                 ActivityCompat.requestPermissions((Activity) context,
                         new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 10);
             } else {
-                for (int i = 0; i < giManagementAdapter.getSelected().size(); i++) {
-                    totalUnit += giManagementAdapter.getSelected().get(i).getGiVhlCubication();
-                }
+                if (!custNameVal.isEmpty()){
+                    for (int i = 0; i < giManagementAdapter.getSelected().size(); i++) {
+                        totalUnit += giManagementAdapter.getSelected().get(i).getGiVhlCubication();
+                    }
 
-                //Toast.makeText(context, String.valueOf(totalUnit), Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(context, String.valueOf(totalUnit), Toast.LENGTH_SHORT).show();
 
                 /*totalUnit = 0;
                 for (int i = 0; i < goodIssueModelArrayList.size(); i++){
@@ -646,27 +649,31 @@ public class AddCashOutRequestActivity extends AppCompatActivity {
                 }*/
 
 
-                double totalIDR = matBuyPrice *Double.parseDouble(df.format(totalUnit));
+                    double totalIDR = matBuyPrice *Double.parseDouble(df.format(totalUnit));
 
-                //Toast.makeText(context, String.valueOf(totalUnit), Toast.LENGTH_SHORT).show();*/
+                    //Toast.makeText(context, String.valueOf(totalUnit), Toast.LENGTH_SHORT).show();*/
 
-                String invDateCreated = new SimpleDateFormat("dd/MM/yyyy", Locale.US).format(new Date());
+                    String invDateCreated = new SimpleDateFormat("dd/MM/yyyy", Locale.US).format(new Date());
 
-                //String roUIDValNoSpace = rouidVal.replaceAll("\\s","");
-                //roUID = getRandomString()+"-COP-"+roUIDValNoSpace;
+                    //String roUIDValNoSpace = rouidVal.replaceAll("\\s","");
+                    //roUID = getRandomString()+"-COP-"+roUIDValNoSpace;
 
-                dialogInterface.confirmCreateCashOutProof(context, db, goodIssueModelArrayList,
-                        rouidVal, invPotypeVal, coCreatedBy, invDateCreated, invPoDate, invPoUID, invCustName, totalIDR, invTax1, invTax2);
+                    dialogInterface.confirmCreateCashOutProof(context, db, goodIssueModelArrayList,
+                            coUID, invPotypeVal, coCreatedBy, invDateCreated, invPoDate, invPoUID, invCustName, totalIDR, invTax1, invTax2);
 
-                String custNameValReplace = custNameVal.replace(" - ","-");
-                int indexCustNameVal = custNameValReplace.lastIndexOf('-');
-                db.collection("CustomerData").whereEqualTo("custUID", custNameValReplace.substring(0, indexCustNameVal)).get()
-                        .addOnSuccessListener(queryDocumentSnapshots2 -> {
-                            for (QueryDocumentSnapshot documentSnapshot2 : queryDocumentSnapshots2){
-                                CustomerModel customerModel = documentSnapshot2.toObject(CustomerModel.class);
-                                custAddressVal = customerModel.getCustAddress();
-                            }
-                        });
+                    String custNameValReplace = custNameVal.replace(" - ","-");
+                    int indexCustNameVal = custNameValReplace.lastIndexOf('-');
+                    db.collection("CustomerData").whereEqualTo("custUID", custNameValReplace.substring(0, indexCustNameVal)).get()
+                            .addOnSuccessListener(queryDocumentSnapshots2 -> {
+                                for (QueryDocumentSnapshot documentSnapshot2 : queryDocumentSnapshots2){
+                                    CustomerModel customerModel = documentSnapshot2.toObject(CustomerModel.class);
+                                    custAddressVal = customerModel.getCustAddress();
+                                }
+                            });
+                } else {
+                    Toast.makeText(context, "Mohon cari data Good Issue terlebih dahulu.", Toast.LENGTH_SHORT).show();
+                }
+
             }
         });
 
@@ -685,10 +692,10 @@ public class AddCashOutRequestActivity extends AppCompatActivity {
         Runnable runnable = new Runnable() {
             public void run() {
                 // CHECK IF DATE AND RO/PO NUMBER IS SELECTED
-                if (!Objects.requireNonNull(edtDateStart.getText()).toString().isEmpty()
-                        && !Objects.requireNonNull(edtDateEnd.getText()).toString().isEmpty()
+                if (!Objects.requireNonNull(spinnerCustName.getText()).toString().isEmpty()
                         && !spinnerRoUID.getText().toString().isEmpty()
-                        && !Objects.requireNonNull(edtPoUID.getText()).toString().isEmpty()){
+                        && !Objects.requireNonNull(edtPoUID.getText()).toString().isEmpty()
+                        && !spinnerSupplierName.getText().toString().isEmpty()){
 
                     int itemSelectedSize = giManagementAdapter.getSelected().size();
                     float itemSelectedVolume = giManagementAdapter.getSelectedVolume();
@@ -696,7 +703,7 @@ public class AddCashOutRequestActivity extends AppCompatActivity {
                     //String itemSelectedBuyPriceVal = df.format(itemSelectedBuyPrice);
                     String itemSelectedSizeVal = String.valueOf(itemSelectedSize).concat(" item terpilih");
                     String itemSelectedVolumeAndBuyPriceVal = df.format(itemSelectedVolume).concat(" m3");
-                            //.concat("IDR "+itemSelectedBuyPriceVal);
+                    //.concat("IDR "+itemSelectedBuyPriceVal);
 
                     if (giManagementAdapter.getSelected().size()>0){
 
@@ -989,10 +996,10 @@ public class AddCashOutRequestActivity extends AppCompatActivity {
 
             // TOTAL AMOUNT CALCULATION
             double totalAmountForMaterials = matBuyPrice *totalUnitFinal;
-            double totalAmountForTransportService = transportServiceSellPrice*totalUnitFinal;
+            //double totalAmountForTransportService = transportServiceSellPrice*totalUnitFinal;
             /*double taxPPN = (0.11)*totalAmountForMaterials;
             double taxPPH = (0.02)*totalAmountForTransportService;*/
-            double totalDue = totalAmountForMaterials+totalAmountForTransportService;
+            //double totalDue = totalAmountForMaterials+totalAmountForTransportService;
             //double totalDueForTransportService = totalAmountForTransportService-taxPPH;
 
             // INIT TABLE
@@ -1002,7 +1009,7 @@ public class AddCashOutRequestActivity extends AppCompatActivity {
             PdfPTable tblInvSection4 = new PdfPTable(7);
             PdfPTable tblInvSection5 = new PdfPTable(4);
             PdfPTable tblInvSection6 = new PdfPTable(4);
-            PdfPTable tblInvSection7 = new PdfPTable(4);
+            PdfPTable tblInvSection7 = new PdfPTable(2);
             PdfPTable tblInvSection8 = new PdfPTable(4);
             PdfPTable tblInvSection9 = new PdfPTable(4);
             PdfPTable tblInvSection10 = new PdfPTable(2);
@@ -1032,7 +1039,7 @@ public class AddCashOutRequestActivity extends AppCompatActivity {
             tblInvSection4.setWidths(new float[]{4,1,9,1,4,1,11}); //5 COLS
             tblInvSection5.setWidths(new float[]{3,3,3,4}); //5 COLS
             tblInvSection6.setWidths(new float[]{3,3,3,4}); //5 COLS
-            tblInvSection7.setWidths(new float[]{3,3,3,4}); //5 COLS
+            tblInvSection7.setWidths(new float[]{1,1}); //2 COLS
             tblInvSection8.setWidths(new float[]{3,3,3,4}); //5 COLS
             tblInvSection9.setWidths(new float[]{3,3,3,4}); //5 COLS
             tblInvSection10.setWidths(new float[]{2,10}); //2 COLS
@@ -1076,13 +1083,13 @@ public class AddCashOutRequestActivity extends AppCompatActivity {
                     new Paragraph("", fontMediumWhite),
                     Element.ALIGN_LEFT));
             tblInvSection2.addCell(cellTxtNoBrdrNrml(
-                    new Paragraph("No. RO", fontNormal),
+                    new Paragraph("No. CO", fontNormal),
                     Element.ALIGN_LEFT));
             tblInvSection2.addCell(cellTxtNoBrdrNrml(
                     new Paragraph(":", fontNormal),
                     Element.ALIGN_LEFT));
             tblInvSection2.addCell(cellTxtNoBrdrNrml(
-                    new Paragraph(rouidVal, fontNormal),
+                    new Paragraph(coUID, fontNormal),
                     Element.ALIGN_LEFT));
 
             tblInvSection3.addCell(cellTxtNoBrdrNrml(
@@ -1116,27 +1123,33 @@ public class AddCashOutRequestActivity extends AppCompatActivity {
             tblInvSection5.addCell(cellColHeader(
                     new Paragraph("Jumlah", fontMedium), Element.ALIGN_RIGHT));
 
-            for (int i = 0; i<productItemsList.size();i++){
-                tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
-                        new Paragraph(matNameVal, fontNormal), Element.ALIGN_LEFT));
-                tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
-                        new Paragraph(currencyVal+" "+currencyFormat(df.format(matBuyPrice)), fontNormal), Element.ALIGN_RIGHT));
-                tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
-                        new Paragraph(df.format(totalUnitFinal), fontNormal), Element.ALIGN_RIGHT));
-                tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
-                        new Paragraph(currencyVal+" "+currencyFormat(df.format(totalAmountForMaterials)), fontNormal), Element.ALIGN_RIGHT));
+            /*for (int i = 0; i<productItemsList.size();i++){
+            }*/
+
+            List<String> datePeriod = new ArrayList<>();
+            for (int i = 0; i < giManagementAdapter.getSelected().size(); i++) {
+                datePeriod.add(giManagementAdapter.getSelected().get(i).getGiDateCreated());
             }
+            HashSet<String> filter = new HashSet(datePeriod);
+            ArrayList<String> datePeriodFiltered = new ArrayList<>(filter);
+
+            tblInvSection7.addCell(cellTxtNoBrdrNrmlMainContent(
+                    new Paragraph("Pengiriman Tanggal: "+datePeriodFiltered, fontNormal), Element.ALIGN_LEFT));
+            tblInvSection7.addCell(cellTxtNoBrdrNrmlMainContent(
+                    new Paragraph("", fontNormal), Element.ALIGN_LEFT));
 
 
 
-            tblInvSection7.addCell(cellTxtNoBrdrNrmlMainContent(
-                    new Paragraph(transportServiceNameVal, fontNormal), Element.ALIGN_LEFT));
-            tblInvSection7.addCell(cellTxtNoBrdrNrmlMainContent(
-                    new Paragraph(currencyVal+" "+currencyFormat(df.format(transportServiceSellPrice)), fontNormal), Element.ALIGN_RIGHT));
-            tblInvSection7.addCell(cellTxtNoBrdrNrmlMainContent(
+            tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
+                    new Paragraph(matNameVal, fontNormal), Element.ALIGN_LEFT));
+            tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
+                    new Paragraph(currencyVal+" "+currencyFormat(df.format(matBuyPrice)), fontNormal), Element.ALIGN_RIGHT));
+            tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
                     new Paragraph(df.format(totalUnitFinal), fontNormal), Element.ALIGN_RIGHT));
-            tblInvSection7.addCell(cellTxtNoBrdrNrmlMainContent(
-                    new Paragraph(currencyVal+" "+currencyFormat(df.format(totalAmountForTransportService)), fontNormal), Element.ALIGN_RIGHT));
+            tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
+                    new Paragraph(currencyVal+" "+currencyFormat(df.format(totalAmountForMaterials)), fontNormal), Element.ALIGN_RIGHT));
+
+
 
 
 
@@ -1147,7 +1160,7 @@ public class AddCashOutRequestActivity extends AppCompatActivity {
             tblInvSection9.addCell(cellColHeader(
                     new Paragraph("JUMLAH PEMBAYARAN (PEMBULATAN)", fontMedium), Element.ALIGN_LEFT));
             tblInvSection9.addCell(cellColHeader(
-                    new Paragraph(currencyVal+" "+currencyFormat(df.format(math(totalDue))), fontMedium), Element.ALIGN_RIGHT));
+                    new Paragraph(currencyVal+" "+currencyFormat(df.format(math(totalAmountForMaterials))), fontMedium), Element.ALIGN_RIGHT));
 
             tblInvSection10.addCell(cellColHeaderNoBrdr(
                     new Paragraph("TERBILANG", fontMediumWhite),
@@ -1165,7 +1178,7 @@ public class AddCashOutRequestActivity extends AppCompatActivity {
 
             tblInvSection11.addCell(cellTxtNoBrdrNrml(
                     new Paragraph(
-                            NumberToWords.convert(math(totalDue)) +
+                            NumberToWords.convert(math(totalAmountForMaterials)) +
                                     " Rupiah", fontMedium),
                     Element.ALIGN_LEFT));
             tblInvSection11.addCell(cellTxtNoBrdrNrml(
@@ -1214,16 +1227,8 @@ public class AddCashOutRequestActivity extends AppCompatActivity {
             document.add(tblInvSection3);
             document.add(paragraphBlank); // SPACE SEPARATOR
             document.add(tblInvSection5);
-            if (invPoType == 0){
-                document.add(tblInvSection6);
-                document.add(tblInvSection7);
-            }
-            if (invPoType == 1){
-                document.add(tblInvSection6);
-            }
-            if (invPoType == 2){
-                document.add(tblInvSection7);
-            }
+            document.add(tblInvSection7);
+            document.add(tblInvSection6);
             document.add(tblInvSection9);
             document.add(paragraphBlank); // SPACE SEPARATOR
             document.add(tblInvSection10);
@@ -1411,6 +1416,7 @@ public class AddCashOutRequestActivity extends AppCompatActivity {
 
         rouidVal = spinnerRoUID.getText().toString();
         pouidVal = Objects.requireNonNull(edtPoUID.getText()).toString();
+        coUID = getRandomString2(5)+" - "+rouidVal;
 
         //fabCreateCOR.animate().translationY(0).setDuration(100).start();
 
@@ -1419,6 +1425,7 @@ public class AddCashOutRequestActivity extends AppCompatActivity {
                     if (productItemsList != null){
                         productItemsList.clear();
                     }
+
                     transportServiceSellPrice = 0;
                     matBuyPrice = 0;
 
@@ -1431,7 +1438,7 @@ public class AddCashOutRequestActivity extends AppCompatActivity {
                         custNameVal = receivedOrderModel.getRoCustName();
                         currencyVal = receivedOrderModel.getRoCurrency();
                         invCustName = receivedOrderModel.getRoCustName();
-                        invPoUID = receivedOrderModel.getRoPoCustNumber();
+                        invPoUID = receivedOrderModel.getRoUID();
                         invPoDate = receivedOrderModel.getRoDateCreated();
                         invPoType = receivedOrderModel.getRoType();
 
@@ -1449,20 +1456,32 @@ public class AddCashOutRequestActivity extends AppCompatActivity {
                         for (HashMap.Entry<String, List<ProductItems>> e : map.entrySet()) {
                             productItemsList = e.getValue();
                             for (int i = 0; i<productItemsList.size();i++){
-                                if (productItemsList.get(0).getMatName().equals("JASA ANGKUT")){
+                                /*if (productItemsList.get(0).getMatName().equals("JASA ANGKUT")){
                                     transportServiceNameVal = productItemsList.get(0).getMatName();
                                     transportServiceSellPrice = productItemsList.get(0).getMatBuyPrice();
-                                } else {
-                                    matNameVal = productItemsList.get(i).getMatName();
-                                    matBuyPrice = productItemsList.get(i).getMatBuyPrice();
-                                }
+                                } else {*/
+                                matNameVal = productItemsList.get(i).getMatName();
+                                matBuyPrice = productItemsList.get(i).getMatBuyPrice();
+                                //}
                             }
 
                         }
                     }
                 });
 
-        Query query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated").startAt(dateStartVal).endAt(dateEndVal);
+        Query query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated");
+        if (!dateEndVal.isEmpty()){
+            query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated").endAt(dateEndVal);
+        }
+        if (!dateStartVal.isEmpty()){
+            query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated").startAt(dateStartVal);
+        }
+        if (!dateStartVal.isEmpty()&&!dateEndVal.isEmpty()){
+            query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated").startAt(dateStartVal).endAt(dateEndVal);
+        }
+        if (dateStartVal.isEmpty()&&dateEndVal.isEmpty()){
+            query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated");
+        }
         query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -1498,6 +1517,7 @@ public class AddCashOutRequestActivity extends AppCompatActivity {
                     llNoData.setVisibility(View.VISIBLE);
                 }
 
+                Collections.reverse(goodIssueModelArrayList);
                 giManagementAdapter = new GIManagementAdapter(context, goodIssueModelArrayList);
                 rvGoodIssueList.setAdapter(giManagementAdapter);
             }
@@ -1648,6 +1668,7 @@ public class AddCashOutRequestActivity extends AppCompatActivity {
         }
         finish();
         helper.ACTIVITY_NAME = null;
+        custNameVal = "";
         return super.onOptionsItemSelected(item);
     }
 
@@ -1661,11 +1682,13 @@ public class AddCashOutRequestActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         helper.ACTIVITY_NAME = null;
+        custNameVal = "";
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        custNameVal = "";
 
         // HANDLE RESPONSIVE CONTENT
         DisplayMetrics displayMetrics = new DisplayMetrics();

@@ -12,11 +12,14 @@ import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -24,6 +27,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -36,14 +40,15 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.ptbas.controlcenter.helper.DialogInterface;
 import com.ptbas.controlcenter.helper.Helper;
 import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.model.GoodIssueModel;
-import com.ptbas.controlcenter.model.ProductItems;
 import com.ptbas.controlcenter.model.ReceivedOrderModel;
 import com.ptbas.controlcenter.model.VehicleModel;
 import com.ptbas.controlcenter.utils.LangUtils;
@@ -52,9 +57,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -62,7 +65,7 @@ import java.util.Random;
 
 public class AddGoodIssueActivity extends AppCompatActivity {
 
-    String vhlData = "", matName = "", matType = "", roNumber ="", roKey ="";
+    String vhlData = "", selectedMatName = "", selectedCustName = "", matType = "", selectedPoNumber ="", roKey ="";
     String monthStrVal, dayStrVal;
     Integer giYear = 0, giMonth = 0, giDay = 0;
 
@@ -70,14 +73,16 @@ public class AddGoodIssueActivity extends AppCompatActivity {
 
     TextView tvHeightCorrection, tvVhlVolume;
     TextInputEditText edtGiDate, edtGiTime, edtPoNumberCust, edtVhlLength, edtVhlWidth, edtVhlHeight,
-            edtHeightCorrection;
-    AutoCompleteTextView spinnerRoNumber, spinnerMatName,
+            edtHeightCorrection, edtGiNoteNumber;
+    AutoCompleteTextView spinnerCustUID, spinnerRoNumber, spinnerMatName,
             spinnerMatType, spinnerVhlUID;
 
     DatePickerDialog datePicker;
     TimePickerDialog timePicker;
     RadioGroup radioGroupOperation;
     RadioButton radioOperationSelected;
+
+    ImageButton btnResetCustomer;
 
     FloatingActionButton fabSaveGIData;
 
@@ -87,7 +92,7 @@ public class AddGoodIssueActivity extends AppCompatActivity {
 
     DialogInterface dialogInterface = new DialogInterface();
     Helper helper = new Helper();
-    List<String> vhlUIDList, matNameList, matTypeNameList, receiveOrderNumberList;
+    List<String> vhlUIDList, matNameList, matTypeNameList, receiveOrderNumberList, customerList;
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -121,10 +126,15 @@ public class AddGoodIssueActivity extends AppCompatActivity {
         matNameList  = new ArrayList<>();
         matTypeNameList  = new ArrayList<>();
         receiveOrderNumberList = new ArrayList<>();
+        customerList = new ArrayList<>();
 
         edtGiDate = findViewById(R.id.edt_gi_date);
         edtGiTime = findViewById(R.id.edt_gi_time);
 
+        edtGiNoteNumber = findViewById(R.id.edtGiNoteNumber);
+
+        btnResetCustomer = findViewById(R.id.btnResetCustomer);
+        spinnerCustUID = findViewById(R.id.spinnerCustUID);
         spinnerRoNumber = findViewById(R.id.spinner_ro_number);
         edtPoNumberCust = findViewById(R.id.edt_po_number_cust);
         spinnerMatName = findViewById(R.id.spinner_mat_name);
@@ -214,6 +224,7 @@ public class AddGoodIssueActivity extends AppCompatActivity {
             }
         });
 
+
         edtVhlLength.setOnKeyListener((view, i, keyEvent) -> {
             processCountVolume(edtVhlLength);
             return false;
@@ -260,51 +271,109 @@ public class AddGoodIssueActivity extends AppCompatActivity {
             return false;
         });
 
-        spinnerVhlUID.setOnItemClickListener((adapterView, view, position, l) -> {
-            String selectedSpinnerVhlRegistNumber = (String) adapterView.getItemAtPosition(position);
-            vhlData = selectedSpinnerVhlRegistNumber;
-            spinnerVhlUID.setError(null);
-            //llHeightCorrectionFeature.setVisibility(View.VISIBLE);
-            edtHeightCorrection.setText("0");
+        // INIT DATA SPINNER CUSTOMER DATA
+        db.collection("CustomerData").addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                if (value != null) {
+                    if (!value.isEmpty()) {
+                        for (DocumentSnapshot d : value.getDocuments()) {
+                            String custList = Objects.requireNonNull(d.get("custUID")).toString().concat(" - " + Objects.requireNonNull(d.get("custName")).toString());
+                            customerList.add(custList);
 
-            radioGroupOperation.check(R.id.radio_minus_operation);
-
-            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("VehicleData/"+vhlData);
-            databaseReference.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    DecimalFormat df12 = new DecimalFormat("0.00");
-                    VehicleModel vehicleModel = snapshot.getValue(VehicleModel.class);
-
-                    if (vehicleModel!=null){
-                            edtVhlLength.setText(String.valueOf(vehicleModel.getVhlLength()));
-                            edtVhlWidth.setText(String.valueOf(vehicleModel.getVhlWidth()));
-                            edtVhlHeight.setText(String.valueOf(vehicleModel.getVhlHeight()));
-                            tvHeightCorrection.setText(Html.fromHtml("Tinggi Hasil Koreksi (TK): "+ vehicleModel.getVhlHeight() +" cm"));
-
-                            float finalVolumeDefault1 =
-                                    (Float.parseFloat(edtVhlLength.getText().toString())*
-                                            Float.parseFloat(edtVhlWidth.getText().toString())*
-                                            Float.parseFloat(edtVhlHeight.getText().toString()))/1000000;
-                            tvVhlVolume.setText(Html.fromHtml(String.valueOf(df12.format(finalVolumeDefault1))+" m\u00B3"));
-                    } else {
-                        Toast.makeText(AddGoodIssueActivity.this, "Null", Toast.LENGTH_SHORT).show();
+                            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddGoodIssueActivity.this, R.layout.style_spinner, customerList);
+                            arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
+                            spinnerCustUID.setAdapter(arrayAdapter);
+                        }
                     }
                 }
+            }
+        });
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-
+        // INIT DATA SPINNER VEHICLE DATA
+        databaseReference.child("VehicleData").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()){
+                    for (DataSnapshot dataSnapshot: snapshot.getChildren()){
+                        if (Objects.equals(dataSnapshot.child("vhlStatus").getValue(), true)){
+                            String spinnerVhlRegistNumber = dataSnapshot.child("vhlUID").getValue(String.class);
+                            vhlUIDList.add(spinnerVhlRegistNumber);
+                        }
+                    }
+                    ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddGoodIssueActivity.this, R.layout.style_spinner, vhlUIDList);
+                    arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
+                    spinnerVhlUID.setAdapter(arrayAdapter);
+                } else {
+                    Toast.makeText(AddGoodIssueActivity.this, "Data tidak ditemukan", Toast.LENGTH_SHORT).show();
                 }
-            });
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+        btnResetCustomer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                spinnerCustUID.setText(null);
+                spinnerRoNumber.setText(null);
+                edtPoNumberCust.setText(null);
+                spinnerMatName.setText(null);
+                spinnerMatType.setText(null);
+
+                btnResetCustomer.setVisibility(View.GONE);
+            }
+        });
+
+        spinnerCustUID.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                String selectedCustomer = (String) adapterView.getItemAtPosition(i);
+                selectedCustName = selectedCustomer;
+                spinnerCustUID.setError(null);
+
+                btnResetCustomer.setVisibility(View.VISIBLE);
+                spinnerRoNumber.setText(null);
+                edtPoNumberCust.setText(null);
+                spinnerMatName.setText(null);
+                spinnerMatType.setText(null);
+                db.collection("ReceivedOrderData").whereEqualTo("roStatus", true)
+                        .addSnapshotListener((value, error) -> {
+                            receiveOrderNumberList.clear();
+                            if (value != null) {
+                                if (!value.isEmpty()) {
+                                    for (DocumentSnapshot d : value.getDocuments()) {
+                                        String spinnerPurchaseOrders = Objects.requireNonNull(d.get("roPoCustNumber")).toString();
+                                        if (Objects.requireNonNull(d.get("roCustName")).toString().equals(spinnerCustUID.getText().toString())) {
+                                            receiveOrderNumberList.add(spinnerPurchaseOrders);
+                                        }
+                                    }
+                                    ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddGoodIssueActivity.this, R.layout.style_spinner, receiveOrderNumberList);
+                                    arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
+                                    spinnerRoNumber.setAdapter(arrayAdapter);
+                                } else {
+                                    if(!isFinishing()) {
+                                        dialogInterface.roNotExistsDialog(AddGoodIssueActivity.this);
+                                    }
+                                }
+                            }
+
+                        });
+            }
         });
 
         spinnerRoNumber.setOnItemClickListener((adapterView, view, position, l) -> {
             String selectedSpinnerPoPtBasNumber = (String) adapterView.getItemAtPosition(position);
             spinnerMatName.setText("");
             spinnerMatName.setError(null);
-            spinnerMatName.requestFocus();
-            db.collection("ReceivedOrderData").whereEqualTo("roUID", selectedSpinnerPoPtBasNumber).get()
+            edtGiNoteNumber.requestFocus();
+
+            selectedPoNumber = selectedSpinnerPoPtBasNumber;
+
+            db.collection("ReceivedOrderData").whereEqualTo("roPoCustNumber", selectedSpinnerPoPtBasNumber).get()
                     .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                         @Override
                         public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
@@ -317,9 +386,9 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                                 //String documentID = receivedOrderModel.getRoDocumentID();
 
                                 String roMatType = receivedOrderModel.getRoMatType();
-                                String roPoCustNumber = receivedOrderModel.getRoPoCustNumber();
+                                String roUID = receivedOrderModel.getRoUID();
                                 spinnerMatType.setText(roMatType);
-                                edtPoNumberCust.setText(roPoCustNumber);
+                                edtPoNumberCust.setText(roUID);
 
                                 /*HashMap<String, List<ProductItems>> map = receivedOrderModel.getRoOrderedItems();
                                 for (HashMap.Entry<String, List<ProductItems>> e : map.entrySet()) {
@@ -348,6 +417,10 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                                 ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddGoodIssueActivity.this, R.layout.style_spinner, matNameList);
                                 arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
                                 spinnerMatName.setAdapter(arrayAdapter);
+
+                                spinnerMatName.setText(matNameList.get(0));
+
+
                             }
                         }
                     });
@@ -357,9 +430,48 @@ public class AddGoodIssueActivity extends AppCompatActivity {
             matNameList.clear();
         });
 
+        spinnerVhlUID.setOnItemClickListener((adapterView, view, position, l) -> {
+            String selectedSpinnerVhlRegistNumber = (String) adapterView.getItemAtPosition(position);
+            vhlData = selectedSpinnerVhlRegistNumber;
+            spinnerVhlUID.setError(null);
+            //llHeightCorrectionFeature.setVisibility(View.VISIBLE);
+            edtHeightCorrection.setText("0");
+
+            radioGroupOperation.check(R.id.radio_minus_operation);
+
+            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("VehicleData/"+vhlData);
+            databaseReference.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    DecimalFormat df12 = new DecimalFormat("0.00");
+                    VehicleModel vehicleModel = snapshot.getValue(VehicleModel.class);
+
+                    if (vehicleModel!=null){
+                        edtVhlLength.setText(String.valueOf(vehicleModel.getVhlLength()));
+                        edtVhlWidth.setText(String.valueOf(vehicleModel.getVhlWidth()));
+                        edtVhlHeight.setText(String.valueOf(vehicleModel.getVhlHeight()));
+                        tvHeightCorrection.setText(Html.fromHtml("Tinggi Hasil Koreksi (TK): "+ vehicleModel.getVhlHeight() +" cm"));
+
+                        float finalVolumeDefault1 =
+                                (Float.parseFloat(edtVhlLength.getText().toString())*
+                                        Float.parseFloat(edtVhlWidth.getText().toString())*
+                                        Float.parseFloat(edtVhlHeight.getText().toString()))/1000000;
+                        tvVhlVolume.setText(Html.fromHtml(String.valueOf(df12.format(finalVolumeDefault1))+" m\u00B3"));
+                    } else {
+                        Toast.makeText(AddGoodIssueActivity.this, "Null", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+        });
+
         spinnerMatName.setOnItemClickListener((adapterView, view, position, l) -> {
             String selectedSpinnerMaterialName = (String) adapterView.getItemAtPosition(position);
-            matName = selectedSpinnerMaterialName;
+            selectedMatName = selectedSpinnerMaterialName;
             spinnerMatName.setError(null);
         });
 
@@ -376,48 +488,17 @@ public class AddGoodIssueActivity extends AppCompatActivity {
         });
 
 
-        db.collection("ReceivedOrderData").whereEqualTo("roStatus", true)
-                .addSnapshotListener((value, error) -> {
-                    receiveOrderNumberList.clear();
-                    if (value != null) {
-                        if (!value.isEmpty()) {
-                            for (DocumentSnapshot d : value.getDocuments()) {
-                                String spinnerPurchaseOrders = Objects.requireNonNull(d.get("roUID")).toString();
-                                receiveOrderNumberList.add(spinnerPurchaseOrders);
-                            }
-                            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddGoodIssueActivity.this, R.layout.style_spinner, receiveOrderNumberList);
-                            arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
-                            spinnerRoNumber.setAdapter(arrayAdapter);
-                        } else {
-                            if(!this.isFinishing()) {
-                                dialogInterface.roNotExistsDialog(AddGoodIssueActivity.this);
-                            }
-                        }
-                    }
-
-                });
-
-        databaseReference.child("VehicleData").addValueEventListener(new ValueEventListener() {
+        spinnerCustUID.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()){
-                    for (DataSnapshot dataSnapshot: snapshot.getChildren()){
-                        if (Objects.equals(dataSnapshot.child("vhlStatus").getValue(), true)){
-                            String spinnerVhlRegistNumber = dataSnapshot.child("vhlUID").getValue(String.class);
-                            vhlUIDList.add(spinnerVhlRegistNumber);
-                        }
-                    }
-                    ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddGoodIssueActivity.this, R.layout.style_spinner, vhlUIDList);
-                    arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
-                    spinnerVhlUID.setAdapter(arrayAdapter);
-                } else {
-                    Toast.makeText(AddGoodIssueActivity.this, "Data tidak ditemukan", Toast.LENGTH_SHORT).show();
-                }
+            public void onFocusChange(View view, boolean b) {
+                spinnerCustUID.setText(selectedCustName);
             }
+        });
 
+        spinnerMatName.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
+            public void onFocusChange(View view, boolean b) {
+                spinnerMatName.setText(selectedMatName);
             }
         });
 
@@ -425,8 +506,8 @@ public class AddGoodIssueActivity extends AppCompatActivity {
             String giDate = Objects.requireNonNull(edtGiDate.getText()).toString();
             String giTime = Objects.requireNonNull(edtGiTime.getText()).toString();
 
-            String giRONumber = Objects.requireNonNull(spinnerRoNumber.getText()).toString();
-            String giPOCustomerNumber = Objects.requireNonNull(edtPoNumberCust.getText()).toString();
+            String giRONumber = Objects.requireNonNull(edtPoNumberCust.getText()).toString();
+            String giPOCustomerNumber = Objects.requireNonNull(spinnerRoNumber.getText()).toString();
 
             String giMatName = Objects.requireNonNull(spinnerMatName.getText()).toString();
             String giMatType = Objects.requireNonNull(spinnerMatType.getText()).toString();
@@ -435,6 +516,8 @@ public class AddGoodIssueActivity extends AppCompatActivity {
             String giHeightCorrection = Objects.requireNonNull(edtHeightCorrection.getText()).toString();
             String giCreatedBy = helper.getUserId();
             String giVerifiedBy = null;
+
+            String giNoteNumber = Objects.requireNonNull(edtGiNoteNumber.getText()).toString();
 
             String giVhlLength = Objects.requireNonNull(edtVhlLength.getText()).toString();
             String giVhlWidth = Objects.requireNonNull(edtVhlWidth.getText()).toString();
@@ -453,11 +536,15 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                 giTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
             }
             if (TextUtils.isEmpty(giRONumber)){
-                spinnerRoNumber.setError("Mohon masukkan nomor RO");
+                spinnerRoNumber.setError("Mohon masukkan nomor PO customer");
                 spinnerRoNumber.requestFocus();
             }
+            if (TextUtils.isEmpty(giNoteNumber)){
+                edtGiNoteNumber.setError("Mohon masukkan nomor nota");
+                edtGiNoteNumber.requestFocus();
+            }
             if (TextUtils.isEmpty(giPOCustomerNumber)){
-                edtPoNumberCust.setError("Mohon masukkan nomor PO customer");
+                edtPoNumberCust.setError("Mohon masukkan nomor RO");
                 edtPoNumberCust.requestFocus();
             }
             if (TextUtils.isEmpty(giMatName)){
@@ -493,43 +580,62 @@ public class AddGoodIssueActivity extends AppCompatActivity {
             if (!TextUtils.isEmpty(giDate)
                     &&!TextUtils.isEmpty(giRONumber)&&!TextUtils.isEmpty(giPOCustomerNumber)
                     &&!TextUtils.isEmpty(giMatName)&&!TextUtils.isEmpty(giMatType)
+                    &&!TextUtils.isEmpty(giNoteNumber)
                     &&!TextUtils.isEmpty(giVhlUID)&&!TextUtils.isEmpty(giVhlWidth)
                     &&!TextUtils.isEmpty(giVhlLength)&&!TextUtils.isEmpty(giVhlHeight)
-                    &&!TextUtils.isEmpty(giHeightCorrection))
+                    &&!TextUtils.isEmpty(giHeightCorrection)){
 
-                for(int i = 0; i<matNameList.size(); i++){
-                    if (!spinnerMatName.getText().toString().equals(matNameList.get(i))){
-                        spinnerMatName.setError("Nama material tidak ditemukan");
-                        spinnerMatName.requestFocus();
-                    } else{
-                        spinnerMatName.setError(null);
-                        spinnerMatName.clearFocus();
-                        String giUID = "";
-                        giUID = getRandomString(5)+"-"+ giMatType.substring(0, 3)+"-"+giDay.toString()+"-"+giMonth.toString()+"-"+giYear.toString();
 
-                        insertData(giUID, giCreatedBy, giVerifiedBy, giRONumber, giPOCustomerNumber, giMatName, giMatType,
-                                giVhlUID, giDate, giTime,
-                                Integer.parseInt(giVhlLength),
-                                Integer.parseInt(giVhlWidth),
-                                Integer.parseInt(giVhlHeight),
-                                Integer.parseInt(radioOperation+giHeightCorrection.replaceAll("[^0-9]", "")),
-                                Integer.parseInt(tvHeightCorrection.getText().toString().replaceAll("[^0-9]", "")),
-                                Float.parseFloat(df.format(Float.parseFloat(giVhlCubication.replaceAll("[^0-9.]", "")))),
-                                false, false);
+
+
+
+                for(int i = 0; i<receiveOrderNumberList.size(); i++) {
+                    if (!receiveOrderNumberList.contains(spinnerRoNumber.getText().toString())){
+                        spinnerRoNumber.setError("Nomor PO tidak ditemukan");
+                        spinnerRoNumber.requestFocus();
                     }
                 }
+
+                for(int i = 0; i<matNameList.size(); i++) {
+                    if (!spinnerMatName.getText().toString().equals(matNameList.get(i))) {
+                        spinnerMatName.setError("Nama material tidak ditemukan");
+                        spinnerMatName.requestFocus();
+
+                    }
+                }
+
+                if (spinnerRoNumber.getError() == null && spinnerMatName.getError() == null){
+                    spinnerMatName.setError(null);
+                    spinnerMatName.clearFocus();
+                    String giUID = "";
+                    giUID = giNoteNumber + "-" + giMatType.substring(0, 3) + "-" + giDay.toString() + "-" + giMonth.toString() + "-" + giYear.toString();
+
+                    insertData(giUID, giCreatedBy, giVerifiedBy, giRONumber, giPOCustomerNumber, giMatName, giMatType,
+                            giNoteNumber, giVhlUID, giDate, giTime,
+                            Integer.parseInt(giVhlLength),
+                            Integer.parseInt(giVhlWidth),
+                            Integer.parseInt(giVhlHeight),
+                            Integer.parseInt(radioOperation + giHeightCorrection.replaceAll("[^0-9]", "")),
+                            Integer.parseInt(tvHeightCorrection.getText().toString().replaceAll("[^0-9]", "")),
+                            Float.parseFloat(df.format(Float.parseFloat(giVhlCubication.replaceAll("[^0-9.]", "")))),
+                            false, false);
+                }
+
+
+
+            }
         });
     }
 
     private void insertData(String giUID, String giCreatedBy, String giVerifiedBy, String giRoUID,
                             String giPoCustNumber, String giMatName, String giMatType,
-                            String vhlUID, String giDateCreated, String giTimeCreted,
-                            int vhlLength, int vhlWidth, int vhlHeight,
+                            String giNoteNumber, String vhlUID, String giDateCreated, String giTimeCreted,
+                            int vhlLength,   int vhlWidth, int vhlHeight,
                             int vhlHeightCorrection, int vhlHeightAfterCorrection,
                             float giVhlCubication, Boolean giStatus, Boolean giInvoiced) {
 
         GoodIssueModel goodIssueModel = new GoodIssueModel(giUID, giCreatedBy, giVerifiedBy, giRoUID, giPoCustNumber,
-                giMatName, giMatType, vhlUID, giDateCreated, giTimeCreted, vhlLength,
+                giMatName, giMatType, giNoteNumber, vhlUID, giDateCreated, giTimeCreted, vhlLength,
                 vhlWidth, vhlHeight, vhlHeightCorrection, vhlHeightAfterCorrection, giVhlCubication, giStatus, giInvoiced, false);
 
         VehicleModel vehicleModel =

@@ -54,7 +54,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-public class CashOutRequestManagementActivity extends AppCompatActivity {
+public class ManageCashOutActivity extends AppCompatActivity {
 
     String[] searchTypeValue = {"giUID", "giRoUID", "giPoCustNumber", "vhlUID", "giMatName"};
     String dateStart = "", dateEnd = "", monthStrVal, dayStrVal;
@@ -154,7 +154,7 @@ public class CashOutRequestManagementActivity extends AppCompatActivity {
 
         // GO TO ADD GOOD ISSUE ACTIVITY
         fabActionCreateGi.setOnClickListener(view -> {
-            Intent intent = new Intent(CashOutRequestManagementActivity.this, AddGoodIssueActivity.class);
+            Intent intent = new Intent(ManageCashOutActivity.this, AddGoodIssueActivity.class);
             startActivity(intent);
         });
 
@@ -191,7 +191,7 @@ public class CashOutRequestManagementActivity extends AppCompatActivity {
             monthStrVal = String.valueOf(calendar.get(Calendar.MONTH));
             String yearStrVal = String.valueOf(calendar.get(Calendar.YEAR));
 
-            datePicker = new DatePickerDialog(CashOutRequestManagementActivity.this,
+            datePicker = new DatePickerDialog(ManageCashOutActivity.this,
                     (datePicker, year, month, dayOfMonth) -> {
                         int monthInt = month + 1;
 
@@ -224,7 +224,7 @@ public class CashOutRequestManagementActivity extends AppCompatActivity {
             monthStrVal = String.valueOf(calendar.get(Calendar.MONTH));
             String yearStrVal = String.valueOf(calendar.get(Calendar.YEAR));
 
-            datePicker = new DatePickerDialog(CashOutRequestManagementActivity.this,
+            datePicker = new DatePickerDialog(ManageCashOutActivity.this,
                     (datePicker, year, month, dayOfMonth) -> {
 
                         int monthInt = month + 1;
@@ -329,7 +329,7 @@ public class CashOutRequestManagementActivity extends AppCompatActivity {
                         Objects.requireNonNull(edtGiDateFilterStart.getText()).toString().isEmpty() ||
                         Objects.requireNonNull(edtGiDateFilterEnd.getText()).toString().isEmpty()){
                     if (!searchView.getQuery().toString().isEmpty()){
-                        dialogInterface.fillSearchFilter(CashOutRequestManagementActivity.this, searchView);
+                        dialogInterface.fillSearchFilter(ManageCashOutActivity.this, searchView);
                     }
                 }
 
@@ -385,7 +385,8 @@ public class CashOutRequestManagementActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        helper.refreshDashboard(this.getApplicationContext());
-        finish();
+        /*helper.refreshDashboard(this.getApplicationContext());
+        finish();*/
+        super.onBackPressed();
     }
 }

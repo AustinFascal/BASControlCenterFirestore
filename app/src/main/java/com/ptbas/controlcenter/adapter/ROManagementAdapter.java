@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -20,15 +21,19 @@ import androidx.transition.TransitionManager;
 
 import com.ptbas.controlcenter.helper.DialogInterface;
 import com.ptbas.controlcenter.R;
+import com.ptbas.controlcenter.helper.Helper;
+import com.ptbas.controlcenter.model.GoodIssueModel;
 import com.ptbas.controlcenter.model.ReceivedOrderModel;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class ROManagementAdapter extends RecyclerView.Adapter<ROManagementAdapter.ItemViewHolder> {
 
     Context context;
     ArrayList<ReceivedOrderModel> receivedOrderModelArrayList;
     DialogInterface dialogInterface;
+    Helper helper = new Helper();
 
     public ROManagementAdapter(Context context, ArrayList<ReceivedOrderModel> receivedOrderModelArrayList) {
         this.context = context;
@@ -57,17 +62,16 @@ public class ROManagementAdapter extends RecyclerView.Adapter<ROManagementAdapte
         LinearLayout llStatusApproved, llStatusPOAvailable, llHiddenView;
         TextView tvRoDateTime, tvRoUid, tvPoCustNumber;
         RelativeLayout btnDeleteRo, btnApproveRo;
-        RelativeLayout rlOpenRoDetail;
         Button btn1, btn2, btn3;
         //ImageView ivExpandLlHiddenView;
         CardView cardView;
+        CheckBox cbSelectItem;
 
         public ItemViewHolder(@NonNull View itemView) {
             super(itemView);
             cardView = itemView.findViewById(R.id.cardView);
             llHiddenView = itemView.findViewById(R.id.llHiddenView);
             //ivExpandLlHiddenView = itemView.findViewById(R.id.ivExpandLlHiddenView);
-            rlOpenRoDetail = itemView.findViewById(R.id.open_detail);
             llStatusApproved = itemView.findViewById(R.id.ll_status_approved);
             llStatusPOAvailable = itemView.findViewById(R.id.ll_status_po_unvailable);
             tvRoDateTime = itemView.findViewById(R.id.tv_inv_date_created);
@@ -78,12 +82,34 @@ public class ROManagementAdapter extends RecyclerView.Adapter<ROManagementAdapte
             btn1 = itemView.findViewById(R.id.btn1);
             btn2 = itemView.findViewById(R.id.btn2);
             btn3 = itemView.findViewById(R.id.btn3);
+            cbSelectItem = itemView.findViewById(R.id.cbSelectItem);
             //ivExpandLlHiddenView = itemView.findViewById(R.id.ivExpandLlHiddenView);
 
             //llHiddenView.getLayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
         }
 
         public void viewBind(ReceivedOrderModel receivedOrderModel) {
+            cbSelectItem.setChecked(false);
+
+            if (Objects.equals(helper.ACTIVITY_NAME, "UPDATE")){
+                btnDeleteRo.setVisibility(View.GONE);
+            }
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    receivedOrderModel.setChecked(!receivedOrderModel.isChecked());
+                    cbSelectItem.setChecked(receivedOrderModel.isChecked());
+                }
+            });
+
+            cbSelectItem.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    receivedOrderModel.setChecked(!receivedOrderModel.isChecked());
+                    cbSelectItem.setChecked(receivedOrderModel.isChecked());
+                }
+            });
+
             dialogInterface = new DialogInterface();
             String dateNTime = receivedOrderModel.getRoDateCreated();
             String roUID = "RO-"+receivedOrderModel.getRoUID();
@@ -108,26 +134,6 @@ public class ROManagementAdapter extends RecyclerView.Adapter<ROManagementAdapte
                 llStatusPOAvailable.setVisibility(View.GONE);
             }
 
-            rlOpenRoDetail.setOnClickListener(view -> {
-                /*String roUID1 =receivedOrderModel.getRoUID();
-                Intent i = new Intent(context, UpdateGoodIssueActivity.class);
-                i.putExtra("key", roUID1);
-                context.startActivity(i);*/
-            });
-
-            /*ivExpandLlHiddenView.setOnClickListener(view -> {
-                if (llHiddenView.getVisibility() == View.VISIBLE) {
-                    llHiddenView.setVisibility(View.GONE);
-                    TransitionManager.beginDelayedTransition(cardView, new AutoTransition());
-                    ivExpandLlHiddenView.setImageResource(R.drawable.ic_outline_keyboard_arrow_down);
-                }
-                else {
-                    TransitionManager.beginDelayedTransition(cardView, new AutoTransition());
-                    llHiddenView.setVisibility(View.VISIBLE);
-                    ivExpandLlHiddenView.setImageResource(R.drawable.ic_outline_keyboard_arrow_up);
-                }
-            });*/
-
             btn3.setOnClickListener(view -> {
                 Toast.makeText(context, "Under development", Toast.LENGTH_SHORT).show();
             });
@@ -144,4 +150,46 @@ public class ROManagementAdapter extends RecyclerView.Adapter<ROManagementAdapte
                     dialogInterface.deleteRoConfirmation(context, receivedOrderModel.getRoDocumentID()));
         }
     }
+
+
+    public ArrayList<ReceivedOrderModel> selectAll() {
+        ArrayList<ReceivedOrderModel> selected = new ArrayList<>();
+        for (int i = 0; i < receivedOrderModelArrayList.size(); i++) {
+            if (!receivedOrderModelArrayList.get(i).isChecked()) {
+                selected.add(receivedOrderModelArrayList.get(i));
+            }
+        }
+        return selected;
+    }
+
+    public void clearSelection() {
+        for (int i = 0; i < receivedOrderModelArrayList.size(); i++) {
+            receivedOrderModelArrayList.get(i).setChecked(false);
+        }
+        notifyDataSetChanged();
+    }
+
+
+    public ArrayList<ReceivedOrderModel> getSelected() {
+        ArrayList<ReceivedOrderModel> selected = new ArrayList<>();
+        for (int i = 0; i < receivedOrderModelArrayList.size(); i++) {
+            if (receivedOrderModelArrayList.get(i).isChecked()) {
+                selected.add(receivedOrderModelArrayList.get(i));
+            }
+        }
+        return selected;
+    }
+    /*public float getSelectedVolume() {
+        float selected = 0;
+        //ArrayList<GoodIssueModel> selected = new ArrayList<>();
+        for (int i = 0; i < receivedOrderModelArrayList.size(); i++) {
+            if (receivedOrderModelArrayList.get(i).isChecked()) {
+                selected += receivedOrderModelArrayList.get(i).getGiVhlCubication();
+                if (!receivedOrderModelArrayList.get(i).isChecked()){
+                    selected -= receivedOrderModelArrayList.get(i).getGiVhlCubication();
+                }
+            }
+        }
+        return selected;
+    }*/
 }

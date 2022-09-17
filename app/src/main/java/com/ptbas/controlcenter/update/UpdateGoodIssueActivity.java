@@ -54,15 +54,14 @@ import java.util.Objects;
 
 public class UpdateGoodIssueActivity extends AppCompatActivity {
 
-    String vhlData, matName, matType, roNumber,  roKey ="";
+    String vhlData, matName, matType, roNumber, poNumber,  roKey ="", giNoteNumber;
     String monthStrVal, dayStrVal;
     Integer giYear = 0, giMonth = 0, giDay = 0;
 
     TextView tvHeightCorrection, tvVhlVolume, tvGiCreatedBy, tvGiModifiedBy, tvGiCashedOutStatus, tvGiInvoicedStatus;
     TextInputEditText edtGiDate, edtGiTime, edtPoNumberCust, edtVhlLength, edtVhlWidth, edtVhlHeight,
-            edtHeightCorrection;
-    AutoCompleteTextView spinnerRoNumber, spinnerMatName,
-            spinnerMatType, spinnerVhlUID;
+            edtHeightCorrection, edtGiNoteNumber, spinnerRoNumber, spinnerMatName, spinnerMatType;
+    AutoCompleteTextView spinnerVhlUID;
 
     //LinearLayout llHeightCorrectionFeature;
     DatePickerDialog datePicker;
@@ -119,6 +118,7 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
         matTypeNameList  = new ArrayList<>();
         receiveOrderNumberList = new ArrayList<>();
 
+
         edtGiDate = findViewById(R.id.edt_gi_date);
         edtGiTime = findViewById(R.id.edt_gi_time);
 
@@ -128,6 +128,7 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
         spinnerMatType = findViewById(R.id.spinner_mat_type);
         spinnerVhlUID = findViewById(R.id.spinner_vhl_uid);
 
+        edtGiNoteNumber = findViewById(R.id.edtGiNoteNumber);
         edtVhlLength = findViewById(R.id.edt_vhl_length);
         edtVhlWidth = findViewById(R.id.edt_vhl_width);
         edtVhlHeight = findViewById(R.id.edt_vhl_height);
@@ -167,9 +168,11 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
                         String giDateCreated = goodIssueModel.getGiDateCreated();
                         String giTimeCreated = goodIssueModel.getGiTimeCreted();
                         roNumber = goodIssueModel.getGiRoUID();
+                        poNumber = goodIssueModel.getGiPoCustNumber();
                         matName = goodIssueModel.getGiMatName();
                         matType = goodIssueModel.getGiMatType();
                         vhlData = goodIssueModel.getVhlUID();
+                        giNoteNumber = goodIssueModel.getGiNoteNumber();
                         Integer giVhlHeight = goodIssueModel.getVhlHeight();
                         Integer giVhlWidth = goodIssueModel.getVhlWidth();
                         Integer giVhlLength = goodIssueModel.getVhlLength();
@@ -232,7 +235,7 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
                             tvGiCashedOutStatus.setText("Status Pengajuan: BELUM");
                             fabSaveBtnFormIsNotEmpty();
                         }
-
+                        edtGiNoteNumber.setText(giNoteNumber);
                         edtGiDate.setText(giDateCreated);
                         edtGiTime.setText(giTimeCreated);
                         spinnerRoNumber.setText(roNumber);
@@ -415,14 +418,16 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
             });
         });
 
-        spinnerMatName.setOnItemClickListener((adapterView, view, position, l) -> {
+        /*spinnerMatName.setOnItemClickListener((adapterView, view, position, l) -> {
             String selectedSpinnerMaterialName = (String) adapterView.getItemAtPosition(position);
             matName = selectedSpinnerMaterialName;
             spinnerMatName.setError(null);
         });
-
-        spinnerMatName.setOnFocusChangeListener((view, b) -> spinnerMatName.setText(matName));
-
+*/
+        edtGiNoteNumber.setOnClickListener(view -> dialogInterface.dataCannotBeChangedInformation(UpdateGoodIssueActivity.this));
+        spinnerMatName.setOnClickListener(view -> dialogInterface.dataCannotBeChangedInformation(UpdateGoodIssueActivity.this));
+        edtPoNumberCust.setOnClickListener(view -> dialogInterface.dataCannotBeChangedInformation(UpdateGoodIssueActivity.this));
+        spinnerRoNumber.setOnClickListener(view -> dialogInterface.dataCannotBeChangedInformation(UpdateGoodIssueActivity.this));
         spinnerMatType.setOnClickListener(view -> dialogInterface.dataCannotBeChangedInformation(UpdateGoodIssueActivity.this));
 
         databaseReference.child("VehicleData").addValueEventListener(new ValueEventListener() {
@@ -447,7 +452,7 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
             }
         });
 
-        databaseReference.child("TransportTypeData").addValueEventListener(new ValueEventListener() {
+        /*databaseReference.child("TransportTypeData").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()){
@@ -467,7 +472,7 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError error) {
 
             }
-        });
+        });*/
     }
 
     private void fabSaveFormIsEmpty(){
@@ -479,11 +484,12 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
             String giDate = Objects.requireNonNull(edtGiDate.getText()).toString();
             String giTime = Objects.requireNonNull(edtGiTime.getText()).toString();
 
-            String giRONumber = Objects.requireNonNull(spinnerRoNumber.getText()).toString();
-            String giPOCustomerNumber = Objects.requireNonNull(edtPoNumberCust.getText()).toString();
+           /* String giRONumber = Objects.requireNonNull(spinnerRoNumber.getText()).toString();
+            String giPOCustomerNumber = Objects.requireNonNull(edtPoNumberCust.getText()).toString();*/
 
-            String giMatName = Objects.requireNonNull(spinnerMatName.getText()).toString();
-            String giMatType = Objects.requireNonNull(spinnerMatType.getText()).toString();
+
+            /*String giMatName = Objects.requireNonNull(spinnerMatName.getText()).toString();
+            String giMatType = Objects.requireNonNull(spinnerMatType.getText()).toString();*/
 
             String giVhlUID = Objects.requireNonNull(spinnerVhlUID.getText()).toString();
             String giHeightCorrection = Objects.requireNonNull(edtHeightCorrection.getText()).toString();
@@ -505,7 +511,7 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
                 edtGiTime.setError("Mohon masukkan waktu pembuatan");
                 edtGiTime.requestFocus();
             }
-            if (TextUtils.isEmpty(giRONumber)){
+            /*if (TextUtils.isEmpty(giRONumber)){
                 spinnerRoNumber.setError("Mohon masukkan nomor RO");
                 spinnerRoNumber.requestFocus();
             }
@@ -520,7 +526,7 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
             if (TextUtils.isEmpty(giMatType)){
                 spinnerMatType.setError("Mohon masukkan jenis transport");
                 spinnerMatType.requestFocus();
-            }
+            }*/
             if (TextUtils.isEmpty(giVhlUID)){
                 spinnerVhlUID.setError("Mohon masukkan NOPOL kendaraan");
                 spinnerVhlUID.requestFocus();
@@ -544,13 +550,11 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
             }
 
             if (!TextUtils.isEmpty(giDate)&&!TextUtils.isEmpty(giTime)
-                    &&!TextUtils.isEmpty(giRONumber)&&!TextUtils.isEmpty(giPOCustomerNumber)
-                    &&!TextUtils.isEmpty(giMatName)&&!TextUtils.isEmpty(giMatType)
                     &&!TextUtils.isEmpty(giVhlUID)&&!TextUtils.isEmpty(giVhlWidth)
                     &&!TextUtils.isEmpty(giVhlLength)&&!TextUtils.isEmpty(giVhlHeight)
                     &&!TextUtils.isEmpty(giHeightCorrection)){
                 DecimalFormat df = new DecimalFormat("0.00");
-                insertData(giUIDVal, giCreatedBy, giVerifiedBy, giRONumber, giPOCustomerNumber, giMatName, giMatType,
+                insertData(giUIDVal, giCreatedBy, giVerifiedBy,
                         giVhlUID, giDate, giTime,
                         Integer.parseInt(giVhlLength),
                         Integer.parseInt(giVhlWidth),
@@ -564,8 +568,7 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
         });
     }
 
-    private void insertData(String giUID, String giCreatedBy, String giVerifiedBy, String giRoUID,
-                            String giPoCustNumber, String giMatName, String giMatType,
+    private void insertData(String giUID, String giCreatedBy, String giVerifiedBy,
                             String vhlUID, String giDateCreated, String giTimeCreted,
                             int vhlLength, int vhlWidth, int vhlHeight,
                             int vhlHeightCorrection, int vhlHeightAfterCorrection,
@@ -588,10 +591,9 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
             }
         });
 
-        GoodIssueModel goodIssueModel = new GoodIssueModel(giUID, giCreatedBy, giVerifiedBy, giRoUID, giPoCustNumber,
-                giMatName, giMatType, vhlUID, giDateCreated, giTimeCreted, vhlLength,
+        GoodIssueModel goodIssueModel = new GoodIssueModel(giUID, giCreatedBy, giVerifiedBy, roNumber, poNumber,
+                matName, matType, giNoteNumber, vhlUID, giDateCreated, giTimeCreted, vhlLength,
                 vhlWidth, vhlHeight, vhlHeightCorrection, vhlHeightAfterCorrection, giVhlCubication, giStatus, giInvoiced, giCashedOut);
-
         DatabaseReference refGI = FirebaseDatabase.getInstance().getReference("GoodIssueData");
         refGI.child(giUID).setValue(goodIssueModel).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
@@ -640,12 +642,37 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(@NonNull Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.delete_update_status, menu);
-        menu.findItem(R.id.menu_verify).setVisible(giStatus.equals(false));
+        //menu.findItem(R.id.menu_verify).setVisible(giStatus.equals(false));
 
-        if (Objects.requireNonNull(edtPoNumberCust.getText()).toString().equals(":")){
+
+        /*if (Objects.requireNonNull(edtPoNumberCust.getText()).toString().equals(":")){
             menu.findItem(R.id.menu_verify).setVisible(giStatus.equals(false));
         } else {
             menu.findItem(R.id.menu_verify).setVisible(giStatus.equals(true));
+        }*/
+
+
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            giUIDVal = extras.getString("key");
+            databaseReference.child("GoodIssueData").child(giUIDVal).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    GoodIssueModel goodIssueModel = snapshot.getValue(GoodIssueModel.class);
+                    if (goodIssueModel == null){
+                        finish();
+                    } else {
+                        assert goodIssueModel != null;
+                        giStatus = goodIssueModel.getGiStatus();
+                        menu.findItem(R.id.menu_verify).setVisible(giStatus.equals(false));
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
         }
         return super.onCreateOptionsMenu(menu);
     }

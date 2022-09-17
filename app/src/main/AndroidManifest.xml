@@ -23,7 +23,7 @@
             android:name=".update.UpdateVehicleData"
             android:exported="false" />
         <activity
-            android:name=".management.ProductDataManagementActivity"
+            android:name=".management.ManageProductDataActivity"
             android:exported="false" />
         <activity
             android:name=".update.UpdateProductData"
@@ -52,26 +52,26 @@
             android:name=".create.AddCustomerActivity"
             android:exported="false" />
         <activity
-            android:name=".management.CashOutRequestManagementActivity"
+            android:name=".management.ManageCashOutActivity"
             android:exported="false" />
 
         <activity
-            android:name=".management.InvoiceManagementActivity"
+            android:name=".management.ManageInvoiceActivity"
             android:exported="false" />
         <activity
-            android:name=".management.CustomerManagementActivity"
+            android:name=".management.ManageCustomerActivity"
             android:exported="false" />
         <activity
-            android:name=".management.GoodIssueManagementActivity"
+            android:name=".management.ManageGoodIssueActivity"
             android:exported="false" />
         <activity
-            android:name=".management.ReceivedOrderManagementActivity"
+            android:name=".management.ManageReceivedOrderActivity"
             android:exported="false" />
         <activity
-            android:name=".management.VehicleManagementActivity"
+            android:name=".management.ManageVehicleActivity"
             android:exported="false" />
         <activity
-            android:name=".management.UserManagementActivity"
+            android:name=".management.ManageUserActivity"
             android:exported="false" />
         <activity
             android:name=".create.AddCashOutRequestActivity"
@@ -89,6 +89,9 @@
             android:name=".DashboardActivity"
             android:exported="false"
             android:theme="@style/Theme.TravelPermitBAS.NoActionBar" />
+        <activity
+            android:name=".AllManagementMenus"
+            android:exported="false" />
         <activity
             android:name=".create.AddReceivedOrder"
             android:exported="false" />
