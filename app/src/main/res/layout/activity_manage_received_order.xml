@@ -16,6 +16,9 @@
             android:layout_height="wrap_content"
             app:cardCornerRadius="8dp"
             app:cardElevation="8dp"
+            android:outlineSpotShadowColor="?colorAccent"
+            android:outlineAmbientShadowColor="?colorAccent"
+            style="@style/Widget.MaterialComponents.CardView"
             android:visibility="visible"
             app:cardPreventCornerOverlap="false">
 
@@ -101,6 +104,7 @@
                             android:tag="firstView">
 
                             <ImageView
+                                app:tint="?colorAccent"
                                 android:layout_width="24dp"
                                 android:layout_height="match_parent"
                                 android:src="@drawable/ic_outline_drag_indicator" />
@@ -387,6 +391,7 @@
             app:fab_labelStyle="@style/customFAB"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
+
             <com.getbase.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fab_action_archived_data"
                 android:layout_width="wrap_content"
@@ -395,6 +400,7 @@
                 app:fab_colorPressed="@color/light_grey"
                 app:fab_icon="@drawable/ic_recap_data"
                 app:fab_title="Data RO Diarsipkan" />
+
             <com.getbase.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fab_action_create_ro"
                 android:layout_width="wrap_content"

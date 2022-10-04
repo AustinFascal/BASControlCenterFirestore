@@ -2,42 +2,34 @@ package com.ptbas.controlcenter.model;
 
 public class InvoiceModel {
 
-    String invDocumentID, invUID, invPoType, invCreatedBy, invDateCreated, invPoUID, invPoDate, invCustName;
-    Double invTotal, invTax1, invTax2;
-    Boolean invStatus;
+    String invDocumentUID, invUID, invCreatedBy, invDateNTimeCreated, invVerifiedBy,
+            invDateNTimeVerified, invDateDeliveryPeriod, custDocumentID, bankDocumentID, roDocumentID;
+
+    private boolean isChecked = false;
 
     public InvoiceModel() {
     }
 
-    public InvoiceModel(String invDocumentID, String invUID, String invPoType, String invCreatedBy, String invDateCreated, String invPoUID, String invPoDate, String invCustName, Double invTotal, Double invTax1, Double invTax2, Boolean invStatus) {
-        this.invDocumentID = invDocumentID;
+    public InvoiceModel(String invDocumentUID, String invUID, String invCreatedBy, String invDateNTimeCreated, String invVerifiedBy, String invDateNTimeVerified, String invDateDeliveryPeriod, String custDocumentID, String bankDocumentID, String roDocumentID) {
+        this.invDocumentUID = invDocumentUID;
         this.invUID = invUID;
-        this.invPoType = invPoType;
         this.invCreatedBy = invCreatedBy;
-        this.invDateCreated = invDateCreated;
-        this.invPoUID = invPoUID;
-        this.invPoDate = invPoDate;
-        this.invCustName = invCustName;
-        this.invTotal = invTotal;
-        this.invTax1 = invTax1;
-        this.invTax2 = invTax2;
-        this.invStatus = invStatus;
+        this.invDateNTimeCreated = invDateNTimeCreated;
+        this.invVerifiedBy = invVerifiedBy;
+        this.invDateNTimeVerified = invDateNTimeVerified;
+        this.invDateDeliveryPeriod = invDateDeliveryPeriod;
+        this.custDocumentID = custDocumentID;
+        this.bankDocumentID = bankDocumentID;
+        this.roDocumentID = roDocumentID;
     }
 
-    public String getInvPoType() {
-        return invPoType;
+
+    public String getInvDocumentUID() {
+        return invDocumentUID;
     }
 
-    public void setInvPoType(String invPoType) {
-        this.invPoType = invPoType;
-    }
-
-    public String getInvDocumentID() {
-        return invDocumentID;
-    }
-
-    public void setInvDocumentID(String invDocumentID) {
-        this.invDocumentID = invDocumentID;
+    public void setInvDocumentUID(String invDocumentUID) {
+        this.invDocumentUID = invDocumentUID;
     }
 
     public String getInvUID() {
@@ -56,67 +48,67 @@ public class InvoiceModel {
         this.invCreatedBy = invCreatedBy;
     }
 
-    public String getInvDateCreated() {
-        return invDateCreated;
+    public String getInvDateNTimeCreated() {
+        return invDateNTimeCreated;
     }
 
-    public void setInvDateCreated(String invDateCreated) {
-        this.invDateCreated = invDateCreated;
+    public void setInvDateNTimeCreated(String invDateNTimeCreated) {
+        this.invDateNTimeCreated = invDateNTimeCreated;
     }
 
-    public String getInvPoUID() {
-        return invPoUID;
+    public String getInvVerifiedBy() {
+        return invVerifiedBy;
     }
 
-    public void setInvPoUID(String invPoUID) {
-        this.invPoUID = invPoUID;
+    public void setInvVerifiedBy(String invVerifiedBy) {
+        this.invVerifiedBy = invVerifiedBy;
     }
 
-    public String getInvPoDate() {
-        return invPoDate;
+    public String getInvDateNTimeVerified() {
+        return invDateNTimeVerified;
     }
 
-    public void setInvPoDate(String invPoDate) {
-        this.invPoDate = invPoDate;
+    public void setInvDateNTimeVerified(String invDateNTimeVerified) {
+        this.invDateNTimeVerified = invDateNTimeVerified;
     }
 
-    public String getInvCustName() {
-        return invCustName;
+    public String getInvDateDeliveryPeriod() {
+        return invDateDeliveryPeriod;
     }
 
-    public void setInvCustName(String invCustName) {
-        this.invCustName = invCustName;
+    public void setInvDateDeliveryPeriod(String invDateDeliveryPeriod) {
+        this.invDateDeliveryPeriod = invDateDeliveryPeriod;
     }
 
-    public Double getInvTotal() {
-        return invTotal;
+    public String getCustDocumentID() {
+        return custDocumentID;
     }
 
-    public void setInvTotal(Double invTotal) {
-        this.invTotal = invTotal;
+    public void setCustDocumentID(String custDocumentID) {
+        this.custDocumentID = custDocumentID;
     }
 
-    public Double getInvTax1() {
-        return invTax1;
+    public String getBankDocumentID() {
+        return bankDocumentID;
     }
 
-    public void setInvTax1(Double invTax1) {
-        this.invTax1 = invTax1;
+    public void setBankDocumentID(String bankDocumentID) {
+        this.bankDocumentID = bankDocumentID;
     }
 
-    public Double getInvTax2() {
-        return invTax2;
+    public String getRoDocumentID() {
+        return roDocumentID;
     }
 
-    public void setInvTax2(Double invTax2) {
-        this.invTax2 = invTax2;
+    public void setRoDocumentID(String roDocumentID) {
+        this.roDocumentID = roDocumentID;
     }
 
-    public Boolean getInvStatus() {
-        return invStatus;
+    public boolean isChecked() {
+        return isChecked;
     }
 
-    public void setInvStatus(Boolean invStatus) {
-        this.invStatus = invStatus;
+    public void setChecked(boolean checked) {
+        isChecked = checked;
     }
 }

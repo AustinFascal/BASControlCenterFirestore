@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:title="Cetak Data"
+        android:icon="@drawable/ic_outline_print"
+        android:id="@+id/itemMenuPrint"
+        app:iconTint="?colorAccent"
+        app:showAsAction="always"/>
+
+    <item
+        android:title="Simpan Perubahan"
+        android:icon="@drawable/ic_outline_save_black"
+        android:id="@+id/itemMenuSave"
+        app:iconTint="?colorAccent"
+        app:showAsAction="always"/>
+</menu>

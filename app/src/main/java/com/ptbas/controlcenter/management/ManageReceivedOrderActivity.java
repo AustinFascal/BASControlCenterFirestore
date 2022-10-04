@@ -181,14 +181,33 @@ public class ManageReceivedOrderActivity extends AppCompatActivity {
             MaterialDialog md = new MaterialDialog.Builder(ManageReceivedOrderActivity.this)
                     .setTitle("Hapus Data Terpilih")
                     .setAnimation(R.raw.lottie_delete)
-                    .setMessage("Apakah Anda yakin ingin menghapus "+size+" data Good Issue yang terpilih? Setelah dihapus, data tidak dapat dikembalikan.")
+                    .setMessage("Apakah Anda yakin ingin menghapus "+size+" data Received Order yang terpilih? Setelah dihapus, data tidak dapat dikembalikan.")
                     .setCancelable(true)
                     .setPositiveButton("YA", R.drawable.ic_outline_check, (dialogInterface, which) -> {
-                        dialogInterface.dismiss();
+                        refRO.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                if (task.isSuccessful()){
+                                    for(DocumentSnapshot documentSnapshot : task.getResult()){
+                                        String getDocumentID = documentSnapshot.getId();
+                                        for (int i = 0; i < size; i++){
+                                            db.collection("ReceivedOrderData").document(roManagementAdapter.getSelected().get(i).getRoDocumentID()).delete();
+                                            dialogInterface.dismiss();
+
+                                            /*if (getDocumentID.equals(roManagementAdapter.getSelected().get(i).getRoDocumentID())){
+                                            }*/
+                                        }
+
+                                    }
+                                }
+                            }
+                        });
+                        //dialogInterface.dismiss();
+                        /*dialogInterface.dismiss();
                         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
                         for (int i = 0; i < roManagementAdapter.getSelected().size(); i++) {
                             //databaseReference.child("ReceivedOrderData").child(roManagementAdapter.getSelected().get(i).getGiUID()).removeValue();
-                        }
+                        }*/
 
                     })
                     .setNegativeButton("TIDAK", R.drawable.ic_outline_close, (dialogInterface, which) -> dialogInterface.dismiss())
@@ -203,7 +222,7 @@ public class ManageReceivedOrderActivity extends AppCompatActivity {
             MaterialDialog md = new MaterialDialog.Builder((Activity) context)
                     .setAnimation(R.raw.lottie_approval)
                     .setTitle("Validasi Data Terpilih")
-                    .setMessage("Apakah Anda yakin ingin mengesahkan "+size+" data Good Issue yang terpilih? Setelah disahkan, status tidak dapat dikembalikan.")
+                    .setMessage("Apakah Anda yakin ingin mengesahkan "+size+" data Received Order yang terpilih? Setelah disahkan, status tidak dapat dikembalikan.")
                     .setPositiveButton("YA", R.drawable.ic_outline_check, (dialogInterface, which) -> {
                         refRO.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                             @Override
@@ -212,12 +231,13 @@ public class ManageReceivedOrderActivity extends AppCompatActivity {
                                     for(DocumentSnapshot documentSnapshot : task.getResult()){
                                         String getDocumentID = documentSnapshot.getId();
                                         for (int i = 0; i < size; i++){
-                                            if (getDocumentID.equals(roManagementAdapter.getSelected().get(i).getRoDocumentID())){
-                                                db.collection("ReceivedOrderData").document(roManagementAdapter.getSelected().get(i).getRoDocumentID()).update("roStatus", true);
-                                                db.collection("ReceivedOrderData").document(roManagementAdapter.getSelected().get(i).getRoDocumentID()).update("roVerifiedBy", helper.getUserId());
-                                                dialogInterface.dismiss();
+                                            db.collection("ReceivedOrderData").document(roManagementAdapter.getSelected().get(i).getRoDocumentID()).update("roStatus", true);
+                                            db.collection("ReceivedOrderData").document(roManagementAdapter.getSelected().get(i).getRoDocumentID()).update("roVerifiedBy", helper.getUserId());
+                                            dialogInterface.dismiss();
+                                           /* if (getDocumentID.equals(roManagementAdapter.getSelected().get(i).getRoDocumentID())){
+
                                                 //roManagementAdapter.clearSelection();
-                                            }
+                                            }*/
                                         }
 
                                     }
@@ -344,7 +364,7 @@ public class ManageReceivedOrderActivity extends AppCompatActivity {
         // ACTION BAR FOR STANDARD ACTIVITY
         assert actionBar != null;
         helper.handleActionBarConfigForStandardActivity(
-                this, actionBar, "Manajemen Received Order");
+                this, actionBar, "Data Received Order");
 
         // SYSTEM UI MODE FOR STANDARD ACTIVITY
         helper.handleUIModeForStandardActivity(this, actionBar);
@@ -830,6 +850,7 @@ public class ManageReceivedOrderActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
+        roManagementAdapter.clearSelection();
         // HANDLE RESPONSIVE CONTENT
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);

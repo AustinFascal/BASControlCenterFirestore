@@ -190,6 +190,7 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                     }, Integer.parseInt(year), Integer.parseInt(monthStrVal), Integer.parseInt(dayStrVal));
             datePicker.show();
 
+            datePicker.getDatePicker().setMaxDate(calendar.getTimeInMillis());
             edtGiDate.setError(null);
         });
 
@@ -618,7 +619,7 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                             Integer.parseInt(radioOperation + giHeightCorrection.replaceAll("[^0-9]", "")),
                             Integer.parseInt(tvHeightCorrection.getText().toString().replaceAll("[^0-9]", "")),
                             Float.parseFloat(df.format(Float.parseFloat(giVhlCubication.replaceAll("[^0-9.]", "")))),
-                            false, false);
+                            false, false, false);
                 }
 
 
@@ -632,11 +633,11 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                             String giNoteNumber, String vhlUID, String giDateCreated, String giTimeCreted,
                             int vhlLength,   int vhlWidth, int vhlHeight,
                             int vhlHeightCorrection, int vhlHeightAfterCorrection,
-                            float giVhlCubication, Boolean giStatus, Boolean giInvoiced) {
+                            float giVhlCubication, Boolean giStatus, Boolean giRecapped, Boolean giInvoiced) {
 
         GoodIssueModel goodIssueModel = new GoodIssueModel(giUID, giCreatedBy, giVerifiedBy, giRoUID, giPoCustNumber,
                 giMatName, giMatType, giNoteNumber, vhlUID, giDateCreated, giTimeCreted, vhlLength,
-                vhlWidth, vhlHeight, vhlHeightCorrection, vhlHeightAfterCorrection, giVhlCubication, giStatus, giInvoiced, false);
+                vhlWidth, vhlHeight, vhlHeightCorrection, vhlHeightAfterCorrection, giVhlCubication, giStatus, giRecapped, giInvoiced, false);
 
         VehicleModel vehicleModel =
                 new VehicleModel(vhlUID, true, vhlLength, vhlWidth, vhlHeight,

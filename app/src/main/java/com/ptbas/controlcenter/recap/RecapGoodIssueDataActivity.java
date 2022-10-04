@@ -2,6 +2,7 @@ package com.ptbas.controlcenter.recap;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
@@ -12,6 +13,8 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DatePickerDialog;
@@ -20,6 +23,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.text.Html;
@@ -27,6 +31,7 @@ import android.transition.AutoTransition;
 import android.transition.TransitionManager;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -37,6 +42,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
@@ -48,8 +54,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
@@ -62,11 +71,13 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.text.pdf.draw.LineSeparator;
+import com.ptbas.controlcenter.create.AddInvoiceActivity;
 import com.ptbas.controlcenter.helper.DialogInterface;
 import com.ptbas.controlcenter.helper.DragLinearLayout;
 import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.adapter.GIManagementAdapter;
 import com.ptbas.controlcenter.helper.Helper;
+import com.ptbas.controlcenter.model.CustomerModel;
 import com.ptbas.controlcenter.model.GoodIssueModel;
 import com.ptbas.controlcenter.model.ProductItems;
 import com.ptbas.controlcenter.model.ReceivedOrderModel;
@@ -80,21 +91,24 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
 public class RecapGoodIssueDataActivity extends AppCompatActivity {
 
+    float totalUnit;
     double matBuyPrice;
     String dateStartVal = "", dateEndVal = "", rouidVal= "", currencyVal = "", pouidVal = "",
-            monthStrVal, dayStrVal, roPoCustNumber, matTypeVal, matNameVal;
+            monthStrVal, dayStrVal, roPoCustNumber, matTypeVal, matNameVal, selectedCustName = "";
     public String custNameVal = "";
 
     Button btnSearchData, imgbtnExpandCollapseFilterLayout;
-    AutoCompleteTextView spinnerRoUID;
+    AutoCompleteTextView spinnerRoUID, spinnerCustUID;
     TextInputEditText edtPoUID, edtDateStart, edtDateEnd;
     DatePickerDialog datePicker;
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
@@ -108,11 +122,14 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
     View firstViewData;
     NestedScrollView nestedScrollView;
 
-    List<String> arrayListRoUID, arrayListPoUID;
+    ImageButton btnExitSelection;
+    TextView tvTotalSelectedItem, tvTotalSelectedItem2;
 
-    LinearLayout llWrapFilterByDateRange, llWrapFilterByRouid, llNoData;
+    List<String> arrayListRoUID, customerList;
 
-    ImageButton btnGiSearchByDateReset, btnGiSearchByRoUIDReset;
+    LinearLayout llWrapFilter, llWrapFilterByDateRange, llWrapFilterByRouid, llNoData, llBottomSelectionOptions, llShowSpinnerRoAndEdtPo;
+
+    ImageButton btnGiSearchByDateReset, btnGiSearchByRoUIDReset, btnResetCustomer;
 
     ExtendedFloatingActionButton fabCreateGiRecap;
 
@@ -124,6 +141,11 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
+    DecimalFormat df = new DecimalFormat("0.00");
+
+    Vibrator vibrator;
+
+    //List<String> receiveOrderNumberList;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -131,23 +153,37 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
 
         context = this;
 
+        vibrator  = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+
+        //receiveOrderNumberList = new ArrayList<>();
+
         cdvFilter = findViewById(R.id.cdv_filter);
         btnSearchData = findViewById(R.id.caridata);
+        btnExitSelection = findViewById(R.id.btnExitSelection);
+
+        spinnerCustUID = findViewById(R.id.spinnerCustName);
         spinnerRoUID = findViewById(R.id.rouid);
         edtPoUID = findViewById(R.id.pouid);
         edtDateStart = findViewById(R.id.edt_gi_date_filter_start);
         edtDateEnd = findViewById(R.id.edt_gi_date_filter_end);
-        rvGoodIssueList = findViewById(R.id.rv_good_issue_list);
+        rvGoodIssueList = findViewById(R.id.rvItemList);
         imgbtnExpandCollapseFilterLayout = findViewById(R.id.imgbtnExpandCollapseFilterLayout);
+        llWrapFilter = findViewById(R.id.llWrapFilter);
         llWrapFilterByDateRange = findViewById(R.id.ll_wrap_filter_by_date_range);
         llWrapFilterByRouid = findViewById(R.id.ll_wrap_filter_by_rouid);
+        llBottomSelectionOptions = findViewById(R.id.llBottomSelectionOptions);
+        llShowSpinnerRoAndEdtPo = findViewById(R.id.llShowSpinnerRoAndEdtPo);
 
         llNoData = findViewById(R.id.ll_no_data);
         nestedScrollView = findViewById(R.id.nestedScrollView);
 
+        btnResetCustomer = findViewById(R.id.btnResetCustomer);
         btnGiSearchByDateReset = findViewById(R.id.btn_gi_search_date_reset);
         btnGiSearchByRoUIDReset = findViewById(R.id.btnResetRouid);
         fabCreateGiRecap = findViewById(R.id.fabCreateCOR);
+
+        tvTotalSelectedItem = findViewById(R.id.tvTotalSelectedItem);
+        tvTotalSelectedItem2 = findViewById(R.id.tvTotalSelectedItem2);
 
         TypedValue typedValue = new TypedValue();
         Resources.Theme theme = context.getTheme();
@@ -164,20 +200,20 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
         // ACTION BAR FOR STANDARD ACTIVITY
         assert actionBar != null;
         helper.handleActionBarConfigForStandardActivity(
-                this, actionBar, "Rekap Data Valid Good Issue");
+                this, actionBar, "Rekap GI Untuk Ditagihkan");
 
         // SYSTEM UI MODE FOR STANDARD ACTIVITY
         helper.handleUIModeForStandardActivity(this, actionBar);
 
         // DRAGLINEARLAYOUT FOR FILTERING
-        DragLinearLayout dragLinearLayout = findViewById(R.id.drag_linear_layout);
+        /*DragLinearLayout dragLinearLayout = findViewById(R.id.drag_linear_layout);
         for(int i = 0; i < dragLinearLayout.getChildCount(); i++){
             View child = dragLinearLayout.getChildAt(i);
             // the child will act as its own drag handle
             dragLinearLayout.setViewDraggable(child, child);
-        }
+        }*/
 
-        dragLinearLayout.setOnViewSwapListener((firstView, firstPosition,
+        /*dragLinearLayout.setOnViewSwapListener((firstView, firstPosition,
                                                 secondView, secondPosition) -> {
             // Vibrate for 500 milliseconds
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -188,7 +224,7 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
                 vibrator.vibrate(100);
             }
             firstViewData = firstView;
-        });
+        });*/
 
         // SET DEFAULT LANG CODE TO ENGLISH
         LangUtils.setLocale(this, "en");
@@ -221,6 +257,7 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
 
                         btnGiSearchByDateReset.setVisibility(View.VISIBLE);
                     }, Integer.parseInt(yearStrVal), Integer.parseInt(monthStrVal), Integer.parseInt(dayStrVal));
+            datePicker.getDatePicker().setMaxDate(calendar.getTimeInMillis());
             datePicker.show();
         });
 
@@ -252,6 +289,7 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
 
                         btnGiSearchByDateReset.setVisibility(View.VISIBLE);
                     }, Integer.parseInt(yearStrVal), Integer.parseInt(monthStrVal), Integer.parseInt(dayStrVal));
+            datePicker.getDatePicker().setMaxDate(calendar.getTimeInMillis());
             datePicker.show();
         });
 
@@ -266,9 +304,10 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
         });
 
         arrayListRoUID = new ArrayList<>();
-        arrayListPoUID = new ArrayList<>();
+        customerList = new ArrayList<>();
+        //arrayListPoUID = new ArrayList<>();
 
-        db.collection("ReceivedOrderData").whereEqualTo("roStatus", true)
+        /*db.collection("ReceivedOrderData").whereEqualTo("roStatus", true)
                 .addSnapshotListener((value, error) -> {
                     arrayListRoUID.clear();
                     if (value != null) {
@@ -286,13 +325,78 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
                             }
                         }
                     }
-                });
+                });*/
+
+        // INIT DATA SPINNER CUSTOMER DATA
+        db.collection("CustomerData").addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                if (value != null) {
+                    if (!value.isEmpty()) {
+                        for (DocumentSnapshot d : value.getDocuments()) {
+                            String custList = Objects.requireNonNull(d.get("custUID")).toString().concat(" - " + Objects.requireNonNull(d.get("custName")).toString());
+                            customerList.add(custList);
+
+                            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(RecapGoodIssueDataActivity.this, R.layout.style_spinner, customerList);
+                            arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
+                            spinnerCustUID.setAdapter(arrayAdapter);
+                        }
+                    }
+                }
+            }
+        });
+
+        spinnerCustUID.setOnItemClickListener((adapterView, view, i, l) -> {
+            String selectedCustomer = (String) adapterView.getItemAtPosition(i);
+            selectedCustName = selectedCustomer;
+            spinnerCustUID.setError(null);
+            spinnerRoUID.setText(null);
+            edtPoUID.setText(null);
+
+            btnResetCustomer.setVisibility(View.VISIBLE);
+            clearRoPoData();
+
+            db.collection("ReceivedOrderData").whereEqualTo("roStatus", true)
+                    .addSnapshotListener((value, error) -> {
+                        arrayListRoUID.clear();
+                        if (value != null) {
+                            if (!value.isEmpty()) {
+                                for (DocumentSnapshot d : value.getDocuments()) {
+                                    String spinnerPurchaseOrders = Objects.requireNonNull(d.get("roPoCustNumber")).toString();
+                                    if (Objects.requireNonNull(d.get("roCustName")).toString().equals(spinnerCustUID.getText().toString())) {
+                                        arrayListRoUID.add(spinnerPurchaseOrders);
+                                    }
+                                }
+                                ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(RecapGoodIssueDataActivity.this, R.layout.style_spinner, arrayListRoUID);
+                                arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
+                                spinnerRoUID.setAdapter(arrayAdapter);
+                            } else {
+                                if(!isFinishing()) {
+                                    dialogInterface.roNotExistsDialog(RecapGoodIssueDataActivity.this);
+                                }
+                            }
+                        }
+
+                    });
+            llShowSpinnerRoAndEdtPo.setVisibility(View.VISIBLE);
+        });
+        spinnerCustUID.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View view, int i, KeyEvent keyEvent) {
+                if (spinnerCustUID.getText().toString().equals("")){
+                    llShowSpinnerRoAndEdtPo.setVisibility(View.GONE);
+                }
+                return false;
+            }
+        });
+        spinnerCustUID.setOnFocusChangeListener((view, b) -> spinnerCustUID.setText(selectedCustName));
+
 
         spinnerRoUID.setOnItemClickListener((adapterView, view, i, l) -> {
             spinnerRoUID.setError(null);
             String selectedSpinnerPoPtBasNumber = (String) adapterView.getItemAtPosition(i);
 
-            db.collection("ReceivedOrderData").whereEqualTo("roUID", selectedSpinnerPoPtBasNumber).get()
+            db.collection("ReceivedOrderData").whereEqualTo("roPoCustNumber", selectedSpinnerPoPtBasNumber).get()
                     .addOnSuccessListener(queryDocumentSnapshots -> {
                         for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots){
                             ReceivedOrderModel receivedOrderModel = documentSnapshot.toObject(ReceivedOrderModel.class);
@@ -321,10 +425,70 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
             btnGiSearchByRoUIDReset.setVisibility(View.GONE);
         });
 
-        fabCreateGiRecap.hide();
+        //fabCreateGiRecap.hide();
+
+        // CREATE GI MANAGEMENT ADAPTER
+        giManagementAdapter = new GIManagementAdapter(this, goodIssueModelArrayList);
+
+        // HIDE FAB CREATE COR ON CREATE
+        fabCreateGiRecap.animate().translationY(800).setDuration(100).start();
+
+        // NOTIFY REAL-TIME CHANGES AS USER CHOOSE THE ITEM
+        final Handler handler = new Handler();
+        Runnable runnable = new Runnable() {
+            public void run() {
+                // CHECK IF DATE AND RO/PO NUMBER IS SELECTED
+                if (!spinnerRoUID.getText().toString().isEmpty()){
+
+                    int itemSelectedSize = giManagementAdapter.getSelected().size();
+                    float itemSelectedVolume = giManagementAdapter.getSelectedVolume();
+
+                    //float itemSelectedBuyPrice = giManagementAdapter.getSelectedVolBuyPrice();
+                    //String itemSelectedBuyPriceVal = df.format(itemSelectedBuyPrice);
+                    String itemSelectedSizeVal = String.valueOf(itemSelectedSize).concat(" item terpilih");
+                    String itemSelectedVolumeAndBuyPriceVal = df.format(itemSelectedVolume).concat(" m3");
+                    //.concat("IDR "+itemSelectedBuyPriceVal);
+
+                    if (giManagementAdapter.getSelected().size()>0){
+
+                        fabCreateGiRecap.animate().translationY(0).setDuration(100).start();
+
+                        tvTotalSelectedItem.setText(itemSelectedSizeVal);
+                        tvTotalSelectedItem2.setText(itemSelectedVolumeAndBuyPriceVal);
+                        llBottomSelectionOptions.animate()
+                                .translationY(0).alpha(1.0f)
+                                .setDuration(100)
+                                .setListener(new AnimatorListenerAdapter() {
+                                    @Override
+                                    public void onAnimationStart(Animator animation) {
+                                        super.onAnimationStart(animation);
+                                        llBottomSelectionOptions.setVisibility(View.VISIBLE);
+                                    }
+                                });
+
+
+                    } else {
+                        totalUnit = 0;
+                        fabCreateGiRecap.animate().translationY(800).setDuration(100).start();
+                        llBottomSelectionOptions.animate()
+                                .translationY(llBottomSelectionOptions.getHeight()).alpha(0.0f)
+                                .setListener(new AnimatorListenerAdapter() {
+                                    @Override
+                                    public void onAnimationEnd(Animator animation) {
+                                        super.onAnimationEnd(animation);
+                                        llBottomSelectionOptions.setVisibility(View.GONE);
+                                    }
+                                });
+                    }
+                }
+
+                handler.postDelayed(this, 100);
+            }
+        };
+        runnable.run();
 
         btnSearchData.setOnClickListener(view -> {
-            View viewLayout = RecapGoodIssueDataActivity.this.getCurrentFocus();
+            /*View viewLayout = RecapGoodIssueDataActivity.this.getCurrentFocus();
             if (viewLayout != null) {
                 InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(viewLayout.getWindowToken(), 0);
@@ -335,6 +499,36 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
             } else {
                 nestedScrollView.setVisibility(View.GONE);
                 dialogInterface.mustAddDateRangeInformation(this);
+            }*/
+
+            View viewLayout = RecapGoodIssueDataActivity.this.getCurrentFocus();
+            if (viewLayout != null) {
+                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(viewLayout.getWindowToken(), 0);
+            }
+
+            if (spinnerCustUID.getText().toString().isEmpty()){
+                spinnerCustUID.setError("");
+            } else{
+                spinnerCustUID.setError(null);
+            }
+
+            if (spinnerRoUID.getText().toString().isEmpty()){
+                spinnerRoUID.setError("");
+            } else{
+                spinnerRoUID.setError(null);
+            }
+
+            if (Objects.requireNonNull(edtPoUID.getText()).toString().isEmpty()){
+                edtPoUID.setError("");
+            } else{
+                edtPoUID.setError(null);
+            }
+
+            if (!spinnerCustUID.getText().toString().isEmpty()&&
+                    !spinnerRoUID.getText().toString().isEmpty()&&
+                    !edtPoUID.getText().toString().isEmpty()){
+                searchQuery();
             }
         });
 
@@ -345,12 +539,22 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
                 ActivityCompat.requestPermissions((Activity) context,
                         new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 10);
             } else {
-                createPDF(Helper.getAppPath(context)+rouidVal+".pdf");
+                dialogInterface.confirmCreateRecap(context, pouidVal, goodIssueModelArrayList);
             }
         });
+
+        searchQueryAll();
     }
 
-    private void createPDF(String dest){
+    private void clearRoPoData(){
+        rouidVal = null;
+        pouidVal = null;
+
+        spinnerRoUID.setText(null);
+        edtPoUID.setText(null);
+    }
+
+    public void createPDF(String dest){
 
         if (new File(dest).exists()){
             new File(dest).deleteOnExit();
@@ -367,7 +571,10 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
             addGiRcpTtl(document);
             addGiRcpMainContent(document);
             document.close();
-            Helper.openFilePDF(context, new File(Helper.getAppPath(context)+rouidVal+".pdf"));
+
+            dialogInterface.recapGeneratedInfo(context, dest);
+            //dialogInterface.confirmCreateRecap(context, dest);
+            //Helper.openFilePDF(context, new File(Helper.getAppPath(context)+rouidVal+".pdf"));
         } catch (DocumentException | FileNotFoundException e) {
             e.printStackTrace();
             Toast.makeText(context, e.toString(), Toast.LENGTH_LONG).show();
@@ -376,7 +583,7 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
 
     private void addGiRcpTtl(Document document) throws DocumentException {
         Paragraph preface = new Paragraph();
-        Chunk title = new Chunk("RO-"+rouidVal, fontBigBold);
+        Chunk title = new Chunk("REKAP GI PO-"+rouidVal, fontBigBold);
         Paragraph paragraphTitle = new Paragraph(title);
         paragraphTitle.setAlignment(Element.ALIGN_CENTER);
         document.add(paragraphTitle);
@@ -419,6 +626,8 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
     }
 
     private void addGiRcpMainContent(Document document) throws DocumentException{
+
+
         DecimalFormat df = new DecimalFormat("0.00");
         String currentDate = new SimpleDateFormat("dd/MM/yyyy", Locale.US).format(new Date());
 
@@ -486,17 +695,17 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
                     new Paragraph(String.valueOf(Html.fromHtml("M\u00B3")), fontBold), Element.ALIGN_CENTER));
 
             float totalCubication = 0;
-            for (int i = 0; i < goodIssueModelArrayList.size(); i++){
+            for (int i = 0; i < giManagementAdapter.getSelected().size(); i++){
                 String rowNumberStrVal = String.valueOf(i+1);
-                String rowDateStrVal = goodIssueModelArrayList.get(i).getGiDateCreated();
-                String rowIDStrVal = goodIssueModelArrayList.get(i).getGiUID().substring(0,5);
-                String rowVhlUIDStrVal = goodIssueModelArrayList.get(i).getVhlUID();
-                String rowVhLengthStrVal = goodIssueModelArrayList.get(i).getVhlLength().toString();
-                String rowVhWidthStrVal = goodIssueModelArrayList.get(i).getVhlWidth().toString();
-                String rowVhHeightStrVal = goodIssueModelArrayList.get(i).getVhlHeight().toString();
-                String rowVhHeightCorrectionStrVal = goodIssueModelArrayList.get(i).getVhlHeightCorrection().toString();
-                String rowVhHeightAfterCorrectionStrVal = goodIssueModelArrayList.get(i).getVhlHeightAfterCorrection().toString();
-                String vhlCubicationStrVal = df.format(goodIssueModelArrayList.get(i).getGiVhlCubication());
+                String rowDateStrVal = giManagementAdapter.getSelected().get(i).getGiDateCreated();
+                String rowIDStrVal = giManagementAdapter.getSelected().get(i).getGiUID().substring(0,5);
+                String rowVhlUIDStrVal = giManagementAdapter.getSelected().get(i).getVhlUID();
+                String rowVhLengthStrVal = giManagementAdapter.getSelected().get(i).getVhlLength().toString();
+                String rowVhWidthStrVal = giManagementAdapter.getSelected().get(i).getVhlWidth().toString();
+                String rowVhHeightStrVal = giManagementAdapter.getSelected().get(i).getVhlHeight().toString();
+                String rowVhHeightCorrectionStrVal = giManagementAdapter.getSelected().get(i).getVhlHeightCorrection().toString();
+                String rowVhHeightAfterCorrectionStrVal = giManagementAdapter.getSelected().get(i).getVhlHeightAfterCorrection().toString();
+                String vhlCubicationStrVal = df.format(giManagementAdapter.getSelected().get(i).getGiVhlCubication());
 
                 table1.addCell(createTextNormalCell(
                         new Paragraph(rowNumberStrVal, fontNormal), Element.ALIGN_CENTER));
@@ -519,10 +728,7 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
                 table1.addCell(createTextNormalCell(
                         new Paragraph(vhlCubicationStrVal, fontNormal), Element.ALIGN_CENTER));
 
-                totalCubication += goodIssueModelArrayList.get(i).getGiVhlCubication();
-
-
-
+                totalCubication += giManagementAdapter.getSelected().get(i).getGiVhlCubication();
 
 
 
@@ -539,7 +745,7 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
 
             String totalCubicationStrVal = df.format(totalCubication);
             //String totalCubicationStrVal = String.valueOf(totalCubication);
-            double totalIDR = matBuyPrice*Double.parseDouble(df.format(totalCubication))    ;
+            double totalIDR = matBuyPrice*Double.parseDouble(df.format(totalCubication));
             String totalIDRStrVal = currencyVal+" "+currencyFormat(df.format(totalIDR));
 
             table2.addCell(createTextColumnHeader(
@@ -570,11 +776,69 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
         return formatter.format(Double.parseDouble(amount));
     }
 
+    private void searchQueryAll(){
+        Query query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated");
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                goodIssueModelArrayList.clear();
+                if (snapshot.exists()){
+                    for (DataSnapshot item : snapshot.getChildren()) {
+                        if (Objects.equals(item.child("giStatus").getValue(), true) &&
+                                Objects.equals(item.child("giCashedOut").getValue(), true) &&
+                                Objects.equals(item.child("giInvoiced").getValue(), false) &&
+                                Objects.equals(item.child("giRecapped").getValue(), false)) {
+                            GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
+                            goodIssueModelArrayList.add(goodIssueModel);
+                            //fabCreateGiRecap.show();
+                            nestedScrollView.setVisibility(View.VISIBLE);
+                            llNoData.setVisibility(View.GONE);
+                        }
+
+                    }
+                    if (goodIssueModelArrayList.size()==0) {
+                        fabCreateGiRecap.hide();
+                        nestedScrollView.setVisibility(View.GONE);
+                        llNoData.setVisibility(View.VISIBLE);
+                    }
+
+                } else  {
+                    fabCreateGiRecap.hide();
+                    nestedScrollView.setVisibility(View.GONE);
+                    llNoData.setVisibility(View.VISIBLE);
+                }
+                Collections.reverse(goodIssueModelArrayList);
+                giManagementAdapter = new GIManagementAdapter(context, goodIssueModelArrayList);
+                rvGoodIssueList.setAdapter(giManagementAdapter);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
     private void searchQuery(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            vibrator.vibrate(VibrationEffect.createOneShot(100,
+                    VibrationEffect.DEFAULT_AMPLITUDE));
+        } else {
+            //deprecated in API 26
+            vibrator.vibrate(100);
+        }
+
+        showHideFilterComponents(false);
+
+        expandFilterViewValidation();
+        TransitionManager.beginDelayedTransition(cdvFilter, new AutoTransition());
+
         rouidVal = spinnerRoUID.getText().toString();
         pouidVal = Objects.requireNonNull(edtPoUID.getText()).toString();
 
-        db.collection("ReceivedOrderData").whereEqualTo("roUID", rouidVal).get()
+        Toast.makeText(context, rouidVal, Toast.LENGTH_SHORT).show();
+
+        db.collection("ReceivedOrderData").whereEqualTo("roPoCustNumber", pouidVal).get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots){
                         ReceivedOrderModel receivedOrderModel = documentSnapshot.toObject(ReceivedOrderModel.class);
@@ -597,7 +861,20 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
                     }
                 });
 
-        Query query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated").startAt(dateStartVal).endAt(dateEndVal);
+        //Query query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated").startAt(dateStartVal).endAt(dateEndVal);
+        Query query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated");
+        if (!dateEndVal.isEmpty()){
+            query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated").endAt(dateEndVal);
+        }
+        if (!dateStartVal.isEmpty()){
+            query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated").startAt(dateStartVal);
+        }
+        if (!dateStartVal.isEmpty()&&!dateEndVal.isEmpty()){
+            query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated").startAt(dateStartVal).endAt(dateEndVal);
+        }
+        if (dateStartVal.isEmpty()&&dateEndVal.isEmpty()){
+            query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated");
+        }
         query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -605,16 +882,19 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
                 if (snapshot.exists()){
                     for (DataSnapshot item : snapshot.getChildren()) {
                         if (!rouidVal.isEmpty()){
-                            if (Objects.requireNonNull(item.child("giRoUID").getValue()).toString().equals(rouidVal) &&
+
+                            if (Objects.requireNonNull(item.child("giPoCustNumber").getValue()).toString().contains(pouidVal) &&
                                     !pouidVal.equals("-")) {
-                                if (Objects.equals(item.child("giStatus").getValue(), true)) {
-                                    if (Objects.equals(item.child("giInvoiced").getValue(), false)) {
-                                        GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
-                                        goodIssueModelArrayList.add(goodIssueModel);
-                                        fabCreateGiRecap.show();
-                                        nestedScrollView.setVisibility(View.VISIBLE);
-                                        llNoData.setVisibility(View.GONE);
-                                    }
+                                if (Objects.equals(item.child("giStatus").getValue(), true) &&
+                                        Objects.equals(item.child("giCashedOut").getValue(), true) &&
+                                        Objects.equals(item.child("giInvoiced").getValue(), false) &&
+                                        Objects.equals(item.child("giRecapped").getValue(), false)) {
+
+                                    GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
+                                    goodIssueModelArrayList.add(goodIssueModel);
+                                    fabCreateGiRecap.show();
+                                    nestedScrollView.setVisibility(View.VISIBLE);
+                                    llNoData.setVisibility(View.GONE);
                                 }
                             }
 
@@ -660,19 +940,9 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
 
     private void showHideFilterComponents(Boolean expandStatus) {
         if (expandStatus){
-            if (firstViewData.getId()==R.id.ll_wrap_filter_by_date_range){
-                llWrapFilterByRouid.setVisibility(View.GONE);
-            }
-            if (firstViewData.getId()==R.id.ll_wrap_filter_by_rouid){
-                llWrapFilterByDateRange.setVisibility(View.GONE);
-            }
+            llWrapFilter.setVisibility(View.GONE);
         } else {
-            if (firstViewData.getId()==R.id.ll_wrap_filter_by_date_range){
-                llWrapFilterByRouid.setVisibility(View.VISIBLE);
-            }
-            if (firstViewData.getId()==R.id.ll_wrap_filter_by_rouid){
-                llWrapFilterByDateRange.setVisibility(View.VISIBLE);
-            }
+            llWrapFilter.setVisibility(View.VISIBLE);
         }
     }
 

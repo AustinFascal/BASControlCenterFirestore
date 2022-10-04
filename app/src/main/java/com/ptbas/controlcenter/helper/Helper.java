@@ -34,6 +34,36 @@ public class Helper {
         File dir = new File(Environment.getExternalStorageDirectory()
                 +File.separator
                 +"BASCC"
+                +File.separator
+                +"Rekap Good Issue"
+                +File.separator);
+
+        if (!dir.exists()){
+            dir.mkdir();
+        }
+        return dir.getPath() + File.separator;
+    }
+
+    public static String getAppPathInvoice(Context context) {
+        File dir = new File(Environment.getExternalStorageDirectory()
+                +File.separator
+                +"BASCC"
+                +File.separator
+                +"Invoice"
+                +File.separator);
+
+        if (!dir.exists()){
+            dir.mkdir();
+        }
+        return dir.getPath() + File.separator;
+    }
+
+    public static String getAppPathCashOut(Context context) {
+        File dir = new File(Environment.getExternalStorageDirectory()
+                +File.separator
+                +"BASCC"
+                +File.separator
+                +"Cash Out"
                 +File.separator);
 
         if (!dir.exists()){

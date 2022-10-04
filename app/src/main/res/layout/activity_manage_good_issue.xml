@@ -18,6 +18,8 @@
             app:cardCornerRadius="8dp"
             app:cardElevation="8dp"
             android:visibility="visible"
+            android:outlineSpotShadowColor="?colorAccent"
+            android:outlineAmbientShadowColor="?colorAccent"
             app:cardPreventCornerOverlap="false">
 
             <LinearLayout
@@ -44,7 +46,7 @@
                         android:layout_width="24dp"
                         android:layout_height="match_parent"
                         android:src="@drawable/ic_outline_drag_indicator"
-                        app:tint="@color/light_grey" />
+                        app:tint="?colorAccent" />
 
                     <com.google.android.material.textfield.TextInputLayout
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
@@ -193,11 +195,12 @@
                                     android:layout_height="wrap_content"
                                     app:singleLine="true"
                                     app:singleSelection="true"
-                                    app:chipSpacingHorizontal="8dp">
+                                    app:chipSpacingHorizontal="6dp">
                                     <com.google.android.material.chip.Chip
                                         android:id="@+id/chip_filter_all"
                                         style="@style/Widget.MaterialComponents.Chip.Choice"
                                         android:checked="true"
+                                        android:textSize="13sp"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:text="SEMUA"/>
@@ -206,36 +209,73 @@
                                         style="@style/Widget.MaterialComponents.Chip.Choice"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
+                                        android:textSize="13sp"
                                         android:text="VALID"/>
                                     <com.google.android.material.chip.Chip
                                         android:id="@+id/chip_filter_status_invalid"
                                         style="@style/Widget.MaterialComponents.Chip.Choice"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
+                                        android:textSize="13sp"
                                         android:text="BELUM VALID"/>
+                                    <com.google.android.material.chip.Chip
+                                        android:id="@+id/chip_filter_status_cash_out"
+                                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:textSize="13sp"
+                                        android:text="SUDAH DIAJUKAN"/>
+                                    <com.google.android.material.chip.Chip
+                                        android:id="@+id/chip_filter_status_not_yet_cash_out"
+                                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:textSize="13sp"
+                                        android:text="BELUM DIAJUKAN"/>
+
+                                    <com.google.android.material.chip.Chip
+                                        android:id="@+id/chip_filter_status_recapped"
+                                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:textSize="13sp"
+                                        android:text="SUDAH DIREKAP"/>
+                                    <com.google.android.material.chip.Chip
+                                        android:id="@+id/chip_filter_status_not_yet_recapped"
+                                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:textSize="13sp"
+                                        android:text="BELUM DIREKAP"/>
+
                                     <com.google.android.material.chip.Chip
                                         android:id="@+id/chip_filter_status_invoiced"
                                         style="@style/Widget.MaterialComponents.Chip.Choice"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
+                                        android:textSize="13sp"
                                         android:text="SUDAH DITAGIHKAN"/>
                                     <com.google.android.material.chip.Chip
                                         android:id="@+id/chip_filter_status_not_yet_invoiced"
                                         style="@style/Widget.MaterialComponents.Chip.Choice"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
+                                        android:textSize="13sp"
                                         android:text="BELUM DITAGIHKAN"/>
+
                                     <com.google.android.material.chip.Chip
                                         android:id="@+id/chip_filter_status_transport_type_curah"
                                         style="@style/Widget.MaterialComponents.Chip.Choice"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
+                                        android:textSize="13sp"
                                         android:text="CURAH"/>
                                     <com.google.android.material.chip.Chip
                                         android:id="@+id/chip_filter_status_transport_type_borong"
                                         style="@style/Widget.MaterialComponents.Chip.Choice"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
+                                        android:textSize="13sp"
                                         android:text="BORONG"/>
 
                                 </com.google.android.material.chip.ChipGroup>
@@ -365,7 +405,7 @@
             android:scrollbars="vertical">
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_good_issue_list"
+                android:id="@+id/rvItemList"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingTop="10dp"
@@ -481,7 +521,7 @@
                 app:fab_colorNormal="@color/white"
                 app:fab_colorPressed="@color/light_grey"
                 app:fab_icon="@drawable/ic_recap_data"
-                app:fab_title="Buat Rekap Data Valid" />
+                app:fab_title="Buat Rekap Untuk Ditagihkan" />
 
             <com.getbase.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fab_action_create_ro"

@@ -58,9 +58,10 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
     String monthStrVal, dayStrVal;
     Integer giYear = 0, giMonth = 0, giDay = 0;
 
-    TextView tvHeightCorrection, tvVhlVolume, tvGiCreatedBy, tvGiModifiedBy, tvGiCashedOutStatus, tvGiInvoicedStatus;
+    TextView tvHeightCorrection, tvVhlVolume;
     TextInputEditText edtGiDate, edtGiTime, edtPoNumberCust, edtVhlLength, edtVhlWidth, edtVhlHeight,
             edtHeightCorrection, edtGiNoteNumber, spinnerRoNumber, spinnerMatName, spinnerMatType;
+    TextInputEditText edtCreatedBy, edtApprovedBy, edtRequestedToCo, edtInvoicedTo;
     AutoCompleteTextView spinnerVhlUID;
 
     //LinearLayout llHeightCorrectionFeature;
@@ -79,9 +80,9 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
     //Helper helper = new Helper();
     List<String> vhlUIDList, matNameList, matTypeNameList, receiveOrderNumberList;
 
-    String giUIDVal, giCreatedBy, giVerifiedBy;
+    String giUIDVal, giCreatedBy, giVerifiedBy, giCashedOutTo;
 
-    Boolean giStatus, giInvoiced, giCashedOut;
+    Boolean giStatus, giRecapped, giInvoiced, giCashedOut;
 
     public FirebaseAuth authProfile;
 
@@ -132,17 +133,16 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
         edtVhlLength = findViewById(R.id.edt_vhl_length);
         edtVhlWidth = findViewById(R.id.edt_vhl_width);
         edtVhlHeight = findViewById(R.id.edt_vhl_height);
+
+        edtCreatedBy = findViewById(R.id.edtCreatedBy);
+        edtApprovedBy = findViewById(R.id.edtApprovedBy);
+        edtRequestedToCo = findViewById(R.id.edtRequestedToCo);
+        edtInvoicedTo = findViewById(R.id.edtInvoicedTo);
+
         radioGroupOperation = findViewById(R.id.radio_group_operation);
         edtHeightCorrection = findViewById(R.id.edt_vhl_height_correction);
         tvHeightCorrection = findViewById(R.id.tv_vhl_height_correction);
         tvVhlVolume = findViewById(R.id.tv_vhl_volume);
-
-
-        tvGiCreatedBy = findViewById(R.id.tv_gi_created_by);
-        tvGiModifiedBy = findViewById(R.id.tv_gi_modified_by);
-        tvGiInvoicedStatus = findViewById(R.id.tv_gi_invoiced_status);
-        tvGiCashedOutStatus = findViewById(R.id.tv_gi_cashed_out_tatus);
-
 
         fabSaveGIData = findViewById(R.id.fab_save_gi_data);
 
@@ -183,17 +183,29 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
                         giInvoiced = goodIssueModel.getGiInvoiced();
                         giCashedOut = goodIssueModel.getGiCashedOut();
 
+
                         db.collection("ReceivedOrderData").whereEqualTo("roUID", roNumber).get()
                                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                                     @Override
                                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                                         for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots){
                                             ReceivedOrderModel receivedOrderModel = documentSnapshot.toObject(ReceivedOrderModel.class);
-                                            //receivedOrderModel.setRoDocumentID(documentSnapshot.getId());
-
-                                            //String documentID = receivedOrderModel.getRoDocumentID();
-
                                             edtPoNumberCust.setText(receivedOrderModel.getRoPoCustNumber());
+                                        }
+                                    }
+                                });
+
+                        db.collection("CashOutData").whereEqualTo("coDocumentID", snapshot.child("giCashedOutTo").getValue(String.class)).get()
+                                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                        for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots){
+                                            ReceivedOrderModel receivedOrderModel = documentSnapshot.toObject(ReceivedOrderModel.class);
+
+                                            if (giCashedOut.equals(true)){
+                                                edtRequestedToCo.setText(documentSnapshot.get("coUID", String.class));
+                                                fabSaveFormIsEmpty();
+                                            }
                                         }
                                     }
                                 });
@@ -203,14 +215,14 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
                         referenceProfile.addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                tvGiCreatedBy.setText("Dibuat oleh: "+snapshot.child(giCreatedBy).child("fullName").getValue(String.class));
+                                edtCreatedBy.setText(snapshot.child(giCreatedBy).child("fullName").getValue(String.class));
 
                                 if (giVerifiedBy != null){
-                                    tvGiModifiedBy.setText("Disetujui oleh: "+snapshot.child(giVerifiedBy).child("fullName").getValue(String.class));
+                                    edtApprovedBy.setText(snapshot.child(giVerifiedBy).child("fullName").getValue(String.class));
                                 }
 
                                 if (Objects.equals(giVerifiedBy, "") || giVerifiedBy == null || giVerifiedBy.isEmpty()) {
-                                    tvGiModifiedBy.setText("Disetujui oleh: BELUM DISETUJUI");
+                                    edtApprovedBy.setText("BELUM DISETUJUI");
                                 }
                             }
 
@@ -220,21 +232,23 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
                             }
                         });
 
+
                         if (giInvoiced.equals(true)){
-                            tvGiInvoicedStatus.setText("Status Ditagihkan ke Customer: SUDAH");
+                            //TODO get invoice UID
+                            edtInvoicedTo.setText("SUDAH DITAGIHKAN");
+                            //tvGiInvoicedStatus.setText("Status Ditagihkan ke Customer: SUDAH");
                             fabSaveFormIsEmpty();
                         } else{
-                            tvGiInvoicedStatus.setText("Status Ditagihkan ke Customer: BELUM");
+                            edtInvoicedTo.setText("BELUM DITAGIHKAN");
+                            //tvGiInvoicedStatus.setText("Status Ditagihkan ke Customer: BELUM");
                             fabSaveBtnFormIsNotEmpty();
                         }
 
-                        if (giCashedOut.equals(true)){
-                            tvGiCashedOutStatus.setText("Status Pengajuan: SUDAH");
-                            fabSaveFormIsEmpty();
-                        } else{
-                            tvGiCashedOutStatus.setText("Status Pengajuan: BELUM");
+                        if (giCashedOut.equals(false)){
+                            edtRequestedToCo.setText("BELUM DIAJUKAN");
                             fabSaveBtnFormIsNotEmpty();
                         }
+
                         edtGiNoteNumber.setText(giNoteNumber);
                         edtGiDate.setText(giDateCreated);
                         edtGiTime.setText(giTimeCreated);
@@ -562,7 +576,7 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
                         Integer.parseInt(radioOperation+giHeightCorrection.replaceAll("[^0-9]", "")),
                         Integer.parseInt(tvHeightCorrection.getText().toString().replaceAll("[^0-9]", "")),
                         Float.parseFloat(df.format(Float.parseFloat(giVhlCubication.replaceAll("[^0-9.]", "")))),
-                        giStatus, giInvoiced, giCashedOut);
+                        giStatus, giRecapped, giInvoiced, giCashedOut);
             }
 
         });
@@ -572,7 +586,7 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
                             String vhlUID, String giDateCreated, String giTimeCreted,
                             int vhlLength, int vhlWidth, int vhlHeight,
                             int vhlHeightCorrection, int vhlHeightAfterCorrection,
-                            float giVhlCubication, Boolean giStatus, Boolean giInvoiced, Boolean giCashedOut) {
+                            float giVhlCubication, Boolean giStatus, Boolean giRecapped, Boolean giInvoiced, Boolean giCashedOut) {
         VehicleModel vehicleModel =
                 new VehicleModel(vhlUID, true, vhlLength, vhlWidth, vhlHeight,
                         "", "", "", "");
@@ -593,7 +607,7 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
 
         GoodIssueModel goodIssueModel = new GoodIssueModel(giUID, giCreatedBy, giVerifiedBy, roNumber, poNumber,
                 matName, matType, giNoteNumber, vhlUID, giDateCreated, giTimeCreted, vhlLength,
-                vhlWidth, vhlHeight, vhlHeightCorrection, vhlHeightAfterCorrection, giVhlCubication, giStatus, giInvoiced, giCashedOut);
+                vhlWidth, vhlHeight, vhlHeightCorrection, vhlHeightAfterCorrection, giVhlCubication, giStatus, giRecapped, giInvoiced, giCashedOut);
         DatabaseReference refGI = FirebaseDatabase.getInstance().getReference("GoodIssueData");
         refGI.child(giUID).setValue(goodIssueModel).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {

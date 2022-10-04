@@ -44,8 +44,8 @@ class MainActivity : AppCompatActivity() {
         next = findViewById(R.id.next)
 
         val onBoardingData: MutableList<OnBoardingData> = ArrayList()
-        onBoardingData.add(OnBoardingData("All-in-One Place", "Aplikasi pusat kontrol manajemen PT Bintang Andalan Semesta", R.drawable.img_desc1))
-        onBoardingData.add(OnBoardingData("Easy Management", "Temukan berbagai fitur untuk memudahkan manajemen aktivitas transaksi", R.drawable.img_desc2))
+        onBoardingData.add(OnBoardingData("All-in-One Place", "Aplikasi pusat kontrol manajemen PT Bintang Andalan Sejahtera", R.drawable.img_desc1))
+        onBoardingData.add(OnBoardingData("Easy Management", "Temukan berbagai fitur untuk memudahkan manajemen aktivitas operasional", R.drawable.img_desc2))
         onBoardingData.add(OnBoardingData("Seamless and Responsive", "Akses aplikasi melalui berbagai macam perangkat secara responsif", R.drawable.img_desc3))
 
         setOnBoardingViewPagerAdapter(onBoardingData)

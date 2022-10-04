@@ -62,7 +62,7 @@ public class CustomerManagementAdapter extends RecyclerView.Adapter<CustomerMana
             tvCustUID = itemView.findViewById(R.id.tvCustUID);
             tvCustName = itemView.findViewById(R.id.tvCustName);
             tvCustPhone = itemView.findViewById(R.id.tvCustPhone);
-            btn1 = itemView.findViewById(R.id.btn1);
+            btn1 = itemView.findViewById(R.id.btnDeleteItem);
         }
 
         public void viewBind(CustomerModel customerModel) {

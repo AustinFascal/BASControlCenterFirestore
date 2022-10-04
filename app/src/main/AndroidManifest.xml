@@ -68,13 +68,16 @@
             android:name=".management.ManageReceivedOrderActivity"
             android:exported="false" />
         <activity
+            android:name=".management.ManageSupplierActivity"
+            android:exported="false" />
+        <activity
             android:name=".management.ManageVehicleActivity"
             android:exported="false" />
         <activity
             android:name=".management.ManageUserActivity"
             android:exported="false" />
         <activity
-            android:name=".create.AddCashOutRequestActivity"
+            android:name=".create.AddCashOutActivity"
             android:exported="false"
             android:noHistory="true" />
         <activity
@@ -100,6 +103,13 @@
             android:exported="false" />
         <activity
             android:name=".update.UpdateGoodIssueActivity"
+            android:exported="false" />
+        <activity
+            android:name=".update.UpdateCashOutActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".update.UpdateInvoiceActivity"
             android:exported="false" />
         <activity
             android:name=".create.AddVehicleActivity"

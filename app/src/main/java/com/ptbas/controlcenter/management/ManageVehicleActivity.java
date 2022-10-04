@@ -46,7 +46,7 @@ public class ManageVehicleActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_vehicle_management);
+        setContentView(R.layout.activity_manage_vehicle);
 
         context = this;
 
@@ -55,7 +55,7 @@ public class ManageVehicleActivity extends AppCompatActivity {
         // ACTION BAR FOR STANDARD ACTIVITY
         assert actionBar != null;
         helper.handleActionBarConfigForStandardActivity(
-                this, actionBar, "Manajemen Armada");
+                this, actionBar, "Data Armada");
 
         // SYSTEM UI MODE FOR STANDARD ACTIVITY
         helper.handleUIModeForStandardActivity(this, actionBar);

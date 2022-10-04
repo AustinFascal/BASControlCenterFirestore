@@ -7,7 +7,7 @@
     app:cardElevation="2dp"
     android:layout_marginHorizontal="8dp"
     android:layout_marginVertical="4dp"
-    android:id="@+id/cardView"
+    android:id="@+id/cdvItem"
     app:cardPreventCornerOverlap="false">
 
     <LinearLayout
@@ -29,17 +29,69 @@
                 android:layout_marginEnd="12dp"
                 android:layout_toStartOf="@+id/cbSelectItem"
                 android:orientation="vertical">
+                <LinearLayout
+                    android:visibility="visible"
+                    android:id="@+id/llWrapItemStatus"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    android:orientation="horizontal"
+                    android:paddingVertical="4dp">
+
+                    <LinearLayout
+                        android:visibility="gone"
+                        android:id="@+id/llStatusApproved"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginEnd="4dp"
+                        android:background="@drawable/pill_green"
+                        android:padding="3dp">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:src="@drawable/ic_outline_verified"/>
+
+                    </LinearLayout>
+
+
+
+                    <LinearLayout
+                        android:visibility="gone"
+                        android:id="@+id/llStatusArchived"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginEnd="4dp"
+                        android:background="@drawable/pill_green"
+                        android:padding="3dp">
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:src="@drawable/ic_outline_archive"/>
+
+                        <!--<TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="ARCHIVED"
+                            android:textAlignment="center"
+                            android:textSize="11sp"
+                            android:textStyle="bold" />-->
+                    </LinearLayout>
+
+                </LinearLayout>
 
                 <TextView
-                    android:id="@+id/tv_inv_date_created"
+                    android:id="@+id/tvDateCreated"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
                     android:maxLines="1"
-                    android:text="12/12/2022" />
+                    android:text="12/12/2022 | TOP: 14 Hari" />
+
+
 
                 <TextView
-                    android:id="@+id/tv_ro_uid"
+                    android:id="@+id/tvCoTotal"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
@@ -56,6 +108,32 @@
                     android:maxLines="1"
                     android:text="Nomor PO Customer"
                     android:textSize="14sp" />
+                <TextView
+                    android:id="@+id/tvCustName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:text="Nama Customer"
+                    android:textSize="14sp" />
+                <TextView
+                    android:id="@+id/tvRoTypeAndMatName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:text="JASA ANGKUT+MATERIAL | BATU BOULDER"
+                    android:textSize="14sp" />
+                <TextView
+                    android:id="@+id/tvRoMatSellPriceCubicAndTaxType"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:text="Harga Jual | 50000 m3 | PPN"
+                    android:textSize="14sp" />
+
+
 
 
                 <LinearLayout
@@ -66,23 +144,6 @@
                     android:orientation="horizontal"
                     android:paddingVertical="4dp">
 
-                    <LinearLayout
-                        android:id="@+id/ll_status_approved"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="4dp"
-                        android:background="@drawable/pill_green"
-                        android:paddingHorizontal="8dp"
-                        android:paddingVertical="2dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="VALID"
-                            android:textColor="@color/dark_green"
-                            android:textSize="11sp"
-                            android:textStyle="bold" />
-                    </LinearLayout>
 
                     <LinearLayout
                         android:id="@+id/ll_status_po_unvailable"
@@ -123,7 +184,7 @@
             android:orientation="horizontal">
 
             <RelativeLayout
-                android:id="@+id/btn_delete_inv"
+                android:id="@+id/rlBtnDeleteItem"
                 android:layout_weight="1"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -134,14 +195,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:src="@drawable/ic_outline_delete_forever"
-                    android:layout_alignStart="@+id/btn1"
-                    android:layout_alignEnd="@+id/btn1"
-                    android:layout_alignTop="@+id/btn1"
-                    android:layout_alignBottom="@+id/btn1"
+                    android:layout_alignStart="@+id/btnDeleteItem"
+                    android:layout_alignEnd="@+id/btnDeleteItem"
+                    android:layout_alignTop="@+id/btnDeleteItem"
+                    android:layout_alignBottom="@+id/btnDeleteItem"
                     app:tint="?colorPrimary" />
 
                 <Button
-                    android:id="@+id/btn1"
+                    android:id="@+id/btnDeleteItem"
                     style="@style/MaterialDialog.NegativeButton"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
@@ -161,7 +222,7 @@
 
 
             <RelativeLayout
-                android:id="@+id/btnShowDetail"
+                android:id="@+id/rlBtnOpenItemDetail"
                 android:layout_weight="1"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -172,14 +233,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:src="@drawable/ic_outline_info"
-                    android:layout_alignStart="@+id/btn3"
-                    android:layout_alignEnd="@+id/btn3"
-                    android:layout_alignTop="@+id/btn3"
-                    android:layout_alignBottom="@+id/btn3"
+                    android:layout_alignStart="@+id/btnOpenItemDetail"
+                    android:layout_alignEnd="@+id/btnOpenItemDetail"
+                    android:layout_alignTop="@+id/btnOpenItemDetail"
+                    android:layout_alignBottom="@+id/btnOpenItemDetail"
                     app:tint="?colorPrimary"/>
 
                 <Button
-                    android:id="@+id/btn3"
+                    android:id="@+id/btnOpenItemDetail"
                     style="@style/MaterialDialog.NegativeButton"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
@@ -197,14 +258,14 @@
             </RelativeLayout>
 
             <RelativeLayout
-                android:id="@+id/btn_approve_inv"
+                android:id="@+id/rlBtnApproveItem"
                 android:layout_weight="1"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center">
 
                 <Button
-                    android:id="@+id/btn2"
+                    android:id="@+id/btnApproveItem"
                     style="@style/MaterialDialog.PositiveButton"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
@@ -222,10 +283,10 @@
                 <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_alignStart="@+id/btn2"
-                    android:layout_alignTop="@+id/btn2"
-                    android:layout_alignEnd="@+id/btn2"
-                    android:layout_alignBottom="@+id/btn2"
+                    android:layout_alignStart="@+id/btnApproveItem"
+                    android:layout_alignTop="@+id/btnApproveItem"
+                    android:layout_alignEnd="@+id/btnApproveItem"
+                    android:layout_alignBottom="@+id/btnApproveItem"
                     android:scaleType="center"
                     android:src="@drawable/ic_outline_verified"
                     app:tint="@color/white" />

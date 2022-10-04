@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".create.AddCashOutRequestActivity">
+    tools:context=".create.AddCashOutActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -20,6 +20,8 @@
             android:visibility="visible"
             app:cardCornerRadius="8dp"
             app:cardElevation="8dp"
+            android:outlineSpotShadowColor="?colorAccent"
+            android:outlineAmbientShadowColor="?colorAccent"
             app:cardPreventCornerOverlap="false">
 
             <LinearLayout
@@ -365,7 +367,7 @@
             android:visibility="visible">
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_good_issue_list"
+                android:id="@+id/rvItemList"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:paddingTop="10dp"

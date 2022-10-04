@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="choosePrint">
+        <item>Cash Out</item>
+        <item>Data Rekap</item>
+    </string-array>
+</resources>

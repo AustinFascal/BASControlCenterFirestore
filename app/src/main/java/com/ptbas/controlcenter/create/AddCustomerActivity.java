@@ -4,10 +4,15 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.text.InputFilter;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -16,6 +21,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -35,6 +41,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
+
+import dev.shreyaspatil.MaterialDialog.MaterialDialog;
 
 public class AddCustomerActivity extends AppCompatActivity {
 
@@ -173,10 +181,10 @@ public class AddCustomerActivity extends AppCompatActivity {
                 edtCustomerAddress.requestFocus();
             }
 
-            if (TextUtils.isEmpty(custNPWP)) {
+            /*if (TextUtils.isEmpty(custNPWP)) {
                 edtCustomerNpwp.setError("Mohon masukkan NPWP customer");
                 edtCustomerNpwp.requestFocus();
-            }
+            }*/
 
             if (TextUtils.isEmpty(custPhone)){
                 custPhone = "-";
@@ -184,7 +192,7 @@ public class AddCustomerActivity extends AppCompatActivity {
                 custPhone = Objects.requireNonNull(edtCustomerPhone.getText()).toString();
             }
 
-            if (!TextUtils.isEmpty(custType)&&!TextUtils.isEmpty(custName)&&!TextUtils.isEmpty(custAddress)&&!TextUtils.isEmpty(custNPWP)){
+            if (!TextUtils.isEmpty(custType)&&!TextUtils.isEmpty(custName)&&!TextUtils.isEmpty(custAddress)){
                 insertData(custType, custName, custAlias, custAddress, custNPWP, custPhone);
             }
 
@@ -212,7 +220,32 @@ public class AddCustomerActivity extends AppCompatActivity {
 
         refCust.set(customerModel)
                 .addOnSuccessListener(unused -> {
-                    dialogInterface.savedInformationFromManagement(AddCustomerActivity.this);
+                    Vibrator vibrator = (Vibrator) this.getSystemService(Context.VIBRATOR_SERVICE);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        vibrator.vibrate(VibrationEffect.createOneShot(100,
+                                VibrationEffect.DEFAULT_AMPLITUDE));
+                    } else {
+                        vibrator.vibrate(100);
+                    }
+
+                    MaterialDialog mBottomSheetDialog = new MaterialDialog.Builder(this)
+                            .setTitle("Sukses!")
+                            .setAnimation(R.raw.lottie_success_2)
+                            .setMessage("Berhasil menambahkan data. Mau menambah data lagi?")
+                            .setCancelable(false)
+                            .setPositiveButton("TAMBAH LAGI", R.drawable.ic_outline_add, (dialogInterface, which) -> {
+                                Intent intent = new Intent(this, AddCustomerActivity.class);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                                this.startActivity(intent);
+                            })
+                            .setNegativeButton("SELESAI", R.drawable.ic_outline_close, (dialogInterface, which) -> {
+                                dialogInterface.dismiss();
+                                finish();
+                            })
+                            .build();
+
+                    mBottomSheetDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
+                    mBottomSheetDialog.show();
                 }).addOnFailureListener(e ->
                         Toast.makeText(AddCustomerActivity.this, "FAILED", Toast.LENGTH_SHORT).show());
 

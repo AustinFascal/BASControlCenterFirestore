@@ -1,11 +1,15 @@
 package com.ptbas.controlcenter.management;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.InputType;
 import android.transition.AutoTransition;
 import android.transition.TransitionManager;
@@ -18,7 +22,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
@@ -32,15 +38,20 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.ptbas.controlcenter.R;
-import com.ptbas.controlcenter.adapter.CashOutRequestManagementAdapter;
+import com.ptbas.controlcenter.adapter.CashOutManagementAdapter;
+import com.ptbas.controlcenter.adapter.InvoiceManagementAdapter;
 import com.ptbas.controlcenter.create.AddInvoiceActivity;
 import com.ptbas.controlcenter.helper.DialogInterface;
 import com.ptbas.controlcenter.helper.DragLinearLayout;
@@ -53,6 +64,8 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+
+import dev.shreyaspatil.MaterialDialog.MaterialDialog;
 
 public class ManageInvoiceActivity extends AppCompatActivity {
 
@@ -81,12 +94,18 @@ public class ManageInvoiceActivity extends AppCompatActivity {
     Helper helper = new Helper();
     ArrayList<InvoiceModel> invoiceModelArrayList = new ArrayList<>();
 
-    CashOutRequestManagementAdapter invManagementAdapter;
+    InvoiceManagementAdapter invManagementAdapter;
 
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
     DialogInterface dialogInterface = new DialogInterface();
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+    LinearLayout llBottomSelectionOptions;
+    TextView tvTotalSelectedItem;
+    ImageButton btnExitSelection, btnDeleteSelected, btnSelectAll, btnVerifySelected;
+
+    CollectionReference refINV = db.collection("InvoiceData");
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -108,7 +127,7 @@ public class ManageInvoiceActivity extends AppCompatActivity {
         llWrapFilterByDateRange = findViewById(R.id.ll_wrap_filter_by_date_range);
         llNoData = findViewById(R.id.ll_no_data);
         ll_wrap_filter_chip_group = findViewById(R.id.ll_wrap_filter_chip_group);
-        rvInvoiceList = findViewById(R.id.rv_good_issue_list);
+        rvInvoiceList = findViewById(R.id.rvItemList);
         edtGiDateFilterStart = findViewById(R.id.edt_gi_date_filter_start);
         edtGiDateFilterEnd = findViewById(R.id.edt_gi_date_filter_end);
         btnGiSearchByDateReset = findViewById(R.id.btn_gi_search_date_reset);
@@ -123,6 +142,13 @@ public class ManageInvoiceActivity extends AppCompatActivity {
         chip_filter_status_transport_type_curah = findViewById(R.id.chip_filter_status_transport_type_curah);
         chip_filter_status_transport_type_borong = findViewById(R.id.chip_filter_status_transport_type_borong);
 
+        llBottomSelectionOptions = findViewById(R.id.llBottomSelectionOptions);
+        tvTotalSelectedItem = findViewById(R.id.tvTotalSelectedItem);
+        btnExitSelection = findViewById(R.id.btnExitSelection);
+        btnDeleteSelected = findViewById(R.id.btnDeleteSelected);
+        btnSelectAll = findViewById(R.id.btnSelectAll);
+        btnVerifySelected = findViewById(R.id.btnVerifySelected);
+
         TypedValue typedValue = new TypedValue();
         Resources.Theme theme = context.getTheme();
         theme.resolveAttribute(androidx.appcompat.R.attr.colorPrimary, typedValue, true);
@@ -136,7 +162,7 @@ public class ManageInvoiceActivity extends AppCompatActivity {
         // ACTION BAR FOR STANDARD ACTIVITY
         assert actionBar != null;
         helper.handleActionBarConfigForStandardActivity(
-                this, actionBar, "Manajemen Invoice");
+                this, actionBar, "Data Invoice");
 
         // SYSTEM UI MODE FOR STANDARD ACTIVITY
         helper.handleUIModeForStandardActivity(this, actionBar);
@@ -209,6 +235,7 @@ public class ManageInvoiceActivity extends AppCompatActivity {
 
                         btnGiSearchByDateReset.setVisibility(View.VISIBLE);
                     }, Integer.parseInt(yearStrVal), Integer.parseInt(monthStrVal), Integer.parseInt(dayStrVal));
+            datePicker.getDatePicker().setMaxDate(calendar.getTimeInMillis());
             datePicker.show();
         });
 
@@ -243,8 +270,149 @@ public class ManageInvoiceActivity extends AppCompatActivity {
                         btnGiSearchByDateReset.setVisibility(View.VISIBLE);
 
                     }, Integer.parseInt(yearStrVal), Integer.parseInt(monthStrVal), Integer.parseInt(dayStrVal));
+            datePicker.getDatePicker().setMaxDate(calendar.getTimeInMillis());
             datePicker.show();
         });
+
+        invManagementAdapter = new InvoiceManagementAdapter(this, invoiceModelArrayList);
+
+        btnSelectAll.setVisibility(View.GONE);
+
+        btnVerifySelected.setOnClickListener(view -> {
+            int size = invManagementAdapter.getSelected().size();
+            MaterialDialog md = new MaterialDialog.Builder((Activity) context)
+                    .setAnimation(R.raw.lottie_approval)
+                    .setTitle("Validasi Data Terpilih")
+                    .setMessage("Apakah Anda yakin ingin mengesahkan "+size+" data Invoice yang terpilih? Setelah disahkan, status tidak dapat dikembalikan.")
+                    .setPositiveButton("YA", R.drawable.ic_outline_check, (dialogInterface, which) -> {
+                        refINV.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                if (task.isSuccessful()){
+                                    for(DocumentSnapshot documentSnapshot : task.getResult()){
+                                        String getDocumentID = documentSnapshot.getId();
+                                        for (int i = 0; i < size; i++){
+                                            if (getDocumentID.equals(invManagementAdapter.getSelected().get(i).getInvDocumentID())){
+                                                db.collection("InvoiceData").document(invManagementAdapter.getSelected().get(i).getInvDocumentID()).update("invStatus", true);
+                                                db.collection("InvoiceData").document(invManagementAdapter.getSelected().get(i).getInvDocumentID()).update("invApprovedBy", helper.getUserId());
+                                                dialogInterface.dismiss();
+                                                //roManagementAdapter.clearSelection();
+                                            }
+                                        }
+
+                                    }
+                                }
+                            }
+                        });
+                    })
+                    .setNegativeButton("TIDAK", R.drawable.ic_outline_close, (dialogInterface, which) -> dialogInterface.dismiss())
+                    .setCancelable(true)
+                    .build();
+
+            md.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
+            md.show();
+        });
+
+
+        btnDeleteSelected.setOnClickListener(view -> {
+            int size = invManagementAdapter.getSelected().size();
+            MaterialDialog md = new MaterialDialog.Builder(ManageInvoiceActivity.this)
+                    .setTitle("Hapus Data Terpilih")
+                    .setAnimation(R.raw.lottie_delete)
+                    .setMessage("Apakah Anda yakin ingin menghapus "+size+" data Invoice yang terpilih? Setelah dihapus, data tidak dapat dikembalikan.")
+                    .setCancelable(true)
+                    .setPositiveButton("YA", R.drawable.ic_outline_check, (dialogInterface, which) -> {
+                        refINV.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                if (task.isSuccessful()){
+                                    for(DocumentSnapshot documentSnapshot : task.getResult()){
+                                        String getDocumentID = documentSnapshot.getId();
+                                        for (int i = 0; i < size; i++){
+                                            db.collection("InvoiceData").document(invManagementAdapter.getSelected().get(i).getInvDocumentID()).delete();
+                                            dialogInterface.dismiss();
+                                           /* if (getDocumentID.equals(roManagementAdapter.getSelected().get(i).getRoDocumentID())){
+
+                                                //roManagementAdapter.clearSelection();
+                                            }*/
+                                        }
+
+                                    }
+                                }
+                            }
+                        });
+                        /*dialogInterface.dismiss();
+                        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+                        for (int i = 0; i < cashOutManagementAdapter.getSelected().size(); i++) {
+                            //databaseReference.child("ReceivedOrderData").child(roManagementAdapter.getSelected().get(i).getGiUID()).removeValue();
+                        }*/
+
+                    })
+                    .setNegativeButton("TIDAK", R.drawable.ic_outline_close, (dialogInterface, which) -> dialogInterface.dismiss())
+                    .build();
+
+            md.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
+            md.show();
+        });
+
+
+        btnExitSelection.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                invManagementAdapter.clearSelection();
+
+                llBottomSelectionOptions.animate()
+                        .translationY(llBottomSelectionOptions.getHeight()).alpha(0.0f)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                super.onAnimationEnd(animation);
+                                llBottomSelectionOptions.setVisibility(View.GONE);
+                            }
+                        });
+            }
+        });
+
+        final Handler handler = new Handler();
+        Runnable runnable = new Runnable() {
+            public void run() {
+                int itemSelectedSize = invManagementAdapter.getSelected().size();
+                if (invManagementAdapter.getSelected().size()>0){
+
+                    fabExpandMenu.animate().translationY(800).setDuration(100).start();
+                    fabExpandMenu.collapse();
+
+                    tvTotalSelectedItem.setText(itemSelectedSize+" item terpilih");
+
+                    llBottomSelectionOptions.animate()
+                            .translationY(0).alpha(1.0f)
+                            .setDuration(100)
+                            .setListener(new AnimatorListenerAdapter() {
+                                @Override
+                                public void onAnimationStart(Animator animation) {
+                                    super.onAnimationStart(animation);
+                                    llBottomSelectionOptions.setVisibility(View.VISIBLE);
+                                }
+                            });
+
+                } else {
+                    fabExpandMenu.animate().translationY(0).setDuration(100).start();
+
+                    llBottomSelectionOptions.animate()
+                            .translationY(llBottomSelectionOptions.getHeight()).alpha(0.0f)
+                            .setListener(new AnimatorListenerAdapter() {
+                                @Override
+                                public void onAnimationEnd(Animator animation) {
+                                    super.onAnimationEnd(animation);
+                                    llBottomSelectionOptions.setVisibility(View.GONE);
+                                }
+                            });
+                }
+                handler.postDelayed(this, 100);
+            }
+        };
+        runnable.run();
     }
 
     private void showDataDefaultQuery() {
@@ -264,7 +432,7 @@ public class ManageInvoiceActivity extends AppCompatActivity {
                         nestedScrollView.setVisibility(View.GONE);
                     }
                     Collections.reverse(invoiceModelArrayList);
-                    invManagementAdapter = new CashOutRequestManagementAdapter(context, invoiceModelArrayList);
+                    invManagementAdapter = new InvoiceManagementAdapter(context, invoiceModelArrayList);
                     rvInvoiceList.setAdapter(invManagementAdapter);
                 });
     }

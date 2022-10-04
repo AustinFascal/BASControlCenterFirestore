@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardCornerRadius="6dp"
+    app:cardElevation="2dp"
+    android:layout_marginHorizontal="8dp"
+    android:layout_marginVertical="4dp"
+    android:id="@+id/cdvItem"
+    app:cardPreventCornerOverlap="false">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:paddingHorizontal="12dp"
+            android:paddingBottom="12dp"
+            android:paddingTop="12dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_marginEnd="12dp"
+                android:layout_toStartOf="@+id/cbSelectItem"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:id="@+id/llWrapItemStatus"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    android:orientation="horizontal"
+                    android:paddingVertical="4dp"
+                    android:visibility="visible">
+
+                    <LinearLayout
+                        android:id="@+id/llStatusApproved"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginEnd="4dp"
+                        android:background="@drawable/pill_green"
+                        android:padding="3dp"
+                        android:visibility="visible">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:src="@drawable/ic_outline_verified" />
+
+                    </LinearLayout>
+
+
+                    <LinearLayout
+                        android:id="@+id/llStatusPaid"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginEnd="4dp"
+                        android:background="@drawable/pill_green"
+                        android:padding="3dp"
+                        android:visibility="visible">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:src="@drawable/ic_outline_currency" />
+
+                        <!--<TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="ARCHIVED"
+                            android:textAlignment="center"
+                            android:textSize="11sp"
+                            android:textStyle="bold" />-->
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tvDateCreated"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:text="12/12/2022" />
+
+
+                <TextView
+                    android:id="@+id/tvTotalDue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:text="IDR 324,000"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvCoUID"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:text="Nomor CO"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/tvPoNumber"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:text="Nomor PO Customer"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/tvSupplierName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:text="Nama Supplier"
+                    android:textSize="14sp" />
+
+
+            </LinearLayout>
+
+            <CheckBox
+                android:id="@+id/cbSelectItem"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true" />
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:animateLayoutChanges="true"
+            android:orientation="horizontal"
+            android:visibility="visible">
+
+            <RelativeLayout
+                android:id="@+id/rlBtnDeleteItem"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center">
+
+
+                <Button
+                    android:id="@+id/btnDeleteItem"
+                    style="@style/MaterialDialog.NegativeButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginStart="0dp"
+                    android:layout_marginTop="0dp"
+                    android:layout_marginEnd="0dp"
+                    android:layout_marginBottom="0dp"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:tag="DeleteGI" />
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignStart="@+id/btnDeleteItem"
+                    android:layout_alignTop="@+id/btnDeleteItem"
+                    android:layout_alignEnd="@+id/btnDeleteItem"
+                    android:layout_alignBottom="@+id/btnDeleteItem"
+                    android:scaleType="center"
+                    android:src="@drawable/ic_outline_delete_forever"
+                    app:tint="?colorPrimary" />
+
+            </RelativeLayout>
+
+
+            <RelativeLayout
+                android:id="@+id/rlBtnOpenItemDetail"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center">
+
+
+                <Button
+                    android:id="@+id/btnOpenItemDetail"
+                    style="@style/MaterialDialog.NegativeButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginStart="0dp"
+                    android:layout_marginTop="0dp"
+                    android:layout_marginEnd="0dp"
+                    android:layout_marginBottom="0dp"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp" />
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignStart="@+id/btnOpenItemDetail"
+                    android:layout_alignTop="@+id/btnOpenItemDetail"
+                    android:layout_alignEnd="@+id/btnOpenItemDetail"
+                    android:layout_alignBottom="@+id/btnOpenItemDetail"
+                    android:scaleType="center"
+                    android:src="@drawable/ic_outline_info"
+                    app:tint="?colorPrimary" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/rlBtnPrintItem"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center">
+
+                <Button
+                    android:id="@+id/btnPrintItem"
+                    style="@style/MaterialDialog.NegativeButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginStart="0dp"
+                    android:layout_marginTop="0dp"
+                    android:layout_marginEnd="0dp"
+                    android:layout_marginBottom="0dp"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp" />
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignStart="@+id/btnPrintItem"
+                    android:layout_alignTop="@+id/btnPrintItem"
+                    android:layout_alignEnd="@+id/btnPrintItem"
+                    android:layout_alignBottom="@+id/btnPrintItem"
+                    android:scaleType="center"
+                    android:src="@drawable/ic_outline_print"
+                    app:tint="?colorPrimary" />
+
+            </RelativeLayout>
+            <RelativeLayout
+                android:id="@+id/rlBtnItemPaid"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center">
+
+                <Button
+                    android:id="@+id/btnItemPaid"
+                    style="@style/MaterialDialog.NegativeButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginStart="0dp"
+                    android:layout_marginTop="0dp"
+                    android:layout_marginEnd="0dp"
+                    android:layout_marginBottom="0dp"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp" />
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignStart="@+id/btnItemPaid"
+                    android:layout_alignTop="@+id/btnItemPaid"
+                    android:layout_alignEnd="@+id/btnItemPaid"
+                    android:layout_alignBottom="@+id/btnItemPaid"
+                    android:scaleType="center"
+                    android:src="@drawable/ic_outline_currency"
+                    app:tint="?colorPrimary" />
+
+            </RelativeLayout>
+            <RelativeLayout
+                android:id="@+id/rlBtnApproveItem"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center">
+
+                <Button
+                    android:id="@+id/btnApproveItem"
+                    style="@style/MaterialDialog.PositiveButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginStart="0dp"
+                    android:layout_marginTop="0dp"
+                    android:layout_marginEnd="0dp"
+                    android:layout_marginBottom="0dp"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp" />
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignStart="@+id/btnApproveItem"
+                    android:layout_alignTop="@+id/btnApproveItem"
+                    android:layout_alignEnd="@+id/btnApproveItem"
+                    android:layout_alignBottom="@+id/btnApproveItem"
+                    android:scaleType="center"
+                    android:src="@drawable/ic_outline_verified"
+                    app:tint="@color/white" />
+
+            </RelativeLayout>
+        </LinearLayout>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

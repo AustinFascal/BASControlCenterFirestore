@@ -11,7 +11,6 @@ import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
@@ -21,34 +20,22 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.ptbas.controlcenter.R;
-import com.ptbas.controlcenter.create.AddGoodIssueActivity;
 import com.ptbas.controlcenter.helper.DialogInterface;
 import com.ptbas.controlcenter.helper.Helper;
 import com.ptbas.controlcenter.model.GoodIssueModel;
-import com.ptbas.controlcenter.model.ProductItems;
 import com.ptbas.controlcenter.model.ReceivedOrderModel;
 import com.ptbas.controlcenter.update.UpdateGoodIssueActivity;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Objects;
 
 import dev.shreyaspatil.MaterialDialog.MaterialDialog;
@@ -93,7 +80,7 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
 
 
     public class ItemViewHolder extends RecyclerView.ViewHolder {
-        LinearLayout llStatusApproved, llStatusInvoiced, llCashedOutStatus, llStatusPOAvailable, llRoNeedsUpdate, llHiddenView, llWrapGiStatus;
+        LinearLayout llStatusApproved, llStatusRecapped, llStatusInvoiced, llCashedOutStatus, llStatusPOAvailable, llRoNeedsUpdate, llHiddenView, llWrapGiStatus;
         TextView tvCubication, tvGiDateTime, tvGiUid, tvRoUid, tvGiMatDetail, tvGiVhlDetail,
                 tvVhlUid, tvPoCustNumber, tvCustomerName;
         RelativeLayout btnDeleteGi, btnApproveGi;
@@ -104,18 +91,19 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
 
         public ItemViewHolder(@NonNull View itemView) {
             super(itemView);
-            cardView = itemView.findViewById(R.id.cardView);
+            cardView = itemView.findViewById(R.id.cdvItem);
             llHiddenView = itemView.findViewById(R.id.llHiddenView);
-            llWrapGiStatus = itemView.findViewById(R.id.llWrapGiStatus);
-            llStatusApproved = itemView.findViewById(R.id.ll_status_approved);
+            llWrapGiStatus = itemView.findViewById(R.id.llWrapItemStatus);
+            llStatusApproved = itemView.findViewById(R.id.llStatusApproved);
             llCashedOutStatus = itemView.findViewById(R.id.llCashedOutStatus);
+            llStatusRecapped = itemView.findViewById(R.id.llStatusRecapped);
             llStatusInvoiced = itemView.findViewById(R.id.ll_status_invoiced);
             llStatusPOAvailable = itemView.findViewById(R.id.ll_status_po_unvailable);
             llRoNeedsUpdate = itemView.findViewById(R.id.ll_ro_needs_update);
             tvCubication = itemView.findViewById(R.id.tv_cubication);
-            tvGiDateTime = itemView.findViewById(R.id.tv_inv_date_created);
+            tvGiDateTime = itemView.findViewById(R.id.tvDateCreated);
             tvGiUid = itemView.findViewById(R.id.tv_gi_uid);
-            tvRoUid = itemView.findViewById(R.id.tv_ro_uid);
+            tvRoUid = itemView.findViewById(R.id.tvCoTotal);
             tvPoCustNumber = itemView.findViewById(R.id.tv_po_cust_number);
             tvGiMatDetail = itemView.findViewById(R.id.tv_gi_mat_detail);
             tvGiVhlDetail = itemView.findViewById(R.id.tv_gi_vhl_detail);
@@ -123,9 +111,9 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
             tvCustomerName = itemView.findViewById(R.id.tvCustomerName);
             btnDeleteGi = itemView.findViewById(R.id.btn_delete_gi);
             btnApproveGi = itemView.findViewById(R.id.btn_approve_gi);
-            btn1 = itemView.findViewById(R.id.btn1);
-            btn2 = itemView.findViewById(R.id.btn2);
-            btn3 = itemView.findViewById(R.id.btn3);
+            btn1 = itemView.findViewById(R.id.btnDeleteItem);
+            btn2 = itemView.findViewById(R.id.btnApproveItem);
+            btn3 = itemView.findViewById(R.id.btnOpenItemDetail);
             cbSelectItem = itemView.findViewById(R.id.cbSelectItem);
 
 
@@ -139,6 +127,7 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
 
             if (Objects.equals(helper.ACTIVITY_NAME, "UPDATE")){
                 btnDeleteGi.setVisibility(View.GONE);
+                //cbSelectItem.setVisibility(View.GONE);
             }
 
             itemView.setOnClickListener(new View.OnClickListener() {
@@ -146,7 +135,7 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
                 public void onClick(View view) {
                     goodIssueModel.setChecked(!goodIssueModel.isChecked());
                     cbSelectItem.setChecked(goodIssueModel.isChecked());
-                                    }
+                }
             });
 
             cbSelectItem.setOnClickListener(new View.OnClickListener() {
@@ -157,12 +146,9 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
                 }
             });
 
-
-
-
             DecimalFormat df = new DecimalFormat("0.00");
             float cubication = goodIssueModel.getGiVhlCubication();
-            String dateNTime = goodIssueModel.getGiDateCreated()+" | "+goodIssueModel.getGiTimeCreted();
+            String dateNTime = goodIssueModel.getGiDateCreated()+" | "+goodIssueModel.getGiTimeCreted() + " WIB";
 
             String[] partGiUID = goodIssueModel.getGiUID().split("-");
             String giUID = partGiUID[0];
@@ -194,6 +180,7 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
             String vhlDetail = "(P) "+goodIssueModel.getVhlLength().toString()+" (L) "+goodIssueModel.getVhlWidth().toString()+" (T) "+goodIssueModel.getVhlHeight().toString()+" | "+"(K) "+goodIssueModel.getVhlHeightCorrection().toString()+" (TK) "+goodIssueModel.getVhlHeightAfterCorrection().toString();
             String vhlUID = goodIssueModel.getVhlUID();
             boolean giStatus = goodIssueModel.getGiStatus();
+            boolean giRecapped = goodIssueModel.getGiRecapped();
             boolean giInvoiced = goodIssueModel.getGiInvoiced();
             boolean giCashedOut = goodIssueModel.getGiCashedOut();
 
@@ -236,6 +223,12 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
                 llWrapGiStatus.setVisibility(View.GONE);
                 llStatusApproved.setVisibility(View.GONE);
                 btnApproveGi.setVisibility(View.VISIBLE);
+            }
+
+            if (giRecapped){
+                llStatusRecapped.setVisibility(View.VISIBLE);
+            } else {
+                llStatusRecapped.setVisibility(View.GONE);
             }
 
             if (giInvoiced){
@@ -343,7 +336,7 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
                 md.show();
             });
 
-                    //dialogInterface.deleteGiConfirmation(context, goodIssueModel.getGiUID()));
+            //dialogInterface.deleteGiConfirmation(context, goodIssueModel.getGiUID()));
 
 
 

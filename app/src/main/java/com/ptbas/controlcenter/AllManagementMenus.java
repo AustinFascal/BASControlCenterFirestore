@@ -88,22 +88,22 @@ public class AllManagementMenus extends AppCompatActivity {
         ArrayList<MainFeatureModel> holder = new ArrayList<>();
 
         MainFeatureModel mRO = new MainFeatureModel();
-        mRO.setHeader("Manajemen\nReceived Order");
+        mRO.setHeader("Data\nReceived Order");
         mRO.setImgName(R.drawable.ic_purchase_order);
         holder.add(mRO);
 
         MainFeatureModel mGI = new MainFeatureModel();
-        mGI.setHeader("Manajemen\nGood Issue");
+        mGI.setHeader("Data\nGood Issue");
         mGI.setImgName(R.drawable.ic_good_issue);
         holder.add(mGI);
 
         MainFeatureModel mCO = new MainFeatureModel();
-        mCO.setHeader("Manajemen\nCash Out");
+        mCO.setHeader("Data\nCash Out");
         mCO.setImgName(R.drawable.ic_bkk);
         holder.add(mCO);
 
         MainFeatureModel mInv = new MainFeatureModel();
-        mInv.setHeader("Manajemen\nInvoice");
+        mInv.setHeader("Data\nInvoice");
         mInv.setImgName(R.drawable.ic_invoice);
         holder.add(mInv);
 
@@ -115,36 +115,36 @@ public class AllManagementMenus extends AppCompatActivity {
         ArrayList<MainFeatureModel> holder = new ArrayList<>();
 
         MainFeatureModel mUsr = new MainFeatureModel();
-        mUsr.setHeader("Manajemen\nPengguna");
+        mUsr.setHeader("Data\nPengguna");
         mUsr.setImgName(R.drawable.ic_manage_user);
 
         MainFeatureModel mMat = new MainFeatureModel();
-        mMat.setHeader("Manajemen\nMaterial");
+        mMat.setHeader("Data\nMaterial");
         mMat.setImgName(R.drawable.ic_material);
 
         MainFeatureModel mSup = new MainFeatureModel();
-        mSup.setHeader("Manajemen\nSupplier");
-        mSup.setImgName(R.drawable.ic_manage_customers);
+        mSup.setHeader("Data\nSupplier");
+        mSup.setImgName(R.drawable.ic_supplier);
 
         MainFeatureModel mCust = new MainFeatureModel();
-        mCust.setHeader("Manajemen\nCustomer");
+        mCust.setHeader("Data\nCustomer");
         mCust.setImgName(R.drawable.ic_manage_customers);
 
         MainFeatureModel mVhl = new MainFeatureModel();
-        mVhl.setHeader("Manajemen\nArmada");
+        mVhl.setHeader("Data\nArmada");
         mVhl.setImgName(R.drawable.ic_manage_vehicle);
 
         MainFeatureModel mBank = new MainFeatureModel();
-        mBank.setHeader("Manajemen\nBank");
+        mBank.setHeader("Data\nBank");
         mBank.setImgName(R.drawable.ic_bank);
 
         MainFeatureModel mBankAccount = new MainFeatureModel();
-        mBankAccount.setHeader("Manajemen\nRekening Bank");
+        mBankAccount.setHeader("Data\nRekening Bank");
         mBankAccount.setImgName(R.drawable.ic_bank_account);
 
         MainFeatureModel mCurrency = new MainFeatureModel();
-        mCurrency.setHeader("Manajemen\nMata Uang");
-        mCurrency.setImgName(R.drawable.ic_bank_account);
+        mCurrency.setHeader("Data\nMata Uang");
+        mCurrency.setImgName(R.drawable.ic_currency);
 
         holder.add(mUsr);
         holder.add(mMat);

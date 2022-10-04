@@ -6,9 +6,9 @@ import java.util.Map;
 
 public class ReceivedOrderModel {
 
-    String roDocumentID, roUID, roCreatedBy, roDateCreated, roTOP, roMatType, roCurrency, roPoCustNumber,
-            roCustName;
-    Integer roType;
+    String roDocumentID, roUID, roCreatedBy, roDateCreated, roMatType, roCurrency, roPoCustNumber,
+            custDocumentID;
+    Integer roType, roTOP;
     Double roSubTotalBuy, roSubTotalSell, roVATPPN, roTotalSellFinal, roEstProfit;
     Boolean roStatus;
     HashMap<String, List<ProductItems>> roOrderedItems;
@@ -18,9 +18,9 @@ public class ReceivedOrderModel {
     public ReceivedOrderModel() {
     }
 
-    public ReceivedOrderModel(String roDocumentID, String roUID, String roCreatedBy, String roDateCreated, String roTOP,
+    public ReceivedOrderModel(String roDocumentID, String roUID, String roCreatedBy, String roDateCreated, Integer roTOP,
                               String roMatType, String roCurrency, String roPoCustNumber,
-                              String roCustName, Integer roType, Double roSubTotalBuy, Double roSubTotalSell,
+                              String custDocumentID, Integer roType, Double roSubTotalBuy, Double roSubTotalSell,
                               Double roVATPPN, Double roTotalSellFinal, Double roEstProfit,
                               Boolean roStatus, HashMap<String, List<ProductItems>> roOrderedItems) {
         this.roDocumentID = roDocumentID;
@@ -31,7 +31,7 @@ public class ReceivedOrderModel {
         this.roMatType = roMatType;
         this.roCurrency = roCurrency;
         this.roPoCustNumber = roPoCustNumber;
-        this.roCustName = roCustName;
+        this.custDocumentID = custDocumentID;
         this.roType = roType;
         this.roSubTotalBuy = roSubTotalBuy;
         this.roSubTotalSell = roSubTotalSell;
@@ -66,11 +66,11 @@ public class ReceivedOrderModel {
         this.roDateCreated = roDateCreated;
     }
 
-    public String getRoTOP() {
+    public Integer getRoTOP() {
         return roTOP;
     }
 
-    public void setRoTOP(String roTOP) {
+    public void setRoTOP(Integer roTOP) {
         this.roTOP = roTOP;
     }
 
@@ -98,12 +98,12 @@ public class ReceivedOrderModel {
         this.roPoCustNumber = roPoCustNumber;
     }
 
-    public String getRoCustName() {
-        return roCustName;
+    public String getCustDocumentID() {
+        return custDocumentID;
     }
 
-    public void setRoCustName(String roCustName) {
-        this.roCustName = roCustName;
+    public void setCustDocumentID(String custDocumentID) {
+        this.custDocumentID = custDocumentID;
     }
 
     public Double getRoSubTotalBuy() {

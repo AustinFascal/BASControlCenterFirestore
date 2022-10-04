@@ -11,7 +11,7 @@ public class GoodIssueModel implements Parcelable {
             giDateCreated, giTimeCreted;
     Integer vhlLength, vhlWidth, vhlHeight, vhlHeightCorrection, vhlHeightAfterCorrection;
     Float giVhlCubication;
-    Boolean giStatus, giInvoiced, giCashedOut;
+    Boolean giStatus, giRecapped, giInvoiced, giCashedOut;
     private boolean isSelected;
 
     public GoodIssueModel() {
@@ -23,7 +23,7 @@ public class GoodIssueModel implements Parcelable {
                           String giDateCreated, String giTimeCreted, Integer vhlLength,
                           Integer vhlWidth, Integer vhlHeight, Integer vhlHeightCorrection,
                           Integer vhlHeightAfterCorrection, Float giVhlCubication, Boolean giStatus,
-                          Boolean giInvoiced, Boolean giCashedOut) {
+                          Boolean giRecapped, Boolean giInvoiced, Boolean giCashedOut) {
         this.giUID = giUID;
         this.giCreatedBy = giCreatedBy;
         this.giVerifiedBy = giVerifiedBy;
@@ -42,6 +42,7 @@ public class GoodIssueModel implements Parcelable {
         this.vhlHeightAfterCorrection = vhlHeightAfterCorrection;
         this.giVhlCubication = giVhlCubication;
         this.giStatus = giStatus;
+        this.giRecapped = giRecapped;
         this.giInvoiced = giInvoiced;
         this.giCashedOut = giCashedOut;
     }
@@ -90,6 +91,8 @@ public class GoodIssueModel implements Parcelable {
         }
         byte tmpGiStatus = in.readByte();
         giStatus = tmpGiStatus == 0 ? null : tmpGiStatus == 1;
+        byte tmpGiRecapped = in.readByte();
+        giRecapped = tmpGiRecapped == 0 ? null : tmpGiRecapped == 1;
         byte tmpGiInvoiced = in.readByte();
         giInvoiced = tmpGiInvoiced == 0 ? null : tmpGiInvoiced == 1;
         byte tmpGiCashedOut = in.readByte();
@@ -260,6 +263,14 @@ public class GoodIssueModel implements Parcelable {
         this.giStatus = giStatus;
     }
 
+    public Boolean getGiRecapped() {
+        return giRecapped;
+    }
+
+    public void setGiRecapped(Boolean giRecapped) {
+        this.giRecapped = giRecapped;
+    }
+
     public Boolean getGiInvoiced() {
         return giInvoiced;
     }
@@ -323,6 +334,7 @@ public class GoodIssueModel implements Parcelable {
             parcel.writeFloat(giVhlCubication);
         }
         parcel.writeByte((byte) (giStatus == null ? 0 : giStatus ? 1 : 2));
+        parcel.writeByte((byte) (giRecapped == null ? 0 : giRecapped ? 1 : 2));
         parcel.writeByte((byte) (giInvoiced == null ? 0 : giInvoiced ? 1 : 2));
         parcel.writeByte((byte) (giCashedOut == null ? 0 : giCashedOut ? 1 : 2));
     }

@@ -2,14 +2,14 @@ package com.ptbas.controlcenter.model;
 
 public class BankAccountModel {
 
-    String bacnkAccountID, bankName, bankType, bankAccountOwnerName, bankAccountNumber;
+    String bankAccountID, bankName, bankType, bankAccountOwnerName, bankAccountNumber;
     Boolean bankStatus;
 
     public BankAccountModel() {
     }
 
-    public BankAccountModel(String bacnkAccountID, String bankName, String bankType, String bankAccountOwnerName, String bankAccountNumber, Boolean bankStatus) {
-        this.bacnkAccountID = bacnkAccountID;
+    public BankAccountModel(String bankAccountID, String bankName, String bankType, String bankAccountOwnerName, String bankAccountNumber, Boolean bankStatus) {
+        this.bankAccountID = bankAccountID;
         this.bankName = bankName;
         this.bankType = bankType;
         this.bankAccountOwnerName = bankAccountOwnerName;
@@ -17,12 +17,12 @@ public class BankAccountModel {
         this.bankStatus = bankStatus;
     }
 
-    public String getBacnkAccountID() {
-        return bacnkAccountID;
+    public String getBankAccountID() {
+        return bankAccountID;
     }
 
-    public void setBacnkAccountID(String bacnkAccountID) {
-        this.bacnkAccountID = bacnkAccountID;
+    public void setBankAccountID(String bankAccountID) {
+        this.bankAccountID = bankAccountID;
     }
 
     public String getBankName() {

@@ -52,7 +52,7 @@ import com.ptbas.controlcenter.adapter.MainFeaturesMenuAdapter;
 import com.ptbas.controlcenter.adapter.StatisticsAdapter;
 import com.ptbas.controlcenter.create.AddCustomerActivity;
 import com.ptbas.controlcenter.create.AddGoodIssueActivity;
-import com.ptbas.controlcenter.create.AddCashOutRequestActivity;
+import com.ptbas.controlcenter.create.AddCashOutActivity;
 import com.ptbas.controlcenter.create.AddProductData;
 import com.ptbas.controlcenter.create.AddReceivedOrder;
 import com.ptbas.controlcenter.create.AddSupplierActivity;
@@ -269,7 +269,7 @@ public class DashboardActivity extends AppCompatActivity {
             startActivity(intent);
         });
         llAddBKK.setOnClickListener(view -> {
-            Intent intent = new Intent(DashboardActivity.this, AddCashOutRequestActivity.class);
+            Intent intent = new Intent(DashboardActivity.this, AddCashOutActivity.class);
             startActivity(intent);
         });
         llShowOthers.setOnClickListener(view -> bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED));
@@ -445,22 +445,22 @@ public class DashboardActivity extends AppCompatActivity {
         ArrayList<MainFeatureModel> holder = new ArrayList<>();
 
         MainFeatureModel mRO = new MainFeatureModel();
-        mRO.setHeader("Manajemen\nReceived Order");
+        mRO.setHeader("Data\nReceived Order");
         mRO.setImgName(R.drawable.ic_purchase_order);
         holder.add(mRO);
 
         MainFeatureModel mGI = new MainFeatureModel();
-        mGI.setHeader("Manajemen\nGood Issue");
+        mGI.setHeader("Data\nGood Issue");
         mGI.setImgName(R.drawable.ic_good_issue);
         holder.add(mGI);
 
         MainFeatureModel mCO = new MainFeatureModel();
-        mCO.setHeader("Manajemen\nCash Out");
+        mCO.setHeader("Data\nCash Out");
         mCO.setImgName(R.drawable.ic_bkk);
         holder.add(mCO);
 
         MainFeatureModel mInv = new MainFeatureModel();
-        mInv.setHeader("Manajemen\nInvoice");
+        mInv.setHeader("Data\nInvoice");
         mInv.setImgName(R.drawable.ic_invoice);
         holder.add(mInv);
 

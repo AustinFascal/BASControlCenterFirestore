@@ -252,7 +252,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="48dp"
                                 android:layout_marginBottom="4dp"
-                                android:src="@drawable/ic_others" />
+                                android:src="@drawable/ic_view_all" />
 
                             <TextView
                                 android:layout_width="match_parent"

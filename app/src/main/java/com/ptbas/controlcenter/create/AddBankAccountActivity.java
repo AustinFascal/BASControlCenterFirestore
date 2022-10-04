@@ -54,8 +54,8 @@ public class AddBankAccountActivity extends AppCompatActivity {
     DocumentReference refBankData = db.collection("BankAccountData").document();
 
 
-    String[] bankTypeStr = {"PERUSAHAAN", "CUSTOMER", "SUPPLIER"};
-    Integer[] bankTypeVal = {0, 1, 2};
+    String[] bankTypeStr = {"PERUSAHAAN", "SUPPLIER"};
+    Integer[] bankTypeVal = {0, 1};
     Integer bankType;
     ArrayList<String> arrayListBankType = new ArrayList<>(Arrays.asList(bankTypeStr));
 
@@ -105,18 +105,15 @@ public class AddBankAccountActivity extends AppCompatActivity {
         spinnerBankType.setAdapter(arrayAdapterBankType);
 
         spinnerBankType.setOnItemClickListener((adapterView, view, i, l) -> {
-            String selectedSpinnerBankName = (String) adapterView.getItemAtPosition(i);
-            selectedBankName = selectedSpinnerBankName;
-            spinnerBankName.setError(null);
+            String selectedSpinnerBankType = (String) adapterView.getItemAtPosition(i);
+            selectedBankType = selectedSpinnerBankType;
+            spinnerBankType.setError(null);
             switch (i){
                 case 0:
                     bankType = bankTypeVal[0];
                     break;
                 case 1:
                     bankType = bankTypeVal[1];
-                    break;
-                case 2:
-                    bankType = bankTypeVal[2];
                     break;
                 default:
                     break;

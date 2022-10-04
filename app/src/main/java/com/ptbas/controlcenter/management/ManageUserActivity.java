@@ -20,7 +20,7 @@ public class ManageUserActivity extends AppCompatActivity {
         setContentView(R.layout.activity_manage_user);
 
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setTitle("Manajemen Pengguna");
+        actionBar.setTitle("Data Pengguna");
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setBackgroundDrawable(new ColorDrawable(getResources()
                 .getColor(R.color.white)));

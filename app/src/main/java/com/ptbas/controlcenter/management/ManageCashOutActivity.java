@@ -10,12 +10,16 @@ import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.InputType;
 import android.transition.AutoTransition;
 import android.transition.TransitionManager;
@@ -28,24 +32,32 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.ptbas.controlcenter.adapter.ROManagementAdapter;
+import com.ptbas.controlcenter.create.AddCashOutActivity;
 import com.ptbas.controlcenter.helper.DialogInterface;
 import com.ptbas.controlcenter.helper.DragLinearLayout;
 import com.ptbas.controlcenter.helper.Helper;
 import com.ptbas.controlcenter.R;
-import com.ptbas.controlcenter.adapter.CashOutRequestManagementAdapter;
+import com.ptbas.controlcenter.adapter.CashOutManagementAdapter;
 import com.ptbas.controlcenter.create.AddGoodIssueActivity;
-import com.ptbas.controlcenter.model.InvoiceModel;
+import com.ptbas.controlcenter.model.CashOutModel;
 import com.ptbas.controlcenter.utils.LangUtils;
 
 import java.util.ArrayList;
@@ -53,6 +65,8 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+
+import dev.shreyaspatil.MaterialDialog.MaterialDialog;
 
 public class ManageCashOutActivity extends AppCompatActivity {
 
@@ -68,25 +82,31 @@ public class ManageCashOutActivity extends AppCompatActivity {
     Context context;
     CardView cdvFilter;
     FloatingActionsMenu fabExpandMenu;
-    FloatingActionButton fabActionCreateGi, fabActionRecapData;
+    FloatingActionButton fabActionCreateCo, fabActionRecapData;
     NestedScrollView nestedScrollView;
     TextInputEditText edtGiDateFilterStart, edtGiDateFilterEnd;
     AutoCompleteTextView spinnerSearchType;
     ImageButton btnGiSearchByDateReset, btnGiSearchByTypeReset;
     DatePickerDialog datePicker;
-    RecyclerView rvInvoiceList;
+    RecyclerView rvItemList;
 
     Boolean expandStatus = true;
     List<String> arrayListMaterialName, arrayListCompanyName;
     Helper helper = new Helper();
-    ArrayList<InvoiceModel> invoiceModelArrayList = new ArrayList<>();
+    ArrayList<CashOutModel> cashCoutModelArrayList = new ArrayList<>();
 
-    CashOutRequestManagementAdapter invManagementAdapter;
+    CashOutManagementAdapter cashOutManagementAdapter;
 
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
     DialogInterface dialogInterface = new DialogInterface();
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+    LinearLayout llBottomSelectionOptions;
+    TextView tvTotalSelectedItem;
+    ImageButton btnExitSelection, btnDeleteSelected, btnSelectAll, btnVerifySelected;
+
+    CollectionReference refCO = db.collection("CashOutData");
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -97,8 +117,8 @@ public class ManageCashOutActivity extends AppCompatActivity {
         context = this;
 
         fabExpandMenu = findViewById(R.id.fab_expand_menu);
-        fabActionCreateGi = findViewById(R.id.fab_action_create_ro);
-        fabActionRecapData = findViewById(R.id.fab_action_recap_data);
+        fabActionCreateCo = findViewById(R.id.fabActionCreateCo);
+        //fabActionRecapData = findViewById(R.id.fab_action_recap_data);
 
         cdvFilter = findViewById(R.id.cdv_filter);
         nestedScrollView = findViewById(R.id.nestedScrollView);
@@ -108,7 +128,7 @@ public class ManageCashOutActivity extends AppCompatActivity {
         llWrapFilterByDateRange = findViewById(R.id.ll_wrap_filter_by_date_range);
         llNoData = findViewById(R.id.ll_no_data);
         ll_wrap_filter_chip_group = findViewById(R.id.ll_wrap_filter_chip_group);
-        rvInvoiceList = findViewById(R.id.rv_good_issue_list);
+        rvItemList = findViewById(R.id.rvItemList);
         edtGiDateFilterStart = findViewById(R.id.edt_gi_date_filter_start);
         edtGiDateFilterEnd = findViewById(R.id.edt_gi_date_filter_end);
         btnGiSearchByDateReset = findViewById(R.id.btn_gi_search_date_reset);
@@ -118,10 +138,17 @@ public class ManageCashOutActivity extends AppCompatActivity {
         chip_filter_all  = findViewById(R.id.chip_filter_all);
         chip_filter_status_valid = findViewById(R.id.chip_filter_status_valid);
         chip_filter_status_invalid = findViewById(R.id.chip_filter_status_invalid);
-        chip_filter_status_invoiced = findViewById(R.id.chip_filter_status_invoiced);
+        /*chip_filter_status_invoiced = findViewById(R.id.chip_filter_status_invoiced);
         chip_filter_status_not_yet_invoiced = findViewById(R.id.chip_filter_status_not_yet_invoiced);
         chip_filter_status_transport_type_curah = findViewById(R.id.chip_filter_status_transport_type_curah);
         chip_filter_status_transport_type_borong = findViewById(R.id.chip_filter_status_transport_type_borong);
+*/
+        llBottomSelectionOptions = findViewById(R.id.llBottomSelectionOptions);
+        tvTotalSelectedItem = findViewById(R.id.tvTotalSelectedItem);
+        btnExitSelection = findViewById(R.id.btnExitSelection);
+        btnDeleteSelected = findViewById(R.id.btnDeleteSelected);
+        btnSelectAll = findViewById(R.id.btnSelectAll);
+        btnVerifySelected = findViewById(R.id.btnVerifySelected);
 
         TypedValue typedValue = new TypedValue();
         Resources.Theme theme = context.getTheme();
@@ -136,7 +163,7 @@ public class ManageCashOutActivity extends AppCompatActivity {
         // ACTION BAR FOR STANDARD ACTIVITY
         assert actionBar != null;
         helper.handleActionBarConfigForStandardActivity(
-                this, actionBar, "Manajemen Cash-Out Proof");
+                this, actionBar, "Data Cash Out");
 
         // SYSTEM UI MODE FOR STANDARD ACTIVITY
         helper.handleUIModeForStandardActivity(this, actionBar);
@@ -153,8 +180,8 @@ public class ManageCashOutActivity extends AppCompatActivity {
         LangUtils.setLocale(this, "en");
 
         // GO TO ADD GOOD ISSUE ACTIVITY
-        fabActionCreateGi.setOnClickListener(view -> {
-            Intent intent = new Intent(ManageCashOutActivity.this, AddGoodIssueActivity.class);
+        fabActionCreateCo.setOnClickListener(view -> {
+            Intent intent = new Intent(ManageCashOutActivity.this, AddCashOutActivity.class);
             startActivity(intent);
         });
 
@@ -168,7 +195,7 @@ public class ManageCashOutActivity extends AppCompatActivity {
         showDataDefaultQuery();
 
         // HANDLE RECYCLERVIEW GI WHEN SCROLLING
-        rvInvoiceList.setOnTouchListener((v, event) -> {
+        rvItemList.setOnTouchListener((v, event) -> {
             switch ( event.getAction( ) ) {
                 case MotionEvent.ACTION_SCROLL:
                 case MotionEvent.ACTION_MOVE:
@@ -215,6 +242,7 @@ public class ManageCashOutActivity extends AppCompatActivity {
 
                         btnGiSearchByDateReset.setVisibility(View.VISIBLE);
                     }, Integer.parseInt(yearStrVal), Integer.parseInt(monthStrVal), Integer.parseInt(dayStrVal));
+            datePicker.getDatePicker().setMaxDate(calendar.getTimeInMillis());
             datePicker.show();
         });
 
@@ -249,19 +277,160 @@ public class ManageCashOutActivity extends AppCompatActivity {
                         btnGiSearchByDateReset.setVisibility(View.VISIBLE);
 
                     }, Integer.parseInt(yearStrVal), Integer.parseInt(monthStrVal), Integer.parseInt(dayStrVal));
+            datePicker.getDatePicker().setMaxDate(calendar.getTimeInMillis());
             datePicker.show();
         });
+
+        cashOutManagementAdapter = new CashOutManagementAdapter(this, cashCoutModelArrayList);
+
+        btnSelectAll.setVisibility(View.GONE);
+
+        btnVerifySelected.setOnClickListener(view -> {
+            int size = cashOutManagementAdapter.getSelected().size();
+            MaterialDialog md = new MaterialDialog.Builder((Activity) context)
+                    .setAnimation(R.raw.lottie_approval)
+                    .setTitle("Validasi Data Terpilih")
+                    .setMessage("Apakah Anda yakin ingin mengesahkan "+size+" data Cash Out yang terpilih? Setelah disahkan, status tidak dapat dikembalikan.")
+                    .setPositiveButton("YA", R.drawable.ic_outline_check, (dialogInterface, which) -> {
+                        refCO.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                if (task.isSuccessful()){
+                                    for(DocumentSnapshot documentSnapshot : task.getResult()){
+                                        String getDocumentID = documentSnapshot.getId();
+                                        for (int i = 0; i < size; i++){
+                                            if (getDocumentID.equals(cashOutManagementAdapter.getSelected().get(i).getCoDocumentID())){
+                                                db.collection("CashOutData").document(cashOutManagementAdapter.getSelected().get(i).getCoDocumentID()).update("coStatusApproval", true);
+                                                db.collection("CashOutData").document(cashOutManagementAdapter.getSelected().get(i).getCoDocumentID()).update("coApprovedBy", helper.getUserId());
+                                                dialogInterface.dismiss();
+                                                //roManagementAdapter.clearSelection();
+                                            }
+                                        }
+
+                                    }
+                                }
+                            }
+                        });
+                    })
+                    .setNegativeButton("TIDAK", R.drawable.ic_outline_close, (dialogInterface, which) -> dialogInterface.dismiss())
+                    .setCancelable(true)
+                    .build();
+
+            md.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
+            md.show();
+        });
+
+
+        btnDeleteSelected.setOnClickListener(view -> {
+            int size = cashOutManagementAdapter.getSelected().size();
+            MaterialDialog md = new MaterialDialog.Builder(ManageCashOutActivity.this)
+                    .setTitle("Hapus Data Terpilih")
+                    .setAnimation(R.raw.lottie_delete)
+                    .setMessage("Apakah Anda yakin ingin menghapus "+size+" data Cash Out yang terpilih? Setelah dihapus, data tidak dapat dikembalikan.")
+                    .setCancelable(true)
+                    .setPositiveButton("YA", R.drawable.ic_outline_check, (dialogInterface, which) -> {
+                        refCO.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                if (task.isSuccessful()){
+                                    for(DocumentSnapshot documentSnapshot : task.getResult()){
+                                        String getDocumentID = documentSnapshot.getId();
+                                        for (int i = 0; i < size; i++){
+                                            db.collection("CashOutData").document(cashOutManagementAdapter.getSelected().get(i).getCoDocumentID()).delete();
+                                            dialogInterface.dismiss();
+                                           /* if (getDocumentID.equals(roManagementAdapter.getSelected().get(i).getRoDocumentID())){
+
+                                                //roManagementAdapter.clearSelection();
+                                            }*/
+                                        }
+
+                                    }
+                                }
+                            }
+                        });
+                        /*dialogInterface.dismiss();
+                        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+                        for (int i = 0; i < cashOutManagementAdapter.getSelected().size(); i++) {
+                            //databaseReference.child("ReceivedOrderData").child(roManagementAdapter.getSelected().get(i).getGiUID()).removeValue();
+                        }*/
+
+                    })
+                    .setNegativeButton("TIDAK", R.drawable.ic_outline_close, (dialogInterface, which) -> dialogInterface.dismiss())
+                    .build();
+
+            md.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
+            md.show();
+        });
+
+
+        btnExitSelection.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                cashOutManagementAdapter.clearSelection();
+
+                llBottomSelectionOptions.animate()
+                        .translationY(llBottomSelectionOptions.getHeight()).alpha(0.0f)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                super.onAnimationEnd(animation);
+                                llBottomSelectionOptions.setVisibility(View.GONE);
+                            }
+                        });
+            }
+        });
+
+        final Handler handler = new Handler();
+        Runnable runnable = new Runnable() {
+            public void run() {
+                int itemSelectedSize = cashOutManagementAdapter.getSelected().size();
+                if (cashOutManagementAdapter.getSelected().size()>0){
+
+                    fabExpandMenu.animate().translationY(800).setDuration(100).start();
+                    fabExpandMenu.collapse();
+
+                    tvTotalSelectedItem.setText(itemSelectedSize+" item terpilih");
+
+                    llBottomSelectionOptions.animate()
+                            .translationY(0).alpha(1.0f)
+                            .setDuration(100)
+                            .setListener(new AnimatorListenerAdapter() {
+                                @Override
+                                public void onAnimationStart(Animator animation) {
+                                    super.onAnimationStart(animation);
+                                    llBottomSelectionOptions.setVisibility(View.VISIBLE);
+                                }
+                            });
+
+                } else {
+                    fabExpandMenu.animate().translationY(0).setDuration(100).start();
+
+                    llBottomSelectionOptions.animate()
+                            .translationY(llBottomSelectionOptions.getHeight()).alpha(0.0f)
+                            .setListener(new AnimatorListenerAdapter() {
+                                @Override
+                                public void onAnimationEnd(Animator animation) {
+                                    super.onAnimationEnd(animation);
+                                    llBottomSelectionOptions.setVisibility(View.GONE);
+                                }
+                            });
+                }
+                handler.postDelayed(this, 100);
+            }
+        };
+        runnable.run();
     }
 
     private void showDataDefaultQuery() {
 
-        db.collection("InvoiceData").orderBy("invDateCreated")
+        db.collection("CashOutData").orderBy("coDateAndTimeCreated")
                 .addSnapshotListener((value, error) -> {
-                    invoiceModelArrayList.clear();
+                    cashCoutModelArrayList.clear();
                     if (!value.isEmpty()){
                         for (DocumentSnapshot d : value.getDocuments()) {
-                            InvoiceModel invoiceModel = d.toObject(InvoiceModel.class);
-                            invoiceModelArrayList.add(invoiceModel);
+                            CashOutModel cashOutModel = d.toObject(CashOutModel.class);
+                            cashCoutModelArrayList.add(cashOutModel);
                         }
                         llNoData.setVisibility(View.GONE);
                         nestedScrollView.setVisibility(View.VISIBLE);
@@ -269,9 +438,9 @@ public class ManageCashOutActivity extends AppCompatActivity {
                         llNoData.setVisibility(View.VISIBLE);
                         nestedScrollView.setVisibility(View.GONE);
                     }
-                    Collections.reverse(invoiceModelArrayList);
-                    invManagementAdapter = new CashOutRequestManagementAdapter(context, invoiceModelArrayList);
-                    rvInvoiceList.setAdapter(invManagementAdapter);
+                    Collections.reverse(cashCoutModelArrayList);
+                    cashOutManagementAdapter = new CashOutManagementAdapter(context, cashCoutModelArrayList);
+                    rvItemList.setAdapter(cashOutManagementAdapter);
                 });
     }
 
@@ -369,15 +538,15 @@ public class ManageCashOutActivity extends AppCompatActivity {
         int width = displayMetrics.widthPixels;
         if (width<=1080){
             RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 1);
-            rvInvoiceList.setLayoutManager(mLayoutManager);
+            rvItemList.setLayoutManager(mLayoutManager);
         }
         if (width>1080&&width<1366){
             RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 2);
-            rvInvoiceList.setLayoutManager(mLayoutManager);
+            rvItemList.setLayoutManager(mLayoutManager);
         }
         if (width>=1366){
             RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 3);
-            rvInvoiceList.setLayoutManager(mLayoutManager);
+            rvItemList.setLayoutManager(mLayoutManager);
         }
         chip_filter_all.isChecked();
         showDataDefaultQuery();

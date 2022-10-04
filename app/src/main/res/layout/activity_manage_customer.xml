@@ -62,7 +62,7 @@
         </androidx.core.widget.NestedScrollView>
     </RelativeLayout>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
+    <!--<com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAddCustomerData"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -72,9 +72,25 @@
         android:layout_marginTop="24dp"
         android:layout_marginEnd="24dp"
         android:layout_marginBottom="24dp"
+        android:textColor="@color/white"
+        app:iconTint="@color/white"
         android:contentDescription="@string/default_content_description"
-        app:tint="@color/white"
-        android:backgroundTint="?attr/colorPrimary"
-        android:src="@drawable/ic_outline_add_circle" />
+        android:src="@drawable/ic_outline_add_white"/>-->
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/fabAddCustomerData"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:icon="@drawable/ic_outline_add"
+        app:iconTint="@color/white"
+        android:layout_alignParentEnd="true"
+        android:textColor="@color/white"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="end|bottom"
+        android:layout_marginBottom="24dp"
+        android:layout_marginEnd="14dp"
+        android:textAlignment="textEnd"
+        android:maxLines="2"
+        android:text="TAMBAH"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

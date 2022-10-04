@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -34,7 +35,7 @@ public class ManageCustomerActivity extends AppCompatActivity {
     CustomerManagementAdapter customerManagementAdapter;
     Helper helper = new Helper();
     LinearLayout llNoData;
-    FloatingActionButton fabAddCustomerData;
+    ExtendedFloatingActionButton fabAddCustomerData;
     NestedScrollView nestedScrollView;
     RecyclerView rv;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -54,7 +55,7 @@ public class ManageCustomerActivity extends AppCompatActivity {
         // ACTION BAR FOR STANDARD ACTIVITY
         assert actionBar != null;
         helper.handleActionBarConfigForStandardActivity(
-                this, actionBar, "Manajemen Customer");
+                this, actionBar, "Data Customer");
 
         // SYSTEM UI MODE FOR STANDARD ACTIVITY
         helper.handleUIModeForStandardActivity(this, actionBar);
@@ -90,7 +91,7 @@ public class ManageCustomerActivity extends AppCompatActivity {
                         llNoData.setVisibility(View.VISIBLE);
                         nestedScrollView.setVisibility(View.GONE);
                     }
-                    Collections.reverse(customerModelArrayList);
+                    //Collections.reverse(customerModelArrayList);
                     customerManagementAdapter = new CustomerManagementAdapter(context, customerModelArrayList);
                     rv.setAdapter(customerManagementAdapter);
                 });

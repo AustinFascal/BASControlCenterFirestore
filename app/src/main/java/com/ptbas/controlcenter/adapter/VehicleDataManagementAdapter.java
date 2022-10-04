@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -70,7 +69,7 @@ public class VehicleDataManagementAdapter extends RecyclerView.Adapter<VehicleDa
             tvStatus = itemView.findViewById(R.id.tvStatus);
             ivShowDetail = itemView.findViewById(R.id.ivShowDetail);
             statusSwitch = itemView.findViewById(R.id.statusSwitch);
-            btn1 = itemView.findViewById(R.id.btn1);
+            btn1 = itemView.findViewById(R.id.btnDeleteItem);
         }
 
         public void viewBind(VehicleModel vehicleModel) {

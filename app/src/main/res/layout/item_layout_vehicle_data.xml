@@ -103,14 +103,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:src="@drawable/ic_outline_delete_forever"
-                    android:layout_alignStart="@+id/btn1"
-                    android:layout_alignEnd="@+id/btn1"
-                    android:layout_alignTop="@+id/btn1"
-                    android:layout_alignBottom="@+id/btn1"
+                    android:layout_alignStart="@+id/btnDeleteItem"
+                    android:layout_alignEnd="@+id/btnDeleteItem"
+                    android:layout_alignTop="@+id/btnDeleteItem"
+                    android:layout_alignBottom="@+id/btnDeleteItem"
                     app:tint="?colorPrimary" />
 
                 <Button
-                    android:id="@+id/btn1"
+                    android:id="@+id/btnDeleteItem"
                     style="@style/MaterialDialog.NegativeButton"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"

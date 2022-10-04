@@ -74,9 +74,9 @@ public class AddReceivedOrder extends AppCompatActivity {
     LinearLayout llList,llAddItem, llInputAllData, llPoNumberAvailability;
     String monthStrVal, dayStrVal;
     Button btnAddRow, btnLockRow, btnUnlockRow, btnNoPoNumber;
-    TextInputEditText edtPoDate, edtPoTOP, edtPoNumberCustomer, edtRoNumber;
+    TextInputEditText edtPoDate, edtPoNumberCustomer, edtRoNumber;
     TextInputLayout wrapEdtPoNumberPtBas, txtInputEdtPoNumberCustomer;
-    AutoCompleteTextView spinnerPoTransportType, spinnerPoCustName, spinnerPoCurrency, spinnerRoType;
+    AutoCompleteTextView spinnerPoTransportType, spinnerPoCustName, spinnerPoCurrency, spinnerRoType, spinnerPoTOP;
     List<String> productName, transportTypeName, customerName, currencyName;
     String transportData = "", customerData = "", customerID ="", randomString="NULL", currencyData="";
     Integer poYear = 0, poMonth = 0, poDay = 0;
@@ -105,6 +105,9 @@ public class AddReceivedOrder extends AppCompatActivity {
 
     PreviewProductItemAdapter previewProductItemAdapter;
 
+    String[] roTOPVal = {"14", "30", "60"};
+    ArrayList<String> arrayListRoTOPVal = new ArrayList<>(Arrays.asList(roTOPVal));
+
     String[] roTypeStr = {"JASA ANGKUT + MATERIAL", "MATERIAL SAJA", "JASA ANGKUT SAJA"};
     Integer[] roTypeVal = {0, 1, 2};
     ArrayList<String> arrayListRoType = new ArrayList<>(Arrays.asList(roTypeStr));
@@ -120,9 +123,13 @@ public class AddReceivedOrder extends AppCompatActivity {
         LangUtils.setLocale(this, "en");
 
         ArrayAdapter<String> arrayAdapterRoType = new ArrayAdapter<>(this, R.layout.style_spinner, arrayListRoType);
+        ArrayAdapter<String> arrayAdapterRoTOP = new ArrayAdapter<>(this, R.layout.style_spinner, arrayListRoTOPVal);
 
         spinnerRoType = findViewById(R.id.spinner_ro_type);
         spinnerRoType.setAdapter(arrayAdapterRoType);
+
+        spinnerPoTOP = findViewById(R.id.edt_po_TOP);
+        spinnerPoTOP.setAdapter(arrayAdapterRoTOP);
 
         spinnerRoType.setOnItemClickListener((adapterView, view, i, l) -> {
             //spinnerRoType.setText(adapterView.indexOfChild(i));
@@ -199,7 +206,6 @@ public class AddReceivedOrder extends AppCompatActivity {
         edtRoNumber = findViewById(R.id.edt_po_number_ptbas);
         wrapEdtPoNumberPtBas = findViewById(R.id.wrap_edt_po_number_ptbas);
         edtPoDate = findViewById(R.id.edt_po_date);
-        edtPoTOP = findViewById(R.id.edt_po_TOP);
         edtPoNumberCustomer = findViewById(R.id.edt_po_number_customer);
         spinnerPoTransportType = findViewById(R.id.spinner_po_transport_type);
         spinnerPoCustName = findViewById(R.id.spinner_po_cust_name);
@@ -312,19 +318,10 @@ public class AddReceivedOrder extends AppCompatActivity {
 
                         edtPoDate.setText(finalDate);
                     }, Integer.parseInt(year), Integer.parseInt(monthStrVal), Integer.parseInt(dayStrVal));
+            datePicker.getDatePicker().setMaxDate(calendar.getTimeInMillis());
             datePicker.show();
         });
 
-        edtPoTOP.setOnClickListener(view -> {
-            final Calendar calendar = Calendar.getInstance();
-            int day = calendar.get(Calendar.DAY_OF_MONTH);
-            int month = calendar.get(Calendar.MONTH);
-            int year = calendar.get(Calendar.YEAR);
-
-            datePicker = new DatePickerDialog(AddReceivedOrder.this,
-                    (datePicker, year12, month1, dayOfMonth) -> edtPoTOP.setText(year12 + "-" +(month1 + 1) + "-" + dayOfMonth), year, month, day);
-            datePicker.show();
-        });
 
         btnAddRow.setOnClickListener(view -> addView());
 
@@ -399,7 +396,7 @@ public class AddReceivedOrder extends AppCompatActivity {
         fabProceed.setOnClickListener(view -> {
             String roCreatedBy = helper.getUserId();
             String roDateCreated = Objects.requireNonNull(edtPoDate.getText()).toString();
-            String roTOP = "";
+            int roTOP = 0;
             String roMatTransport = Objects.requireNonNull(spinnerPoTransportType.getText()).toString();
             String roCurrency = Objects.requireNonNull(spinnerPoCurrency.getText()).toString();
             String roCustName = Objects.requireNonNull(spinnerPoCustName.getText()).toString();
@@ -416,10 +413,12 @@ public class AddReceivedOrder extends AppCompatActivity {
                 edtPoDate.requestFocus();
             }
 
-            if (edtPoTOP.getText().toString().equals("")) {
-                roTOP = "-";
-            } else {
-                roTOP = Objects.requireNonNull(edtPoTOP.getText()).toString();
+            if (spinnerPoTOP.getText().toString().equals("")) {
+                spinnerPoTOP.setError("Mohon masukkan T.O.P.");
+                spinnerPoTOP.requestFocus();
+            } else{
+                spinnerPoTOP.setError(null);
+                roTOP = Integer.parseInt(Objects.requireNonNull(spinnerPoTOP.getText()).toString());
             }
 
             if (edtPoNumberCustomer.getText().toString().equals("")) {
@@ -442,7 +441,7 @@ public class AddReceivedOrder extends AppCompatActivity {
                 spinnerPoCustName.requestFocus();
             }
 
-            if (!TextUtils.isEmpty(roDateCreated)&&!TextUtils.isEmpty(roMatTransport)&&!TextUtils.isEmpty(roCurrency)&&
+            if (!TextUtils.isEmpty(roDateCreated)&&roTOP!=0&&!TextUtils.isEmpty(roMatTransport)&&!TextUtils.isEmpty(roCurrency)&&
                     !TextUtils.isEmpty(roCustName)&&!TextUtils.isEmpty(roUID)){
                 /*insertData(roUID, roCreatedBy, roDateCreated, roTOP, roMatTransport, roCurrency, roPoCustNumber,
                         roCustName, roType,false);*/
@@ -479,7 +478,7 @@ public class AddReceivedOrder extends AppCompatActivity {
                     tvPoCurrency.setText(roCurrency);
                     tvPoPtBasNumber.setText(roUID);
                     tvPoDate.setText(roDateCreated);
-                    tvPoTOP.setText(roTOP);
+                    tvPoTOP.setText(String.valueOf(roTOP));
                     tvPoTransportType.setText(roMatTransport);
                     tvPoCustomerName.setText(roCustName);
                     tvPoCustomerNumber.setText(poUID);

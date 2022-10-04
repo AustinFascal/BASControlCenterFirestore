@@ -1,13 +1,11 @@
 package com.ptbas.controlcenter.adapter;
 
-import android.animation.LayoutTransition;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -16,16 +14,18 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.transition.AutoTransition;
-import androidx.transition.TransitionManager;
 
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.ptbas.controlcenter.helper.DialogInterface;
 import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.helper.Helper;
-import com.ptbas.controlcenter.model.GoodIssueModel;
+import com.ptbas.controlcenter.model.ProductItems;
 import com.ptbas.controlcenter.model.ReceivedOrderModel;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Objects;
 
 public class ROManagementAdapter extends RecyclerView.Adapter<ROManagementAdapter.ItemViewHolder> {
@@ -60,35 +60,66 @@ public class ROManagementAdapter extends RecyclerView.Adapter<ROManagementAdapte
 
     public class ItemViewHolder extends RecyclerView.ViewHolder {
         LinearLayout llStatusApproved, llStatusPOAvailable, llHiddenView;
-        TextView tvRoDateTime, tvRoUid, tvPoCustNumber;
+        TextView tvRoDateTime, tvRoUid, tvPoCustNumber, tvCustName, tvRoTypeAndMatName, tvRoMatSellPriceCubicAndTaxType;
         RelativeLayout btnDeleteRo, btnApproveRo;
         Button btn1, btn2, btn3;
         //ImageView ivExpandLlHiddenView;
         CardView cardView;
         CheckBox cbSelectItem;
 
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        List<ProductItems> productItemsList;
+        double matSellPrice, matQuantity, transportServiceSellPrice;
+        String matNameVal;
+
+        DecimalFormat df = new DecimalFormat("0.00");
+
+
         public ItemViewHolder(@NonNull View itemView) {
             super(itemView);
-            cardView = itemView.findViewById(R.id.cardView);
+            cardView = itemView.findViewById(R.id.cdvItem);
             llHiddenView = itemView.findViewById(R.id.llHiddenView);
             //ivExpandLlHiddenView = itemView.findViewById(R.id.ivExpandLlHiddenView);
-            llStatusApproved = itemView.findViewById(R.id.ll_status_approved);
+            llStatusApproved = itemView.findViewById(R.id.llStatusApproved);
             llStatusPOAvailable = itemView.findViewById(R.id.ll_status_po_unvailable);
-            tvRoDateTime = itemView.findViewById(R.id.tv_inv_date_created);
-            tvRoUid = itemView.findViewById(R.id.tv_ro_uid);
+            tvRoDateTime = itemView.findViewById(R.id.tvDateCreated);
+            tvRoUid = itemView.findViewById(R.id.tvCoTotal);
             tvPoCustNumber = itemView.findViewById(R.id.tv_po_cust_number);
-            btnDeleteRo = itemView.findViewById(R.id.btn_delete_inv);
-            btnApproveRo = itemView.findViewById(R.id.btn_approve_inv);
-            btn1 = itemView.findViewById(R.id.btn1);
-            btn2 = itemView.findViewById(R.id.btn2);
-            btn3 = itemView.findViewById(R.id.btn3);
+
+            tvCustName = itemView.findViewById(R.id.tvCustName);
+            tvRoTypeAndMatName = itemView.findViewById(R.id.tvRoTypeAndMatName);
+            tvRoMatSellPriceCubicAndTaxType = itemView.findViewById(R.id.tvRoMatSellPriceCubicAndTaxType);
+
+            btnDeleteRo = itemView.findViewById(R.id.rlBtnDeleteItem);
+            btnApproveRo = itemView.findViewById(R.id.rlBtnApproveItem);
+            btn1 = itemView.findViewById(R.id.btnDeleteItem);
+            btn2 = itemView.findViewById(R.id.btnApproveItem);
+            btn3 = itemView.findViewById(R.id.btnOpenItemDetail);
             cbSelectItem = itemView.findViewById(R.id.cbSelectItem);
             //ivExpandLlHiddenView = itemView.findViewById(R.id.ivExpandLlHiddenView);
 
             //llHiddenView.getLayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
+
         }
 
         public void viewBind(ReceivedOrderModel receivedOrderModel) {
+
+            HashMap<String, List<ProductItems>> map = receivedOrderModel.getRoOrderedItems();
+            for (HashMap.Entry<String, List<ProductItems>> e : map.entrySet()) {
+                productItemsList = e.getValue();
+                for (int i = 0; i<productItemsList.size();i++){
+                                /*if (productItemsList.get(0).getMatName().equals("JASA ANGKUT")){
+                                    transportServiceNameVal = productItemsList.get(0).getMatName();
+                                    transportServiceSellPrice = productItemsList.get(0).getMatBuyPrice();
+                                } else {*/
+                    matNameVal = productItemsList.get(i).getMatName();
+                    matSellPrice = productItemsList.get(i).getMatBuyPrice();
+                    matQuantity = productItemsList.get(i).getMatQuantity();
+                    //}
+                }
+
+            }
+
             cbSelectItem.setChecked(false);
 
             if (Objects.equals(helper.ACTIVITY_NAME, "UPDATE")){
@@ -112,13 +143,47 @@ public class ROManagementAdapter extends RecyclerView.Adapter<ROManagementAdapte
 
             dialogInterface = new DialogInterface();
             String dateNTime = receivedOrderModel.getRoDateCreated();
-            String roUID = "RO-"+receivedOrderModel.getRoUID();
-            String poCustNumb = "PO: "+receivedOrderModel.getRoPoCustNumber();
+            String currency = receivedOrderModel.getRoCurrency();
+
+
+            String custTaxStatus;
+            if (receivedOrderModel.getRoVATPPN().equals(0)||receivedOrderModel.getRoVATPPN().toString().isEmpty()){
+                custTaxStatus = "NON PKP";
+            } else {
+                custTaxStatus = "PKP";
+            }
+
+            String[] partRoUID = receivedOrderModel.getRoUID().split(" - ");
+            String partRoUIDVal = partRoUID[2];
+            String roUID = "RO: " + partRoUIDVal;
+
+            //String roUID = "RO: "+receivedOrderModel.getRoUID();
+            String poCustNummVal = receivedOrderModel.getRoPoCustNumber();
+            String poCustNumb = "PO: " + poCustNummVal;
             boolean giStatus = receivedOrderModel.getRoStatus();
 
-            tvRoDateTime.setText(dateNTime);
+            tvRoDateTime.setText(dateNTime + " | " + receivedOrderModel.getRoTOP() + " hari");
             tvRoUid.setText(roUID);
             tvPoCustNumber.setText(poCustNumb);
+
+            String roType = null;
+            if (receivedOrderModel.getRoType().equals(0)){
+                roType = "JASA ANGKUT + MATERIAL";
+            }
+            if (receivedOrderModel.getRoType().equals(1)){
+                roType = "MATERIAL SAJA";
+            }
+            if (receivedOrderModel.getRoType().equals(2)){
+                roType = "JASA ANGKUT SAJA";
+            }
+            tvCustName.setText(receivedOrderModel.getRoCustName());
+            tvRoTypeAndMatName.setText(roType + " | " + matNameVal);
+            tvRoMatSellPriceCubicAndTaxType.setText(custTaxStatus + " | " + currency
+                    + " " +
+                    currencyFormat(df.format(matSellPrice))
+                    + "/m3 | " +
+                    currencyFormat(df.format(matQuantity))+ " m3");
+
             if (giStatus){
                 llStatusApproved.setVisibility(View.VISIBLE);
                 btnApproveRo.setVisibility(View.GONE);
@@ -126,11 +191,11 @@ public class ROManagementAdapter extends RecyclerView.Adapter<ROManagementAdapte
                 llStatusApproved.setVisibility(View.GONE);
                 btnApproveRo.setVisibility(View.VISIBLE);
             }
-            if (tvPoCustNumber.getText().toString().equals("PO: -")){
-                tvPoCustNumber.setVisibility(View.GONE);
+            if (partRoUIDVal.contains(" ")){
+                //tvPoCustNumber.setVisibility(View.GONE);
                 llStatusPOAvailable.setVisibility(View.VISIBLE);
             } else {
-                tvPoCustNumber.setVisibility(View.VISIBLE);
+                //tvPoCustNumber.setVisibility(View.VISIBLE);
                 llStatusPOAvailable.setVisibility(View.GONE);
             }
 
@@ -139,7 +204,7 @@ public class ROManagementAdapter extends RecyclerView.Adapter<ROManagementAdapte
             });
 
             btn2.setOnClickListener(view -> {
-                if (tvPoCustNumber.getText().toString().equals("PO: -")){
+                if (llStatusPOAvailable.getVisibility() == View.VISIBLE){
                     dialogInterface.noRoPoNumberInformation(context, receivedOrderModel.getRoDocumentID());
                 } else {
                     dialogInterface.approveRoConfirmation(context, receivedOrderModel.getRoDocumentID());
@@ -178,6 +243,11 @@ public class ROManagementAdapter extends RecyclerView.Adapter<ROManagementAdapte
             }
         }
         return selected;
+    }
+
+    public static String currencyFormat(String amount) {
+        DecimalFormat formatter = new DecimalFormat("###,###,##0.00");
+        return formatter.format(Double.parseDouble(amount));
     }
     /*public float getSelectedVolume() {
         float selected = 0;
