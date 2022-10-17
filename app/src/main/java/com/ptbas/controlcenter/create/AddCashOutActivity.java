@@ -85,6 +85,7 @@ import com.ptbas.controlcenter.model.GoodIssueModel;
 import com.ptbas.controlcenter.model.ProductItems;
 import com.ptbas.controlcenter.model.ReceivedOrderModel;
 import com.ptbas.controlcenter.model.SupplierModel;
+import com.ptbas.controlcenter.recap.RecapGoodIssueDataActivity;
 import com.ptbas.controlcenter.utils.LangUtils;
 
 import java.io.ByteArrayOutputStream;
@@ -112,7 +113,7 @@ public class AddCashOutActivity extends AppCompatActivity {
     float totalUnit;
     int invPoType;
     double matBuyPrice, transportServiceSellPrice;
-    String dateStartVal = "", dateEndVal = "", rouidVal= "", suppplieruidVal = "",
+    String custDocumentID, roDocumentID, custIDVal, dateStartVal = "", dateEndVal = "", rouidVal= "", suppplieruidVal = "",
             currencyVal = "", pouidVal = "",
             monthStrVal, dayStrVal, roPoCustNumber, matTypeVal, matNameVal,
             invPoDate = "", invCustName = "", invPoUID = "", custNameVal = "",
@@ -307,8 +308,11 @@ public class AddCashOutActivity extends AppCompatActivity {
             btnResetCustomer.setVisibility(View.VISIBLE);
             clearRoPoData();
 
+            llShowSpinnerRoAndEdtPo.setVisibility(View.VISIBLE);
 
-            db.collection("ReceivedOrderData").whereEqualTo("roStatus", true)
+
+
+           /* db.collection("ReceivedOrderData").whereEqualTo("roStatus", true)
                     .addSnapshotListener((value, error) -> {
                         arrayListRoUID.clear();
                         if (value != null) {
@@ -330,9 +334,42 @@ public class AddCashOutActivity extends AppCompatActivity {
                                 }
                             }
                         }
+                    });*/
+
+            db.collection("ReceivedOrderData").whereEqualTo("roStatus", true)
+                    .addSnapshotListener((value, error) -> {
+                        if (!Objects.requireNonNull(value).isEmpty()) {
+                            for (DocumentSnapshot d : value.getDocuments()) {
+                                db.collection("CustomerData").whereEqualTo("custDocumentID", Objects.requireNonNull(d.get("custDocumentID")).toString())
+                                        .addSnapshotListener((value2, error2) -> {
+                                            arrayListRoUID.clear();
+                                            if (!Objects.requireNonNull(value2).isEmpty()) {
+                                                for (DocumentSnapshot e : value2.getDocuments()) {
+                                                    custIDVal = Objects.requireNonNull(e.get("custName")).toString();
+                                                    db.collection("ReceivedOrderData").whereEqualTo("roStatus", true)
+                                                            .addSnapshotListener((value3, error3) -> {
+                                                                if (!Objects.requireNonNull(value3).isEmpty()) {
+                                                                    String spinnerPurchaseOrders = Objects.requireNonNull(d.get("roPoCustNumber")).toString();
+                                                                    if (selectedSpinnerCustomerName.contains(custIDVal)) {
+                                                                        arrayListRoUID.add(spinnerPurchaseOrders);
+                                                                    }
+                                                                    ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddCashOutActivity.this, R.layout.style_spinner, arrayListRoUID);
+                                                                    arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
+                                                                    spinnerRoUID.setAdapter(arrayAdapter);
+                                                                }
+                                                            });
+                                                }
+                                            } else {
+                                                if (!isFinishing()) {
+                                                    dialogInterface.roNotExistsDialog(AddCashOutActivity.this);
+                                                }
+                                            }
+                                        });
+                            }
+                        }
                     });
 
-            llShowSpinnerRoAndEdtPo.setVisibility(View.VISIBLE);
+
         });
         spinnerCustName.setOnKeyListener(new View.OnKeyListener() {
             @Override
@@ -355,12 +392,13 @@ public class AddCashOutActivity extends AppCompatActivity {
                     (datePicker, year, month, dayOfMonth) -> {
                         int monthInt = month + 1;
 
-                        if(month < 10){
+                        if(monthInt < 10){
                             monthStrVal = "0" + monthInt;
                         } else {
                             monthStrVal = String.valueOf(monthInt);
                         }
-                        if(dayOfMonth < 10){
+
+                        if(dayOfMonth <= 9){
                             dayStrVal = "0" + dayOfMonth;
                         } else {
                             dayStrVal = String.valueOf(dayOfMonth);
@@ -385,12 +423,13 @@ public class AddCashOutActivity extends AppCompatActivity {
                     (datePicker, year, month, dayOfMonth) -> {
                         int monthInt = month + 1;
 
-                        if(month < 10){
+                        if(monthInt < 10){
                             monthStrVal = "0" + monthInt;
                         } else {
                             monthStrVal = String.valueOf(monthInt);
                         }
-                        if(dayOfMonth < 10){
+
+                        if(dayOfMonth <= 9){
                             dayStrVal = "0" + dayOfMonth;
                         } else {
                             dayStrVal = String.valueOf(dayOfMonth);
@@ -437,18 +476,20 @@ public class AddCashOutActivity extends AppCompatActivity {
 
             btnResetRouid.setVisibility(View.VISIBLE);
 
-            db.collection("ReceivedOrderData").whereEqualTo("roUID", selectedSpinnerPoPtBasNumber).get()
+            db.collection("ReceivedOrderData").whereEqualTo("roPoCustNumber", selectedSpinnerPoPtBasNumber).get()
                     .addOnSuccessListener(queryDocumentSnapshots -> {
                         for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots){
                             ReceivedOrderModel receivedOrderModel = documentSnapshot.toObject(ReceivedOrderModel.class);
                             receivedOrderModel.setRoDocumentID(documentSnapshot.getId());
                             rouidVal = selectedSpinnerPoPtBasNumber;
                             roPoCustNumber = receivedOrderModel.getRoPoCustNumber();
+                            roDocumentID = receivedOrderModel.getRoDocumentID();
+                            custDocumentID = receivedOrderModel.getCustDocumentID();
                         }
                         edtPoUID.setText(roPoCustNumber);
                     });
         });
-        spinnerRoUID.setOnFocusChangeListener((view, b) -> spinnerRoUID.setText(rouidVal));
+        //spinnerRoUID.setOnFocusChangeListener((view, b) -> spinnerRoUID.setText(rouidVal));
 
         btnResetCustomer.setOnClickListener(view -> {
             btnResetCustomer.setVisibility(View.GONE);
@@ -590,38 +631,38 @@ public class AddCashOutActivity extends AppCompatActivity {
                 ActivityCompat.requestPermissions((Activity) context,
                         new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 10);
             } else {
-                if (!custNameVal.isEmpty()){
+                if (!custDocumentID.isEmpty()){
+                    List<String> datePeriod = new ArrayList<>();
                     for (int i = 0; i < giManagementAdapter.getSelected().size(); i++) {
                         totalUnit += giManagementAdapter.getSelected().get(i).getGiVhlCubication();
+                        datePeriod.add(giManagementAdapter.getSelected().get(i).getGiDateCreated());
                     }
 
-                    double totalIDR = matBuyPrice *Double.parseDouble(df.format(totalUnit));
 
+
+                    HashSet<String> filter = new HashSet(datePeriod);
+                    ArrayList<String> datePeriodFiltered = new ArrayList<>(filter);
+                    coDateDeliveryPeriod = String.valueOf(datePeriodFiltered);
+
+                    double totalIDR = matBuyPrice *Double.parseDouble(df.format(totalUnit));
+                    Toast.makeText(context, String.valueOf(totalIDR), Toast.LENGTH_SHORT).show();
                     //Toast.makeText(context, String.valueOf(totalUnit), Toast.LENGTH_SHORT).show();*/
 
-                    String coDateCreated = new SimpleDateFormat("dd-MM-yyyy", Locale.US).format(new Date());
+                    String coDateCreated = new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(new Date());
 
                     String coTimeCreated =
                             new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
-
-                    List<String> datePeriod = new ArrayList<>();
-                    for (int i = 0; i < giManagementAdapter.getSelected().size(); i++) {
-                        datePeriod.add(giManagementAdapter.getSelected().get(i).getGiDateCreated());
-                    }
-                    HashSet<String> filter = new HashSet(datePeriod);
-                    ArrayList<String> datePeriodFiltered = new ArrayList<>(filter);
-
-                    coDateDeliveryPeriod = String.valueOf(datePeriodFiltered);
 
 
                     dialogInterface.confirmCreateCashOutProof(context, db, goodIssueModelArrayList,
                             coUID, coDateCreated + " | " + coTimeCreated + " WIB",
                             helper.getUserId(), "-","-", "-", "-",
-                            suppplieruidVal, roPoCustNumber, coDateDeliveryPeriod, false, false, totalIDR);
+                            suppplieruidVal, roDocumentID, coDateDeliveryPeriod, false, false, totalIDR);
 
                     String custNameValReplace = custNameVal.replace(" - ","-");
                     int indexCustNameVal = custNameValReplace.lastIndexOf('-');
-                    db.collection("CustomerData").whereEqualTo("custUID", custNameValReplace.substring(0, indexCustNameVal)).get()
+
+                    db.collection("CustomerData").whereEqualTo("custDocumentID",  custDocumentID).get()
                             .addOnSuccessListener(queryDocumentSnapshots2 -> {
                                 for (QueryDocumentSnapshot documentSnapshot2 : queryDocumentSnapshots2){
                                     CustomerModel customerModel = documentSnapshot2.toObject(CustomerModel.class);
@@ -1270,7 +1311,7 @@ public class AddCashOutActivity extends AppCompatActivity {
 
         //fabCreateCOR.animate().translationY(0).setDuration(100).start();
 
-        db.collection("ReceivedOrderData").whereEqualTo("roUID", rouidVal).get()
+        db.collection("ReceivedOrderData").whereEqualTo("roDocumentID", roDocumentID).get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     if (productItemsList != null){
                         productItemsList.clear();
@@ -1285,9 +1326,9 @@ public class AddCashOutActivity extends AppCompatActivity {
 
                         matTypeVal = receivedOrderModel.getRoMatType();
                         roPoCustNumber = receivedOrderModel.getRoPoCustNumber();
-                        custNameVal = receivedOrderModel.getRoCustName();
+                        //custNameVal = receivedOrderModel.getRoCustName();
                         currencyVal = receivedOrderModel.getRoCurrency();
-                        invCustName = receivedOrderModel.getRoCustName();
+                        invCustName = receivedOrderModel.getCustDocumentID();
                         invPoUID = receivedOrderModel.getRoUID();
                         invPoDate = receivedOrderModel.getRoDateCreated();
                         invPoType = receivedOrderModel.getRoType();
@@ -1302,17 +1343,32 @@ public class AddCashOutActivity extends AppCompatActivity {
                             invPotypeVal = "JASA ANGKUT SAJA";
                         }
 
+                        /*HashMap<String, List<ProductItems>> map = receivedOrderModel.getRoOrderedItems();
+                        for (HashMap.Entry<String, List<ProductItems>> e : map.entrySet()) {
+                            productItemsList = e.getValue();
+                            for (int i = 0; i<productItemsList.size();i++){
+                                *//*if (productItemsList.get(0).getMatName().equals("JASA ANGKUT")){
+                                    transportServiceNameVal = productItemsList.get(0).getMatName();
+                                    transportServiceSellPrice = productItemsList.get(0).getMatBuyPrice();
+                                } else {*//*
+                                matNameVal = productItemsList.get(i).getMatName();
+                                matBuyPrice = productItemsList.get(i).getMatBuyPrice();
+                                //}
+                            }
+
+                        }*/
+
                         HashMap<String, List<ProductItems>> map = receivedOrderModel.getRoOrderedItems();
                         for (HashMap.Entry<String, List<ProductItems>> e : map.entrySet()) {
                             productItemsList = e.getValue();
                             for (int i = 0; i<productItemsList.size();i++){
-                                /*if (productItemsList.get(0).getMatName().equals("JASA ANGKUT")){
-                                    transportServiceNameVal = productItemsList.get(0).getMatName();
-                                    transportServiceSellPrice = productItemsList.get(0).getMatBuyPrice();
-                                } else {*/
-                                matNameVal = productItemsList.get(i).getMatName();
-                                matBuyPrice = productItemsList.get(i).getMatBuyPrice();
-                                //}
+                                if (productItemsList.get(0).getMatName().equals("JASA ANGKUT")){
+                                    /*transportServiceNameVal = productItemsList.get(0).getMatName();
+                                    transportServiceSellPrice = productItemsList.get(0).getMatBuyPrice();*/
+                                } else {
+                                    matNameVal = productItemsList.get(i).getMatName();
+                                    matBuyPrice = productItemsList.get(i).getMatBuyPrice();
+                                }
                             }
 
                         }
@@ -1339,9 +1395,9 @@ public class AddCashOutActivity extends AppCompatActivity {
                 if (snapshot.exists()){
                     for (DataSnapshot item : snapshot.getChildren()) {
                         if (!rouidVal.isEmpty()){
-                            if (Objects.requireNonNull(item.child("giRoUID").getValue()).toString().equals(rouidVal) &&
-                                    !pouidVal.equals("-")) {
-                                if (Objects.equals(item.child("giStatus").getValue(), true)) {
+                            if (Objects.requireNonNull(item.child("roDocumentID").getValue()).toString().equals(roDocumentID)) {
+                                if (Objects.equals(item.child("giStatus").getValue(), true)  &&
+                                        Objects.equals(item.child("giRecapped").getValue(), true)) {
                                     if (Objects.equals(item.child("giCashedOut").getValue(), false)) {
                                         GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
                                         goodIssueModelArrayList.add(goodIssueModel);
@@ -1387,7 +1443,8 @@ public class AddCashOutActivity extends AppCompatActivity {
                 goodIssueModelArrayList.clear();
                 if (snapshot.exists()){
                     for (DataSnapshot item : snapshot.getChildren()) {
-                        if (Objects.equals(item.child("giStatus").getValue(), true)) {
+                        if (Objects.equals(item.child("giStatus").getValue(), true) &&
+                                Objects.equals(item.child("giRecapped").getValue(), true)) {
                             if (Objects.equals(item.child("giCashedOut").getValue(), false)) {
                                 GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
                                 goodIssueModelArrayList.add(goodIssueModel);

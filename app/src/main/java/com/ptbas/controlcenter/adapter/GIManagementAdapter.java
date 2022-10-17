@@ -25,11 +25,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.helper.DialogInterface;
 import com.ptbas.controlcenter.helper.Helper;
+import com.ptbas.controlcenter.model.CustomerModel;
 import com.ptbas.controlcenter.model.GoodIssueModel;
 import com.ptbas.controlcenter.model.ReceivedOrderModel;
 import com.ptbas.controlcenter.update.UpdateGoodIssueActivity;
@@ -63,7 +65,7 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
     @NonNull
     @Override
     public GIManagementAdapter.ItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_layout_good_issue, parent, false);
+        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_layout_good_issue_desktop, parent, false);
 
         return new ItemViewHolder(itemView);
     }
@@ -80,14 +82,15 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
 
 
     public class ItemViewHolder extends RecyclerView.ViewHolder {
-        LinearLayout llStatusApproved, llStatusRecapped, llStatusInvoiced, llCashedOutStatus, llStatusPOAvailable, llRoNeedsUpdate, llHiddenView, llWrapGiStatus;
+        //llStatusPOAvailable
+        LinearLayout llStatusApproved, llStatusRecapped, llStatusInvoiced, llCashedOutStatus, llRoNeedsUpdate, llHiddenView, llWrapGiStatus;
         TextView tvCubication, tvGiDateTime, tvGiUid, tvRoUid, tvGiMatDetail, tvGiVhlDetail,
                 tvVhlUid, tvPoCustNumber, tvCustomerName;
         RelativeLayout btnDeleteGi, btnApproveGi;
         Button btn1, btn2, btn3;
         CardView cardView;
         CheckBox cbSelectItem;
-        String customerNameVal;
+        String customerNameVal, custDocumentID;
 
         public ItemViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -98,7 +101,7 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
             llCashedOutStatus = itemView.findViewById(R.id.llCashedOutStatus);
             llStatusRecapped = itemView.findViewById(R.id.llStatusRecapped);
             llStatusInvoiced = itemView.findViewById(R.id.ll_status_invoiced);
-            llStatusPOAvailable = itemView.findViewById(R.id.ll_status_po_unvailable);
+            //llStatusPOAvailable = itemView.findViewById(R.id.ll_status_po_unvailable);
             llRoNeedsUpdate = itemView.findViewById(R.id.ll_ro_needs_update);
             tvCubication = itemView.findViewById(R.id.tv_cubication);
             tvGiDateTime = itemView.findViewById(R.id.tvDateCreated);
@@ -124,6 +127,7 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
 
         public void viewBind(final GoodIssueModel goodIssueModel) {
             cbSelectItem.setChecked(false);
+            tvRoUid.setVisibility(View.GONE);
 
             if (Objects.equals(helper.ACTIVITY_NAME, "UPDATE")){
                 btnDeleteGi.setVisibility(View.GONE);
@@ -148,33 +152,79 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
 
             DecimalFormat df = new DecimalFormat("0.00");
             float cubication = goodIssueModel.getGiVhlCubication();
-            String dateNTime = goodIssueModel.getGiDateCreated()+" | "+goodIssueModel.getGiTimeCreted() + " WIB";
+            String dateNTime = goodIssueModel.getGiDateCreated()+" | \n"+goodIssueModel.getGiTimeCreted() + " WIB";
 
             String[] partGiUID = goodIssueModel.getGiUID().split("-");
             String giUID = partGiUID[0];
 
-            String[] partRoUID = goodIssueModel.getGiRoUID().split(" - ");
-            String roUID = "RO: "+ partRoUID[2];
+            String roDocumentID = goodIssueModel.getRoDocumentID();
 
-            String customerName = partRoUID[0];
+            /*String[] partRoUID = goodIssueModel.getGiRoUID().split(" - ");
+            String roUID = "RO: "+ partRoUID[2];*/
+
+            //String customerName = partRoUID[0];
+
+            //String
+
             FirebaseFirestore db1 = FirebaseFirestore.getInstance();
-            db1.collection("ReceivedOrderData").whereEqualTo("roStatus", true)
+            db1.collection("ReceivedOrderData").whereEqualTo("roDocumentID", roDocumentID)
                     .addSnapshotListener((value, error) -> {
                         if (value != null) {
                             if (!value.isEmpty()) {
                                 for (DocumentSnapshot d : value.getDocuments()) {
-                                    String spinnerPurchaseOrders = Objects.requireNonNull(d.get("roCustName")).toString();
+                                    ReceivedOrderModel receivedOrderModel = d.toObject(ReceivedOrderModel.class);
+
+                                    assert receivedOrderModel != null;
+                                    String roNumber = receivedOrderModel.getRoUID();
+                                    String poNumber = receivedOrderModel.getRoPoCustNumber();
+                                    custDocumentID = receivedOrderModel.getCustDocumentID();
+
+                                    //tvRoUid.setText("RO: " + roNumber);
+                                    tvPoCustNumber.setText("PO: " + poNumber);
+
+
+                                    /*String spinnerPurchaseOrders = Objects.requireNonNull(d.get("roCustName")).toString();
                                     if (Objects.requireNonNull(d.get("roCustName")).toString().contains(customerName)) {
                                         tvCustomerName.setText(spinnerPurchaseOrders);
-                                    }
-                                }
+                                    }*/
 
+                                    db1.collection("CustomerData").whereEqualTo("custDocumentID", custDocumentID)
+                                            .addSnapshotListener((value2, error2) -> {
+                                                if (value2 != null) {
+                                                    if (!value2.isEmpty()) {
+                                                        for (DocumentSnapshot e : value2.getDocuments()) {
+                                                            CustomerModel customerModel = e.toObject(CustomerModel.class);
+                                                            String customerName = customerModel.getCustName();
+                                                            String customerAlias = customerModel.getCustUID();
+
+                                                            tvCustomerName.setText(customerAlias+" - "+customerName);
+                                                        }
+                                                    }
+                                                }
+                                            });
+                                }
                             }
                         }
-
                     });
 
-            String poCustNumb = "PO: "+goodIssueModel.getGiPoCustNumber();
+            FirebaseFirestore db0 = FirebaseFirestore.getInstance();
+
+            CollectionReference refCust = db0.collection("CustomerData");
+
+            refCust.get().addOnCompleteListener(task -> {
+                if (task.isSuccessful()){
+                    for(DocumentSnapshot documentSnapshot : task.getResult()){
+                        String getDocumentID = documentSnapshot.getId();
+                        /*if (getDocumentID.equals(customerName)){
+                            CustomerModel customerModel = documentSnapshot.toObject(CustomerModel.class);
+                            //db.collection("CustomerData").document(receivedOrderModel.getCustDocumentID());
+                            tvCustomerName.setText(customerModel.getCustName());
+                        }*/
+                    }
+                }
+            });
+
+            //String poCustNumb = "PO: "+goodIssueModel.getGiPoCustNumber();
 
             String matDetail = goodIssueModel.getGiMatType()+" - "+goodIssueModel.getGiMatName();
             String vhlDetail = "(P) "+goodIssueModel.getVhlLength().toString()+" (L) "+goodIssueModel.getVhlWidth().toString()+" (T) "+goodIssueModel.getVhlHeight().toString()+" | "+"(K) "+goodIssueModel.getVhlHeightCorrection().toString()+" (TK) "+goodIssueModel.getVhlHeightAfterCorrection().toString();
@@ -187,15 +237,15 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
             tvCubication.setText(Html.fromHtml(df.format(cubication) +" m\u00B3"));
             tvGiDateTime.setText(dateNTime);
             tvGiUid.setText(giUID);
-            tvRoUid.setText(roUID);
+            //tvRoUid.setText(roUID);
             //tvCustomerName.setText(customerNameVal);
-            tvPoCustNumber.setText(poCustNumb);
+            //tvPoCustNumber.setText(poCustNumb);
             tvGiMatDetail.setText(matDetail);
             tvGiVhlDetail.setText(vhlDetail);
             tvVhlUid.setText(vhlUID);
 
             String giUIDVal =goodIssueModel.getGiUID();
-            String giRoUIDVal =goodIssueModel.getGiRoUID();
+            //String giRoUIDVal =goodIssueModel.getGiRoUID();
 
             if (goodIssueModel.getGiMatName().contentEquals("JASA ANGKUT")){
                 tvVhlUid.setVisibility(View.GONE);
@@ -204,7 +254,7 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
 
             DatabaseReference databaseReferenceGI = FirebaseDatabase.getInstance().getReference();
             FirebaseFirestore db = FirebaseFirestore.getInstance();
-            db.collection("ReceivedOrderData").whereEqualTo("roUID", giRoUIDVal)
+            /*db.collection("ReceivedOrderData").whereEqualTo("roUID", giRoUIDVal)
                     .addSnapshotListener((value, error) -> {
                         String poUIDUpdate = "";
                         for (DocumentSnapshot d : value.getDocuments()) {
@@ -213,7 +263,7 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
                             poUIDUpdate = receivedOrderModel.getRoPoCustNumber();
                         }
                         databaseReferenceGI.child("GoodIssueData").child(giUIDVal).child("giPoCustNumber").setValue(poUIDUpdate);
-                    });
+                    });*/
 
             if (giStatus){
                 llWrapGiStatus.setVisibility(View.VISIBLE);
@@ -243,23 +293,24 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
                 llCashedOutStatus.setVisibility(View.GONE);
             }
 
-            if (tvPoCustNumber.getText().toString().equals("PO: -")){
+            /*if (tvPoCustNumber.getText().toString().equals("PO: -")){
                 tvPoCustNumber.setVisibility(View.GONE);
                 llStatusPOAvailable.setVisibility(View.VISIBLE);
             } else {
                 tvPoCustNumber.setVisibility(View.VISIBLE);
                 llStatusPOAvailable.setVisibility(View.GONE);
-            }
+            }*/
 
             btn3.setOnClickListener(view -> {
-                if (!helper.ACTIVITY_NAME.equals("UPDATE")){
-                    String giUID1 =goodIssueModel.getGiUID();
-                    Intent i = new Intent(context, UpdateGoodIssueActivity.class);
-                    i.putExtra("key", giUID1);
-                    context.startActivity(i);
-                } else {
+                String giUID1 =goodIssueModel.getGiUID();
+                Intent i = new Intent(context, UpdateGoodIssueActivity.class);
+                i.putExtra("key", giUID1);
+                context.startActivity(i);
+                /*if (helper.ACTIVITY_NAME.equals("UPDATE")){
+
+                }*/ /*else {
                     Toast.makeText(context, "OPEN DETAIL", Toast.LENGTH_SHORT).show();
-                }
+                }*/
 
             });
 

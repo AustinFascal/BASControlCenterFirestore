@@ -54,17 +54,14 @@ public class AllManagementMenus extends AppCompatActivity {
         if (width<=1080){
             RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 2);
             rvOperationalFeatures.setLayoutManager(mLayoutManager);
-            //rvDataMasterFeatures.setLayoutManager(mLayoutManager2);
         }
         if (width>1080&&width<1366){
             RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 4);
             rvOperationalFeatures.setLayoutManager(mLayoutManager);
-            //rvDataMasterFeatures.setLayoutManager(mLayoutManager2);
         }
         if (width>=1366){
             RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 6);
             rvOperationalFeatures.setLayoutManager(mLayoutManager);
-            //rvDataMasterFeatures.setLayoutManager(mLayoutManager2);
         }
 
         mainFeaturesMenuAdapter = new MainFeaturesMenuAdapter(dataQueue2(),getApplicationContext(),0);

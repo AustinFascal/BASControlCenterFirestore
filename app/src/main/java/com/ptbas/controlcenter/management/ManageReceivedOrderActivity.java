@@ -435,12 +435,13 @@ public class ManageReceivedOrderActivity extends AppCompatActivity {
                     (datePicker, year, month, dayOfMonth) -> {
                         int monthInt = month + 1;
 
-                        if(month < 10){
+                        if(monthInt < 10){
                             monthStrVal = "0" + monthInt;
                         } else {
                             monthStrVal = String.valueOf(monthInt);
                         }
-                        if(dayOfMonth < 10){
+
+                        if(dayOfMonth <= 9){
                             dayStrVal = "0" + dayOfMonth;
                         } else {
                             dayStrVal = String.valueOf(dayOfMonth);
@@ -477,12 +478,13 @@ public class ManageReceivedOrderActivity extends AppCompatActivity {
 
                         int monthInt = month + 1;
 
-                        if(month < 10){
+                        if(monthInt < 10){
                             monthStrVal = "0" + monthInt;
                         } else {
                             monthStrVal = String.valueOf(monthInt);
                         }
-                        if(dayOfMonth < 10){
+
+                        if(dayOfMonth <= 9){
                             dayStrVal = "0" + dayOfMonth;
                         } else {
                             dayStrVal = String.valueOf(dayOfMonth);
@@ -620,7 +622,7 @@ public class ManageReceivedOrderActivity extends AppCompatActivity {
                 for (DocumentSnapshot d : value.getDocuments()) {
                     ReceivedOrderModel receivedOrderModel = d.toObject(ReceivedOrderModel.class);
                     if (searchTypeData.equals(searchTypeValue[0])){
-                        if(Objects.requireNonNull(receivedOrderModel).getRoCustName().contains(newText)) {
+                        if(Objects.requireNonNull(receivedOrderModel).getCustDocumentID().contains(newText)) {
                             receivedOrderModelArrayList.add(receivedOrderModel);
                         }
                     }

@@ -81,7 +81,7 @@ import com.ptbas.controlcenter.helper.Helper;
 import com.ptbas.controlcenter.helper.ImageAndPositionRenderer;
 import com.ptbas.controlcenter.helper.NumberToWords;
 import com.ptbas.controlcenter.model.BankAccountModel;
-import com.ptbas.controlcenter.model.CustomerModel;
+import com.ptbas.controlcenter.model.CashOutModel;
 import com.ptbas.controlcenter.model.GoodIssueModel;
 import com.ptbas.controlcenter.model.ProductItems;
 import com.ptbas.controlcenter.model.ReceivedOrderModel;
@@ -110,14 +110,14 @@ public class AddInvoiceActivity extends AppCompatActivity {
     private static final String ALLOWED_CHARACTERS = "0123456789QWERTYUIOPASDFGHJKLZXCVBNM";
 
     double matSellPrice, transportServiceSellPrice, invTax1 = 0, invTax2 =0;
-    String dateStartVal = "", dateEndVal = "", rouidVal= "", currencyVal = "", pouidVal = "",
+    String invDueDate, invDateNTimeCreated, invTimeCreated, custIDVal, dateStartVal = "", dateEndVal = "", rouidVal= "", currencyVal = "", pouidVal = "",
             monthStrVal, dayStrVal, roPoCustNumber, matTypeVal, matNameVal, transportServiceNameVal,
-            invPoDate = "", invCustName = "", invPoUID = "", custNameVal = "", roDocumentID = "",
+            invPoDate = "", invCustName = "", invPoUID = "", custNameVal = "", roDocumentID = "", coDocumentID, coUID,
             custAddressVal = "", invUID="", invPotypeVal = "", customerData = "", customerID ="", bankAccountID = "", bankNameVal, bankAccountNumberVal, bankAccountOwnerNameVal;
     int invPoType, invPoTOP;
 
     Button btnSearchData, imgbtnExpandCollapseFilterLayout;
-    AutoCompleteTextView spinnerRoUID, spinnerCustName, spinnerBankAccount;
+    AutoCompleteTextView spinnerRoUID, spinnerCustName, spinnerBankAccount, spinnerCoUID;
     TextInputEditText edtPoUID, edtDateStart, edtDateEnd, edtAccountOwnerName;
     DatePickerDialog datePicker;
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
@@ -133,13 +133,13 @@ public class AddInvoiceActivity extends AppCompatActivity {
 
     TextView tvTotalSelectedItem, tvTotalSelectedItem2;
 
-    List<String> bankAccountDocumentID, bankAccount, arrayListRoUID, arrayListPoUID;
+    List<String> bankAccountDocumentID, bankAccount, arrayListRoUID, arrayListPoUID, arrayListCoUID;
     List<ProductItems> productItemsList;
     List<String> customerName, arrayListCustDocumentID;
 
-    LinearLayout llShowSpinnerRoAndEdtPo, llWrapFilterByDateRange, llWrapFilterByRouid, llNoData, llWrapFilter, llBottomSelectionOptions;
+    LinearLayout ll_wrap_filter_by_couid, llShowSpinnerRoAndEdtPo, llWrapFilterByDateRange, llWrapFilterByRouid, llNoData, llWrapFilter, llBottomSelectionOptions;
 
-    ImageButton btnResetBankAccount, btnResetCustomer, btnGiSearchByDateReset, btnGiSearchByRoUIDReset, btnExitSelection;
+    ImageButton btnResetBankAccount, btnResetCustomer, btnGiSearchByDateReset, btnGiSearchByRoUIDReset, btnExitSelection, btnResetCoUID;
 
     ExtendedFloatingActionButton fabCreateDocument;
 
@@ -198,6 +198,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
         cdvFilter = findViewById(R.id.cdv_filter);
         btnSearchData = findViewById(R.id.caridata);
 
+        spinnerCoUID = findViewById(R.id.spinnerCoUID);
         spinnerBankAccount = findViewById(R.id.spinnerBankAccount);
         spinnerCustName = findViewById(R.id.spinnerCustName);
         spinnerRoUID = findViewById(R.id.rouid);
@@ -207,6 +208,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
         edtDateEnd = findViewById(R.id.edt_gi_date_filter_end);
         rvGoodIssueList = findViewById(R.id.rvItemList);
         imgbtnExpandCollapseFilterLayout = findViewById(R.id.imgbtnExpandCollapseFilterLayout);
+        ll_wrap_filter_by_couid = findViewById(R.id.ll_wrap_filter_by_couid);
         llWrapFilterByDateRange = findViewById(R.id.ll_wrap_filter_by_date_range);
         llWrapFilterByRouid = findViewById(R.id.ll_wrap_filter_by_rouid);
         llWrapFilter = findViewById(R.id.llWrapFilter);
@@ -220,6 +222,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
         btnExitSelection = findViewById(R.id.btnExitSelection);
         llBottomSelectionOptions = findViewById(R.id.llBottomSelectionOptions);
 
+        btnResetCoUID = findViewById(R.id.btnResetCoUID);
         btnResetBankAccount = findViewById(R.id.btnResetBankAccount);
         btnResetCustomer = findViewById(R.id.btnResetCustomer);
         btnGiSearchByDateReset = findViewById(R.id.btn_gi_search_date_reset);
@@ -262,18 +265,19 @@ public class AddInvoiceActivity extends AppCompatActivity {
                     (datePicker, year, month, dayOfMonth) -> {
                         int monthInt = month + 1;
 
-                        if(month < 10){
+                        if(monthInt < 10){
                             monthStrVal = "0" + monthInt;
                         } else {
                             monthStrVal = String.valueOf(monthInt);
                         }
-                        if(dayOfMonth < 10){
+
+                        if(dayOfMonth <= 9){
                             dayStrVal = "0" + dayOfMonth;
                         } else {
                             dayStrVal = String.valueOf(dayOfMonth);
                         }
 
-                        String finalDate = year + "-" +monthStrVal + "-" + dayStrVal;
+                        String finalDate = dayStrVal + "-" +monthStrVal + "-" +  year;
 
                         edtDateStart.setText(finalDate);
                         dateStartVal = finalDate;
@@ -293,21 +297,24 @@ public class AddInvoiceActivity extends AppCompatActivity {
                     (datePicker, year, month, dayOfMonth) -> {
                         int monthInt = month + 1;
 
-                        if(month < 10){
+                        if(monthInt < 10){
                             monthStrVal = "0" + monthInt;
                         } else {
                             monthStrVal = String.valueOf(monthInt);
                         }
-                        if(dayOfMonth < 10){
+
+                        if(dayOfMonth <= 9){
                             dayStrVal = "0" + dayOfMonth;
                         } else {
                             dayStrVal = String.valueOf(dayOfMonth);
                         }
 
-                        String finalDate = year + "-" +monthStrVal + "-" + dayStrVal;
+                        String finalDate = dayStrVal + "-" +monthStrVal + "-" + year;
 
                         edtDateEnd.setText(finalDate);
                         dateEndVal = finalDate;
+
+
 
                         btnGiSearchByDateReset.setVisibility(View.VISIBLE);
                     }, Integer.parseInt(yearStrVal), Integer.parseInt(monthStrVal), Integer.parseInt(dayStrVal));
@@ -416,6 +423,8 @@ public class AddInvoiceActivity extends AppCompatActivity {
         arrayListCustDocumentID = new ArrayList<>();
         arrayListRoUID = new ArrayList<>();
         arrayListPoUID = new ArrayList<>();
+        arrayListCoUID = new ArrayList<>();
+
 
         db.collection("CustomerData").whereEqualTo("custStatus", true)
                 .addSnapshotListener((value, error) -> {
@@ -423,12 +432,11 @@ public class AddInvoiceActivity extends AppCompatActivity {
                     if (value != null) {
                         if (!value.isEmpty()) {
                             for (DocumentSnapshot d : value.getDocuments()) {
-                                custDocumentID = Objects.requireNonNull(d.get("custDocumentID")).toString();
+                                //String custDocumentID = Objects.requireNonNull(d.get("custDocumentID")).toString();
                                 String spinnerCustUID = Objects.requireNonNull(d.get("custUID")).toString();
                                 String spinnerCustName = Objects.requireNonNull(d.get("custName")).toString();
                                 customerName.add(spinnerCustUID+" - "+spinnerCustName);
-                                arrayListCustDocumentID.add(custDocumentID);
-
+                                //arrayListCustDocumentID.add(custDocumentID);
                             }
                             ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddInvoiceActivity.this, R.layout.style_spinner, customerName);
                             arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
@@ -470,8 +478,8 @@ public class AddInvoiceActivity extends AppCompatActivity {
             //clearRoPoData();
 
 
-            custDocumentID = arrayListCustDocumentID.get(adapterView.getSelectedItemPosition());
-            String custDocumentIDValReplace = custNameVal.replace(" - ","-");
+            /*custDocumentID = arrayListCustDocumentID.get(adapterView.getSelectedItemPosition());
+            String custDocumentIDValReplace = custDocumentID.replace(" - ","-");
             int indexCustDocumentIDVal = custDocumentIDValReplace.lastIndexOf('-');
 
 
@@ -497,7 +505,54 @@ public class AddInvoiceActivity extends AppCompatActivity {
                                 }
                             }
                         }
+                    });*/
+
+
+
+
+
+            db.collection("ReceivedOrderData").whereEqualTo("roStatus", true)
+                    .addSnapshotListener((value, error) -> {
+                        if (!Objects.requireNonNull(value).isEmpty()) {
+                            for (DocumentSnapshot d : value.getDocuments()) {
+                                custDocumentID = Objects.requireNonNull(d.get("custDocumentID")).toString();
+                                db.collection("CustomerData").whereEqualTo("custDocumentID", custDocumentID)
+                                        .addSnapshotListener((value2, error2) -> {
+                                            arrayListRoUID.clear();
+                                            if (!Objects.requireNonNull(value2).isEmpty()) {
+                                                for (DocumentSnapshot e : value2.getDocuments()) {
+                                                    custNameVal = Objects.requireNonNull(e.get("custName")).toString();
+                                                    custAddressVal = Objects.requireNonNull(e.get("custAddress")).toString();
+                                                    //custIDVal = Objects.requireNonNull(e.get("custName")).toString();
+                                                    db.collection("ReceivedOrderData").whereEqualTo("roStatus", true)
+                                                            .addSnapshotListener((value3, error3) -> {
+                                                                if (!Objects.requireNonNull(value3).isEmpty()) {
+                                                                    String spinnerPurchaseOrders = Objects.requireNonNull(d.get("roPoCustNumber")).toString();
+                                                                    if (selectedSpinnerCustomerName.contains(custNameVal)) {
+                                                                        arrayListRoUID.add(spinnerPurchaseOrders);
+                                                                    }
+                                                                    ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddInvoiceActivity.this, R.layout.style_spinner, arrayListRoUID);
+                                                                    arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
+                                                                    spinnerRoUID.setAdapter(arrayAdapter);
+                                                                }
+                                                            });
+                                                }
+                                            } else {
+                                                if (!isFinishing()) {
+                                                    dialogInterface.roNotExistsDialog(AddInvoiceActivity.this);
+                                                }
+                                            }
+                                        });
+                            }
+                        }
                     });
+
+
+
+
+
+
+
 
             llShowSpinnerRoAndEdtPo.setVisibility(View.VISIBLE);
         });
@@ -513,7 +568,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
         spinnerCustName.setOnFocusChangeListener((view, b) -> spinnerCustName.setText(customerData));
 
 
-        spinnerRoUID.setOnItemClickListener((adapterView, view, i, l) -> {
+        /*spinnerRoUID.setOnItemClickListener((adapterView, view, i, l) -> {
             spinnerRoUID.setError(null);
             btnGiSearchByRoUIDReset.setVisibility(View.VISIBLE);
             String selectedSpinnerPoPtBasNumber = (String) adapterView.getItemAtPosition(i);
@@ -525,6 +580,66 @@ public class AddInvoiceActivity extends AppCompatActivity {
                             receivedOrderModel.setRoDocumentID(documentSnapshot.getId());
                             rouidVal = selectedSpinnerPoPtBasNumber;
                             roPoCustNumber = receivedOrderModel.getRoPoCustNumber();
+                        }
+                        edtPoUID.setText(roPoCustNumber);
+                    });
+        });*/
+
+
+
+        spinnerRoUID.setOnItemClickListener((adapterView, view, i, l) -> {
+            spinnerRoUID.setError(null);
+            String selectedSpinnerPoPtBasNumber = (String) adapterView.getItemAtPosition(i);
+
+            btnGiSearchByRoUIDReset.setVisibility(View.VISIBLE);
+            ll_wrap_filter_by_couid.setVisibility(View.VISIBLE);
+
+            db.collection("ReceivedOrderData").whereEqualTo("roPoCustNumber", selectedSpinnerPoPtBasNumber).get()
+                    .addOnSuccessListener(queryDocumentSnapshots -> {
+                        for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots){
+                            ReceivedOrderModel receivedOrderModel = documentSnapshot.toObject(ReceivedOrderModel.class);
+                            receivedOrderModel.setRoDocumentID(documentSnapshot.getId());
+                            rouidVal = selectedSpinnerPoPtBasNumber;
+                            roPoCustNumber = receivedOrderModel.getRoPoCustNumber();
+                            roDocumentID = receivedOrderModel.getRoDocumentID();
+
+                            db.collection("CashOutData").whereEqualTo("roDocumentID", roDocumentID)
+                                    .addSnapshotListener((value, error) -> {
+                                        arrayListCoUID.clear();
+                                        if (value != null) {
+                                            if (!value.isEmpty()) {
+                                                for (DocumentSnapshot d : value.getDocuments()) {
+                                                    //coDocumentID = Objects.requireNonNull(d.get("coDocumentID")).toString();
+                                                    coUID = Objects.requireNonNull(d.get("coUID")).toString();
+                                                    arrayListCoUID.add(coUID);
+                                                }
+                                                ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddInvoiceActivity.this, R.layout.style_spinner, arrayListCoUID);
+                                                arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
+                                                spinnerCoUID.setAdapter(arrayAdapter);
+                                            } else {
+                                                Toast.makeText(AddInvoiceActivity.this, "Not exists", Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
+                                    });
+                        }
+                        edtPoUID.setText(roPoCustNumber);
+                    });
+
+        });
+
+        spinnerCoUID.setOnItemClickListener((adapterView, view, i, l) -> {
+            spinnerCoUID.setError(null);
+            String selectedCoUID = (String) adapterView.getItemAtPosition(i);
+
+            btnGiSearchByRoUIDReset.setVisibility(View.VISIBLE);
+            ll_wrap_filter_by_couid.setVisibility(View.VISIBLE);
+
+            db.collection("CashOutData").whereEqualTo("coUID", selectedCoUID).get()
+                    .addOnSuccessListener(queryDocumentSnapshots -> {
+                        for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots){
+                            CashOutModel cashOutModel = documentSnapshot.toObject(CashOutModel.class);
+                            cashOutModel.setCoDocumentID(documentSnapshot.getId());
+                            coDocumentID = cashOutModel.getCoDocumentID();
                         }
                         edtPoUID.setText(roPoCustNumber);
                     });
@@ -605,9 +720,15 @@ public class AddInvoiceActivity extends AppCompatActivity {
             spinnerRoUID.requestFocus();
             edtPoUID.setText(null);
             edtPoUID.clearFocus();
+            spinnerCoUID.setText(null);
+            spinnerCoUID.clearFocus();
+            coUID = "";
+            coDocumentID = "";
+            roDocumentID = "";
             rouidVal = "";
             pouidVal = "";
 
+            ll_wrap_filter_by_couid.setVisibility(View.GONE);
             btnGiSearchByRoUIDReset.setVisibility(View.GONE);
         });
 
@@ -625,6 +746,8 @@ public class AddInvoiceActivity extends AppCompatActivity {
         btnResetCustomer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                coUID = "";
+                coDocumentID = "";
                 rouidVal = "";
                 pouidVal = "";
                 custNameVal = "";
@@ -635,7 +758,11 @@ public class AddInvoiceActivity extends AppCompatActivity {
                 spinnerRoUID.setText(null);
                 edtPoUID.clearFocus();
                 spinnerRoUID.clearFocus();
-                btnResetCustomer.setVisibility(View.GONE);
+
+                spinnerCoUID.setText(null);
+                spinnerCoUID.clearFocus();
+                ll_wrap_filter_by_couid.setVisibility(View.GONE);
+                btnResetCustomer.setVisibility(View.GONE);  
             }
         });
 
@@ -660,25 +787,32 @@ public class AddInvoiceActivity extends AppCompatActivity {
             }
 
             if (spinnerCustName.getText().toString().isEmpty()){
-                spinnerCustName.setError("");
+                spinnerCustName.setError("Mohon pilih pelanggan");
             } else{
                 spinnerCustName.setError(null);
             }
 
             if (spinnerRoUID.getText().toString().isEmpty()){
-                spinnerRoUID.setError("");
+                spinnerRoUID.setError("Mohon pilih nomor RO dan PO");
             } else{
                 spinnerRoUID.setError(null);
             }
 
             if (Objects.requireNonNull(edtPoUID.getText()).toString().isEmpty()){
-                edtPoUID.setError("");
+                edtPoUID.setError("Mohon pilih nomor RO dan PO");
             } else{
                 edtPoUID.setError(null);
             }
 
+            if (Objects.requireNonNull(spinnerCoUID.getText()).toString().isEmpty()){
+                spinnerCoUID.setError("Mohon pilih nomor ID Cash Out");
+            } else{
+                spinnerCoUID.setError(null);
+            }
+
             if (!spinnerCustName.getText().toString().isEmpty()&&
                     !spinnerRoUID.getText().toString().isEmpty()&&
+                    !spinnerCoUID.getText().toString().isEmpty()&&
                     !edtPoUID.getText().toString().isEmpty()){
                 searchQuery();
             }
@@ -711,7 +845,8 @@ public class AddInvoiceActivity extends AppCompatActivity {
                 String roUIDValNoSpace = rouidVal.replaceAll("\\s","");
                 invUID = getRandomString()+"-INV-"+roUIDValNoSpace;
 
-                String invDateNTimeCreated = new SimpleDateFormat("dd/MM/yyyy", Locale.US).format(new Date());
+
+
                 String invCreatedBy = helper.getUserId();
 
 /*
@@ -735,10 +870,24 @@ public class AddInvoiceActivity extends AppCompatActivity {
 
 
 
-                dialogInterface.confirmCreateInvoice(context, db, goodIssueModelArrayList,
-                        invUID, invCreatedBy, invDateNTimeCreated, "",
-                        "", invDateDeliveryPeriod,
-                        custDocumentID, bankDocumentID, roDocumentID);
+                invTimeCreated =
+                        new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
+                invDateNTimeCreated =
+                        new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(new Date()).concat(" | "+invTimeCreated+" WIB");
+
+                Calendar c = Calendar.getInstance();
+                c.add(Calendar.DATE, invPoTOP);
+
+                Date invDueDateVal = c.getTime();
+                invDueDate = new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(invDueDateVal) + " | " + invTimeCreated + " WIB (" + invPoTOP + " hari)";
+
+
+                dialogInterface.confirmCreateInvoice(context, db,
+                         goodIssueModelArrayList,
+                         invUID,  invCreatedBy,
+                         invDateNTimeCreated,  invDueDate, "", "",
+                         "", invDateDeliveryPeriod,
+                         custDocumentID,  bankAccountID,  roDocumentID);
             }
         });
 
@@ -773,6 +922,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
     }
 
     public void createInvPDF(String dest){
+
         if (new File(dest).exists()){
             new File(dest).deleteOnExit();
         }
@@ -939,23 +1089,18 @@ public class AddInvoiceActivity extends AppCompatActivity {
     }
     private void addInvMainContent(Document document) throws DocumentException{
         try {
-            String invDateCreated =
-                    new SimpleDateFormat("dd/MM/yyyy", Locale.US).format(new Date());
+            /*String invDateCreated =
+                    new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(new Date());
             String invTimeCreated =
-                    new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
+                    new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());*/
 
-            Calendar c = Calendar.getInstance();
-            c.add(Calendar.DATE, invPoTOP);
 
-            Date invDueDateVal = c.getTime();
-            String invDueDate =
-                    new SimpleDateFormat("dd/MM/yyyy", Locale.US).format(invDueDateVal) + " " + invTimeCreated + " WIB (" + invPoTOP + " hari)";
 
             Paragraph paragraphBlank = new Paragraph(" ");
 
             Paragraph paragraphInvDateCreated =
                     new Paragraph("Terakhir diperbarui: "
-                            +invDateCreated+" "+invTimeCreated+" WIB, oleh: "+invCreatedBy, fontNormalSmallItalic);
+                            +invDateNTimeCreated+", oleh: "+invCreatedBy, fontNormalSmallItalic);
             paragraphInvDateCreated.setAlignment(Element.ALIGN_RIGHT);
             paragraphInvDateCreated.setSpacingAfter(5);
 
@@ -1343,13 +1488,13 @@ public class AddInvoiceActivity extends AppCompatActivity {
     }
     private void addGiRcpMainContent(Document document) throws DocumentException{
         DecimalFormat df = new DecimalFormat("0.00");
-        String currentDate = new SimpleDateFormat("dd/MM/yyyy", Locale.US).format(new Date());
+        String currentDate = new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(new Date());
 
         try {
             String roMatNameTypeStrVal = "Material: "+ matNameVal +" | "+ matTypeVal;
             String roCustNameStrVal = "Customer: "+custNameVal;
             String roPoCustNumberStrVal = "Nomor PO: "+roPoCustNumber;
-            String roRecapDateCreatedStrVal = "Tanggal rekap dibuat: "+currentDate;
+            String roRecapDateCreatedStrVal = "Tanggal rekap dibuat: "+invDateNTimeCreated;
 
             Chunk roMatNameType = new Chunk(roMatNameTypeStrVal, fontNormal);
             Chunk roCustName = new Chunk(roCustNameStrVal, fontNormal);
@@ -1570,8 +1715,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
                 if (snapshot.exists()){
                     for (DataSnapshot item : snapshot.getChildren()) {
                         if (!rouidVal.isEmpty()){
-                            if (Objects.requireNonNull(item.child("giPoCustNumber").getValue()).toString().contains(pouidVal) &&
-                                    !pouidVal.equals("-")) {
+                            if (Objects.requireNonNull(item.child("giCashedOutTo").getValue()).toString().contains(coDocumentID)) {
                                 if (Objects.equals(item.child("giStatus").getValue(), true)
                                         && Objects.equals(item.child("giCashedOut").getValue(), true)
                                         && Objects.equals(item.child("giInvoiced").getValue(), false)

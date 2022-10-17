@@ -3,26 +3,43 @@ package com.ptbas.controlcenter.model;
 public class InvoiceModel {
 
     String invDocumentUID, invUID, invCreatedBy, invDateNTimeCreated, invVerifiedBy,
-            invDateNTimeVerified, invDateDeliveryPeriod, custDocumentID, bankDocumentID, roDocumentID;
+            invDueDateNTime, invDateVerified, invTransferReference, invDateDeliveryPeriod, custDocumentID, bankDocumentID, roDocumentID;
 
     private boolean isChecked = false;
 
     public InvoiceModel() {
     }
 
-    public InvoiceModel(String invDocumentUID, String invUID, String invCreatedBy, String invDateNTimeCreated, String invVerifiedBy, String invDateNTimeVerified, String invDateDeliveryPeriod, String custDocumentID, String bankDocumentID, String roDocumentID) {
+    public InvoiceModel(String invDocumentUID, String invUID, String invCreatedBy, String invDateNTimeCreated, String invDueDateNTime, String invVerifiedBy, String invDateVerified, String invTransferReference, String invDateDeliveryPeriod, String custDocumentID, String bankDocumentID, String roDocumentID) {
         this.invDocumentUID = invDocumentUID;
         this.invUID = invUID;
         this.invCreatedBy = invCreatedBy;
         this.invDateNTimeCreated = invDateNTimeCreated;
+        this.invDueDateNTime = invDueDateNTime;
         this.invVerifiedBy = invVerifiedBy;
-        this.invDateNTimeVerified = invDateNTimeVerified;
+        this.invDateVerified = invDateVerified;
+        this.invTransferReference = invTransferReference;
         this.invDateDeliveryPeriod = invDateDeliveryPeriod;
         this.custDocumentID = custDocumentID;
         this.bankDocumentID = bankDocumentID;
         this.roDocumentID = roDocumentID;
     }
 
+    public String getInvTransferReference() {
+        return invTransferReference;
+    }
+
+    public void setInvTransferReference(String invTransferReference) {
+        this.invTransferReference = invTransferReference;
+    }
+
+    public String getInvDueDateNTime() {
+        return invDueDateNTime;
+    }
+
+    public void setInvDueDateNTime(String invDueDateNTime) {
+        this.invDueDateNTime = invDueDateNTime;
+    }
 
     public String getInvDocumentUID() {
         return invDocumentUID;
@@ -64,12 +81,12 @@ public class InvoiceModel {
         this.invVerifiedBy = invVerifiedBy;
     }
 
-    public String getInvDateNTimeVerified() {
-        return invDateNTimeVerified;
+    public String getInvDateVerified() {
+        return invDateVerified;
     }
 
-    public void setInvDateNTimeVerified(String invDateNTimeVerified) {
-        this.invDateNTimeVerified = invDateNTimeVerified;
+    public void setInvDateVerified(String invDateVerified) {
+        this.invDateVerified = invDateVerified;
     }
 
     public String getInvDateDeliveryPeriod() {

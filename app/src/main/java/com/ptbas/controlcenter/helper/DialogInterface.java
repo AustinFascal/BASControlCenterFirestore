@@ -39,8 +39,10 @@ import com.ptbas.controlcenter.model.GoodIssueModel;
 import com.ptbas.controlcenter.model.InvoiceModel;
 import com.ptbas.controlcenter.recap.RecapGoodIssueDataActivity;
 import com.ptbas.controlcenter.update.UpdateCashOutActivity;
+import com.ptbas.controlcenter.update.UpdateInvoiceActivity;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -478,7 +480,7 @@ public class DialogInterface {
     }
 
     public void coPaidConfirm(Context context, String coDocumentID) {
-        String coDateCreated = new SimpleDateFormat("dd-MM-yyyy", Locale.US).format(new Date());
+        String coDateCreated = new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(new Date());
         String coTimeCreated = new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
 
         Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
@@ -520,7 +522,7 @@ public class DialogInterface {
     }
 
     public void approveCoConfirm(Context context, String coDocumentID) {
-        String coDateCreated = new SimpleDateFormat("dd-MM-yyyy", Locale.US).format(new Date());
+        String coDateCreated = new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(new Date());
         String coTimeCreated = new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
         Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -586,7 +588,11 @@ public class DialogInterface {
         md.show();
     }
 
+/*
     public void approveInvConfirmation(Context context, String invDocumentID) {
+        String dateCreated = new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(new Date());
+        String timeCreated = new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
+
         Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             vibrator.vibrate(VibrationEffect.createOneShot(100,
@@ -600,6 +606,9 @@ public class DialogInterface {
                 .setMessage("Apakah Anda yakin ingin mengubah status Invoice yang Anda pilih menjadi lunas? Setelah diubah, status tidak dapat dikembalikan.")
                 .setPositiveButton("YA", R.drawable.ic_outline_check, (dialogInterface, which) -> {
                     refInv.document(invDocumentID).update("invStatus", true);
+                    refInv.document(invDocumentID).update("invVerifiedBy", helper.getUserId());
+                    refInv.document(invDocumentID).update("invTransferReference", invTransferReference);
+                    refInv.document(invDocumentID).update("invDateNTimeVerified", dateCreated + " | " + timeCreated + " WIB");
                     dialogInterface.dismiss();
                 })
                 .setNegativeButton("TIDAK", R.drawable.ic_outline_close, (dialogInterface, which) -> dialogInterface.dismiss())
@@ -608,6 +617,7 @@ public class DialogInterface {
         md.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
         md.show();
     }
+*/
 
     public void changePoNumberCustomer(Context context, String roUIDVal) {
         md = new MaterialDialog.Builder((Activity) context)
@@ -914,25 +924,21 @@ public class DialogInterface {
         invoiceGeneratedInformationDialog.show();
     }
 
-
-
-
-
-    public void confirmCreateInvoice(Context context, FirebaseFirestore db,
+    public void confirmPrintInvoice(Context context, FirebaseFirestore db,
                                      ArrayList<GoodIssueModel> goodIssueModelArrayList,
                                      String invUID, String invCreatedBy,
-                                     String invDateNTimeCreated, String invVerifiedBy,
+                                     String invDateNTimeCreated, String invDueDateNTime, String invVerifiedBy,
                                      String invDateNTimeVerified, String invDateDeliveryPeriod,
                                      String custDocumentID, String bankDocumentID, String roDocumentID) {
         MaterialDialog materialDialog = new MaterialDialog.Builder((Activity) context)
-                .setTitle("Buat Invoice")
+                .setTitle("Cetak Invoice")
                 .setAnimation(R.raw.lottie_generate_bill)
-                .setMessage("Apakah Anda yakin ingin membuat Invoice dari Good Issue yang terpilih?")
+                .setMessage("Apakah Anda yakin ingin mencetak Invoice ini?")
                 .setCancelable(true)
                 .setPositiveButton("YA", R.drawable.ic_outline_check, (dialogInterface, which) -> {
-                    generatingInvoice(context, db,
+                    printingInvoice(context, db,
                             goodIssueModelArrayList,
-                            invUID, invCreatedBy, invDateNTimeCreated, invVerifiedBy,
+                            invUID, invCreatedBy, invDateNTimeCreated, invDueDateNTime, invVerifiedBy,
                             invDateNTimeVerified, invDateDeliveryPeriod, custDocumentID, bankDocumentID, roDocumentID);
                     dialogInterface.dismiss();
                 })
@@ -945,10 +951,101 @@ public class DialogInterface {
 
 
 
+
+    public void confirmCreateInvoice(Context context, FirebaseFirestore db,
+                                     ArrayList<GoodIssueModel> goodIssueModelArrayList,
+                                     String invUID, String invCreatedBy,
+                                     String invDateNTimeCreated, String invDueDateNTime, String invVerifiedBy, String invTransferReference,
+                                     String invDateNTimeVerified, String invDateDeliveryPeriod,
+                                     String custDocumentID, String bankDocumentID, String roDocumentID) {
+        MaterialDialog materialDialog = new MaterialDialog.Builder((Activity) context)
+                .setTitle("Buat Invoice")
+                .setAnimation(R.raw.lottie_generate_bill)
+                .setMessage("Apakah Anda yakin ingin membuat Invoice dari Good Issue yang terpilih?")
+                .setCancelable(true)
+                .setPositiveButton("YA", R.drawable.ic_outline_check, (dialogInterface, which) -> {
+                    generatingInvoice(context, db,
+                            goodIssueModelArrayList,
+                            invUID, invCreatedBy, invDateNTimeCreated, invDueDateNTime, invVerifiedBy, invTransferReference,
+                            invDateNTimeVerified, invDateDeliveryPeriod, custDocumentID, bankDocumentID, roDocumentID);
+                    dialogInterface.dismiss();
+                })
+                .setNegativeButton("TIDAK", R.drawable.ic_outline_close, (dialogInterface, which) -> dialogInterface.dismiss())
+                .build();
+
+        materialDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
+        materialDialog.show();
+    }
+
+
+
+    public void printingInvoice(Context context, FirebaseFirestore db,
+                                  ArrayList<GoodIssueModel> goodIssueModelArrayList,
+                                  String invUID, String invCreatedBy,
+                                  String invDateNTimeCreated, String invDueDateNTime, String invVerifiedBy,
+                                  String invDateNTimeVerified, String invDateDeliveryPeriod,
+                                  String custDocumentID, String bankDocumentID, String roDocumentID) {
+
+        GIManagementAdapter giManagementAdapter;
+
+        giManagementAdapter = new GIManagementAdapter(context, goodIssueModelArrayList);
+        //int itemSelectedSize = giManagementAdapter.getSelected().size();
+
+
+        MaterialDialog generatingInvoiceDialog = new MaterialDialog.Builder((Activity) context)
+                .setTitle("Memproses Permintaan")
+                .setMessage("Invoice sedang diproses. Harap tunggu ...")
+                .setAnimation(R.raw.lottie_generate_bill)
+                .setCancelable(false)
+                .build();
+
+        generatingInvoiceDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
+        generatingInvoiceDialog.show();
+
+        new CountDownTimer(2000, 1000) {
+            public void onTick(long millisUntilFinished) {
+            }
+
+            public void onFinish() {
+
+                DatabaseReference databaseReferenceGI = FirebaseDatabase.getInstance().getReference();
+                DocumentReference ref = db.collection("InvoiceData").document();
+                //String invDocumentID = ref.getId();
+
+                /*InvoiceModel invoiceModel = new InvoiceModel(
+                        invDocumentID, invUID, invCreatedBy, invDateNTimeCreated, invDueDateNTime, invVerifiedBy,
+                        invDateNTimeVerified, invDateDeliveryPeriod, custDocumentID, bankDocumentID, roDocumentID);
+
+                ref.set(invoiceModel);*/
+
+                /*
+                DocumentReference refGI = db.collection("InvoiceData").document(invDocumentID);
+                for (int i = 0; i < goodIssueModelArrayList.size(); i++) {
+                    GoodIssueModel goodIssueModel = goodIssueModelArrayList.get(i);
+                    refGI.collection("GoodIssueData").document(goodIssueModelArrayList.get(i).getGiUID()).set(goodIssueModel);
+                    databaseReferenceGI.child("GoodIssueData").child(goodIssueModelArrayList.get(i).getGiUID()).child("giInvoiced").setValue(true);
+                }
+                AddInvoiceActivity addInvoiceActivity = (AddInvoiceActivity) context;
+                addInvoiceActivity.createInvPDF(Helper.getAppPath(context)+invUID+".pdf");
+                generatingInvoiceDialog.dismiss();*/
+
+                /*for (int i = 0; i < giManagementAdapter.getSelected().size(); i++) {
+                    databaseReferenceGI.child("GoodIssueData").child(giManagementAdapter.getSelected().get(i).getGiUID()).child("giInvoiced").setValue(true);
+                    databaseReferenceGI.child("GoodIssueData").child(giManagementAdapter.getSelected().get(i).getGiUID()).child("giInvoicedTo").setValue(invDocumentID);
+                }*/
+                UpdateInvoiceActivity updateInvoiceActivity = (UpdateInvoiceActivity) context;
+                updateInvoiceActivity.createInvPDF(Helper.getAppPathInvoice(context)+invUID+".pdf");
+                generatingInvoiceDialog.dismiss();
+            }
+        }.start();
+    }
+
+
+
     public void generatingInvoice(Context context, FirebaseFirestore db,
                                   ArrayList<GoodIssueModel> goodIssueModelArrayList,
                                   String invUID, String invCreatedBy,
-                                  String invDateNTimeCreated, String invVerifiedBy,
+                                  String invDateNTimeCreated, String invDueDateNTime, String invVerifiedBy, String invTransferReference,
                                   String invDateNTimeVerified, String invDateDeliveryPeriod,
                                   String custDocumentID, String bankDocumentID, String roDocumentID) {
 
@@ -979,7 +1076,7 @@ public class DialogInterface {
                 String invDocumentID = ref.getId();
 
                 InvoiceModel invoiceModel = new InvoiceModel(
-                        invDocumentID, invUID, invCreatedBy, invDateNTimeCreated, invVerifiedBy,
+                        invDocumentID, invUID, invCreatedBy, invDateNTimeCreated, invDueDateNTime, invVerifiedBy, invTransferReference,
                         invDateNTimeVerified, invDateDeliveryPeriod, custDocumentID, bankDocumentID, roDocumentID);
 
                 ref.set(invoiceModel);
@@ -1028,7 +1125,7 @@ public class DialogInterface {
                                           String coUID, String coDateAndTimeCreated, String coCreatedBy,
                                           String coDateAndTimeApproved, String coApprovedBy,
                                           String coDateAndTimeACC, String coAccBy, String coSupplier,
-                                          String coPoNumber, String coDateDeliveryPeriod, Boolean coStatusApproval,
+                                          String roDocumentID, String coDateDeliveryPeriod, Boolean coStatusApproval,
                                           Boolean coStatusPayment, Double coTotal) {
 
         MaterialDialog materialDialog = new MaterialDialog.Builder((Activity) context)
@@ -1041,7 +1138,7 @@ public class DialogInterface {
                             goodIssueModelArrayList,
                             coUID, coDateAndTimeCreated, coCreatedBy,
                             coDateAndTimeApproved, coApprovedBy, coDateAndTimeACC, coAccBy, coSupplier,
-                            coPoNumber, coDateDeliveryPeriod, coStatusApproval, coStatusPayment, coTotal);
+                            roDocumentID, coDateDeliveryPeriod, coStatusApproval, coStatusPayment, coTotal);
                     dialogInterface.dismiss();
                 })
                 .setNegativeButton("TIDAK", R.drawable.ic_outline_close, (dialogInterface, which) -> dialogInterface.dismiss())
@@ -1056,7 +1153,7 @@ public class DialogInterface {
                                   String coUID, String coDateAndTimeCreated, String coCreatedBy,
                                   String coDateAndTimeApproved, String coApprovedBy,
                                   String coDateAndTimeACC, String coAccBy, String coSupplier,
-                                  String coPoNumber, String coDateDeliveryPeriod, Boolean coStatusApproval,
+                                  String roDocumentID, String coDateDeliveryPeriod, Boolean coStatusApproval,
                                   Boolean coStatusPayment, Double coTotal) {
 
 
@@ -1086,7 +1183,7 @@ public class DialogInterface {
                 CashOutModel cashOutModel = new CashOutModel(
                         coDocumentID, coUID, coDateAndTimeCreated, coCreatedBy,
                         coDateAndTimeApproved, coApprovedBy, coDateAndTimeACC, coAccBy, coSupplier,
-                        coPoNumber, coDateDeliveryPeriod, coStatusApproval, coStatusPayment, coTotal);
+                        roDocumentID, coDateDeliveryPeriod, coStatusApproval, coStatusPayment, coTotal);
 
                 refCO.set(cashOutModel);
 
@@ -1154,7 +1251,9 @@ public class DialogInterface {
 
                         public void onFinish() {
                             UpdateCashOutActivity updateCashOutActivity = (UpdateCashOutActivity) context;
-                            updateCashOutActivity.createCashOutProofPDF(Helper.getAppPathCashOut(context)+coUID+".pdf");
+
+                                updateCashOutActivity.createCashOutProofPDF(Helper.getAppPathCashOut(context)+coUID+".pdf");
+
                             generatingCashOutProofDialog.dismiss();
                         }
                     }.start();

@@ -77,12 +77,14 @@ public class AddReceivedOrder extends AppCompatActivity {
     TextInputEditText edtPoDate, edtPoNumberCustomer, edtRoNumber;
     TextInputLayout wrapEdtPoNumberPtBas, txtInputEdtPoNumberCustomer;
     AutoCompleteTextView spinnerPoTransportType, spinnerPoCustName, spinnerPoCurrency, spinnerRoType, spinnerPoTOP;
-    List<String> productName, transportTypeName, customerName, currencyName;
-    String transportData = "", customerData = "", customerID ="", randomString="NULL", currencyData="";
+    List<String> productName, transportTypeName, customerName, currencyName, arrayListCustDocumentID;
+    String transportData = "", customerData = "", customerID ="", randomString="NULL", currencyData="", custDocumentID = "";
     Integer poYear = 0, poMonth = 0, poDay = 0;
     Integer roType;
 
     double totalSellPrice = 0, totalBuyPrice = 0;
+
+    double roCountQuantity;
 
     private DatePickerDialog datePicker;
 
@@ -169,6 +171,7 @@ public class AddReceivedOrder extends AppCompatActivity {
         transportTypeName  = new ArrayList<>();
         customerName  = new ArrayList<>();
         currencyName = new ArrayList<>();
+        arrayListCustDocumentID = new ArrayList<>();
 
         ActionBar actionBar = getSupportActionBar();
         assert actionBar != null;
@@ -255,9 +258,11 @@ public class AddReceivedOrder extends AppCompatActivity {
                     if (value != null) {
                         if (!value.isEmpty()) {
                             for (DocumentSnapshot d : value.getDocuments()) {
+                                String custDocumentID = Objects.requireNonNull(d.get("custDocumentID")).toString();
                                 String spinnerCustUID = Objects.requireNonNull(d.get("custUID")).toString();
                                 String spinnerCustName = Objects.requireNonNull(d.get("custName")).toString();
                                 customerName.add(spinnerCustUID+" - "+spinnerCustName);
+                                arrayListCustDocumentID.add(custDocumentID);
                             }
                             ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddReceivedOrder.this, R.layout.style_spinner, customerName);
                             arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
@@ -303,18 +308,21 @@ public class AddReceivedOrder extends AppCompatActivity {
                         poMonth = month + 1;
                         poDay = dayOfMonth;
 
-                        if(month < 10){
-                            monthStrVal = "0" + (month+1);
+                        int monthInt = month + 1;
+
+                        if(monthInt < 10){
+                            monthStrVal = "0" + monthInt;
                         } else {
-                            monthStrVal = String.valueOf(month+1);
+                            monthStrVal = String.valueOf(monthInt);
                         }
-                        if(dayOfMonth < 10){
+
+                        if(dayOfMonth <= 9){
                             dayStrVal = "0" + dayOfMonth;
                         } else {
                             dayStrVal = String.valueOf(dayOfMonth);
                         }
 
-                        String finalDate = poYear + "-" +monthStrVal + "-" + dayStrVal;
+                        String finalDate =  poYear + "-" +monthStrVal + "-" +  dayStrVal;
 
                         edtPoDate.setText(finalDate);
                     }, Integer.parseInt(year), Integer.parseInt(monthStrVal), Integer.parseInt(dayStrVal));
@@ -340,6 +348,17 @@ public class AddReceivedOrder extends AppCompatActivity {
             String[] custID =  selectedSpinnerCustomerName.split("-");
             customerID = custID[0];
             randomString = getRandomString(5);
+
+
+
+
+            custDocumentID = arrayListCustDocumentID.get(position);
+            //String custDocumentIDValReplace = custDocumentIDVal.replace(" - ","-");
+            //int indexCustDocumentIDVal = custDocumentIDValReplace.lastIndexOf('-');
+
+            //Toast.makeText(this, custDocumentID, Toast.LENGTH_SHORT).show();
+
+            //custDocumentID = custDocumentIDValReplace.substring(0, indexCustDocumentIDVal);
         });
 
         spinnerPoCustName.setOnFocusChangeListener((view, b) -> spinnerPoCustName.setText(customerData));
@@ -521,15 +540,19 @@ public class AddReceivedOrder extends AppCompatActivity {
                                 objectList = new ArrayList<>();
                             }
                             objectList.add(productItemsArrayList.get(i));
+
                             productItemsHashMap.put(sortID, objectList);
                         }
 
                         // Create RO object
                         String roDocumentID = refRO.getId();
-                        ReceivedOrderModel receivedOrderModel = new ReceivedOrderModel(
-                                roDocumentID, roUID, roCreatedBy, roDateCreated, roTOP, roMatTransport, roCurrency,
-                                roPoCustNumber, roCustName, roType, poSubTotalBuy, poSubTotalSell, poVAT,
-                                poTotalSellFinal, poEstProfit, false, productItemsHashMap);
+                        ReceivedOrderModel receivedOrderModel =
+                                new ReceivedOrderModel(roDocumentID, roUID, roCreatedBy,
+                                        roDateCreated, roMatTransport, roCurrency, roPoCustNumber,
+                                        custDocumentID, roType, roTOP, poSubTotalBuy,
+                                        poSubTotalSell, roCountQuantity, poTotalSellFinal, poEstProfit,
+                                        false, productItemsHashMap);
+
 
                         fabActionSaveCloud.setOnClickListener(view1 -> {
                             if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED){
@@ -816,6 +839,7 @@ public class AddReceivedOrder extends AppCompatActivity {
                                 public void run() {
                                     if(!edtPoQuantity.getText().toString().equals("")){
                                         double quantity = Double.parseDouble(NumberTextWatcher.trimCommaOfString(edtPoQuantity.getText().toString()));
+                                        roCountQuantity = Double.parseDouble(NumberTextWatcher.trimCommaOfString(edtPoQuantity.getText().toString()));
                                         if (edtBuyPrice.getText().toString().equals("")){
                                             totalBuyPrice = quantity*0;
                                         } else {

@@ -9,7 +9,7 @@ public class ReceivedOrderModel {
     String roDocumentID, roUID, roCreatedBy, roDateCreated, roMatType, roCurrency, roPoCustNumber,
             custDocumentID;
     Integer roType, roTOP;
-    Double roSubTotalBuy, roSubTotalSell, roVATPPN, roTotalSellFinal, roEstProfit;
+    Double roSubTotalBuy, roSubTotalSell, roCountQuantity, roTotalSellFinal, roEstProfit;
     Boolean roStatus;
     HashMap<String, List<ProductItems>> roOrderedItems;
     private boolean isSelected;
@@ -18,28 +18,38 @@ public class ReceivedOrderModel {
     public ReceivedOrderModel() {
     }
 
-    public ReceivedOrderModel(String roDocumentID, String roUID, String roCreatedBy, String roDateCreated, Integer roTOP,
-                              String roMatType, String roCurrency, String roPoCustNumber,
-                              String custDocumentID, Integer roType, Double roSubTotalBuy, Double roSubTotalSell,
-                              Double roVATPPN, Double roTotalSellFinal, Double roEstProfit,
+    public ReceivedOrderModel(String roDocumentID, String roUID, String roCreatedBy,
+                              String roDateCreated, String roMatType, String roCurrency,
+                              String roPoCustNumber, String custDocumentID, Integer roType,
+                              Integer roTOP, Double roSubTotalBuy, Double roSubTotalSell,
+                              Double roCountQuantity, Double roTotalSellFinal, Double roEstProfit,
                               Boolean roStatus, HashMap<String, List<ProductItems>> roOrderedItems) {
         this.roDocumentID = roDocumentID;
         this.roUID = roUID;
         this.roCreatedBy = roCreatedBy;
         this.roDateCreated = roDateCreated;
-        this.roTOP = roTOP;
         this.roMatType = roMatType;
         this.roCurrency = roCurrency;
         this.roPoCustNumber = roPoCustNumber;
         this.custDocumentID = custDocumentID;
         this.roType = roType;
+        this.roTOP = roTOP;
         this.roSubTotalBuy = roSubTotalBuy;
         this.roSubTotalSell = roSubTotalSell;
-        this.roVATPPN = roVATPPN;
+        this.roCountQuantity = roCountQuantity;
         this.roTotalSellFinal = roTotalSellFinal;
         this.roEstProfit = roEstProfit;
         this.roStatus = roStatus;
         this.roOrderedItems = roOrderedItems;
+    }
+
+
+    public String getRoDocumentID() {
+        return roDocumentID;
+    }
+
+    public void setRoDocumentID(String roDocumentID) {
+        this.roDocumentID = roDocumentID;
     }
 
     public String getRoUID() {
@@ -64,14 +74,6 @@ public class ReceivedOrderModel {
 
     public void setRoDateCreated(String roDateCreated) {
         this.roDateCreated = roDateCreated;
-    }
-
-    public Integer getRoTOP() {
-        return roTOP;
-    }
-
-    public void setRoTOP(Integer roTOP) {
-        this.roTOP = roTOP;
     }
 
     public String getRoMatType() {
@@ -106,6 +108,22 @@ public class ReceivedOrderModel {
         this.custDocumentID = custDocumentID;
     }
 
+    public Integer getRoType() {
+        return roType;
+    }
+
+    public void setRoType(Integer roType) {
+        this.roType = roType;
+    }
+
+    public Integer getRoTOP() {
+        return roTOP;
+    }
+
+    public void setRoTOP(Integer roTOP) {
+        this.roTOP = roTOP;
+    }
+
     public Double getRoSubTotalBuy() {
         return roSubTotalBuy;
     }
@@ -122,12 +140,12 @@ public class ReceivedOrderModel {
         this.roSubTotalSell = roSubTotalSell;
     }
 
-    public Double getRoVATPPN() {
-        return roVATPPN;
+    public Double getRoCountQuantity() {
+        return roCountQuantity;
     }
 
-    public void setRoVATPPN(Double roVATPPN) {
-        this.roVATPPN = roVATPPN;
+    public void setRoCountQuantity(Double roCountQuantity) {
+        this.roCountQuantity = roCountQuantity;
     }
 
     public Double getRoTotalSellFinal() {
@@ -136,14 +154,6 @@ public class ReceivedOrderModel {
 
     public void setRoTotalSellFinal(Double roTotalSellFinal) {
         this.roTotalSellFinal = roTotalSellFinal;
-    }
-
-    public Integer getRoType() {
-        return roType;
-    }
-
-    public void setRoType(Integer roType) {
-        this.roType = roType;
     }
 
     public Double getRoEstProfit() {
@@ -160,14 +170,6 @@ public class ReceivedOrderModel {
 
     public void setRoStatus(Boolean roStatus) {
         this.roStatus = roStatus;
-    }
-
-    public String getRoDocumentID() {
-        return roDocumentID;
-    }
-
-    public void setRoDocumentID(String roDocumentID) {
-        this.roDocumentID = roDocumentID;
     }
 
     public void setRoOrderedItems(HashMap<String, List<ProductItems>> roOrderedItems) {

@@ -222,12 +222,13 @@ public class ManageCashOutActivity extends AppCompatActivity {
                     (datePicker, year, month, dayOfMonth) -> {
                         int monthInt = month + 1;
 
-                        if(month < 10){
+                        if(monthInt < 10){
                             monthStrVal = "0" + monthInt;
                         } else {
                             monthStrVal = String.valueOf(monthInt);
                         }
-                        if(dayOfMonth < 10){
+
+                        if(dayOfMonth <= 9){
                             dayStrVal = "0" + dayOfMonth;
                         } else {
                             dayStrVal = String.valueOf(dayOfMonth);

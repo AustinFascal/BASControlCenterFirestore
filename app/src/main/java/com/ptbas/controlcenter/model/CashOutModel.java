@@ -4,7 +4,7 @@ public class CashOutModel {
 
     private boolean isChecked = false;
     String coDocumentID, coUID, coDateAndTimeCreated, coCreatedBy,
-            coDateAndTimeApproved, coApprovedBy, coDateAndTimeACC, coAccBy, coSupplier, coPoNumber,
+            coDateAndTimeApproved, coApprovedBy, coDateAndTimeACC, coAccBy, coSupplier, roDocumentID,
             coDateDeliveryPeriod;
     Boolean coStatusApproval, coStatusPayment;
     Double coTotal;
@@ -12,7 +12,7 @@ public class CashOutModel {
     public CashOutModel() {
     }
 
-    public CashOutModel(String coDocumentID, String coUID, String coDateAndTimeCreated, String coCreatedBy, String coDateAndTimeApproved, String coApprovedBy, String coDateAndTimeACC, String coAccBy, String coSupplier, String coPoNumber, String coDateDeliveryPeriod, Boolean coStatusApproval, Boolean coStatusPayment, Double coTotal) {
+    public CashOutModel(String coDocumentID, String coUID, String coDateAndTimeCreated, String coCreatedBy, String coDateAndTimeApproved, String coApprovedBy, String coDateAndTimeACC, String coAccBy, String coSupplier, String roDocumentID, String coDateDeliveryPeriod, Boolean coStatusApproval, Boolean coStatusPayment, Double coTotal) {
         this.coDocumentID = coDocumentID;
         this.coUID = coUID;
         this.coDateAndTimeCreated = coDateAndTimeCreated;
@@ -22,7 +22,7 @@ public class CashOutModel {
         this.coDateAndTimeACC = coDateAndTimeACC;
         this.coAccBy = coAccBy;
         this.coSupplier = coSupplier;
-        this.coPoNumber = coPoNumber;
+        this.roDocumentID = roDocumentID;
         this.coDateDeliveryPeriod = coDateDeliveryPeriod;
         this.coStatusApproval = coStatusApproval;
         this.coStatusPayment = coStatusPayment;
@@ -101,12 +101,12 @@ public class CashOutModel {
         this.coSupplier = coSupplier;
     }
 
-    public String getCoPoNumber() {
-        return coPoNumber;
+    public String getRoDocumentID() {
+        return roDocumentID;
     }
 
-    public void setCoPoNumber(String coPoNumber) {
-        this.coPoNumber = coPoNumber;
+    public void setRoDocumentID(String roDocumentID) {
+        this.roDocumentID = roDocumentID;
     }
 
     public String getCoDateDeliveryPeriod() {

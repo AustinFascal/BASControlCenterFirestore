@@ -237,12 +237,13 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
                     (datePicker, year, month, dayOfMonth) -> {
                         int monthInt = month + 1;
 
-                        if(month < 10){
+                        if(monthInt < 10){
                             monthStrVal = "0" + monthInt;
                         } else {
                             monthStrVal = String.valueOf(monthInt);
                         }
-                        if(dayOfMonth < 10){
+
+                        if(dayOfMonth <= 9){
                             dayStrVal = "0" + dayOfMonth;
                         } else {
                             dayStrVal = String.valueOf(dayOfMonth);
@@ -272,12 +273,13 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
 
                         int monthInt = month + 1;
 
-                        if(month < 10){
+                        if(monthInt < 10){
                             monthStrVal = "0" + monthInt;
                         } else {
                             monthStrVal = String.valueOf(monthInt);
                         }
-                        if(dayOfMonth < 10){
+
+                        if(dayOfMonth <= 9){
                             dayStrVal = "0" + dayOfMonth;
                         } else {
                             dayStrVal = String.valueOf(dayOfMonth);
@@ -562,7 +564,7 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
                             }
                         }
 
-                        if (searchTypeData.equals(searchTypeValue[1])){
+                        /*if (searchTypeData.equals(searchTypeValue[1])){
                             if(Objects.requireNonNull(goodIssueModel).getGiRoUID().contains(newText)) {
                                 goodIssueModelArrayList.add(goodIssueModel);
                             }
@@ -572,7 +574,7 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
                             if(Objects.requireNonNull(goodIssueModel).getGiPoCustNumber().contains(newText)) {
                                 goodIssueModelArrayList.add(goodIssueModel);
                             }
-                        }
+                        }*/
 
                         if (searchTypeData.equals(searchTypeValue[3])){
                             if(Objects.requireNonNull(goodIssueModel).getVhlUID().contains(newText)) {
@@ -1016,7 +1018,7 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         int width = displayMetrics.widthPixels;
-        if (width<=1080){
+        /*if (width<=1080){
             RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 1);
             rvGoodIssueList.setLayoutManager(mLayoutManager);
         }
@@ -1027,7 +1029,9 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
         if (width>=1366){
             RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 3);
             rvGoodIssueList.setLayoutManager(mLayoutManager);
-        }
+        }*/
+        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 1);
+        rvGoodIssueList.setLayoutManager(mLayoutManager);
         /*chip_filter_all.isSelected();
         chip_filter_all.isChecked();
         showDataDefaultQuery();*/

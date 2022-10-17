@@ -54,7 +54,7 @@ import java.util.Objects;
 
 public class UpdateGoodIssueActivity extends AppCompatActivity {
 
-    String vhlData, matName, matType, roNumber, poNumber,  roKey ="", giNoteNumber;
+    String roDocumentID, vhlData, matName, matType, roNumber, poNumber,  roKey ="", giNoteNumber;
     String monthStrVal, dayStrVal;
     Integer giYear = 0, giMonth = 0, giDay = 0;
 
@@ -167,8 +167,9 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
                         giVerifiedBy = goodIssueModel.getGiVerifiedBy();
                         String giDateCreated = goodIssueModel.getGiDateCreated();
                         String giTimeCreated = goodIssueModel.getGiTimeCreted();
-                        roNumber = goodIssueModel.getGiRoUID();
-                        poNumber = goodIssueModel.getGiPoCustNumber();
+                        roDocumentID = goodIssueModel.getRoDocumentID();
+                       // roNumber = goodIssueModel.getGiRoUID();
+                        //poNumber = goodIssueModel.getGiPoCustNumber();
                         matName = goodIssueModel.getGiMatName();
                         matType = goodIssueModel.getGiMatType();
                         vhlData = goodIssueModel.getVhlUID();
@@ -182,15 +183,17 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
                         giStatus = goodIssueModel.getGiStatus();
                         giInvoiced = goodIssueModel.getGiInvoiced();
                         giCashedOut = goodIssueModel.getGiCashedOut();
+                        giRecapped = goodIssueModel.getGiRecapped();
 
 
-                        db.collection("ReceivedOrderData").whereEqualTo("roUID", roNumber).get()
+                        db.collection("ReceivedOrderData").whereEqualTo("roDocumentID", roDocumentID).get()
                                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                                     @Override
                                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                                         for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots){
                                             ReceivedOrderModel receivedOrderModel = documentSnapshot.toObject(ReceivedOrderModel.class);
                                             edtPoNumberCust.setText(receivedOrderModel.getRoPoCustNumber());
+                                            spinnerRoNumber.setText(receivedOrderModel.getRoUID());
                                         }
                                     }
                                 });
@@ -252,7 +255,7 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
                         edtGiNoteNumber.setText(giNoteNumber);
                         edtGiDate.setText(giDateCreated);
                         edtGiTime.setText(giTimeCreated);
-                        spinnerRoNumber.setText(roNumber);
+
                         spinnerMatName.setText(matName);
                         spinnerMatType.setText(matType);
                         spinnerVhlUID.setText(vhlData);
@@ -605,7 +608,7 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
             }
         });
 
-        GoodIssueModel goodIssueModel = new GoodIssueModel(giUID, giCreatedBy, giVerifiedBy, roNumber, poNumber,
+        GoodIssueModel goodIssueModel = new GoodIssueModel(giUID, giCreatedBy, giVerifiedBy, roDocumentID,
                 matName, matType, giNoteNumber, vhlUID, giDateCreated, giTimeCreted, vhlLength,
                 vhlWidth, vhlHeight, vhlHeightCorrection, vhlHeightAfterCorrection, giVhlCubication, giStatus, giRecapped, giInvoiced, giCashedOut);
         DatabaseReference refGI = FirebaseDatabase.getInstance().getReference("GoodIssueData");

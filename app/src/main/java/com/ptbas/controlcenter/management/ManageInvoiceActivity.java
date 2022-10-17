@@ -215,12 +215,13 @@ public class ManageInvoiceActivity extends AppCompatActivity {
                     (datePicker, year, month, dayOfMonth) -> {
                         int monthInt = month + 1;
 
-                        if(month < 10){
+                        if(monthInt < 10){
                             monthStrVal = "0" + monthInt;
                         } else {
                             monthStrVal = String.valueOf(monthInt);
                         }
-                        if(dayOfMonth < 10){
+
+                        if(dayOfMonth <= 9){
                             dayStrVal = "0" + dayOfMonth;
                         } else {
                             dayStrVal = String.valueOf(dayOfMonth);
@@ -292,9 +293,9 @@ public class ManageInvoiceActivity extends AppCompatActivity {
                                     for(DocumentSnapshot documentSnapshot : task.getResult()){
                                         String getDocumentID = documentSnapshot.getId();
                                         for (int i = 0; i < size; i++){
-                                            if (getDocumentID.equals(invManagementAdapter.getSelected().get(i).getInvDocumentID())){
-                                                db.collection("InvoiceData").document(invManagementAdapter.getSelected().get(i).getInvDocumentID()).update("invStatus", true);
-                                                db.collection("InvoiceData").document(invManagementAdapter.getSelected().get(i).getInvDocumentID()).update("invApprovedBy", helper.getUserId());
+                                            if (getDocumentID.equals(invManagementAdapter.getSelected().get(i).getInvDocumentUID())){
+                                                db.collection("InvoiceData").document(invManagementAdapter.getSelected().get(i).getInvDocumentUID()).update("invVerifiedBy", helper.getUserId());
+                                                //db.collection("InvoiceData").document(invManagementAdapter.getSelected().get(i).getInvDocumentUID()).update("invApprovedBy", helper.getUserId());
                                                 dialogInterface.dismiss();
                                                 //roManagementAdapter.clearSelection();
                                             }
@@ -329,7 +330,7 @@ public class ManageInvoiceActivity extends AppCompatActivity {
                                     for(DocumentSnapshot documentSnapshot : task.getResult()){
                                         String getDocumentID = documentSnapshot.getId();
                                         for (int i = 0; i < size; i++){
-                                            db.collection("InvoiceData").document(invManagementAdapter.getSelected().get(i).getInvDocumentID()).delete();
+                                            db.collection("InvoiceData").document(invManagementAdapter.getSelected().get(i).getInvDocumentUID()).delete();
                                             dialogInterface.dismiss();
                                            /* if (getDocumentID.equals(roManagementAdapter.getSelected().get(i).getRoDocumentID())){
 
@@ -417,7 +418,7 @@ public class ManageInvoiceActivity extends AppCompatActivity {
 
     private void showDataDefaultQuery() {
 
-        db.collection("InvoiceData").orderBy("invDateCreated")
+        db.collection("InvoiceData").orderBy("invDateNTimeCreated")
                 .addSnapshotListener((value, error) -> {
                     invoiceModelArrayList.clear();
                     if (!value.isEmpty()){

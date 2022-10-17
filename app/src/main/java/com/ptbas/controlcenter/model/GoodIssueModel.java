@@ -7,7 +7,7 @@ public class GoodIssueModel implements Parcelable {
 
     private boolean isChecked = false;
     //MANDATORY
-    String giUID, giCreatedBy, giVerifiedBy, giRoUID, giPoCustNumber, giMatName, giMatType, giNoteNumber, vhlUID,
+    String giUID, giCreatedBy, giVerifiedBy, roDocumentID, giMatName, giMatType, giNoteNumber, vhlUID,
             giDateCreated, giTimeCreted;
     Integer vhlLength, vhlWidth, vhlHeight, vhlHeightCorrection, vhlHeightAfterCorrection;
     Float giVhlCubication;
@@ -18,7 +18,7 @@ public class GoodIssueModel implements Parcelable {
     }
 
     public GoodIssueModel(String giUID, String giCreatedBy, String giVerifiedBy,
-                          String giRoUID, String giPoCustNumber, String giMatName,
+                          String roDocumentID, String giMatName,
                           String giMatType, String giNoteNumber, String vhlUID,
                           String giDateCreated, String giTimeCreted, Integer vhlLength,
                           Integer vhlWidth, Integer vhlHeight, Integer vhlHeightCorrection,
@@ -27,8 +27,7 @@ public class GoodIssueModel implements Parcelable {
         this.giUID = giUID;
         this.giCreatedBy = giCreatedBy;
         this.giVerifiedBy = giVerifiedBy;
-        this.giRoUID = giRoUID;
-        this.giPoCustNumber = giPoCustNumber;
+        this.roDocumentID = roDocumentID;
         this.giMatName = giMatName;
         this.giMatType = giMatType;
         this.giNoteNumber = giNoteNumber;
@@ -51,8 +50,7 @@ public class GoodIssueModel implements Parcelable {
         giUID = in.readString();
         giCreatedBy = in.readString();
         giVerifiedBy = in.readString();
-        giRoUID = in.readString();
-        giPoCustNumber = in.readString();
+        roDocumentID = in.readString();
         giMatName = in.readString();
         giMatType = in.readString();
         giNoteNumber = in.readString();
@@ -151,20 +149,12 @@ public class GoodIssueModel implements Parcelable {
         this.giVerifiedBy = giVerifiedBy;
     }
 
-    public String getGiRoUID() {
-        return giRoUID;
+    public String getRoDocumentID() {
+        return roDocumentID;
     }
 
-    public void setGiRoUID(String giRoUID) {
-        this.giRoUID = giRoUID;
-    }
-
-    public String getGiPoCustNumber() {
-        return giPoCustNumber;
-    }
-
-    public void setGiPoCustNumber(String giPoCustNumber) {
-        this.giPoCustNumber = giPoCustNumber;
+    public void setRoDocumentID(String roDocumentID) {
+        this.roDocumentID = roDocumentID;
     }
 
     public String getGiMatName() {
@@ -289,8 +279,7 @@ public class GoodIssueModel implements Parcelable {
         parcel.writeString(giUID);
         parcel.writeString(giCreatedBy);
         parcel.writeString(giVerifiedBy);
-        parcel.writeString(giRoUID);
-        parcel.writeString(giPoCustNumber);
+        parcel.writeString(roDocumentID);
         parcel.writeString(giMatName);
         parcel.writeString(giMatType);
         parcel.writeString(giNoteNumber);

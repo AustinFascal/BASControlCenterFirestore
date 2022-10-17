@@ -36,6 +36,7 @@ import com.ptbas.controlcenter.helper.Helper;
 import com.ptbas.controlcenter.model.CashOutModel;
 import com.ptbas.controlcenter.model.CustomerModel;
 import com.ptbas.controlcenter.model.GoodIssueModel;
+import com.ptbas.controlcenter.model.ReceivedOrderModel;
 import com.ptbas.controlcenter.model.SupplierModel;
 import com.ptbas.controlcenter.update.UpdateCashOutActivity;
 import com.ptbas.controlcenter.update.UpdateGoodIssueActivity;
@@ -150,8 +151,21 @@ public class CashOutManagementAdapter extends RecyclerView.Adapter<CashOutManage
 
             coDateCreated = cashOutModel.getCoDateAndTimeCreated();
             coUID = cashOutModel.getCoUID();
+
+            db.collection("ReceivedOrderData").whereEqualTo("roDocumentID", cashOutModel.getRoDocumentID()).get()
+                    .addOnSuccessListener(queryDocumentSnapshots -> {
+                        for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots){
+                            ReceivedOrderModel receivedOrderModel = documentSnapshot.toObject(ReceivedOrderModel.class);
+                            //receivedOrderModel.setRoDocumentID(documentSnapshot.getId());
+                            coPoUID = receivedOrderModel.getRoPoCustNumber();
+                            tvPoNumber.setText("PO: "+coPoUID);
+                        }
+                        tvSupplierName.setText(coSupplierName);
+                    });
+
+
             coDocumentID = cashOutModel.getCoDocumentID();
-            coPoUID = "PO: "+cashOutModel.getCoPoNumber();
+            //coPoUID = "PO: "+;
             coSupplierNameTemp = cashOutModel.getCoSupplier();
             coTotalTemp = cashOutModel.getCoTotal();
             coTotal = "IDR " + currencyFormat(String.valueOf(coTotalTemp));
@@ -159,9 +173,9 @@ public class CashOutManagementAdapter extends RecyclerView.Adapter<CashOutManage
             coStatusPayment = cashOutModel.getCoStatusPayment();
 
             tvDateCreated.setText(coDateCreated);
-            tvCoUID.setText(coUID);
-            tvPoNumber.setText(coPoUID);
-            tvPoNumber.setText(coPoUID);
+            tvCoUID.setText("CO: "+ coUID);
+
+            //tvPoNumber.setText(coPoUID);
             db.collection("SupplierData").whereEqualTo("supplierID", coSupplierNameTemp).get()
                     .addOnSuccessListener(queryDocumentSnapshots -> {
                         for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots){

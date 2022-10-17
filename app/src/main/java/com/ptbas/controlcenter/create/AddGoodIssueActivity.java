@@ -12,7 +12,6 @@ import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -45,9 +44,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.helper.DialogInterface;
 import com.ptbas.controlcenter.helper.Helper;
-import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.model.GoodIssueModel;
 import com.ptbas.controlcenter.model.ReceivedOrderModel;
 import com.ptbas.controlcenter.model.VehicleModel;
@@ -65,7 +64,7 @@ import java.util.Random;
 
 public class AddGoodIssueActivity extends AppCompatActivity {
 
-    String vhlData = "", selectedMatName = "", selectedCustName = "", matType = "", selectedPoNumber ="", roKey ="";
+    String roDocumentID, custIDVal="", vhlData = "", selectedMatName = "", selectedCustName = "", matType = "", selectedPoNumber ="", roKey ="";
     String monthStrVal, dayStrVal;
     Integer giYear = 0, giMonth = 0, giDay = 0;
 
@@ -173,18 +172,20 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                         giMonth = month + 1;
                         giDay = dayOfMonth;
 
-                        if(month < 10){
+                        //int monthInt = month + 1;
+
+                        if(giMonth < 10){
                             monthStrVal = "0" + giMonth;
                         } else {
                             monthStrVal = String.valueOf(giMonth);
                         }
-                        if(dayOfMonth < 10){
+                        if(dayOfMonth <= 9){
                             dayStrVal = "0" + giDay;
                         } else {
                             dayStrVal = String.valueOf(giDay);
                         }
 
-                        String finalDate = giYear + "-" +monthStrVal + "-" + dayStrVal;
+                        String finalDate = giYear   + "-" +monthStrVal + "-" + dayStrVal;
 
                         edtGiDate.setText(finalDate);
                     }, Integer.parseInt(year), Integer.parseInt(monthStrVal), Integer.parseInt(dayStrVal));
@@ -326,6 +327,7 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                 spinnerMatType.setText(null);
 
                 btnResetCustomer.setVisibility(View.GONE);
+                selectedCustName = null;
             }
         });
 
@@ -341,28 +343,41 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                 edtPoNumberCust.setText(null);
                 spinnerMatName.setText(null);
                 spinnerMatType.setText(null);
+
+
                 db.collection("ReceivedOrderData").whereEqualTo("roStatus", true)
                         .addSnapshotListener((value, error) -> {
-                            receiveOrderNumberList.clear();
-                            if (value != null) {
-                                if (!value.isEmpty()) {
-                                    for (DocumentSnapshot d : value.getDocuments()) {
-                                        String spinnerPurchaseOrders = Objects.requireNonNull(d.get("roPoCustNumber")).toString();
-                                        if (Objects.requireNonNull(d.get("roCustName")).toString().equals(spinnerCustUID.getText().toString())) {
-                                            receiveOrderNumberList.add(spinnerPurchaseOrders);
-                                        }
-                                    }
-                                    ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddGoodIssueActivity.this, R.layout.style_spinner, receiveOrderNumberList);
-                                    arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
-                                    spinnerRoNumber.setAdapter(arrayAdapter);
-                                } else {
-                                    if(!isFinishing()) {
-                                        dialogInterface.roNotExistsDialog(AddGoodIssueActivity.this);
-                                    }
+                            if (!Objects.requireNonNull(value).isEmpty()) {
+                                for (DocumentSnapshot d : value.getDocuments()) {
+                                    db.collection("CustomerData").whereEqualTo("custDocumentID", Objects.requireNonNull(d.get("custDocumentID")).toString())
+                                            .addSnapshotListener((value2, error2) -> {
+                                                receiveOrderNumberList.clear();
+                                                if (!Objects.requireNonNull(value2).isEmpty()) {
+                                                    for (DocumentSnapshot e : value2.getDocuments()) {
+                                                        custIDVal = Objects.requireNonNull(e.get("custName")).toString();
+                                                        db.collection("ReceivedOrderData").whereEqualTo("roStatus", true)
+                                                                .addSnapshotListener((value3, error3) -> {
+                                                                    if (!Objects.requireNonNull(value3).isEmpty()) {
+                                                                        String spinnerPurchaseOrders = Objects.requireNonNull(d.get("roPoCustNumber")).toString();
+                                                                        if (selectedCustomer.contains(custIDVal)) {
+                                                                            receiveOrderNumberList.add(spinnerPurchaseOrders);
+                                                                        }
+                                                                        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddGoodIssueActivity.this, R.layout.style_spinner, receiveOrderNumberList);
+                                                                        arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
+                                                                        spinnerRoNumber.setAdapter(arrayAdapter);
+                                                                    }
+                                                                });
+                                                    }
+                                                } else {
+                                                    if (!isFinishing()) {
+                                                        dialogInterface.roNotExistsDialog(AddGoodIssueActivity.this);
+                                                    }
+                                                }
+                                            });
                                 }
                             }
-
                         });
+
             }
         });
 
@@ -388,6 +403,7 @@ public class AddGoodIssueActivity extends AppCompatActivity {
 
                                 String roMatType = receivedOrderModel.getRoMatType();
                                 String roUID = receivedOrderModel.getRoUID();
+                                roDocumentID = receivedOrderModel.getRoDocumentID();
                                 spinnerMatType.setText(roMatType);
                                 edtPoNumberCust.setText(roUID);
 
@@ -529,113 +545,187 @@ public class AddGoodIssueActivity extends AppCompatActivity {
             radioOperationSelected = findViewById(selectedStatusId);
             String radioOperation = radioOperationSelected.getText().toString();
 
-            if (TextUtils.isEmpty(giDate)){
-                edtGiDate.setError("Mohon masukkan tanggal pembuatan");
-                edtGiDate.requestFocus();
-            }
-            if (giTime.equals("-")){
-                giTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
-            }
-            if (TextUtils.isEmpty(giRONumber)){
-                spinnerRoNumber.setError("Mohon masukkan nomor PO customer");
-                spinnerRoNumber.requestFocus();
-            }
-            if (TextUtils.isEmpty(giNoteNumber)){
-                edtGiNoteNumber.setError("Mohon masukkan nomor nota");
-                edtGiNoteNumber.requestFocus();
-            }
-            if (TextUtils.isEmpty(giPOCustomerNumber)){
-                edtPoNumberCust.setError("Mohon masukkan nomor RO");
-                edtPoNumberCust.requestFocus();
-            }
-            if (TextUtils.isEmpty(giMatName)){
-                spinnerMatName.setError("Mohon masukkan nama material");
-                spinnerMatName.requestFocus();
-            }
-            if (TextUtils.isEmpty(giMatType)){
-                spinnerMatType.setError("Mohon masukkan jenis transport");
-                spinnerMatType.requestFocus();
-            }
-            if (TextUtils.isEmpty(giVhlUID)){
-                spinnerVhlUID.setError("Mohon masukkan NOPOL kendaraan");
-                spinnerVhlUID.requestFocus();
-            }
+            if  (giMatName.equals("JASA ANGKUT")){
+                if (TextUtils.isEmpty(giDate)){
+                    edtGiDate.setError("Mohon masukkan tanggal pembuatan");
+                    edtGiDate.requestFocus();
+                }
+                if (giTime.equals("-")){
+                    giTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
+                }
+                if (TextUtils.isEmpty(giRONumber)){
+                    spinnerRoNumber.setError("Mohon masukkan nomor PO customer");
+                    spinnerRoNumber.requestFocus();
+                }
+                if (TextUtils.isEmpty(giNoteNumber)){
+                    edtGiNoteNumber.setError("Mohon masukkan nomor nota");
+                    edtGiNoteNumber.requestFocus();
+                }
+                if (TextUtils.isEmpty(giPOCustomerNumber)){
+                    edtPoNumberCust.setError("Mohon masukkan nomor RO");
+                    edtPoNumberCust.requestFocus();
+                }
+                if (TextUtils.isEmpty(giMatName)){
+                    spinnerMatName.setError("Mohon masukkan nama material");
+                    spinnerMatName.requestFocus();
+                }
+                if (TextUtils.isEmpty(giMatType)){
+                    spinnerMatType.setError("Mohon masukkan jenis transport");
+                    spinnerMatType.requestFocus();
+                }
+                if (TextUtils.isEmpty(giVhlUID)){
+                    spinnerVhlUID.setError("Mohon masukkan NOPOL kendaraan");
+                    spinnerVhlUID.requestFocus();
+                }
+                if (TextUtils.isEmpty(giVhlLength)||giVhlLength.equals("0")){
+                    edtVhlLength.setError("Mohon masukkan lebar kendaraan");
+                    edtVhlLength.requestFocus();
+                }
+                if (TextUtils.isEmpty(giVhlWidth)||giVhlWidth.equals("0")){
+                    edtVhlWidth.setError("Mohon masukkan lebar kendaraan");
+                    edtVhlWidth.requestFocus();
+                }
+                if (TextUtils.isEmpty(giVhlHeight)||giVhlHeight.equals("0")){
+                    edtVhlHeight.setError("Mohon masukkan lebar kendaraan");
+                    edtVhlHeight.requestFocus();
+                }
+                if (edtHeightCorrection.getText().toString().isEmpty()){
+                    giHeightCorrection.equals(0);
+                    edtHeightCorrection.setText("0");
+                }
+                if (!TextUtils.isEmpty(giDate)
+                        &&!TextUtils.isEmpty(giRONumber)&&!TextUtils.isEmpty(giPOCustomerNumber)
+                        &&!TextUtils.isEmpty(giMatName)&&!TextUtils.isEmpty(giMatType)
+                        &&!TextUtils.isEmpty(giNoteNumber)
+                        &&!TextUtils.isEmpty(giVhlUID)&&!TextUtils.isEmpty(giVhlWidth)
+                        &&!TextUtils.isEmpty(giVhlLength)&&!TextUtils.isEmpty(giVhlHeight)
+                        &&!TextUtils.isEmpty(giHeightCorrection)){
+                    for(int i = 0; i<receiveOrderNumberList.size(); i++) {
+                        if (!receiveOrderNumberList.contains(spinnerRoNumber.getText().toString())){
+                            spinnerRoNumber.setError("Nomor PO tidak ditemukan");
+                            spinnerRoNumber.requestFocus();
+                        }
+                    }
+                    for(int i = 0; i<matNameList.size(); i++) {
+                        if (!spinnerMatName.getText().toString().equals(matNameList.get(i))) {
+                            spinnerMatName.setError("Nama material tidak ditemukan");
+                            spinnerMatName.requestFocus();
+                        }
+                    }
+                    if (spinnerRoNumber.getError() == null && spinnerMatName.getError() == null){
+                        spinnerMatName.setError(null);
+                        spinnerMatName.clearFocus();
+                        String giUID = "";
+                        giUID = giNoteNumber + "-" + giMatType.substring(0, 3) + "-" + giDay.toString() + "-" + giMonth.toString() + "-" + giYear.toString();
 
-            if (TextUtils.isEmpty(giVhlLength)||giVhlLength.equals("0")){
-                edtVhlLength.setError("Mohon masukkan lebar kendaraan");
-                edtVhlLength.requestFocus();
-            }
-            if (TextUtils.isEmpty(giVhlWidth)||giVhlWidth.equals("0")){
-                edtVhlWidth.setError("Mohon masukkan lebar kendaraan");
-                edtVhlWidth.requestFocus();
-            }
-            if (TextUtils.isEmpty(giVhlHeight)||giVhlHeight.equals("0")){
-                edtVhlHeight.setError("Mohon masukkan lebar kendaraan");
-                edtVhlHeight.requestFocus();
-            }
-            if (edtHeightCorrection.getText().toString().isEmpty()){
-                giHeightCorrection.equals(0);
-                edtHeightCorrection.setText("0");
-            }
-
-            if (!TextUtils.isEmpty(giDate)
-                    &&!TextUtils.isEmpty(giRONumber)&&!TextUtils.isEmpty(giPOCustomerNumber)
-                    &&!TextUtils.isEmpty(giMatName)&&!TextUtils.isEmpty(giMatType)
-                    &&!TextUtils.isEmpty(giNoteNumber)
-                    &&!TextUtils.isEmpty(giVhlUID)&&!TextUtils.isEmpty(giVhlWidth)
-                    &&!TextUtils.isEmpty(giVhlLength)&&!TextUtils.isEmpty(giVhlHeight)
-                    &&!TextUtils.isEmpty(giHeightCorrection)){
-
-
-
-
-
-                for(int i = 0; i<receiveOrderNumberList.size(); i++) {
-                    if (!receiveOrderNumberList.contains(spinnerRoNumber.getText().toString())){
-                        spinnerRoNumber.setError("Nomor PO tidak ditemukan");
-                        spinnerRoNumber.requestFocus();
+                        insertData(giUID, giCreatedBy, giVerifiedBy, roDocumentID, giMatName, giMatType,
+                                giNoteNumber, giVhlUID, giDate, giTime,
+                                Integer.parseInt(giVhlLength),
+                                Integer.parseInt(giVhlWidth),
+                                Integer.parseInt(giVhlHeight),
+                                Integer.parseInt(radioOperation + giHeightCorrection.replaceAll("[^0-9]", "")),
+                                Integer.parseInt(tvHeightCorrection.getText().toString().replaceAll("[^0-9]", "")),
+                                Float.parseFloat(df.format(Float.parseFloat(giVhlCubication.replaceAll("[^0-9.]", "")))),
+                                false, false, false);
                     }
                 }
 
-                for(int i = 0; i<matNameList.size(); i++) {
-                    if (!spinnerMatName.getText().toString().equals(matNameList.get(i))) {
-                        spinnerMatName.setError("Nama material tidak ditemukan");
-                        spinnerMatName.requestFocus();
+            } else{
+                if (TextUtils.isEmpty(giDate)){
+                    edtGiDate.setError("Mohon masukkan tanggal pembuatan");
+                    edtGiDate.requestFocus();
+                }
+                if (giTime.equals("-")){
+                    giTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
+                }
+                if (TextUtils.isEmpty(giRONumber)){
+                    spinnerRoNumber.setError("Mohon masukkan nomor PO customer");
+                    spinnerRoNumber.requestFocus();
+                }
+                if (TextUtils.isEmpty(giNoteNumber)){
+                    edtGiNoteNumber.setError("Mohon masukkan nomor nota");
+                    edtGiNoteNumber.requestFocus();
+                }
+                if (TextUtils.isEmpty(giPOCustomerNumber)){
+                    edtPoNumberCust.setError("Mohon masukkan nomor RO");
+                    edtPoNumberCust.requestFocus();
+                }
+                if (TextUtils.isEmpty(giMatName)){
+                    spinnerMatName.setError("Mohon masukkan nama material");
+                    spinnerMatName.requestFocus();
+                }
+                if (TextUtils.isEmpty(giMatType)){
+                    spinnerMatType.setError("Mohon masukkan jenis transport");
+                    spinnerMatType.requestFocus();
+                }
+                if (TextUtils.isEmpty(giVhlUID)){
+                    spinnerVhlUID.setError("Mohon masukkan NOPOL kendaraan");
+                    spinnerVhlUID.requestFocus();
+                }
+                if (TextUtils.isEmpty(giVhlLength)||giVhlLength.equals("0")){
+                    edtVhlLength.setError("Mohon masukkan lebar kendaraan");
+                    edtVhlLength.requestFocus();
+                }
+                if (TextUtils.isEmpty(giVhlWidth)||giVhlWidth.equals("0")){
+                    edtVhlWidth.setError("Mohon masukkan lebar kendaraan");
+                    edtVhlWidth.requestFocus();
+                }
+                if (TextUtils.isEmpty(giVhlHeight)||giVhlHeight.equals("0")){
+                    edtVhlHeight.setError("Mohon masukkan lebar kendaraan");
+                    edtVhlHeight.requestFocus();
+                }
+                if (edtHeightCorrection.getText().toString().isEmpty()){
+                    giHeightCorrection.equals(0);
+                    edtHeightCorrection.setText("0");
+                }
+                if (!TextUtils.isEmpty(giDate)
+                        &&!TextUtils.isEmpty(giRONumber)&&!TextUtils.isEmpty(giPOCustomerNumber)
+                        &&!TextUtils.isEmpty(giMatName)&&!TextUtils.isEmpty(giMatType)
+                        &&!TextUtils.isEmpty(giNoteNumber)
+                        &&!TextUtils.isEmpty(giVhlUID)&&!TextUtils.isEmpty(giVhlWidth)
+                        &&!TextUtils.isEmpty(giVhlLength)&&!TextUtils.isEmpty(giVhlHeight)
+                        &&!TextUtils.isEmpty(giHeightCorrection)){
+                    for(int i = 0; i<receiveOrderNumberList.size(); i++) {
+                        if (!receiveOrderNumberList.contains(spinnerRoNumber.getText().toString())){
+                            spinnerRoNumber.setError("Nomor PO tidak ditemukan");
+                            spinnerRoNumber.requestFocus();
+                        }
+                    }
+                    for(int i = 0; i<matNameList.size(); i++) {
+                        if (!spinnerMatName.getText().toString().equals(matNameList.get(i))) {
+                            spinnerMatName.setError("Nama material tidak ditemukan");
+                            spinnerMatName.requestFocus();
+                        }
+                    }
+                    if (spinnerRoNumber.getError() == null && spinnerMatName.getError() == null){
+                        spinnerMatName.setError(null);
+                        spinnerMatName.clearFocus();
+                        String giUID = "";
+                        giUID = giNoteNumber + "-" + giMatType.substring(0, 3) + "-" + giDay.toString() + "-" + giMonth.toString() + "-" + giYear.toString();
 
+                        insertData(giUID, giCreatedBy, giVerifiedBy, roDocumentID, giMatName, giMatType,
+                                giNoteNumber, giVhlUID, giDate, giTime,
+                                Integer.parseInt(giVhlLength),
+                                Integer.parseInt(giVhlWidth),
+                                Integer.parseInt(giVhlHeight),
+                                Integer.parseInt(radioOperation + giHeightCorrection.replaceAll("[^0-9]", "")),
+                                Integer.parseInt(tvHeightCorrection.getText().toString().replaceAll("[^0-9]", "")),
+                                Float.parseFloat(df.format(Float.parseFloat(giVhlCubication.replaceAll("[^0-9.]", "")))),
+                                false, false, false);
                     }
                 }
-
-                if (spinnerRoNumber.getError() == null && spinnerMatName.getError() == null){
-                    spinnerMatName.setError(null);
-                    spinnerMatName.clearFocus();
-                    String giUID = "";
-                    giUID = giNoteNumber + "-" + giMatType.substring(0, 3) + "-" + giDay.toString() + "-" + giMonth.toString() + "-" + giYear.toString();
-
-                    insertData(giUID, giCreatedBy, giVerifiedBy, giRONumber, giPOCustomerNumber, giMatName, giMatType,
-                            giNoteNumber, giVhlUID, giDate, giTime,
-                            Integer.parseInt(giVhlLength),
-                            Integer.parseInt(giVhlWidth),
-                            Integer.parseInt(giVhlHeight),
-                            Integer.parseInt(radioOperation + giHeightCorrection.replaceAll("[^0-9]", "")),
-                            Integer.parseInt(tvHeightCorrection.getText().toString().replaceAll("[^0-9]", "")),
-                            Float.parseFloat(df.format(Float.parseFloat(giVhlCubication.replaceAll("[^0-9.]", "")))),
-                            false, false, false);
-                }
-
-
 
             }
         });
     }
 
-    private void insertData(String giUID, String giCreatedBy, String giVerifiedBy, String giRoUID,
-                            String giPoCustNumber, String giMatName, String giMatType,
+    private void insertData(String giUID, String giCreatedBy, String giVerifiedBy, String roDocumentID, String giMatName, String giMatType,
                             String giNoteNumber, String vhlUID, String giDateCreated, String giTimeCreted,
                             int vhlLength,   int vhlWidth, int vhlHeight,
                             int vhlHeightCorrection, int vhlHeightAfterCorrection,
                             float giVhlCubication, Boolean giStatus, Boolean giRecapped, Boolean giInvoiced) {
 
-        GoodIssueModel goodIssueModel = new GoodIssueModel(giUID, giCreatedBy, giVerifiedBy, giRoUID, giPoCustNumber,
+        GoodIssueModel goodIssueModel = new GoodIssueModel(giUID, giCreatedBy, giVerifiedBy, roDocumentID,
                 giMatName, giMatType, giNoteNumber, vhlUID, giDateCreated, giTimeCreted, vhlLength,
                 vhlWidth, vhlHeight, vhlHeightCorrection, vhlHeightAfterCorrection, giVhlCubication, giStatus, giRecapped, giInvoiced, false);
 

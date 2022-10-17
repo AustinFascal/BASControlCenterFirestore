@@ -37,6 +37,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -71,6 +72,7 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.text.pdf.draw.LineSeparator;
+import com.ptbas.controlcenter.create.AddGoodIssueActivity;
 import com.ptbas.controlcenter.create.AddInvoiceActivity;
 import com.ptbas.controlcenter.helper.DialogInterface;
 import com.ptbas.controlcenter.helper.DragLinearLayout;
@@ -103,9 +105,11 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
 
     float totalUnit;
     double matBuyPrice;
-    String dateStartVal = "", dateEndVal = "", rouidVal= "", currencyVal = "", pouidVal = "",
+    String roDocumentID, custIDVal, dateStartVal = "", dateEndVal = "", rouidVal= "", currencyVal = "", pouidVal = "",
             monthStrVal, dayStrVal, roPoCustNumber, matTypeVal, matNameVal, selectedCustName = "";
     public String custNameVal = "";
+
+    List<ProductItems> productItemsList;
 
     Button btnSearchData, imgbtnExpandCollapseFilterLayout;
     AutoCompleteTextView spinnerRoUID, spinnerCustUID;
@@ -239,12 +243,13 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
                     (datePicker, year, month, dayOfMonth) -> {
                         int monthInt = month + 1;
 
-                        if(month < 10){
+                        if(monthInt < 10){
                             monthStrVal = "0" + monthInt;
                         } else {
                             monthStrVal = String.valueOf(monthInt);
                         }
-                        if(dayOfMonth < 10){
+
+                        if(dayOfMonth <= 9){
                             dayStrVal = "0" + dayOfMonth;
                         } else {
                             dayStrVal = String.valueOf(dayOfMonth);
@@ -271,12 +276,13 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
                     (datePicker, year, month, dayOfMonth) -> {
                         int monthInt = month + 1;
 
-                        if(month < 10){
+                        if(monthInt < 10){
                             monthStrVal = "0" + monthInt;
                         } else {
                             monthStrVal = String.valueOf(monthInt);
                         }
-                        if(dayOfMonth < 10){
+
+                        if(dayOfMonth <= 9){
                             dayStrVal = "0" + dayOfMonth;
                         } else {
                             dayStrVal = String.valueOf(dayOfMonth);
@@ -346,7 +352,20 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
             }
         });
 
-        spinnerCustUID.setOnItemClickListener((adapterView, view, i, l) -> {
+
+
+
+
+
+
+
+
+
+
+
+
+
+        /*spinnerCustUID.setOnItemClickListener((adapterView, view, i, l) -> {
             String selectedCustomer = (String) adapterView.getItemAtPosition(i);
             selectedCustName = selectedCustomer;
             spinnerCustUID.setError(null);
@@ -379,7 +398,75 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
 
                     });
             llShowSpinnerRoAndEdtPo.setVisibility(View.VISIBLE);
+        });*/
+
+
+
+
+
+
+
+        spinnerCustUID.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                String selectedCustomer = (String) adapterView.getItemAtPosition(i);
+                selectedCustName = selectedCustomer;
+                spinnerCustUID.setError(null);
+                spinnerRoUID.setText(null);
+                edtPoUID.setText(null);
+
+                btnResetCustomer.setVisibility(View.VISIBLE);
+                clearRoPoData();
+
+                llShowSpinnerRoAndEdtPo.setVisibility(View.VISIBLE);
+
+
+                db.collection("ReceivedOrderData").whereEqualTo("roStatus", true)
+                        .addSnapshotListener((value, error) -> {
+                            if (!Objects.requireNonNull(value).isEmpty()) {
+                                for (DocumentSnapshot d : value.getDocuments()) {
+                                    db.collection("CustomerData").whereEqualTo("custDocumentID", Objects.requireNonNull(d.get("custDocumentID")).toString())
+                                            .addSnapshotListener((value2, error2) -> {
+                                                arrayListRoUID.clear();
+                                                if (!Objects.requireNonNull(value2).isEmpty()) {
+                                                    for (DocumentSnapshot e : value2.getDocuments()) {
+                                                        custIDVal = Objects.requireNonNull(e.get("custName")).toString();
+                                                        db.collection("ReceivedOrderData").whereEqualTo("roStatus", true)
+                                                                .addSnapshotListener((value3, error3) -> {
+                                                                    if (!Objects.requireNonNull(value3).isEmpty()) {
+                                                                        String spinnerPurchaseOrders = Objects.requireNonNull(d.get("roPoCustNumber")).toString();
+                                                                        if (selectedCustomer.contains(custIDVal)) {
+                                                                            arrayListRoUID.add(spinnerPurchaseOrders);
+                                                                        }
+                                                                        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(RecapGoodIssueDataActivity.this, R.layout.style_spinner, arrayListRoUID);
+                                                                        arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
+                                                                        spinnerRoUID.setAdapter(arrayAdapter);
+                                                                    }
+                                                                });
+                                                    }
+                                                } else {
+                                                    if (!isFinishing()) {
+                                                        dialogInterface.roNotExistsDialog(RecapGoodIssueDataActivity.this);
+                                                    }
+                                                }
+                                            });
+                                }
+                            }
+                        });
+
+            }
         });
+
+
+
+
+
+
+
+
+
+
+
         spinnerCustUID.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View view, int i, KeyEvent keyEvent) {
@@ -402,9 +489,9 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
                             ReceivedOrderModel receivedOrderModel = documentSnapshot.toObject(ReceivedOrderModel.class);
                             receivedOrderModel.setRoDocumentID(documentSnapshot.getId());
 
-                            //String documentID = receivedOrderModel.getRoDocumentID();
                             rouidVal = selectedSpinnerPoPtBasNumber;
                             roPoCustNumber = receivedOrderModel.getRoPoCustNumber();
+                            roDocumentID = receivedOrderModel.getRoDocumentID();
                         }
                         edtPoUID.setText(roPoCustNumber);
                     });
@@ -698,7 +785,7 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
             for (int i = 0; i < giManagementAdapter.getSelected().size(); i++){
                 String rowNumberStrVal = String.valueOf(i+1);
                 String rowDateStrVal = giManagementAdapter.getSelected().get(i).getGiDateCreated();
-                String rowIDStrVal = giManagementAdapter.getSelected().get(i).getGiUID().substring(0,5);
+                String rowIDStrVal = giManagementAdapter.getSelected().get(i).getGiNoteNumber();
                 String rowVhlUIDStrVal = giManagementAdapter.getSelected().get(i).getVhlUID();
                 String rowVhLengthStrVal = giManagementAdapter.getSelected().get(i).getVhlLength().toString();
                 String rowVhWidthStrVal = giManagementAdapter.getSelected().get(i).getVhlWidth().toString();
@@ -785,7 +872,7 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
                 if (snapshot.exists()){
                     for (DataSnapshot item : snapshot.getChildren()) {
                         if (Objects.equals(item.child("giStatus").getValue(), true) &&
-                                Objects.equals(item.child("giCashedOut").getValue(), true) &&
+                                Objects.equals(item.child("giCashedOut").getValue(), false) &&
                                 Objects.equals(item.child("giInvoiced").getValue(), false) &&
                                 Objects.equals(item.child("giRecapped").getValue(), false)) {
                             GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
@@ -836,7 +923,7 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
         rouidVal = spinnerRoUID.getText().toString();
         pouidVal = Objects.requireNonNull(edtPoUID.getText()).toString();
 
-        Toast.makeText(context, rouidVal, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(context, rouidVal, Toast.LENGTH_SHORT).show();
 
         db.collection("ReceivedOrderData").whereEqualTo("roPoCustNumber", pouidVal).get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
@@ -848,15 +935,39 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
 
                         matTypeVal = receivedOrderModel.getRoMatType();
                         roPoCustNumber = receivedOrderModel.getRoPoCustNumber();
-                        custNameVal = receivedOrderModel.getRoCustName();
+                        String custDocumentID = receivedOrderModel.getCustDocumentID();
                         currencyVal = receivedOrderModel.getRoCurrency();
+                        //roDocumentID = receivedOrderModel.getRoDocumentID();
 
-                        HashMap<String, List<ProductItems>> map = receivedOrderModel.getRoOrderedItems();
+                        db.collection("CustomerData").whereEqualTo("custDocumentID", custDocumentID).get()
+                                .addOnSuccessListener(queryDocumentSnapshots2 -> {
+                                    for (QueryDocumentSnapshot documentSnapshot2 : queryDocumentSnapshots2){
+                                        CustomerModel customerModel = documentSnapshot2.toObject(CustomerModel.class);
+                                        custNameVal = customerModel.getCustName();
+                                    }
+                                });
+
+                        /*HashMap<String, List<ProductItems>> map = receivedOrderModel.getRoOrderedItems();
                         for (HashMap.Entry<String, List<ProductItems>> e : map.entrySet()) {
                             for (ProductItems productItems : e.getValue()) {
                                 matNameVal = productItems.getMatName();
                                 matBuyPrice = productItems.getMatBuyPrice();
                             }
+                        }*/
+
+                        HashMap<String, List<ProductItems>> map = receivedOrderModel.getRoOrderedItems();
+                        for (HashMap.Entry<String, List<ProductItems>> e : map.entrySet()) {
+                            productItemsList = e.getValue();
+                            for (int i = 0; i<productItemsList.size();i++){
+                                if (productItemsList.get(0).getMatName().equals("JASA ANGKUT")){
+                                    /*transportServiceNameVal = productItemsList.get(0).getMatName();
+                                    transportServiceSellPrice = productItemsList.get(0).getMatBuyPrice();*/
+                                } else {
+                                    matNameVal = productItemsList.get(i).getMatName();
+                                    matBuyPrice = productItemsList.get(i).getMatBuyPrice();
+                                }
+                            }
+
                         }
                     }
                 });
@@ -881,12 +992,12 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
                 goodIssueModelArrayList.clear();
                 if (snapshot.exists()){
                     for (DataSnapshot item : snapshot.getChildren()) {
-                        if (!rouidVal.isEmpty()){
+                        //if (!rouidVal.isEmpty()){
 
-                            if (Objects.requireNonNull(item.child("giPoCustNumber").getValue()).toString().contains(pouidVal) &&
-                                    !pouidVal.equals("-")) {
+                        //Toast.makeText(context, roDocumentID, Toast.LENGTH_SHORT).show();
+                            if (Objects.requireNonNull(item.child("roDocumentID").getValue()).toString().equals(roDocumentID)) {
                                 if (Objects.equals(item.child("giStatus").getValue(), true) &&
-                                        Objects.equals(item.child("giCashedOut").getValue(), true) &&
+                                        Objects.equals(item.child("giCashedOut").getValue(), false) &&
                                         Objects.equals(item.child("giInvoiced").getValue(), false) &&
                                         Objects.equals(item.child("giRecapped").getValue(), false)) {
 
@@ -898,7 +1009,7 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
                                 }
                             }
 
-                        }
+                        //}
 
                     }
                     if (goodIssueModelArrayList.size()==0) {
@@ -912,7 +1023,7 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
                     nestedScrollView.setVisibility(View.GONE);
                     llNoData.setVisibility(View.VISIBLE);
                 }
-
+                Collections.reverse(goodIssueModelArrayList);
                 giManagementAdapter = new GIManagementAdapter(context, goodIssueModelArrayList);
                 rvGoodIssueList.setAdapter(giManagementAdapter);
             }

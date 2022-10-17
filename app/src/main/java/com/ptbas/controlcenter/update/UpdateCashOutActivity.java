@@ -120,10 +120,10 @@ public class UpdateCashOutActivity extends AppCompatActivity {
     CollectionReference refSupplier = db.collection("SupplierData");
 
     double matBuyPrice, transportServiceSellPrice, invTax1 = 0, invTax2 =0;
-    String dateStartVal = "", dateEndVal = "", rouidVal= "", suppplieruidVal = "", currencyVal = "", pouidVal = "",
+    String custDocumentID, dateStartVal = "", dateEndVal = "", rouidVal= "", suppplieruidVal = "", currencyVal = "", pouidVal = "",
             monthStrVal, dayStrVal, roPoCustNumber, matTypeVal, matNameVal, transportServiceNameVal,
             invPoDate = "", invCustName = "", invPoUID = "", custNameVal = "",
-            custAddressVal = "", roUID ="", coUID="", invPotypeVal = "", coCreatedBy="",
+            custAddressVal = "", roUID ="", coUID="", invPotypeVal = "", coCreatedBy="", coApprovedBy, coAccBy,
             supplierPayee, supplierBankAndAccountNumber, supplierAccountOwnerName, coID, poUID, supplierUID;
 
     String coUIDVal, coCreatedByVal, coApprovedByVal, coAccByVal,
@@ -227,18 +227,21 @@ public class UpdateCashOutActivity extends AppCompatActivity {
             refCO.whereEqualTo("coDocumentID", coID).get()
                     .addOnSuccessListener(queryDocumentSnapshots -> {
                         for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots){
-                            //CashOutModel cashOutModel = documentSnapshot.toObject(CashOutModel.class);
+                            CashOutModel cashOutModel = documentSnapshot.toObject(CashOutModel.class);
 
-                            coUIDVal = documentSnapshot.get("coUID", String.class);
+                            coUIDVal = cashOutModel.getCoUID();
+                            coCreatedBy = cashOutModel.getCoCreatedBy();
+                            coApprovedBy = cashOutModel.getCoApprovedBy();
+                            coAccBy = cashOutModel.getCoAccBy();
                             tvCoUID.setText(coUIDVal);
 
                             DatabaseReference referenceProfile = FirebaseDatabase.getInstance("https://bas-delivery-report-default-rtdb.asia-southeast1.firebasedatabase.app").getReference("RegisteredUser");
                             referenceProfile.addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                    coCreatedByVal = snapshot.child(documentSnapshot.get("coCreatedBy", String.class)).child("fullName").getValue(String.class);
-                                    coApprovedByVal = snapshot.child(documentSnapshot.get("coApprovedBy", String.class)).child("fullName").getValue(String.class);
-                                    coAccByVal = snapshot.child(documentSnapshot.get("coAccBy", String.class)).child("fullName").getValue(String.class);
+                                    coCreatedByVal = snapshot.child(coCreatedBy).child("fullName").getValue(String.class);
+                                    coApprovedByVal = snapshot.child(coApprovedBy).child("fullName").getValue(String.class);
+                                    coAccByVal = snapshot.child(coAccBy).child("fullName").getValue(String.class);
 
                                     tvCreatedBy.setText(coCreatedByVal);
                                     tvApprovedBy.setText(coApprovedByVal);
@@ -251,27 +254,26 @@ public class UpdateCashOutActivity extends AppCompatActivity {
                                 }
                             });
 
-                            coDateAndTimeCreatedVal = documentSnapshot.get("coDateAndTimeCreated", String.class);
+                            coDateAndTimeCreatedVal = cashOutModel.getCoDateAndTimeCreated();
                             tvDateAndTimeCreated.setText(coDateAndTimeCreatedVal);
 
-                            coDateAndTimeApprovedVal = documentSnapshot.get("coDateAndTimeApproved", String.class);
-                            coDateAndTimeAccVal = documentSnapshot.get("coDateAndTimeACC", String.class);
+                            coDateAndTimeApprovedVal = cashOutModel.getCoDateAndTimeApproved();
+                            coDateAndTimeAccVal = cashOutModel.getCoDateAndTimeACC();
                             tvDateAndTimeApproved.setText(coDateAndTimeApprovedVal);
                             tvDateAndTimeACC.setText(coDateAndTimeAccVal);
 
-                            coDateDeliveryPeriodVal = documentSnapshot.get("coDateDeliveryPeriod", String.class);
-                            coPoUIDVal = documentSnapshot.get("coPoNumber", String.class);
+                            coDateDeliveryPeriodVal = cashOutModel.getCoDateDeliveryPeriod();
+                            coPoUIDVal = cashOutModel.getRoDocumentID();
+
                             tvDateDeliveryPeriod.setText(coDateDeliveryPeriodVal);
-                            tvPoUID.setText(coPoUIDVal);
 
-                            //TWO
-                            coSupplierUIDVal = documentSnapshot.get("coSupplier", String.class);
-                            supplierUID = documentSnapshot.get("coSupplier", String.class);
+                            //coSupplierUIDVal = documentSnapshot.get("coSupplier", String.class);
+                            supplierUID = cashOutModel.getCoSupplier();
 
-                            coStatusApprovalVal = documentSnapshot.get("coStatusApproval", Boolean.class);
-                            coStatusPaymentVal = documentSnapshot.get("coStatusPayment", Boolean.class);
+                            coStatusApprovalVal = cashOutModel.getCoStatusApproval();
+                            coStatusPaymentVal = cashOutModel.getCoStatusPayment();
 
-                            refRO.whereEqualTo("roPoCustNumber", coPoUIDVal).get()
+                            refRO.whereEqualTo("roDocumentID", coPoUIDVal).get()
                                     .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                                         @Override
                                         public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
@@ -283,22 +285,38 @@ public class UpdateCashOutActivity extends AppCompatActivity {
                                             matBuyPrice = 0;
 
                                             for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots){
-                                                coCustomerNameVal = documentSnapshot.get("roCustName", String.class);
-                                                coRoUIDVal = documentSnapshot.get("roUID", String.class);
-                                                tvCustomerName.setText(coCustomerNameVal);
-                                                tvRoUID.setText(coRoUIDVal);
-
                                                 ReceivedOrderModel receivedOrderModel = documentSnapshot.toObject(ReceivedOrderModel.class);
                                                 receivedOrderModel.setRoDocumentID(documentSnapshot.getId());
 
+                                                custDocumentID = receivedOrderModel.getRoDocumentID();
+                                                //coRoUIDVal = documentSnapshot.get("roUID", String.class);
+
                                                 matTypeVal = receivedOrderModel.getRoMatType();
                                                 roPoCustNumber = receivedOrderModel.getRoPoCustNumber();
-                                                custNameVal = receivedOrderModel.getRoCustName();
+                                                custNameVal = receivedOrderModel.getCustDocumentID();
                                                 currencyVal = receivedOrderModel.getRoCurrency();
-                                                invCustName = receivedOrderModel.getRoCustName();
+                                                invCustName = receivedOrderModel.getCustDocumentID();
                                                 invPoUID = receivedOrderModel.getRoUID();
                                                 invPoDate = receivedOrderModel.getRoDateCreated();
                                                 invPoType = receivedOrderModel.getRoType();
+
+                                                tvPoUID.setText(roPoCustNumber);
+                                                tvRoUID.setText(invPoUID);
+
+                                                db.collection("CustomerData").whereEqualTo("custDocumentID", invCustName).get()
+                                                        .addOnSuccessListener(queryDocumentSnapshots2 -> {
+                                                            for (QueryDocumentSnapshot documentSnapshot2 : queryDocumentSnapshots2){
+                                                                CustomerModel customerModel = documentSnapshot2.toObject(CustomerModel.class);
+                                                                custNameVal = customerModel.getCustName();
+                                                                custAddressVal = customerModel.getCustAddress();
+
+                                                                tvCustomerName.setText(custNameVal);
+
+                                                            }
+                                                        });
+
+
+
 
                                                 if (invPoType == 0){
                                                     invPotypeVal = "MATERIAL + JASA ANGKUT";
@@ -310,13 +328,29 @@ public class UpdateCashOutActivity extends AppCompatActivity {
                                                     invPotypeVal = "JASA ANGKUT SAJA";
                                                 }
 
-                                                HashMap<String, List<ProductItems>> map = receivedOrderModel.getRoOrderedItems();
+                                                /*HashMap<String, List<ProductItems>> map = receivedOrderModel.getRoOrderedItems();
                                                 for (HashMap.Entry<String, List<ProductItems>> e : map.entrySet()) {
                                                     productItemsList = e.getValue();
                                                     for (int i = 0; i<productItemsList.size();i++){
                                                         matNameVal = productItemsList.get(i).getMatName();
                                                         matBuyPrice = productItemsList.get(i).getMatBuyPrice();
 
+                                                    }
+
+                                                }*/
+
+                                                HashMap<String, List<ProductItems>> map = receivedOrderModel.getRoOrderedItems();
+                                                for (HashMap.Entry<String, List<ProductItems>> e : map.entrySet()) {
+                                                    productItemsList = e.getValue();
+                                                    for (int i = 0; i<productItemsList.size();i++){
+                                                        if (productItemsList.get(0).getMatName().equals("JASA ANGKUT")){
+                                                            transportServiceNameVal = productItemsList.get(0).getMatName();
+                                                            transportServiceSellPrice = productItemsList.get(0).getMatBuyPrice();
+                                                        } else {
+                                                            matNameVal = productItemsList.get(i).getMatName();
+                                                            //matCubication = productItemsList.get(i).getMatQuantity();
+                                                            matBuyPrice = productItemsList.get(i).getMatBuyPrice();
+                                                        }
                                                     }
 
                                                 }
@@ -328,7 +362,7 @@ public class UpdateCashOutActivity extends AppCompatActivity {
                                     });
 
 
-                            refSupplier.whereEqualTo("supplierID", coSupplierUIDVal).get()
+                            refSupplier.whereEqualTo("supplierID", supplierUID).get()
                                     .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                                         @Override
                                         public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
@@ -506,20 +540,14 @@ public class UpdateCashOutActivity extends AppCompatActivity {
 
                 dialogInterface.confirmPrintCo(context, db, goodIssueModelArrayList,
                         coUIDVal, coDateAndTimeCreatedVal, coCustomerNameVal, coDateAndTimeApprovedVal,coApprovedByVal, coDateAndTimeAccVal, coAccByVal,
-                        coSupplierUIDVal, coRoUIDVal, coDateDeliveryPeriodVal, coStatusApprovalVal, coStatusPaymentVal, totalIDR);
+                        coSupplierUIDVal, roPoCustNumber, coDateDeliveryPeriodVal, coStatusApprovalVal, coStatusPaymentVal, totalIDR);
 
-                String custNameValReplace = coCustomerNameVal.replace(" - ","-");
+                //String custNameValReplace = coCustomerNameVal.replace(" - ","-");
 
                 //Toast.makeText(context, custNameValReplace, Toast.LENGTH_SHORT).show();
 
-                int indexCustNameVal = custNameValReplace.lastIndexOf('-');
-                db.collection("CustomerData").whereEqualTo("custUID", custNameValReplace.substring(0, indexCustNameVal)).get()
-                        .addOnSuccessListener(queryDocumentSnapshots2 -> {
-                            for (QueryDocumentSnapshot documentSnapshot2 : queryDocumentSnapshots2){
-                                CustomerModel customerModel = documentSnapshot2.toObject(CustomerModel.class);
-                                custAddressVal = customerModel.getCustAddress();
-                            }
-                        });
+                //int indexCustNameVal = custNameValReplace.lastIndexOf('-');
+
 
             }
         });
@@ -531,64 +559,7 @@ public class UpdateCashOutActivity extends AppCompatActivity {
         // CREATE GI MANAGEMENT ADAPTER
         giManagementAdapter = new GIManagementAdapter(this, goodIssueModelArrayList);
 
-        // HIDE FAB CREATE COR ON CREATE
-        //fabPrint.animate().translationY(800).setDuration(100).start();
 
-        // NOTIFY REAL-TIME CHANGES AS USER CHOOSE THE ITEM
-        /*final Handler handler = new Handler();
-        Runnable runnable = new Runnable() {
-            public void run() {
-                // CHECK IF DATE AND RO/PO NUMBER IS SELECTED
-                if (!Objects.requireNonNull(spinnerCustName.getText()).toString().isEmpty()
-                        && !spinnerRoUID.getText().toString().isEmpty()
-                        && !Objects.requireNonNull(edtPoUID.getText()).toString().isEmpty()
-                        && !spinnerSupplierName.getText().toString().isEmpty()){
-
-                    int itemSelectedSize = giManagementAdapter.getSelected().size();
-                    float itemSelectedVolume = giManagementAdapter.getSelectedVolume();
-                    //float itemSelectedBuyPrice = giManagementAdapter.getSelectedVolBuyPrice();
-                    //String itemSelectedBuyPriceVal = df.format(itemSelectedBuyPrice);
-                    String itemSelectedSizeVal = String.valueOf(itemSelectedSize).concat(" item terpilih");
-                    String itemSelectedVolumeAndBuyPriceVal = df.format(itemSelectedVolume).concat(" m3");
-                    //.concat("IDR "+itemSelectedBuyPriceVal);
-
-                    if (giManagementAdapter.getSelected().size()>0){
-
-                        fabCreateCOR.animate().translationY(0).setDuration(100).start();
-
-                        tvTotalSelectedItem.setText(itemSelectedSizeVal);
-                        tvTotalSelectedItem2.setText(itemSelectedVolumeAndBuyPriceVal);
-                        llBottomSelectionOptions.animate()
-                                .translationY(0).alpha(1.0f)
-                                .setDuration(100)
-                                .setListener(new AnimatorListenerAdapter() {
-                                    @Override
-                                    public void onAnimationStart(Animator animation) {
-                                        super.onAnimationStart(animation);
-                                        llBottomSelectionOptions.setVisibility(View.VISIBLE);
-                                    }
-                                });
-
-
-                    } else {
-                        totalUnit = 0;
-                        fabCreateCOR.animate().translationY(800).setDuration(100).start();
-                        llBottomSelectionOptions.animate()
-                                .translationY(llBottomSelectionOptions.getHeight()).alpha(0.0f)
-                                .setListener(new AnimatorListenerAdapter() {
-                                    @Override
-                                    public void onAnimationEnd(Animator animation) {
-                                        super.onAnimationEnd(animation);
-                                        llBottomSelectionOptions.setVisibility(View.GONE);
-                                    }
-                                });
-                    }
-                }
-
-                handler.postDelayed(this, 100);
-            }
-        };
-        runnable.run();*/
     }
 
     private void clearRoPoData(){
@@ -797,7 +768,7 @@ public class UpdateCashOutActivity extends AppCompatActivity {
 
             Paragraph paragraphInvDateCreated =
                     new Paragraph("Tanggal cetak: "
-                            +invDateCreated+" "+invTimeCreated+" WIB, oleh: "+coCreatedBy, fontNormalSmallItalic);
+                            +invDateCreated+" "+invTimeCreated+" WIB, oleh: "+coCreatedByVal, fontNormalSmallItalic);
             paragraphInvDateCreated.setAlignment(Element.ALIGN_RIGHT);
             paragraphInvDateCreated.setSpacingAfter(5);
 
@@ -828,11 +799,11 @@ public class UpdateCashOutActivity extends AppCompatActivity {
 
             // TOTAL AMOUNT CALCULATION
             double totalAmountForMaterials = matBuyPrice *totalUnitFinal;
-            //double totalAmountForTransportService = transportServiceSellPrice*totalUnitFinal;
+            double totalAmountForTransportService = transportServiceSellPrice*totalUnitFinal;
             /*double taxPPN = (0.11)*totalAmountForMaterials;
             double taxPPH = (0.02)*totalAmountForTransportService;*/
             //double totalDue = totalAmountForMaterials+totalAmountForTransportService;
-            //double totalDueForTransportService = totalAmountForTransportService-taxPPH;
+            //double totalDueForTransportService = totalAmountForTransportService;
 
             // INIT TABLE
             PdfPTable tblInvSection1 = new PdfPTable(7);
@@ -841,7 +812,8 @@ public class UpdateCashOutActivity extends AppCompatActivity {
             PdfPTable tblInvSection4 = new PdfPTable(7);
             PdfPTable tblInvSection5 = new PdfPTable(4);
             PdfPTable tblInvSection6 = new PdfPTable(4);
-            PdfPTable tblInvSection7 = new PdfPTable(2);
+            PdfPTable tblInvSectionDeliveryPeriod = new PdfPTable(2);
+            PdfPTable tblInvSection7 = new PdfPTable(4);
             PdfPTable tblInvSection8 = new PdfPTable(4);
             PdfPTable tblInvSection9 = new PdfPTable(4);
             PdfPTable tblInvSection10 = new PdfPTable(2);
@@ -857,6 +829,7 @@ public class UpdateCashOutActivity extends AppCompatActivity {
             tblInvSection5.setWidthPercentage(100);
             tblInvSection6.setWidthPercentage(100);
             tblInvSection7.setWidthPercentage(100);
+            tblInvSectionDeliveryPeriod.setWidthPercentage(100);
             tblInvSection8.setWidthPercentage(100);
             tblInvSection9.setWidthPercentage(100);
             tblInvSection10.setWidthPercentage(100);
@@ -871,7 +844,8 @@ public class UpdateCashOutActivity extends AppCompatActivity {
             tblInvSection4.setWidths(new float[]{4,1,9,1,4,1,11}); //5 COLS
             tblInvSection5.setWidths(new float[]{3,3,3,4}); //5 COLS
             tblInvSection6.setWidths(new float[]{3,3,3,4}); //5 COLS
-            tblInvSection7.setWidths(new float[]{1,1}); //2 COLS
+            tblInvSection7.setWidths(new float[]{3,3,3,4}); //2 COLS
+            tblInvSectionDeliveryPeriod.setWidths(new float[]{1,1}); //2 COLS
             tblInvSection8.setWidths(new float[]{3,3,3,4}); //5 COLS
             tblInvSection9.setWidths(new float[]{3,3,3,4}); //5 COLS
             tblInvSection10.setWidths(new float[]{2,10}); //2 COLS
@@ -943,7 +917,7 @@ public class UpdateCashOutActivity extends AppCompatActivity {
                     new Paragraph(":"+"\n"+":"+"\n"+":", fontNormal),
                     Element.ALIGN_LEFT));
             tblInvSection3.addCell(cellTxtNoBrdrNrml(
-                    new Paragraph(coPoUIDVal+"\n"+invPoDate+"\n"+invPotypeVal, fontNormal),
+                    new Paragraph(roPoCustNumber+"\n"+invPoDate+"\n"+invPotypeVal, fontNormal),
                     Element.ALIGN_LEFT));
 
             tblInvSection5.addCell(cellColHeader(
@@ -965,21 +939,31 @@ public class UpdateCashOutActivity extends AppCompatActivity {
             /*HashSet<String> filter = new HashSet(datePeriod);
             ArrayList<String> datePeriodFiltered = new ArrayList<>(filter);*/
 
-            tblInvSection7.addCell(cellTxtNoBrdrNrmlMainContent(
+            tblInvSectionDeliveryPeriod.addCell(cellTxtNoBrdrNrmlMainContent(
                     new Paragraph("Pengiriman Tanggal: "+coDateDeliveryPeriodVal, fontNormal), Element.ALIGN_LEFT));
-            tblInvSection7.addCell(cellTxtNoBrdrNrmlMainContent(
+            tblInvSectionDeliveryPeriod.addCell(cellTxtNoBrdrNrmlMainContent(
                     new Paragraph("", fontNormal), Element.ALIGN_LEFT));
 
 
+            for (int i = 0; i < productItemsList.size(); i++) {
+                tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
+                        new Paragraph(matNameVal, fontNormal), Element.ALIGN_LEFT));
+                tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
+                        new Paragraph(currencyVal + " " + currencyFormat(df.format(matBuyPrice)), fontNormal), Element.ALIGN_RIGHT));
+                tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
+                        new Paragraph(df.format(totalUnitFinal), fontNormal), Element.ALIGN_RIGHT));
+                tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
+                        new Paragraph(currencyVal + " " + currencyFormat(df.format(totalAmountForMaterials)), fontNormal), Element.ALIGN_RIGHT));
+            }
 
-            tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
-                    new Paragraph(matNameVal, fontNormal), Element.ALIGN_LEFT));
-            tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
-                    new Paragraph(currencyVal+" "+currencyFormat(df.format(matBuyPrice)), fontNormal), Element.ALIGN_RIGHT));
-            tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
+            tblInvSection7.addCell(cellTxtNoBrdrNrmlMainContent(
+                    new Paragraph(transportServiceNameVal, fontNormal), Element.ALIGN_LEFT));
+            tblInvSection7.addCell(cellTxtNoBrdrNrmlMainContent(
+                    new Paragraph(currencyVal+" "+currencyFormat(df.format(transportServiceSellPrice)), fontNormal), Element.ALIGN_RIGHT));
+            tblInvSection7.addCell(cellTxtNoBrdrNrmlMainContent(
                     new Paragraph(df.format(totalUnitFinal), fontNormal), Element.ALIGN_RIGHT));
-            tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
-                    new Paragraph(currencyVal+" "+currencyFormat(df.format(totalAmountForMaterials)), fontNormal), Element.ALIGN_RIGHT));
+            tblInvSection7.addCell(cellTxtNoBrdrNrmlMainContent(
+                    new Paragraph(currencyVal+" "+currencyFormat(df.format(totalAmountForTransportService)), fontNormal), Element.ALIGN_RIGHT));
 
 
 
@@ -1232,7 +1216,7 @@ public class UpdateCashOutActivity extends AppCompatActivity {
         return (n - c) % 2 == 0 ? (int) d : c;
     }
 
-    private void searchQuery(){
+    /*private void searchQuery(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             vibrator.vibrate(VibrationEffect.createOneShot(100,
                     VibrationEffect.DEFAULT_AMPLITUDE));
@@ -1245,12 +1229,6 @@ public class UpdateCashOutActivity extends AppCompatActivity {
 
         expandFilterViewValidation();
         TransitionManager.beginDelayedTransition(cdvFilter, new AutoTransition());
-
-        /*rouidVal = spinnerRoUID.getText().toString();
-        pouidVal = Objects.requireNonNull(edtPoUID.getText()).toString();
-        coUID = getRandomString2(5)+" - "+rouidVal;*/
-
-        //fabCreateCOR.animate().translationY(0).setDuration(100).start();
 
         db.collection("ReceivedOrderData").whereEqualTo("roUID", coRoUIDVal).get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
@@ -1267,9 +1245,9 @@ public class UpdateCashOutActivity extends AppCompatActivity {
 
                         matTypeVal = receivedOrderModel.getRoMatType();
                         roPoCustNumber = receivedOrderModel.getRoPoCustNumber();
-                        custNameVal = receivedOrderModel.getRoCustName();
+                        custNameVal = receivedOrderModel.getCustDocumentID();
                         currencyVal = receivedOrderModel.getRoCurrency();
-                        invCustName = receivedOrderModel.getRoCustName();
+                        invCustName = receivedOrderModel.getCustDocumentID();
                         invPoUID = receivedOrderModel.getRoUID();
                         invPoDate = receivedOrderModel.getRoDateCreated();
                         invPoType = receivedOrderModel.getRoType();
@@ -1288,10 +1266,10 @@ public class UpdateCashOutActivity extends AppCompatActivity {
                         for (HashMap.Entry<String, List<ProductItems>> e : map.entrySet()) {
                             productItemsList = e.getValue();
                             for (int i = 0; i<productItemsList.size();i++){
-                                /*if (productItemsList.get(0).getMatName().equals("JASA ANGKUT")){
+                                *//*if (productItemsList.get(0).getMatName().equals("JASA ANGKUT")){
                                     transportServiceNameVal = productItemsList.get(0).getMatName();
                                     transportServiceSellPrice = productItemsList.get(0).getMatBuyPrice();
-                                } else {*/
+                                } else {*//*
                                 matNameVal = productItemsList.get(i).getMatName();
                                 matBuyPrice = productItemsList.get(i).getMatBuyPrice();
                                 //}
@@ -1314,7 +1292,7 @@ public class UpdateCashOutActivity extends AppCompatActivity {
         if (dateStartVal.isEmpty()&&dateEndVal.isEmpty()){
             query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated");
         }
-        query.addValueEventListener(new ValueEventListener() {
+        *//*query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 goodIssueModelArrayList.clear();
@@ -1358,8 +1336,8 @@ public class UpdateCashOutActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError error) {
 
             }
-        });
-    }
+        });*//*
+    }*/
 
     private void searchQueryAll(){
         //rouidVal = spinnerRoUID.getText().toString();

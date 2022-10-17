@@ -10,6 +10,7 @@ import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Environment;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
@@ -22,6 +23,8 @@ import com.ptbas.controlcenter.DashboardActivity;
 import com.ptbas.controlcenter.R;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.util.List;
 
 public class Helper {
@@ -31,44 +34,44 @@ public class Helper {
     public FirebaseAuth authProfile;
 
     public static String getAppPath(Context context) {
-        File dir = new File(Environment.getExternalStorageDirectory()
-                +File.separator
-                +"BASCC"
-                +File.separator
+        String fullPath = context.getExternalFilesDir(null) + File.separator
                 +"Rekap Good Issue"
-                +File.separator);
+                +File.separator ;
 
-        if (!dir.exists()){
-            dir.mkdir();
+        File dir = new File(fullPath);
+
+        if (!dir.exists()) {
+            dir.mkdirs();
         }
+
         return dir.getPath() + File.separator;
     }
 
     public static String getAppPathInvoice(Context context) {
-        File dir = new File(Environment.getExternalStorageDirectory()
-                +File.separator
-                +"BASCC"
-                +File.separator
+        String fullPath = context.getExternalFilesDir(null) + File.separator
                 +"Invoice"
-                +File.separator);
+                +File.separator ;
 
-        if (!dir.exists()){
-            dir.mkdir();
+        File dir = new File(fullPath);
+
+        if (!dir.exists()) {
+            dir.mkdirs();
         }
+
         return dir.getPath() + File.separator;
     }
 
     public static String getAppPathCashOut(Context context) {
-        File dir = new File(Environment.getExternalStorageDirectory()
-                +File.separator
-                +"BASCC"
-                +File.separator
+        String fullPath = context.getExternalFilesDir(null) + File.separator
                 +"Cash Out"
-                +File.separator);
+                +File.separator ;
 
-        if (!dir.exists()){
-            dir.mkdir();
+        File dir = new File(fullPath);
+
+        if (!dir.exists()) {
+            dir.mkdirs();
         }
+
         return dir.getPath() + File.separator;
     }
 
