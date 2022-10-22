@@ -521,7 +521,7 @@
                 app:fab_colorNormal="@color/white"
                 app:fab_colorPressed="@color/light_grey"
                 app:fab_icon="@drawable/ic_recap_data"
-                app:fab_title="Buat Rekap Untuk Ditagihkan" />
+                app:fab_title="Buat Rekap Untuk Cash Out" />
 
             <com.getbase.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fab_action_create_ro"

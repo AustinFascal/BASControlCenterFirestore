@@ -1549,7 +1549,7 @@ public class AddCashOutActivity extends AppCompatActivity {
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         int width = displayMetrics.widthPixels;
-        if (width<=1080){
+        /*if (width<=1080){
             RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 1);
             rvGoodIssueList.setLayoutManager(mLayoutManager);
         }
@@ -1560,6 +1560,9 @@ public class AddCashOutActivity extends AppCompatActivity {
         if (width>=1366){
             RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 3);
             rvGoodIssueList.setLayoutManager(mLayoutManager);
-        }
+        }*/
+
+        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 1);
+        rvGoodIssueList.setLayoutManager(mLayoutManager);
     }
 }

@@ -11,13 +11,13 @@ import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
@@ -49,6 +49,8 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
     ArrayList<GoodIssueModel> goodIssueModelArrayList;
     DialogInterface dialogInterface;
     Helper helper = new Helper();
+    ItemViewHolder itemViewHolder;
+    public boolean isSelectedAll = false;
 
 
     public GIManagementAdapter(Context context, ArrayList<GoodIssueModel> goodIssueModelArrayList) {
@@ -62,17 +64,39 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
         notifyDataSetChanged();
     }*/
 
+
     @NonNull
     @Override
     public GIManagementAdapter.ItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_layout_good_issue_desktop, parent, false);
+        View itemView;
 
-        return new ItemViewHolder(itemView);
+
+        WindowManager wm = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
+        wm.getDefaultDisplay().getMetrics(context.getResources().getDisplayMetrics());
+        int width = context.getResources().getDisplayMetrics().widthPixels;
+        if (width<=1080){
+            itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_layout_good_issue, parent, false);
+            itemViewHolder = new ItemViewHolder(itemView);
+        }
+        if (width>1080&&width<1366){
+             itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_layout_good_issue_desktop, parent, false);
+            itemViewHolder = new ItemViewHolder(itemView);
+        }
+        if (width>=1366){
+             itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_layout_good_issue_desktop, parent, false);
+            itemViewHolder = new ItemViewHolder(itemView);
+        }
+        return itemViewHolder;
     }
 
     @Override
     public void onBindViewHolder(@NonNull ItemViewHolder holder, int position) {
         holder.viewBind(goodIssueModelArrayList.get(position));
+        if (!isSelectedAll) {
+            holder.cbSelectItem.setChecked(false);
+        } else {
+            holder.cbSelectItem.setChecked(true);
+        }
     }
 
     @Override
@@ -152,7 +176,7 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
 
             DecimalFormat df = new DecimalFormat("0.00");
             float cubication = goodIssueModel.getGiVhlCubication();
-            String dateNTime = goodIssueModel.getGiDateCreated()+" | \n"+goodIssueModel.getGiTimeCreted() + " WIB";
+            String dateNTime = goodIssueModel.getGiDateCreated()+" | "+goodIssueModel.getGiTimeCreted() + " WIB";
 
             String[] partGiUID = goodIssueModel.getGiUID().split("-");
             String giUID = partGiUID[0];
@@ -395,17 +419,20 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
     }
 
 
-    public ArrayList<GoodIssueModel> selectAll() {
-        ArrayList<GoodIssueModel> selected = new ArrayList<>();
+
+    public void selectAll(){
+        isSelectedAll=true;
         for (int i = 0; i < goodIssueModelArrayList.size(); i++) {
-            if (!goodIssueModelArrayList.get(i).isChecked()) {
-                selected.add(goodIssueModelArrayList.get(i));
-            }
+            goodIssueModelArrayList.get(i).setChecked(true);
+
         }
-        return selected;
+        notifyDataSetChanged();
     }
 
+
+
     public void clearSelection() {
+        isSelectedAll=false;
         for (int i = 0; i < goodIssueModelArrayList.size(); i++) {
             goodIssueModelArrayList.get(i).setChecked(false);
         }

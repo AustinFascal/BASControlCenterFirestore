@@ -34,7 +34,7 @@ public class Helper {
     public FirebaseAuth authProfile;
 
     public static String getAppPath(Context context) {
-        String fullPath = context.getExternalFilesDir(null) + File.separator
+        /*String fullPath = context.getExternalFilesDir(null) + File.separator
                 +"Rekap Good Issue"
                 +File.separator ;
 
@@ -42,34 +42,66 @@ public class Helper {
 
         if (!dir.exists()) {
             dir.mkdirs();
+        }*/
+
+        String fullPath = File.separator +  "mnt" + File.separator
+                + "windows" + File.separator
+                + "BstSharedFolder" + File.separator
+                +"Rekap Good Issue"
+                +File.separator ;
+
+        File dir = new File(fullPath);
+
+        if (!dir.exists()) {
+            dir.mkdir();
+        } else{
+            dir.canWrite();
         }
 
         return dir.getPath() + File.separator;
     }
 
     public static String getAppPathInvoice(Context context) {
-        String fullPath = context.getExternalFilesDir(null) + File.separator
+        /*String fullPath = context.getExternalFilesDir(null) + File.separator
+                +"Invoice"
+                +File.separator ;
+
+        File dir = new File(fullPath);*/
+
+        String fullPath = File.separator +  "mnt" + File.separator
+                + "windows" + File.separator
+                + "BstSharedFolder" + File.separator
                 +"Invoice"
                 +File.separator ;
 
         File dir = new File(fullPath);
 
         if (!dir.exists()) {
-            dir.mkdirs();
+            dir.mkdir();
+        } else{
+            dir.canWrite();
         }
 
         return dir.getPath() + File.separator;
     }
 
     public static String getAppPathCashOut(Context context) {
-        String fullPath = context.getExternalFilesDir(null) + File.separator
+        /*String fullPath = context.getExternalFilesDir(null) + File.separator
+                +"Cash Out"
+                +File.separator ;*/
+
+        String fullPath = File.separator +  "mnt" + File.separator
+                + "windows" + File.separator
+                + "BstSharedFolder" + File.separator
                 +"Cash Out"
                 +File.separator ;
 
         File dir = new File(fullPath);
 
         if (!dir.exists()) {
-            dir.mkdirs();
+            dir.mkdir();
+        } else{
+            dir.canWrite();
         }
 
         return dir.getPath() + File.separator;

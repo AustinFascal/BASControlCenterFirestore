@@ -227,20 +227,75 @@ public class AddGoodIssueActivity extends AppCompatActivity {
         });
 
 
-        edtVhlLength.setOnKeyListener((view, i, keyEvent) -> {
+        edtVhlLength.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                processCountVolume(edtVhlLength);
+
+            }
+        });
+
+
+        edtVhlWidth.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                processCountVolume(edtVhlWidth);
+
+            }
+        });
+
+        edtVhlHeight.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                processCountVolume(edtVhlHeight);
+
+            }
+        });
+
+        /*edtVhlLength.setOnKeyListener((view, i, keyEvent) -> {
             processCountVolume(edtVhlLength);
             return false;
-        });
+        });*/
 
-        edtVhlWidth.setOnKeyListener((view, i, keyEvent) -> {
+        /*edtVhlWidth.setOnKeyListener((view, i, keyEvent) -> {
             processCountVolume(edtVhlWidth);
             return false;
-        });
+        });*/
 
-        edtVhlHeight.setOnKeyListener((view, i, keyEvent) -> {
+        /*edtVhlHeight.setOnKeyListener((view, i, keyEvent) -> {
             processCountVolume(edtVhlHeight);
             return false;
-        });
+        });*/
 
         radioGroupOperation.setOnCheckedChangeListener((radioGroup, i) -> {
             DecimalFormat df1 = new DecimalFormat("0.00");

@@ -85,7 +85,8 @@ public class CashOutManagementAdapter extends RecyclerView.Adapter<CashOutManage
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         LinearLayout llWrapItemStatus, llStatusApproved, llStatusPaid;
         TextView tvDateCreated, tvTotalDue, tvCoUID, tvPoNumber, tvSupplierName;
-        Button btnDeleteItem, btnShowItemDetail, btnPrintItem, btnItemPaid, btnApproveItem;
+        Button btnDeleteItem, btnShowItemDetail, btnPrintItem, btnItemPaid;
+        //btnApproveItem
         RelativeLayout rlBtnDeleteItem, rlOpenItemDetail, rlBtnPrintItem, rlBtnItemPaid, rlBtnApproveItem;
         CardView cdvItem;
         CheckBox cbSelectItem;
@@ -112,7 +113,7 @@ public class CashOutManagementAdapter extends RecyclerView.Adapter<CashOutManage
             btnShowItemDetail = itemView.findViewById(R.id.btnOpenItemDetail);
             btnPrintItem = itemView.findViewById(R.id.btnPrintItem);
             btnItemPaid = itemView.findViewById(R.id.btnItemPaid);
-            btnApproveItem = itemView.findViewById(R.id.btnApproveItem);
+            //btnApproveItem = itemView.findViewById(R.id.btnApproveItem);
 
             rlBtnDeleteItem = itemView.findViewById(R.id.rlBtnDeleteItem);
             rlOpenItemDetail = itemView.findViewById(R.id.rlBtnOpenItemDetail);
@@ -282,12 +283,12 @@ public class CashOutManagementAdapter extends RecyclerView.Adapter<CashOutManage
                 }
             });
 
-            btnApproveItem.setOnClickListener(new View.OnClickListener() {
+            /*btnApproveItem.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     dialogInterface.approveCoConfirm(context, coDocumentID);
                 }
-            });
+            });*/
 
 
             //!!TODO CREATE OPTION TO PRINT FROM LIST ITEM

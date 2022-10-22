@@ -1112,6 +1112,7 @@
                             android:drawableTint="?colorPrimary"
                             android:textSize="15sp"
                             android:textStyle="bold"
+                            android:textAlignment="textStart"
                             android:text="Lihat Daftar Good Issue"
                             android:visibility="visible" />
                     </LinearLayout>

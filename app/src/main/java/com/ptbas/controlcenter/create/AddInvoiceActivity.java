@@ -515,6 +515,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
                     .addSnapshotListener((value, error) -> {
                         if (!Objects.requireNonNull(value).isEmpty()) {
                             for (DocumentSnapshot d : value.getDocuments()) {
+                                //custDocumentID = d.get("custDocumentID").toString();
                                 custDocumentID = Objects.requireNonNull(d.get("custDocumentID")).toString();
                                 db.collection("CustomerData").whereEqualTo("custDocumentID", custDocumentID)
                                         .addSnapshotListener((value2, error2) -> {
@@ -640,8 +641,9 @@ public class AddInvoiceActivity extends AppCompatActivity {
                             CashOutModel cashOutModel = documentSnapshot.toObject(CashOutModel.class);
                             cashOutModel.setCoDocumentID(documentSnapshot.getId());
                             coDocumentID = cashOutModel.getCoDocumentID();
+                            coUID = cashOutModel.getCoUID();
                         }
-                        edtPoUID.setText(roPoCustNumber);
+                        //spinnerCoUID.setText(coUID);
                     });
         });
 
@@ -1715,7 +1717,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
                 if (snapshot.exists()){
                     for (DataSnapshot item : snapshot.getChildren()) {
                         if (!rouidVal.isEmpty()){
-                            if (Objects.requireNonNull(item.child("giCashedOutTo").getValue()).toString().contains(coDocumentID)) {
+                            if (Objects.equals(item.child("giCashedOutTo").getValue(), coDocumentID)) {
                                 if (Objects.equals(item.child("giStatus").getValue(), true)
                                         && Objects.equals(item.child("giCashedOut").getValue(), true)
                                         && Objects.equals(item.child("giInvoiced").getValue(), false)
@@ -1726,6 +1728,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
                                     nestedScrollView.setVisibility(View.VISIBLE);
                                     llNoData.setVisibility(View.GONE);
                                 }
+
                             }
                         }
 
@@ -1956,7 +1959,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         int width = displayMetrics.widthPixels;
-        if (width<=1080){
+        /*if (width<=1080){
             RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 1);
             rvGoodIssueList.setLayoutManager(mLayoutManager);
         }
@@ -1967,7 +1970,10 @@ public class AddInvoiceActivity extends AppCompatActivity {
         if (width>=1366){
             RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 3);
             rvGoodIssueList.setLayoutManager(mLayoutManager);
-        }
+        }*/
+
+        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 1);
+        rvGoodIssueList.setLayoutManager(mLayoutManager);
     }
 
     @Override

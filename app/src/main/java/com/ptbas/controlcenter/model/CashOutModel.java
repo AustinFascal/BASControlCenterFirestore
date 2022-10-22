@@ -6,13 +6,20 @@ public class CashOutModel {
     String coDocumentID, coUID, coDateAndTimeCreated, coCreatedBy,
             coDateAndTimeApproved, coApprovedBy, coDateAndTimeACC, coAccBy, coSupplier, roDocumentID,
             coDateDeliveryPeriod;
+    String coBookedStep1By, coBookedStep1Date, coBookedStep2By, coBookedStep2Date, bankDocumentID, coTransferReference;
     Boolean coStatusApproval, coStatusPayment;
     Double coTotal;
 
     public CashOutModel() {
     }
 
-    public CashOutModel(String coDocumentID, String coUID, String coDateAndTimeCreated, String coCreatedBy, String coDateAndTimeApproved, String coApprovedBy, String coDateAndTimeACC, String coAccBy, String coSupplier, String roDocumentID, String coDateDeliveryPeriod, Boolean coStatusApproval, Boolean coStatusPayment, Double coTotal) {
+    public CashOutModel(String coDocumentID, String coUID, String coDateAndTimeCreated,
+                        String coCreatedBy, String coDateAndTimeApproved, String coApprovedBy,
+                        String coDateAndTimeACC, String coAccBy, String coSupplier,
+                        String roDocumentID, String coDateDeliveryPeriod, Boolean coStatusApproval,
+                        Boolean coStatusPayment, Double coTotal,
+                        String coBookedStep1By, String coBookedStep1Date, String coBookedStep2By,
+                        String coBookedStep2Date, String bankDocumentID, String coTransferReference) {
         this.coDocumentID = coDocumentID;
         this.coUID = coUID;
         this.coDateAndTimeCreated = coDateAndTimeCreated;
@@ -27,6 +34,12 @@ public class CashOutModel {
         this.coStatusApproval = coStatusApproval;
         this.coStatusPayment = coStatusPayment;
         this.coTotal = coTotal;
+        this.coBookedStep1By = coBookedStep1By;
+        this.coBookedStep1Date = coBookedStep1Date;
+        this.coBookedStep2By = coBookedStep2By;
+        this.coBookedStep2Date = coBookedStep2Date;
+        this.bankDocumentID = bankDocumentID;
+        this.coTransferReference = coTransferReference;
     }
 
     public String getCoDocumentID() {
@@ -139,6 +152,55 @@ public class CashOutModel {
 
     public void setCoTotal(Double coTotal) {
         this.coTotal = coTotal;
+    }
+
+
+    public String getCoBookedStep1By() {
+        return coBookedStep1By;
+    }
+
+    public void setCoBookedStep1By(String coBookedStep1By) {
+        this.coBookedStep1By = coBookedStep1By;
+    }
+
+    public String getCoBookedStep1Date() {
+        return coBookedStep1Date;
+    }
+
+    public void setCoBookedStep1Date(String coBookedStep1Date) {
+        this.coBookedStep1Date = coBookedStep1Date;
+    }
+
+    public String getCoBookedStep2By() {
+        return coBookedStep2By;
+    }
+
+    public void setCoBookedStep2By(String coBookedStep2By) {
+        this.coBookedStep2By = coBookedStep2By;
+    }
+
+    public String getCoBookedStep2Date() {
+        return coBookedStep2Date;
+    }
+
+    public void setCoBookedStep2Date(String coBookedStep2Date) {
+        this.coBookedStep2Date = coBookedStep2Date;
+    }
+
+    public String getBankDocumentID() {
+        return bankDocumentID;
+    }
+
+    public void setBankDocumentID(String bankDocumentID) {
+        this.bankDocumentID = bankDocumentID;
+    }
+
+    public String getCoTransferReference() {
+        return coTransferReference;
+    }
+
+    public void setCoTransferReference(String coTransferReference) {
+        this.coTransferReference = coTransferReference;
     }
 
     public boolean isChecked() {

@@ -431,7 +431,26 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
             md.show();
         });
 
-        btnSelectAll.setVisibility(View.GONE);
+        btnSelectAll.setVisibility(View.VISIBLE);
+
+        btnSelectAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                giManagementAdapter.selectAll();
+                llBottomSelectionOptions.animate()
+                        .translationY(0).alpha(1.0f)
+                        .setDuration(100)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationStart(Animator animation) {
+                                super.onAnimationStart(animation);
+                                llBottomSelectionOptions.setVisibility(View.VISIBLE);
+                            }
+                        });
+            }
+        });
+
+
 
         btnExitSelection.setOnClickListener(new View.OnClickListener() {
             @Override

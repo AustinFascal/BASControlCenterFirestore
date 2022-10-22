@@ -41,6 +41,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -100,12 +101,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Random;
 
 public class RecapGoodIssueDataActivity extends AppCompatActivity {
 
+    private static final String ALLOWED_CHARACTERS = "0123456789QWERTYUIOPASDFGHJKLZXCVBNM";
+
+
     float totalUnit;
     double matBuyPrice;
-    String roDocumentID, custIDVal, dateStartVal = "", dateEndVal = "", rouidVal= "", currencyVal = "", pouidVal = "",
+    String rcpGiUID, roDocumentID, custIDVal, dateStartVal = "", dateEndVal = "", rouidVal= "", currencyVal = "", pouidVal = "",
             monthStrVal, dayStrVal, roPoCustNumber, matTypeVal, matNameVal, selectedCustName = "";
     public String custNameVal = "";
 
@@ -125,6 +130,8 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
     CardView cdvFilter;
     View firstViewData;
     NestedScrollView nestedScrollView;
+
+    boolean isSelectedAll = false;
 
     ImageButton btnExitSelection;
     TextView tvTotalSelectedItem, tvTotalSelectedItem2;
@@ -148,6 +155,8 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
     DecimalFormat df = new DecimalFormat("0.00");
 
     Vibrator vibrator;
+
+    private Menu menu;
 
     //List<String> receiveOrderNumberList;
     @Override
@@ -185,6 +194,8 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
         btnGiSearchByDateReset = findViewById(R.id.btn_gi_search_date_reset);
         btnGiSearchByRoUIDReset = findViewById(R.id.btnResetRouid);
         fabCreateGiRecap = findViewById(R.id.fabCreateCOR);
+
+
 
         tvTotalSelectedItem = findViewById(R.id.tvTotalSelectedItem);
         tvTotalSelectedItem2 = findViewById(R.id.tvTotalSelectedItem2);
@@ -232,6 +243,26 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
 
         // SET DEFAULT LANG CODE TO ENGLISH
         LangUtils.setLocale(this, "en");
+
+        btnExitSelection.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                menu.findItem(R.id.select_all_data_recap).setIcon(ContextCompat.getDrawable(RecapGoodIssueDataActivity.this, R.drawable.ic_outline_select_all));
+
+                giManagementAdapter.clearSelection();
+
+                llBottomSelectionOptions.animate()
+                        .translationY(llBottomSelectionOptions.getHeight()).alpha(0.0f)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                super.onAnimationEnd(animation);
+                                llBottomSelectionOptions.setVisibility(View.GONE);
+                            }
+                        });
+            }
+        });
 
         edtDateStart.setOnClickListener(view -> {
             final Calendar calendar = Calendar.getInstance();
@@ -512,6 +543,21 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
             btnGiSearchByRoUIDReset.setVisibility(View.GONE);
         });
 
+        btnResetCustomer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                isSelectedAll = false;
+                giManagementAdapter.clearSelection();
+                menu.findItem(R.id.select_all_data_recap).setVisible(false);
+                spinnerCustUID.setText(null);
+                llShowSpinnerRoAndEdtPo.setVisibility(View.GONE);
+                spinnerRoUID.setText(null);
+                edtPoUID.setText(null);
+                btnResetCustomer.setVisibility(View.GONE);
+                searchQueryAll();
+            }
+        });
+
         //fabCreateGiRecap.hide();
 
         // CREATE GI MANAGEMENT ADAPTER
@@ -626,11 +672,26 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
                 ActivityCompat.requestPermissions((Activity) context,
                         new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 10);
             } else {
-                dialogInterface.confirmCreateRecap(context, pouidVal, goodIssueModelArrayList);
+                String coDateCreated = new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(new Date());
+
+                String coTimeCreated =
+                        new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
+                rcpGiUID = getRandomString2(5)+" - "+pouidVal;
+                dialogInterface.confirmCreateRecap(context, rcpGiUID, coDateCreated + " | " + coTimeCreated + " WIB", helper.getUserId(), roDocumentID, roPoCustNumber, goodIssueModelArrayList);
             }
         });
 
         searchQueryAll();
+    }
+
+
+
+    private static String getRandomString2(final int sizeOfRandomString) {
+        final Random random=new Random();
+        final StringBuilder sb=new StringBuilder(sizeOfRandomString);
+        for(int i=0;i<sizeOfRandomString;++i)
+            sb.append(ALLOWED_CHARACTERS.charAt(random.nextInt(ALLOWED_CHARACTERS.length())));
+        return sb.toString();
     }
 
     private void clearRoPoData(){
@@ -995,19 +1056,20 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
                         //if (!rouidVal.isEmpty()){
 
                         //Toast.makeText(context, roDocumentID, Toast.LENGTH_SHORT).show();
-                            if (Objects.requireNonNull(item.child("roDocumentID").getValue()).toString().equals(roDocumentID)) {
-                                if (Objects.equals(item.child("giStatus").getValue(), true) &&
-                                        Objects.equals(item.child("giCashedOut").getValue(), false) &&
-                                        Objects.equals(item.child("giInvoiced").getValue(), false) &&
-                                        Objects.equals(item.child("giRecapped").getValue(), false)) {
+                        if (Objects.requireNonNull(item.child("roDocumentID").getValue()).toString().equals(roDocumentID)) {
+                            if (Objects.equals(item.child("giStatus").getValue(), true) &&
+                                    Objects.equals(item.child("giCashedOut").getValue(), false) &&
+                                    Objects.equals(item.child("giInvoiced").getValue(), false) &&
+                                    Objects.equals(item.child("giRecapped").getValue(), false)) {
 
-                                    GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
-                                    goodIssueModelArrayList.add(goodIssueModel);
-                                    fabCreateGiRecap.show();
-                                    nestedScrollView.setVisibility(View.VISIBLE);
-                                    llNoData.setVisibility(View.GONE);
-                                }
+                                menu.findItem(R.id.select_all_data_recap).setVisible(true);
+                                GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
+                                goodIssueModelArrayList.add(goodIssueModel);
+                                fabCreateGiRecap.show();
+                                nestedScrollView.setVisibility(View.VISIBLE);
+                                llNoData.setVisibility(View.GONE);
                             }
+                        }
 
                         //}
 
@@ -1059,9 +1121,9 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(@NonNull Menu menu) {
+        this.menu = menu;
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.recap_gi_menu, menu);
-
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -1081,6 +1143,72 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
             }
             return true;
         }
+        if (item.getItemId() == R.id.refresh_data_recap) {
+            View viewLayout = RecapGoodIssueDataActivity.this.getCurrentFocus();
+            if (viewLayout != null) {
+                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(viewLayout.getWindowToken(), 0);
+            }
+
+            if (spinnerCustUID.getText().toString().isEmpty()){
+                spinnerCustUID.setError("");
+            } else{
+                spinnerCustUID.setError(null);
+            }
+
+            if (spinnerRoUID.getText().toString().isEmpty()){
+                spinnerRoUID.setError("");
+            } else{
+                spinnerRoUID.setError(null);
+            }
+
+            if (Objects.requireNonNull(edtPoUID.getText()).toString().isEmpty()){
+                edtPoUID.setError("");
+            } else{
+                edtPoUID.setError(null);
+            }
+
+            if (!spinnerCustUID.getText().toString().isEmpty()&&
+                    !spinnerRoUID.getText().toString().isEmpty()&&
+                    !edtPoUID.getText().toString().isEmpty()){
+                searchQuery();
+            }
+            return true;
+        }
+
+        if (item.getItemId() == R.id.select_all_data_recap) {
+
+            if (!isSelectedAll){
+                isSelectedAll = true;
+                item.setIcon(R.drawable.ic_outline_deselect);
+                giManagementAdapter.selectAll();
+                llBottomSelectionOptions.animate()
+                        .translationY(0).alpha(1.0f)
+                        .setDuration(100)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationStart(Animator animation) {
+                                super.onAnimationStart(animation);
+                                llBottomSelectionOptions.setVisibility(View.VISIBLE);
+                            }
+                        });
+            } else {
+                isSelectedAll = false;
+                item.setIcon(R.drawable.ic_outline_select_all);
+                giManagementAdapter.clearSelection();
+                llBottomSelectionOptions.animate()
+                        .translationY(llBottomSelectionOptions.getHeight()).alpha(0.0f)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                super.onAnimationEnd(animation);
+                                llBottomSelectionOptions.setVisibility(View.GONE);
+                            }
+                        });
+            }
+
+            return true;
+        }
 
         onBackPressed();
         return super.onOptionsItemSelected(item);
@@ -1094,7 +1222,7 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         int width = displayMetrics.widthPixels;
-        if (width<=1080){
+        /*if (width<=1080){
             RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 1);
             rvGoodIssueList.setLayoutManager(mLayoutManager);
         }
@@ -1105,7 +1233,11 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
         if (width>=1366){
             RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 3);
             rvGoodIssueList.setLayoutManager(mLayoutManager);
-        }
+        }*/
+
+        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 1);
+        rvGoodIssueList.setLayoutManager(mLayoutManager);
+
     }
 
     @Override

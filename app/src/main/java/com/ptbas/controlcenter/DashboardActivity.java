@@ -454,6 +454,11 @@ public class DashboardActivity extends AppCompatActivity {
         mGI.setImgName(R.drawable.ic_good_issue);
         holder.add(mGI);
 
+        MainFeatureModel mRKPGI = new MainFeatureModel();
+        mRKPGI.setHeader("Data Rekap\nGood Issue");
+        mRKPGI.setImgName(R.drawable.ic_recap_good_issue);
+        holder.add(mRKPGI);
+
         MainFeatureModel mCO = new MainFeatureModel();
         mCO.setHeader("Data\nCash Out");
         mCO.setImgName(R.drawable.ic_bkk);

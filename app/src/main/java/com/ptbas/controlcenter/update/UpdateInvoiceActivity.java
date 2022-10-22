@@ -221,7 +221,7 @@ public class UpdateInvoiceActivity extends AppCompatActivity {
         tvDateDeliveryPeriod = findViewById(R.id.tvDateDeliveryPeriod);
         tvCreatedBy = findViewById(R.id.tvCreatedBy);
         tvDateAndTimeCreated = findViewById(R.id.tvDateAndTimeCreated);
-        tvApprovedBy = findViewById(R.id.tvApprovedBy);
+        //tvApprovedBy = findViewById(R.id.tvApprovedBy);
 
         spinnerBankAccount = findViewById(R.id.spinnerBankAccount);
 
@@ -540,13 +540,14 @@ public class UpdateInvoiceActivity extends AppCompatActivity {
                                                 }
 
                                                 tvMatName.setText(matNameVal);
-                                                tvCubicationTotal.setText(matCubication+" m3");
+
 
 
                                                 totalUnitFinal = 0;
                                                 for (int i = 0; i < goodIssueModelArrayList.size(); i++) {
                                                     totalUnitFinal += goodIssueModelArrayList.get(i).getGiVhlCubication();
                                                 }
+                                                tvCubicationTotal.setText(totalUnitFinal+" m3");
 
                                                 // TOTAL AMOUNT CALCULATION
                                                 totalAmountForMaterials = matSellPrice*totalUnitFinal;
@@ -1108,6 +1109,13 @@ public class UpdateInvoiceActivity extends AppCompatActivity {
                     new Paragraph("", fontNormalSmall),
                     Element.ALIGN_LEFT));
 
+            String paidStatus;
+            if (edtVerifiedBy.getText().toString().isEmpty()){
+                paidStatus= "BELUM LUNAS";
+            } else {
+                paidStatus= "LUNAS";
+            }
+
             tblInvSection12.addCell(cellTxtNoBrdrNrmlWthPadLft(
                     new Paragraph("Status", fontMedium),
                     Element.ALIGN_LEFT));
@@ -1115,7 +1123,7 @@ public class UpdateInvoiceActivity extends AppCompatActivity {
                     new Paragraph(":", fontMedium),
                     Element.ALIGN_RIGHT));
             tblInvSection12.addCell(cellTxtNoBrdrNrml(
-                    new Paragraph("BELUM LUNAS", fontMedium),
+                    new Paragraph(paidStatus, fontMedium),
                     Element.ALIGN_LEFT));
             tblInvSection12.addCell(cellTxtNoBrdrNrml(
                     new Paragraph("", fontNormalSmall),
@@ -1447,7 +1455,7 @@ public class UpdateInvoiceActivity extends AppCompatActivity {
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         int width = displayMetrics.widthPixels;
-        if (width<=1080){
+        /*if (width<=1080){
             RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 1);
             rvGoodIssueList.setLayoutManager(mLayoutManager);
         }
@@ -1458,6 +1466,8 @@ public class UpdateInvoiceActivity extends AppCompatActivity {
         if (width>=1366){
             RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 3);
             rvGoodIssueList.setLayoutManager(mLayoutManager);
-        }
+        }*/
+        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 1);
+        rvGoodIssueList.setLayoutManager(mLayoutManager);
     }
 }
