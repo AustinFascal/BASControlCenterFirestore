@@ -76,7 +76,7 @@ public class AddReceivedOrder extends AppCompatActivity {
     Button btnAddRow, btnLockRow, btnUnlockRow, btnNoPoNumber;
     TextInputEditText edtPoDate, edtPoNumberCustomer, edtRoNumber;
     TextInputLayout wrapEdtPoNumberPtBas, txtInputEdtPoNumberCustomer;
-    AutoCompleteTextView spinnerPoTransportType, spinnerPoCustName, spinnerPoCurrency, spinnerRoType, spinnerPoTOP;
+    AutoCompleteTextView spinnerPoTransportType, spinnerPoCustName, spinnerPoCurrency, spinnerRoType, spinnerPoTOP, spinnerTaxType;
     List<String> productName, transportTypeName, customerName, currencyName, arrayListCustDocumentID;
     String transportData = "", customerData = "", customerID ="", randomString="NULL", currencyData="", custDocumentID = "";
     Integer poYear = 0, poMonth = 0, poDay = 0;
@@ -100,6 +100,8 @@ public class AddReceivedOrder extends AppCompatActivity {
     private BottomSheetBehavior<ConstraintLayout> bottomSheetBehavior;
     private ConstraintLayout bottomSheet;
 
+    TextInputLayout spinnerTaxTypeWrap;
+
     DialogInterface dialogInterface = new DialogInterface();
     Helper helper = new Helper();
 
@@ -107,12 +109,16 @@ public class AddReceivedOrder extends AppCompatActivity {
 
     PreviewProductItemAdapter previewProductItemAdapter;
 
+    Boolean taxTypeVal;
+
     String[] roTOPVal = {"14", "30", "60"};
     ArrayList<String> arrayListRoTOPVal = new ArrayList<>(Arrays.asList(roTOPVal));
 
     String[] roTypeStr = {"JASA ANGKUT + MATERIAL", "MATERIAL SAJA", "JASA ANGKUT SAJA"};
+    String[] taxTypeStr = {"PKP", "NON PKP"};
     Integer[] roTypeVal = {0, 1, 2};
     ArrayList<String> arrayListRoType = new ArrayList<>(Arrays.asList(roTypeStr));
+    ArrayList<String> arrayListTaxType = new ArrayList<>(Arrays.asList(taxTypeStr));
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     DocumentReference refRO = db.collection("ReceivedOrderData").document();
@@ -125,6 +131,7 @@ public class AddReceivedOrder extends AppCompatActivity {
         LangUtils.setLocale(this, "en");
 
         ArrayAdapter<String> arrayAdapterRoType = new ArrayAdapter<>(this, R.layout.style_spinner, arrayListRoType);
+        ArrayAdapter<String> arrayAdapterTaxType = new ArrayAdapter<>(this, R.layout.style_spinner, arrayListTaxType);
         ArrayAdapter<String> arrayAdapterRoTOP = new ArrayAdapter<>(this, R.layout.style_spinner, arrayListRoTOPVal);
 
         spinnerRoType = findViewById(R.id.spinner_ro_type);
@@ -132,6 +139,30 @@ public class AddReceivedOrder extends AppCompatActivity {
 
         spinnerPoTOP = findViewById(R.id.edt_po_TOP);
         spinnerPoTOP.setAdapter(arrayAdapterRoTOP);
+
+        spinnerTaxType = findViewById(R.id.spinnerTaxType);
+        spinnerTaxTypeWrap = findViewById(R.id.spinnerTaxTypeWrap);
+
+        spinnerTaxTypeWrap.setVisibility(View.GONE);
+
+
+        spinnerTaxType.setAdapter(arrayAdapterTaxType);
+
+        spinnerTaxType.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                switch (i) {
+                    case 0:
+                        taxTypeVal = true;
+                        break;
+                    case 1:
+                        taxTypeVal = false;
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
 
         spinnerRoType.setOnItemClickListener((adapterView, view, i, l) -> {
             //spinnerRoType.setText(adapterView.indexOfChild(i));
@@ -349,8 +380,7 @@ public class AddReceivedOrder extends AppCompatActivity {
             customerID = custID[0];
             randomString = getRandomString(5);
 
-
-
+            spinnerTaxTypeWrap.setVisibility(View.VISIBLE);
 
             custDocumentID = arrayListCustDocumentID.get(position);
             //String custDocumentIDValReplace = custDocumentIDVal.replace(" - ","-");
@@ -551,7 +581,7 @@ public class AddReceivedOrder extends AppCompatActivity {
                                         roDateCreated, roMatTransport, roCurrency, roPoCustNumber,
                                         custDocumentID, roType, roTOP, poSubTotalBuy,
                                         poSubTotalSell, roCountQuantity, poTotalSellFinal, poEstProfit,
-                                        false, productItemsHashMap);
+                                        false, productItemsHashMap, taxTypeVal);
 
 
                         fabActionSaveCloud.setOnClickListener(view1 -> {

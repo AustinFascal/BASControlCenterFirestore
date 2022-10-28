@@ -153,7 +153,25 @@
                                 </com.google.android.material.textfield.TextInputLayout>
 
                             </LinearLayout>
+                            <LinearLayout
+                                android:id="@+id/llStatusCo"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/pill_red"
+                                android:paddingHorizontal="8dp"
+                                android:layout_marginTop="2dp"
+                                android:paddingVertical="2dp"
+                                android:textAlignment="center"
+                                android:visibility="gone">
 
+                                <TextView
+                                    android:textColor="@color/dark_red"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="CASH OUT BELUM LUNAS"
+                                    android:textSize="11sp"
+                                    android:textStyle="bold" />
+                            </LinearLayout>
                             <LinearLayout
                                 android:id="@+id/ll_wrap_filter_by_couid"
                                 android:layout_width="match_parent"
@@ -301,7 +319,7 @@
                             style="@style/MaterialDialog.PositiveButton"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="CARI DATA GOOD ISSUE" />
+                            android:text="TERAPKAN" />
 
                     </LinearLayout>
 

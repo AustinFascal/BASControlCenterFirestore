@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".recap.RecapGoodIssueDataActivity">
+    tools:context=".create.AddRecapGoodIssueDataActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -359,7 +359,7 @@
                         style="@style/MaterialDialog.PositiveButton"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="CARI DATA GOOD ISSUE" />
+                        android:text="TERAPKAN" />
 
                 </LinearLayout>
 

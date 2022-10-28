@@ -121,16 +121,16 @@ public class UpdateCashOutActivity extends AppCompatActivity {
     CollectionReference refSupplier = db.collection("SupplierData");
     CollectionReference refBankAccount = db.collection("BankAccountData");
 
-    double matBuyPrice, transportServiceSellPrice, invTax1 = 0, invTax2 =0,matCubication;
-    String custDocumentID, dateStartVal = "", dateEndVal = "", rouidVal= "", suppplieruidVal = "", currencyVal = "", pouidVal = "",
+    double matBuyPrice, transportServiceSellPrice;
+    String custDocumentID, rouidVal= "", suppplieruidVal = "", currencyVal = "", pouidVal = "",
             monthStrVal, dayStrVal, roPoCustNumber, matTypeVal, matNameVal, transportServiceNameVal,
             invPoDate = "", invCustName = "", invPoUID = "", custNameVal = "",
-            custAddressVal = "", roUID ="", coUID="", invPotypeVal = "", coCreatedBy="", coApprovedBy, coAccBy,
-            supplierPayee, supplierBankAndAccountNumber, supplierAccountOwnerName, coID, poUID, supplierUID;
+            custAddressVal = "", invPotypeVal = "", coCreatedBy="", coApprovedBy, coAccBy,
+            supplierPayee, supplierBankAndAccountNumber, supplierAccountOwnerName, coID, supplierUID;
 
     String bankDocumentID, coUIDVal, coCreatedByVal, coApprovedByVal, coAccByVal,
             coDateAndTimeCreatedVal, coDateAndTimeApprovedVal, coDateAndTimeAccVal, coDateDeliveryPeriodVal, coPoUIDVal, coSupplierUIDVal,
-            coCustomerNameVal, coRoUIDVal, coSupplierNameVal, coAccountOwnerNameVal, coBankNameAndAccountNumberVal, coPayeeVal;
+            coCustomerNameVal, coSupplierNameVal, coAccountOwnerNameVal, coBankNameAndAccountNumberVal, coPayeeVal;
 
     String bookedStep1By, bookedStep2By, coVerifiedBy;
     Boolean coStatusApprovalVal, coStatusPaymentVal;
@@ -142,18 +142,17 @@ public class UpdateCashOutActivity extends AppCompatActivity {
     DialogInterface dialogInterface = new DialogInterface();
 
     CardView cdvFilter;
-    View firstViewData;
     NestedScrollView nestedScrollView;
-    TextInputEditText edtSupplierBankNameAndAccountNumber, edtSupplierAccountOwnerName, edtBankNameAndAccountNumber, edtPayee, edtValidStatus, edtPaymentStatus, edtCreatedBy;
+    TextInputEditText edtSupplierBankNameAndAccountNumber, edtSupplierAccountOwnerName, edtPayee;
+
+    // edtBankNameAndAccountNumber
     TextView tvCreatedBy, tvDateAndTimeCreated,
             tvCoUID, tvCustomerName, tvRoUID, tvPoUID, tvDateDeliveryPeriod;
-
-    // tvApprovedBy, tvDateAndTimeApproved, tvAccBy, tvDateAndTimeACC
     AutoCompleteTextView spinnerSupplierName;
-    Button btnSearchData, imgbtnExpandCollapseFilterLayout;
-    LinearLayout llWrapFilterByDateRange, llWrapFilterByRouid, llNoData, llWrapFilter, llShowSpinnerRoAndEdtPo, llWrapSupplierDetail;
+    Button imgbtnExpandCollapseFilterLayout;
+    LinearLayout llNoData, llWrapFilter, llWrapSupplierDetail;
 
-    ImageButton btnGiSearchByDateReset, btnResetRouid, btnResetCustomer, btnResetSupplier;
+    ImageButton btnResetSupplier;
 
     ExtendedFloatingActionButton fabPrint;
 
@@ -182,7 +181,7 @@ public class UpdateCashOutActivity extends AppCompatActivity {
 
 
     float totalUnitFinal;
-    double totalAmountForMaterials, totalAmountForTransportService, taxPPN, taxPPH, totalDue, totalDueForTransportService;
+    double totalAmountForMaterials, totalAmountForTransportService, totalDue, totalDueForTransportService;
 
     String finalPaidDate, finalBookedStep1Date, finalBookedStep2Date, transferProofReference;
 
@@ -213,7 +212,6 @@ public class UpdateCashOutActivity extends AppCompatActivity {
         llWrapFilter = findViewById(R.id.llWrapFilter);
         llNoData = findViewById(R.id.ll_no_data);
         edtSupplierBankNameAndAccountNumber = findViewById(R.id.edtSupplierBankNameAndAccountNumber);
-        edtBankNameAndAccountNumber = findViewById(R.id.edtAccountOwnerName);
         edtSupplierAccountOwnerName = findViewById(R.id.edtSupplierAccountOwnerName);
         edtPayee = findViewById(R.id.edtPayee);
 
@@ -291,6 +289,7 @@ public class UpdateCashOutActivity extends AppCompatActivity {
                         finalPaidDate = year + "-" +monthStrVal + "-" + dayStrVal;
 
                         edtDatePaid.setText(finalPaidDate);
+                        edtDatePaid.setError(null);
                         btnDatePaidReset.setVisibility(View.VISIBLE);
 
                     }, Integer.parseInt(yearStrVal), Integer.parseInt(monthStrVal), Integer.parseInt(dayStrVal));
@@ -324,6 +323,7 @@ public class UpdateCashOutActivity extends AppCompatActivity {
                         finalBookedStep1Date = year + "-" +monthStrVal + "-" + dayStrVal;
 
                         edtBookedStep1Date.setText(finalBookedStep1Date);
+                        edtBookedStep1Date.setError(null);
                         btnBookedStep1DateReset.setVisibility(View.VISIBLE);
 
                     }, Integer.parseInt(yearStrVal), Integer.parseInt(monthStrVal), Integer.parseInt(dayStrVal));
@@ -355,8 +355,8 @@ public class UpdateCashOutActivity extends AppCompatActivity {
                         }
 
                         finalBookedStep2Date = year + "-" +monthStrVal + "-" + dayStrVal;
-
                         edtBookedStep2Date.setText(finalBookedStep2Date);
+                        edtBookedStep2Date.setError(null);
                         btnBookedStep2DateReset.setVisibility(View.VISIBLE);
 
                     }, Integer.parseInt(yearStrVal), Integer.parseInt(monthStrVal), Integer.parseInt(dayStrVal));
@@ -474,8 +474,8 @@ public class UpdateCashOutActivity extends AppCompatActivity {
             btnResetSupplier.setVisibility(View.GONE);
             llWrapSupplierDetail.setVisibility(View.GONE);
             spinnerSupplierName.setText(null);
-            edtBankNameAndAccountNumber.setText(null);
-            edtAccountOwnerName.setText(null);
+            edtSupplierBankNameAndAccountNumber.setText(null);
+            edtSupplierAccountOwnerName.setText(null);
             edtPayee.setText(null);
             spinnerSupplierName.requestFocus();
         });
@@ -538,8 +538,8 @@ public class UpdateCashOutActivity extends AppCompatActivity {
                             supplierBankAndAccountNumber = bankAliasReplace.substring(0, indexBankAliasVal) + " - " + supplierModel.getBankAccountNumber() ;
                             supplierAccountOwnerName = supplierModel.getBankAccountOwnerName();
                         }
-                        edtSupplierAccountOwnerName.setText(supplierBankAndAccountNumber);
-                        edtAccountOwnerName.setText(supplierAccountOwnerName);
+                        edtSupplierBankNameAndAccountNumber.setText(supplierBankAndAccountNumber);
+                        edtSupplierAccountOwnerName.setText(supplierAccountOwnerName);
                         edtPayee.setText(supplierPayee);
                     });
         });
@@ -571,14 +571,12 @@ public class UpdateCashOutActivity extends AppCompatActivity {
 
                 double totalIDR = matBuyPrice *Double.parseDouble(df.format(totalUnit));
 
-
                 dialogInterface.confirmPrintCo(context, db, goodIssueModelArrayList,
                         coUIDVal, coDateAndTimeCreatedVal, coCustomerNameVal, coDateAndTimeApprovedVal,coApprovedByVal, coDateAndTimeAccVal, coAccByVal,
                         coSupplierUIDVal, roPoCustNumber, coDateDeliveryPeriodVal, coStatusApprovalVal, coStatusPaymentVal, totalIDR);
 
             }
         });
-
 
         // SHOW INIT DATA ON CREATE
         searchQueryAll();
@@ -625,7 +623,7 @@ public class UpdateCashOutActivity extends AppCompatActivity {
                             bookedStep2By = cashOutModel.getCoBookedStep2By();
 
                             if (!coVerifiedBy.isEmpty()){
-                                edtVerifiedBy.setEnabled(false);
+                                edtVerifiedBy.setFocusable(false);
                                 statusSwitch.setEnabled(false);
                                 statusSwitch.setChecked(true);
                                 tvStatus.setText("Lunas");
@@ -662,18 +660,26 @@ public class UpdateCashOutActivity extends AppCompatActivity {
                             });
 
                             if (!bookedStep1By.isEmpty()){
-                                edtBookedStep1Date.setEnabled(false);
-                                edtDatePaid.setEnabled(false);
-                                spinnerBankAccount.setEnabled(false);
-                                edtBankNameAndAccountNumber.setEnabled(false);
-                                edtTransferProofReference.setEnabled(false);
+                                edtBookedStep1Date.setFocusable(false);
+                                edtBookedStep1Date.setOnClickListener(null);
+
+                                edtDatePaid.setFocusable(false);
+                                edtDatePaid.setOnClickListener(null);
+
+                                spinnerBankAccount.setFocusable(false);
+                                spinnerBankAccount.setAdapter(null);
+
+                                edtAccountOwnerName.setFocusable(false);
+                                edtTransferProofReference.setFocusable(false);
                                 btnDatePaidReset.setVisibility(View.GONE);
-                                edtBookedStep1By.setEnabled(false);
+                                edtBookedStep1By.setFocusable(false);
                                 statusSwitchBookedStep1.setChecked(true);
                                 statusSwitchBookedStep1.setEnabled(false);
 
                                 tvStatusBookedStep1.setText("Selesai");
                                 btnBookedStep1DateReset.setVisibility(View.GONE);
+                                btnResetBankAccount.setFocusable(false);
+
                             } else{
                                 statusSwitchBookedStep1.setChecked(false);
                                 tvStatusBookedStep1.setText("Belum Selesai");
@@ -717,7 +723,7 @@ public class UpdateCashOutActivity extends AppCompatActivity {
                                                     edtDatePaid.setError(null);
                                                     spinnerBankAccount.setError(null);
                                                     edtTransferProofReference.setError(null);
-
+                                                    btnResetBankAccount.setVisibility(View.GONE);
                                                     pd.dismiss();
                                                     loadCashOutData();
                                                 }
@@ -742,9 +748,9 @@ public class UpdateCashOutActivity extends AppCompatActivity {
                             });
 
                             if (!bookedStep2By.isEmpty()){
-                                edtBookedStep2Date.setEnabled(false);
+                                edtBookedStep2Date.setFocusable(false);
                                 btnBookedStep2DateReset.setVisibility(View.GONE);
-                                edtBookedStep2By.setEnabled(false);
+                                edtBookedStep2By.setFocusable(false);
                                 statusSwitchBookedStep2.setChecked(true);
                                 statusSwitchBookedStep2.setEnabled(false);
                                 tvStatusBookedStep2.setText("Selesai");

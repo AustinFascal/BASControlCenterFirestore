@@ -4,6 +4,7 @@ package com.ptbas.controlcenter.adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
@@ -21,6 +22,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.database.DatabaseReference;
@@ -28,9 +31,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.helper.DialogInterface;
 import com.ptbas.controlcenter.helper.Helper;
+import com.ptbas.controlcenter.model.CashOutModel;
 import com.ptbas.controlcenter.model.CustomerModel;
 import com.ptbas.controlcenter.model.GoodIssueModel;
 import com.ptbas.controlcenter.model.ReceivedOrderModel;
@@ -69,21 +74,15 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
     @Override
     public GIManagementAdapter.ItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView;
-
-
-        WindowManager wm = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
-        wm.getDefaultDisplay().getMetrics(context.getResources().getDisplayMetrics());
-        int width = context.getResources().getDisplayMetrics().widthPixels;
+        WindowManager wm = (WindowManager)context.getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
+        wm.getDefaultDisplay().getMetrics(context.getApplicationContext().getResources().getDisplayMetrics());
+        int width = context.getApplicationContext().getResources().getDisplayMetrics().widthPixels;
         if (width<=1080){
             itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_layout_good_issue, parent, false);
             itemViewHolder = new ItemViewHolder(itemView);
         }
-        if (width>1080&&width<1366){
-             itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_layout_good_issue_desktop, parent, false);
-            itemViewHolder = new ItemViewHolder(itemView);
-        }
-        if (width>=1366){
-             itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_layout_good_issue_desktop, parent, false);
+        if (width>1080){
+            itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_layout_good_issue_desktop, parent, false);
             itemViewHolder = new ItemViewHolder(itemView);
         }
         return itemViewHolder;
@@ -114,7 +113,7 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
         Button btn1, btn2, btn3;
         CardView cardView;
         CheckBox cbSelectItem;
-        String customerNameVal, custDocumentID;
+        String customerNameVal, custDocumentID, coAccBy;
 
         public ItemViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -175,7 +174,7 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
             });
 
             DecimalFormat df = new DecimalFormat("0.00");
-            float cubication = goodIssueModel.getGiVhlCubication();
+            Double cubication = goodIssueModel.getGiVhlCubication();
             String dateNTime = goodIssueModel.getGiDateCreated()+" | "+goodIssueModel.getGiTimeCreted() + " WIB";
 
             String[] partGiUID = goodIssueModel.getGiUID().split("-");
@@ -250,6 +249,8 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
 
             //String poCustNumb = "PO: "+goodIssueModel.getGiPoCustNumber();
 
+
+
             String matDetail = goodIssueModel.getGiMatType()+" - "+goodIssueModel.getGiMatName();
             String vhlDetail = "(P) "+goodIssueModel.getVhlLength().toString()+" (L) "+goodIssueModel.getVhlWidth().toString()+" (T) "+goodIssueModel.getVhlHeight().toString()+" | "+"(K) "+goodIssueModel.getVhlHeightCorrection().toString()+" (TK) "+goodIssueModel.getVhlHeightAfterCorrection().toString();
             String vhlUID = goodIssueModel.getVhlUID();
@@ -257,6 +258,7 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
             boolean giRecapped = goodIssueModel.getGiRecapped();
             boolean giInvoiced = goodIssueModel.getGiInvoiced();
             boolean giCashedOut = goodIssueModel.getGiCashedOut();
+            String giCashedOutTo = goodIssueModel.getGiCashedOutTo();
 
             tvCubication.setText(Html.fromHtml(df.format(cubication) +" m\u00B3"));
             tvGiDateTime.setText(dateNTime);
@@ -317,6 +319,25 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
                 llCashedOutStatus.setVisibility(View.GONE);
             }
 
+
+
+            db.collection("CashOutData").whereEqualTo("coDocumentID", giCashedOutTo).get()
+                    .addOnSuccessListener(queryDocumentSnapshots -> {
+                                for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                                    CashOutModel cashOutModel = documentSnapshot.toObject(CashOutModel.class);
+                                    cashOutModel.setCoDocumentID(documentSnapshot.getId());
+                                    coAccBy = cashOutModel.getCoAccBy();
+                                    if (!coAccBy.isEmpty()){
+                                        llCashedOutStatus.setBackground(ContextCompat.getDrawable(context, R.drawable.pill_green));
+                                    } else {
+                                        llCashedOutStatus.setBackground(ContextCompat.getDrawable(context, R.drawable.pill_red));
+                                    }
+                                }
+                            }
+                    );
+
+
+
             /*if (tvPoCustNumber.getText().toString().equals("PO: -")){
                 tvPoCustNumber.setVisibility(View.GONE);
                 llStatusPOAvailable.setVisibility(View.VISIBLE);
@@ -325,18 +346,18 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
                 llStatusPOAvailable.setVisibility(View.GONE);
             }*/
 
-            btn3.setOnClickListener(view -> {
-                String giUID1 =goodIssueModel.getGiUID();
-                Intent i = new Intent(context, UpdateGoodIssueActivity.class);
-                i.putExtra("key", giUID1);
-                context.startActivity(i);
+                btn3.setOnClickListener(view -> {
+                    String giUID1 =goodIssueModel.getGiUID();
+                    Intent i = new Intent(context, UpdateGoodIssueActivity.class);
+                    i.putExtra("key", giUID1);
+                    context.startActivity(i);
                 /*if (helper.ACTIVITY_NAME.equals("UPDATE")){
 
                 }*/ /*else {
                     Toast.makeText(context, "OPEN DETAIL", Toast.LENGTH_SHORT).show();
                 }*/
 
-            });
+                });
 
             btn2.setOnClickListener(view -> {
                 if (tvPoCustNumber.getText().toString().equals("PO: -")){

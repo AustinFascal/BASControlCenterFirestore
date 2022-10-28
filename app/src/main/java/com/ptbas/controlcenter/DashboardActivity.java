@@ -249,7 +249,7 @@ public class DashboardActivity extends AppCompatActivity {
 
         crdviewWrapShortcuts.setVisibility(View.VISIBLE);
 
-        haveNetworkConnection();
+        //haveNetworkConnection();
 
         // FADE TRANSITION FOR DASHBOARD ACTIVITY
         Fade fade = new Fade();
@@ -275,14 +275,14 @@ public class DashboardActivity extends AppCompatActivity {
         llShowOthers.setOnClickListener(view -> bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED));
 
         // HANDLER CHECK INTERNET CONNECTIVITY
-        final Handler handler = new Handler();
+        /*final Handler handler = new Handler();
         Runnable runnable = new Runnable() {
             public void run() {
-                haveNetworkConnection();
+                //haveNetworkConnection();
                 handler.postDelayed(this, 1000);
             }
         };
-        runnable.run();
+        runnable.run();*/
 
         // ADAPTER FOR MAIN FEATURES
         DisplayMetrics displayMetrics = new DisplayMetrics();
@@ -515,7 +515,7 @@ public class DashboardActivity extends AppCompatActivity {
         return holder2;
     }
 
-    public void haveNetworkConnection() {
+   /* public void haveNetworkConnection() {
         nestedscrollview.setOnScrollChangeListener((NestedScrollView.OnScrollChangeListener) (v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
 
             if (scrollY > 50) {
@@ -562,7 +562,7 @@ public class DashboardActivity extends AppCompatActivity {
 
             }
         });
-    }
+    }*/
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -590,7 +590,7 @@ public class DashboardActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        haveNetworkConnection();
+        //haveNetworkConnection();
     }
 
     @Override

@@ -162,6 +162,42 @@
                                     </com.google.android.material.textfield.TextInputLayout>
 
                                 </LinearLayout>
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:divider="@drawable/divider_transparent"
+                                    android:gravity="top"
+                                    android:orientation="horizontal"
+                                    android:showDividers="middle"
+                                    android:visibility="visible">
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:layout_weight="1"
+                                        app:startIconDrawable="@drawable/ic_outline_receipt">
+
+                                        <AutoCompleteTextView
+                                            android:id="@+id/spinnerRcpID"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="ID Rekap Good Issue" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+
+                                    <ImageButton
+                                        android:id="@+id/btnResetRcpID"
+                                        android:layout_width="55dp"
+                                        android:layout_height="match_parent"
+                                        android:layout_marginTop="4dp"
+                                        android:layout_gravity="center_vertical"
+                                        android:layout_marginBottom="1dp"
+                                        android:background="@drawable/outline_box"
+                                        android:scaleType="centerInside"
+                                        android:src="@drawable/ic_outline_restore"
+                                        android:visibility="gone" />
+                                </LinearLayout>
+
                             </LinearLayout>
                             <LinearLayout
                                 android:layout_width="match_parent"
@@ -315,7 +351,7 @@
                                 style="@style/MaterialDialog.PositiveButton"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="CARI DATA GOOD ISSUE" />
+                                android:text="TERAPKAN" />
 
                         </LinearLayout>
                         <Button

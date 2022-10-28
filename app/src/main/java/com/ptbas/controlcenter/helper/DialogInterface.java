@@ -30,7 +30,6 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.WriteBatch;
 import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.adapter.GIManagementAdapter;
-import com.ptbas.controlcenter.create.AddCashOutActivity;
 import com.ptbas.controlcenter.create.AddInvoiceActivity;
 import com.ptbas.controlcenter.create.AddReceivedOrder;
 import com.ptbas.controlcenter.management.ManageReceivedOrderActivity;
@@ -38,12 +37,10 @@ import com.ptbas.controlcenter.model.CashOutModel;
 import com.ptbas.controlcenter.model.GoodIssueModel;
 import com.ptbas.controlcenter.model.InvoiceModel;
 import com.ptbas.controlcenter.model.RecapGIModel;
-import com.ptbas.controlcenter.recap.RecapGoodIssueDataActivity;
+import com.ptbas.controlcenter.create.AddRecapGoodIssueDataActivity;
 import com.ptbas.controlcenter.update.UpdateCashOutActivity;
-import com.ptbas.controlcenter.update.UpdateInvoiceActivity;
 
 import java.io.File;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -63,6 +60,7 @@ public class DialogInterface {
     CollectionReference refInv = db.collection("InvoiceData");
     CollectionReference refCust = db.collection("CustomerData");
     CollectionReference refSupplier = db.collection("SupplierData");
+    CollectionReference refRecap = db.collection("RecapData");
 
     public void fillSearchFilter(Activity activity, SearchView searchView) {
         md = new MaterialDialog.Builder(activity)
@@ -355,6 +353,7 @@ public class DialogInterface {
         md.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
         md.show();
     }
+
 
     public void roNotExistsDialogForInvoice(Activity activity) {
         Vibrator vibrator = (Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE);
@@ -854,7 +853,7 @@ public class DialogInterface {
                                      String invUID, String invCreatedBy,
                                      String invDateNTimeCreated, String invDueDateNTime, String invVerifiedBy, String invTransferReference,
                                      String invDateNTimeVerified, String invDateDeliveryPeriod,
-                                     String custDocumentID, String bankDocumentID, String roDocumentID) {
+                                     String custDocumentID, String bankDocumentID, String roDocumentID, String invDateHandover, String invHandOverBy) {
         MaterialDialog materialDialog = new MaterialDialog.Builder((Activity) context)
                 .setTitle("Buat Invoice")
                 .setAnimation(R.raw.lottie_generate_bill)
@@ -864,7 +863,7 @@ public class DialogInterface {
                     generatingInvoice(context, db,
                             goodIssueModelArrayList,
                             invUID, invCreatedBy, invDateNTimeCreated, invDueDateNTime, invVerifiedBy, invTransferReference,
-                            invDateNTimeVerified, invDateDeliveryPeriod, custDocumentID, bankDocumentID, roDocumentID);
+                            invDateNTimeVerified, invDateDeliveryPeriod, custDocumentID, bankDocumentID, roDocumentID, invDateHandover, invHandOverBy);
                     dialogInterface.dismiss();
                 })
                 .setNegativeButton("TIDAK", R.drawable.ic_outline_close, (dialogInterface, which) -> dialogInterface.dismiss())
@@ -881,7 +880,7 @@ public class DialogInterface {
                                   String invUID, String invCreatedBy,
                                   String invDateNTimeCreated, String invDueDateNTime, String invVerifiedBy, String invTransferReference,
                                   String invDateNTimeVerified, String invDateDeliveryPeriod,
-                                  String custDocumentID, String bankDocumentID, String roDocumentID) {
+                                  String custDocumentID, String bankDocumentID, String roDocumentID, String invDateHandover,  String invHandOverBy) {
 
         GIManagementAdapter giManagementAdapter;
 
@@ -911,7 +910,7 @@ public class DialogInterface {
 
                 InvoiceModel invoiceModel = new InvoiceModel(
                         invDocumentID, invUID, invCreatedBy, invDateNTimeCreated, invDueDateNTime, invVerifiedBy, invTransferReference,
-                        invDateNTimeVerified, invDateDeliveryPeriod, custDocumentID, bankDocumentID, roDocumentID);
+                        invDateNTimeVerified, invDateDeliveryPeriod, custDocumentID, bankDocumentID, roDocumentID, invDateHandover, invHandOverBy);
 
                 ref.set(invoiceModel);
 
@@ -960,7 +959,7 @@ public class DialogInterface {
                                           String coDateAndTimeApproved, String coApprovedBy,
                                           String coDateAndTimeACC, String coAccBy, String coSupplier,
                                           String roDocumentID, String coDateDeliveryPeriod, Boolean coStatusApproval,
-                                          Boolean coStatusPayment, Double coTotal) {
+                                          Boolean coStatusPayment, Double coTotal, String rcpUIDVal) {
 
         MaterialDialog materialDialog = new MaterialDialog.Builder((Activity) context)
                 .setTitle("Buat Cash Out")
@@ -972,7 +971,7 @@ public class DialogInterface {
                             goodIssueModelArrayList,
                             coUID, coDateAndTimeCreated, coCreatedBy,
                             coDateAndTimeApproved, coApprovedBy, coDateAndTimeACC, coAccBy, coSupplier,
-                            roDocumentID, coDateDeliveryPeriod, coStatusApproval, coStatusPayment, coTotal);
+                            roDocumentID, coDateDeliveryPeriod, coStatusApproval, coStatusPayment, coTotal, rcpUIDVal);
                     dialogInterface.dismiss();
                 })
                 .setNegativeButton("TIDAK", R.drawable.ic_outline_close, (dialogInterface, which) -> dialogInterface.dismiss())
@@ -988,7 +987,7 @@ public class DialogInterface {
                                   String coDateAndTimeApproved, String coApprovedBy,
                                   String coDateAndTimeACC, String coAccBy, String coSupplier,
                                   String roDocumentID, String coDateDeliveryPeriod, Boolean coStatusApproval,
-                                  Boolean coStatusPayment, Double coTotal) {
+                                  Boolean coStatusPayment, Double coTotal, String rcpUIDVal) {
 
 
         GIManagementAdapter giManagementAdapter;
@@ -1021,6 +1020,22 @@ public class DialogInterface {
                         "", "", "", "", "", "");
 
                 refCO.set(cashOutModel);
+
+                refRecap.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()){
+                            for(DocumentSnapshot documentSnapshot : task.getResult()){
+                                String getDocumentID = documentSnapshot.getId();
+                                if (getDocumentID.equals(rcpUIDVal)){
+                                    db.collection("RecapData").document(rcpUIDVal).update("rcpGiStatus", true);
+                                    db.collection("RecapData").document(rcpUIDVal).update("rcpGiCoUID", coDocumentID);
+                                }
+                            }
+                        }
+                    }
+                });
+
 
                 for (int i = 0; i < giManagementAdapter.getSelected().size(); i++) {
                     databaseReferenceGI.child("GoodIssueData").child(giManagementAdapter.getSelected().get(i).getGiUID()).child("giCashedOut").setValue(true);
@@ -1055,7 +1070,8 @@ public class DialogInterface {
 
 
 
-    public void confirmCreateRecap(Context context, String rcpGiUID, String rcpGiDateAndTimeCreated, String rcpGiCreatedBy, String roUIDVal, String poUID,
+    public void confirmCreateRecap(Context context, String rcpGiUID, String rcpGiDateAndTimeCreated,
+                                   String rcpGiCreatedBy, String roUIDVal, String poUID, String rcpDateDeliveryPeriod, float totalUnit,
                                    ArrayList<GoodIssueModel> goodIssueModelArrayList) {
 
         MaterialDialog materialDialog = new MaterialDialog.Builder((Activity) context)
@@ -1091,7 +1107,7 @@ public class DialogInterface {
                             DocumentReference refRCPGI = db.collection("RecapData").document();
                             String rcpGiDocumentID = refRCPGI.getId();
 
-                            RecapGIModel recapGIModel = new RecapGIModel(rcpGiDocumentID, rcpGiUID, rcpGiDateAndTimeCreated, rcpGiCreatedBy, roUIDVal);
+                            RecapGIModel recapGIModel = new RecapGIModel(rcpGiDocumentID, rcpGiUID, rcpGiDateAndTimeCreated, rcpGiCreatedBy, roUIDVal, totalUnit, "");
 
                             refRCPGI.set(recapGIModel);
 
@@ -1099,8 +1115,8 @@ public class DialogInterface {
                                 databaseReferenceGI.child("GoodIssueData").child(giManagementAdapter.getSelected().get(i).getGiUID()).child("giRecapped").setValue(true);
                                 databaseReferenceGI.child("GoodIssueData").child(giManagementAdapter.getSelected().get(i).getGiUID()).child("giRecappedTo").setValue(rcpGiDocumentID);
                             }
-                            RecapGoodIssueDataActivity recapGoodIssueDataActivity = (RecapGoodIssueDataActivity) context;
-                            recapGoodIssueDataActivity.createPDF(Helper.getAppPath(context)+"RKP-PO-"+poUID+".pdf");
+                            AddRecapGoodIssueDataActivity addRecapGoodIssueDataActivity = (AddRecapGoodIssueDataActivity) context;
+                            addRecapGoodIssueDataActivity.createPDF(Helper.getAppPath(context)+"RKP-PO-"+poUID+" Periode Pengiriman "+rcpDateDeliveryPeriod+".pdf");
                             generatingInvoiceDialog.dismiss();
                         }
                     }.start();
@@ -1179,7 +1195,7 @@ public class DialogInterface {
                         public void onFinish() {
                             UpdateCashOutActivity updateCashOutActivity = (UpdateCashOutActivity) context;
 
-                            updateCashOutActivity.createCashOutProofPDF(Helper.getAppPathCashOut(context)+coUID+".pdf");
+                            updateCashOutActivity.createCashOutProofPDF(Helper.getAppPathCashOut(context)+coUID+" Periode Pengiriman "+coDateDeliveryPeriod+".pdf");
 
                             generatingCashOutProofDialog.dismiss();
                         }

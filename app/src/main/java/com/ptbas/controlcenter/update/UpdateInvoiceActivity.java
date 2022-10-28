@@ -54,6 +54,10 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
 import com.itextpdf.text.BadElementException;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Chunk;
@@ -70,6 +74,7 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.text.pdf.draw.LineSeparator;
+import com.journeyapps.barcodescanner.BarcodeEncoder;
 import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.adapter.GIManagementAdapter;
 import com.ptbas.controlcenter.helper.DialogInterface;
@@ -115,11 +120,11 @@ public class UpdateInvoiceActivity extends AppCompatActivity {
     CollectionReference refCust = db.collection("CustomerData");
     CollectionReference refBankAccount = db.collection("BankAccountData");
 
-    int invPoType;
+    int invPoType, invPoTOP;
     double matBuyPrice, matSellPrice, matCubication, transportServiceSellPrice;
 
     // ID
-    String roPoCustNumber, currencyVal, custDocumentID, invUIDVal, coRoUIDVal, coPoUIDVal, invUID, invPoUID;
+    String roPoCustNumber, currencyVal, custDocumentID, invUIDVal, coRoUIDVal, coPoUIDVal, invUID, invPoUID, invDueDateNTimVal;
 
     // RO
     String roDocumentID, matTypeVal, matNameVal, transportServiceNameVal;
@@ -128,8 +133,8 @@ public class UpdateInvoiceActivity extends AppCompatActivity {
     String bankAccountID, bankName, bankAccountNumber, bankAccountOwnerName;
 
     // INV
-    String finalPaidDate, invDueDateNTime, invMainID, invVerifiedBy, invPrintedBy,
-            invCreatedByVal, invApprovedByVal, invPoDate, invCustName, custNameVal,
+    String invHandOverBy, invDateHandover, dateHandover, finalPaidDate, finalDateHandover, invDueDateNTime, invMainID, invVerifiedBy, invPrintedBy,
+            invCreatedByVal, invApprovedByVal, invHandOverByVal, invPoDate, invCustName, custNameVal,
             custAddressVal, invPotypeVal, coCreatedBy, transferProofReference, invTransferReference;
 
     // DATE
@@ -166,12 +171,18 @@ public class UpdateInvoiceActivity extends AppCompatActivity {
 
 
 
+    TextInputEditText edtDateHandover, edtHandoverBy;
+    SwitchCompat statusSwitchHandover;
+    TextView tvStatusHandover;
+    ImageButton btnDateHandoverReset;
 
 
 
 
     float totalUnitFinal;
     double totalAmountForMaterials, totalAmountForTransportService, taxPPN, taxPPH, totalDue, totalDueForTransportService;
+
+    private MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -184,6 +195,7 @@ public class UpdateInvoiceActivity extends AppCompatActivity {
         cdvFilter = findViewById(R.id.cdv_filter);
 
         btnDatePaidReset = findViewById(R.id.btnDatePaidReset);
+        btnDateHandoverReset = findViewById(R.id.btnDateHandoverReset);
 
         llWrapSupplierDetail = findViewById(R.id.llWrapSupplierDetail);
         llWrapFilter = findViewById(R.id.llWrapFilter);
@@ -235,6 +247,12 @@ public class UpdateInvoiceActivity extends AppCompatActivity {
 
         helper.ACTIVITY_NAME = "UPDATE";
         loadInvoiceData();
+
+
+        edtDateHandover = findViewById(R.id.edtDateHandover);
+        edtHandoverBy = findViewById(R.id.edtHandoverBy);
+        statusSwitchHandover = findViewById(R.id.statusSwitchHandover);
+        tvStatusHandover = findViewById(R.id.tvStatusHandover);
 
         baseColorBluePale = new BaseColor(22,169,242);
         baseColorLightGrey = new BaseColor(237, 237, 237);
@@ -337,7 +355,47 @@ public class UpdateInvoiceActivity extends AppCompatActivity {
 
         });
 
+        edtDateHandover.setOnClickListener(view -> {
+            final Calendar calendar = Calendar.getInstance();
+            dayStrVal = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
+            monthStrVal = String.valueOf(calendar.get(Calendar.MONTH));
+            String yearStrVal = String.valueOf(calendar.get(Calendar.YEAR));
+
+            datePicker = new DatePickerDialog(UpdateInvoiceActivity.this,
+                    (datePicker, year, month, dayOfMonth) -> {
+
+                        int monthInt = month + 1;
+
+                        if(monthInt < 10){
+                            monthStrVal = "0" + monthInt;
+                        } else {
+                            monthStrVal = String.valueOf(monthInt);
+                        }
+
+                        if(dayOfMonth <= 9){
+                            dayStrVal = "0" + dayOfMonth;
+                        } else {
+                            dayStrVal = String.valueOf(dayOfMonth);
+                        }
+
+                        finalDateHandover = year + "-" +monthStrVal + "-" + dayStrVal;
+
+                        edtDateHandover.setText(finalDateHandover);
+                        btnDateHandoverReset.setVisibility(View.VISIBLE);
+
+                    }, Integer.parseInt(yearStrVal), Integer.parseInt(monthStrVal), Integer.parseInt(dayStrVal));
+            datePicker.getDatePicker().setMaxDate(System.currentTimeMillis());
+            datePicker.show();
+
+        });
+
         btnDatePaidReset.setOnClickListener(view -> resetDate());
+        btnDateHandoverReset.setOnClickListener(view -> resetHandOverDate());
+    }
+
+    private void resetHandOverDate() {
+        edtDateHandover.setText(null);
+        btnDateHandoverReset.setVisibility(View.GONE);
     }
 
     private void resetDate() {
@@ -359,7 +417,7 @@ public class UpdateInvoiceActivity extends AppCompatActivity {
             refInv.whereEqualTo("invDocumentUID", invUID).get()
                     .addOnSuccessListener(queryDocumentSnapshots -> {
                         for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots){
-                            invUIDVal = documentSnapshot.get("invDocumentUID", String.class);
+                            invUIDVal = documentSnapshot.get("invUID", String.class);
 
                             InvoiceModel invoiceModel = documentSnapshot.toObject(InvoiceModel.class);
                             invMainID = invoiceModel.getInvUID();
@@ -373,13 +431,81 @@ public class UpdateInvoiceActivity extends AppCompatActivity {
                             edtDatePaid.setText(invDatePaid);
 
                             invVerifiedBy = invoiceModel.getInvVerifiedBy();
+                            invDateHandover = invoiceModel.getInvDateHandover();
+                            invHandOverBy = invoiceModel.getInvHandoverBy();
+
+                            edtDateHandover.setText(invDateHandover);
+
+
+                            if (!invHandOverBy.isEmpty()){
+                                statusSwitchHandover.setChecked(true);
+                                tvStatusHandover.setText("Sudah Diterima");
+
+                                edtDateHandover.setFocusable(false);
+                                edtDateHandover.setOnClickListener(null);
+                                edtHandoverBy.setFocusable(false);
+
+                                statusSwitchHandover.setEnabled(false);
+                                btnDatePaidReset.setVisibility(View.GONE);
+                            } else{
+                                statusSwitchHandover.setChecked(false);
+                                tvStatusHandover.setText("Belum Diterima");
+
+                                edtHandoverBy.setText(null);
+                                edtDateHandover.setText(null);
+                            }
+
+
+
+                            statusSwitchHandover.setOnCheckedChangeListener((compoundButton, b) -> {
+                                pd.show();
+                                if (edtDateHandover.getText().toString().isEmpty()){
+                                    edtDateHandover.requestFocus();
+                                    edtDateHandover.setError("Tanggal serah terima masih belum diisi");
+                                    pd.dismiss();
+                                    statusSwitchHandover.setChecked(false);
+                                } else {
+                                    dateHandover = edtDateHandover.getText().toString();
+                                    if (statusSwitchHandover.isChecked()) {
+                                        refInv.document(invUID).update("invDueDateNTime", invDueDateNTimVal);
+                                        refInv.document(invUID).update("invDateHandover", dateHandover);
+                                        refInv.document(invUID).update("invHandoverBy", helper.getUserId()).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                if (task.isSuccessful()){
+                                                    edtDateHandover.setError(null);
+                                                    edtHandoverBy.setError(null);
+                                                    pd.dismiss();
+                                                    loadInvoiceData();
+                                                }
+                                            }
+                                        });
+                                    } else {
+                                        refInv.document(invUID).update("invDateHandover", "");
+                                        refInv.document(invUID).update("invHandoverBy", "").addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                if (task.isSuccessful()){
+                                                    pd.dismiss();
+                                                    loadInvoiceData();
+                                                }
+                                            }
+                                        });
+                                    }
+                                }
+
+
+                            });
 
                             if (!invVerifiedBy.isEmpty()){
+                                spinnerBankAccount.setFocusable(false);
+                                spinnerBankAccount.setOnItemClickListener(null);
+                                spinnerBankAccount.setOnClickListener(null);
                                 statusSwitch.setChecked(true);
                                 tvStatus.setText("Lunas");
-                                edtVerifiedBy.setEnabled(false);
-                                edtTransferProofReference.setEnabled(false);
-                                edtDatePaid.setEnabled(false);
+                                edtVerifiedBy.setFocusable(false);
+                                edtTransferProofReference.setFocusable(false);
+                                edtDatePaid.setFocusable(false);
                                 statusSwitch.setEnabled(false);
                                 btnDatePaidReset.setVisibility(View.GONE);
                             } else{
@@ -405,9 +531,9 @@ public class UpdateInvoiceActivity extends AppCompatActivity {
                                 } else {
                                     transferProofReference = edtTransferProofReference.getText().toString();
                                     if (statusSwitch.isChecked()) {
-                                        refInv.document(invUIDVal).update("invDateVerified", finalPaidDate);
-                                        refInv.document(invUIDVal).update("invTransferReference", transferProofReference);
-                                        refInv.document(invUIDVal).update("invVerifiedBy", helper.getUserId()).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        refInv.document(invUID).update("invDateVerified", finalPaidDate);
+                                        refInv.document(invUID).update("invTransferReference", transferProofReference);
+                                        refInv.document(invUID).update("invVerifiedBy", helper.getUserId()).addOnCompleteListener(new OnCompleteListener<Void>() {
                                             @Override
                                             public void onComplete(@NonNull Task<Void> task) {
                                                 if (task.isSuccessful()){
@@ -419,9 +545,9 @@ public class UpdateInvoiceActivity extends AppCompatActivity {
                                             }
                                         });
                                     } else {
-                                        refInv.document(invUIDVal).update("invDateVerified", "");
-                                        refInv.document(invUIDVal).update("invTransferReference", "");
-                                        refInv.document(invUIDVal).update("invVerifiedBy", "").addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        refInv.document(invUID).update("invDateVerified", "");
+                                        refInv.document(invUID).update("invTransferReference", "");
+                                        refInv.document(invUID).update("invVerifiedBy", "").addOnCompleteListener(new OnCompleteListener<Void>() {
                                             @Override
                                             public void onComplete(@NonNull Task<Void> task) {
                                                 if (task.isSuccessful()){
@@ -435,6 +561,9 @@ public class UpdateInvoiceActivity extends AppCompatActivity {
 
 
                             });
+
+
+
 
                             custDocumentID = invoiceModel.getCustDocumentID();
                             invDateDeliveryPeriod = invoiceModel.getInvDateDeliveryPeriod();
@@ -453,10 +582,10 @@ public class UpdateInvoiceActivity extends AppCompatActivity {
                                     invPrintedBy = snapshot.child(helper.getUserId()).child("fullName").getValue(String.class);
                                     invCreatedByVal = snapshot.child(Objects.requireNonNull(documentSnapshot.get("invCreatedBy", String.class))).child("fullName").getValue(String.class);
                                     invApprovedByVal = snapshot.child(Objects.requireNonNull(documentSnapshot.get("invVerifiedBy", String.class))).child("fullName").getValue(String.class);
+                                    invHandOverByVal = snapshot.child(Objects.requireNonNull(documentSnapshot.get("invHandoverBy", String.class))).child("fullName").getValue(String.class);
                                     tvCreatedBy.setText(invCreatedByVal);
-
                                     edtVerifiedBy.setText(invApprovedByVal);
-
+                                    edtHandoverBy.setText(invHandOverByVal);
                                 }
 
                                 @Override
@@ -502,6 +631,7 @@ public class UpdateInvoiceActivity extends AppCompatActivity {
                                                 roPoCustNumber = receivedOrderModel.getRoPoCustNumber();
                                                 custNameVal = receivedOrderModel.getCustDocumentID();
                                                 currencyVal = receivedOrderModel.getRoCurrency();
+                                                invPoTOP = receivedOrderModel.getRoTOP();
 
                                                 invPoUID = receivedOrderModel.getRoPoCustNumber();
                                                 invPoDate = receivedOrderModel.getRoDateCreated();
@@ -598,6 +728,19 @@ public class UpdateInvoiceActivity extends AppCompatActivity {
 
                                                             }
                                                         });
+
+
+
+
+
+
+
+                                                Calendar c = Calendar.getInstance();
+                                                c.add(Calendar.DATE, invPoTOP);
+
+                                                Date invDueDateVal = c.getTime();
+                                                invDueDateNTimVal = new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(invDueDateVal) +" (" + invPoTOP + " hari)";
+
                                             }
                                         }
                                     });
@@ -699,7 +842,7 @@ public class UpdateInvoiceActivity extends AppCompatActivity {
         cell.addElement(image);
         cell.setBorder(PdfPCell.NO_BORDER);
         cell.setColspan(1);
-        cell.setRowspan(5);
+        cell.setRowspan(6);
         return cell;
     }
     public static PdfPCell cellTxtSpan4RowList() throws DocumentException {
@@ -712,7 +855,7 @@ public class UpdateInvoiceActivity extends AppCompatActivity {
         cell.setBorder(PdfPCell.NO_BORDER);
         cell.setVerticalAlignment(Element.ALIGN_TOP);
         cell.setColspan(1);
-        cell.setRowspan(5);
+        cell.setRowspan(6);
         return cell;
     }
     public static PdfPCell cellTxtNrml(Paragraph paragraph, int alignment) {
@@ -821,7 +964,7 @@ public class UpdateInvoiceActivity extends AppCompatActivity {
             paragraphInvDateCreated.setSpacingAfter(5);
 
             // INIT IMAGE BCA QR CODE
-            Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.bca_qr_bas);
+           /* Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.bca_qr_bas);
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             bm.compress(Bitmap.CompressFormat.JPEG, 90, stream);
             Image img = null;
@@ -832,6 +975,31 @@ public class UpdateInvoiceActivity extends AppCompatActivity {
                 img.scaleAbsolute(80f, 80f);
             } catch (BadElementException | IOException e) {
                 e.printStackTrace();
+            }*/
+
+            Image img = null;
+
+            try {
+
+                BitMatrix bitMatrix = multiFormatWriter.encode(invUIDVal, BarcodeFormat.QR_CODE, 100, 95);
+
+                BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
+                Bitmap bitmap = barcodeEncoder.createBitmap(bitMatrix);
+
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+
+                byte[] byteArray = stream.toByteArray();
+                try {
+                    img = Image.getInstance(byteArray);
+                    img.setAlignment(Image.TEXTWRAP);
+                    img.scaleAbsolute(100f, 110f);
+                } catch (BadElementException | IOException e) {
+                    e.printStackTrace();
+                }
+
+            } catch (WriterException e){
+
             }
 
             // TOTAL UNIT CALCULATION
@@ -1124,6 +1292,19 @@ public class UpdateInvoiceActivity extends AppCompatActivity {
                     Element.ALIGN_RIGHT));
             tblInvSection12.addCell(cellTxtNoBrdrNrml(
                     new Paragraph(paidStatus, fontMedium),
+                    Element.ALIGN_LEFT));
+            tblInvSection12.addCell(cellTxtNoBrdrNrml(
+                    new Paragraph("", fontNormalSmall),
+                    Element.ALIGN_LEFT));
+
+            tblInvSection12.addCell(cellTxtNoBrdrNrmlWthPadLft(
+                    new Paragraph("Tanggal Lunas", fontNormalSmall),
+                    Element.ALIGN_LEFT));
+            tblInvSection12.addCell(cellTxtNoBrdrNrml(
+                    new Paragraph(":", fontNormalSmall),
+                    Element.ALIGN_RIGHT));
+            tblInvSection12.addCell(cellTxtNoBrdrNrml(
+                    new Paragraph(invDatePaid, fontNormalSmall),
                     Element.ALIGN_LEFT));
             tblInvSection12.addCell(cellTxtNoBrdrNrml(
                     new Paragraph("", fontNormalSmall),

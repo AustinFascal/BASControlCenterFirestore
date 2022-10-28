@@ -51,6 +51,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
+import kotlinx.android.parcel.IgnoredOnParcel;
+
 public class CashOutManagementAdapter extends RecyclerView.Adapter<CashOutManagementAdapter.ItemViewHolder> {
 
     Context context;
@@ -95,7 +97,7 @@ public class CashOutManagementAdapter extends RecyclerView.Adapter<CashOutManage
 
         Double coTotalTemp;
         boolean coStatusApproval, coStatusPayment;
-        String coSupplierName, coDateCreated, coUID, coDocumentID, coPoUID, coSupplierNameTemp, coTotal;
+        String coAccBy, coSupplierName, coDateCreated, coUID, coDocumentID, coPoUID, coSupplierNameTemp, coTotal;
 
         public ItemViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -126,6 +128,10 @@ public class CashOutManagementAdapter extends RecyclerView.Adapter<CashOutManage
         }
 
         public void viewBind(CashOutModel cashOutModel) {
+            btnItemPaid.setVisibility(View.GONE);
+            rlBtnItemPaid.setVisibility(View.GONE);
+            rlBtnApproveItem.setVisibility(View.GONE);
+            rlBtnApproveItem.setVisibility(View.GONE);
             cbSelectItem.setChecked(false);
             dialogInterface = new DialogInterface();
 
@@ -144,8 +150,6 @@ public class CashOutManagementAdapter extends RecyclerView.Adapter<CashOutManage
                     cbSelectItem.setChecked(cashOutModel.isChecked());
                 }
             });
-
-            cbSelectItem.setChecked(false);
 
             btnPrintItem.setVisibility(View.GONE);
             rlBtnPrintItem.setVisibility(View.GONE);
@@ -172,6 +176,7 @@ public class CashOutManagementAdapter extends RecyclerView.Adapter<CashOutManage
             coTotal = "IDR " + currencyFormat(String.valueOf(coTotalTemp));
             coStatusApproval = cashOutModel.getCoStatusApproval();
             coStatusPayment = cashOutModel.getCoStatusPayment();
+            coAccBy = cashOutModel.getCoAccBy();
 
             tvDateCreated.setText(coDateCreated);
             tvCoUID.setText("CO: "+ coUID);
@@ -187,23 +192,23 @@ public class CashOutManagementAdapter extends RecyclerView.Adapter<CashOutManage
                         tvSupplierName.setText(coSupplierName);
                     });
             tvTotalDue.setText(coTotal);
-            if (coStatusApproval){
+            if (!coAccBy.isEmpty()){
                 llWrapItemStatus.setVisibility(View.VISIBLE);
                 llStatusApproved.setVisibility(View.VISIBLE);
-                rlBtnItemPaid.setVisibility(View.VISIBLE);
-                rlBtnApproveItem.setVisibility(View.GONE);
-                if (coStatusPayment){
+                //rlBtnItemPaid.setVisibility(View.VISIBLE);
+                //rlBtnApproveItem.setVisibility(View.GONE);
+                /*if (coStatusPayment){
                     llStatusPaid.setVisibility(View.VISIBLE);
                     rlBtnItemPaid.setVisibility(View.GONE);
                 } else {
                     llStatusPaid.setVisibility(View.GONE);
                     rlBtnItemPaid.setVisibility(View.VISIBLE);
-                }
+                }*/
             } else {
                 llWrapItemStatus.setVisibility(View.GONE);
                 llStatusApproved.setVisibility(View.GONE);
-                rlBtnItemPaid.setVisibility(View.GONE);
-                rlBtnApproveItem.setVisibility(View.VISIBLE);
+                //rlBtnItemPaid.setVisibility(View.GONE);
+                //rlBtnApproveItem.setVisibility(View.VISIBLE);
             }
 
             btnDeleteItem.setOnClickListener(new View.OnClickListener() {
@@ -276,12 +281,12 @@ public class CashOutManagementAdapter extends RecyclerView.Adapter<CashOutManage
                 }
             });
 
-            btnItemPaid.setOnClickListener(new View.OnClickListener() {
+            /*btnItemPaid.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     dialogInterface.coPaidConfirm(context, coDocumentID);
                 }
-            });
+            });*/
 
             /*btnApproveItem.setOnClickListener(new View.OnClickListener() {
                 @Override

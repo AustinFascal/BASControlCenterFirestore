@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.ptbas.controlcenter">
-
+    <queries> <package android:name="com.whatsapp" /> </queries>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission
@@ -46,7 +46,7 @@
         </provider>
 
         <activity
-            android:name=".recap.RecapGoodIssueDataActivity"
+            android:name=".create.AddRecapGoodIssueDataActivity"
             android:exported="false" />
         <activity
             android:name=".create.AddCustomerActivity"
@@ -63,6 +63,9 @@
             android:exported="false" />
         <activity
             android:name=".management.ManageGoodIssueActivity"
+            android:exported="false" />
+        <activity
+            android:name=".management.ManageRecapGoodIssueActivity"
             android:exported="false" />
         <activity
             android:name=".management.ManageReceivedOrderActivity"

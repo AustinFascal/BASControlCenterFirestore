@@ -688,7 +688,132 @@
                                     android:divider="@drawable/divider_transparent"
                                     android:showDividers="middle"
                                     android:visibility="visible">
+                                    <TextView
+                                        style="@style/TextAppearance.AppCompat.Title"
 
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:ellipsize="end"
+                                        android:gravity="center_vertical"
+                                        android:text="Rincian Serah Terima"
+                                        android:textSize="16sp"
+                                        android:textStyle="bold" />
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="55dp"
+                                        app:startIconDrawable="@drawable/ic_outline_person">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/edtHandoverBy"
+                                            android:paddingBottom="14dp"
+                                            android:focusable="false"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Disahkan Oleh (auto)"
+                                            android:inputType="textCapCharacters" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:divider="@drawable/divider_transparent"
+                                        android:gravity="top"
+                                        android:orientation="horizontal"
+                                        android:showDividers="middle"
+                                        android:visibility="visible">
+
+                                        <com.google.android.material.textfield.TextInputLayout
+                                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="55dp"
+                                            android:layout_weight="1"
+                                            app:startIconDrawable="@drawable/ic_outline_today">
+
+                                            <com.google.android.material.textfield.TextInputEditText
+                                                android:id="@+id/edtDateHandover"
+                                                android:paddingBottom="14dp"
+                                                android:layout_width="match_parent"
+                                                android:layout_height="wrap_content"
+                                                android:focusable="false"
+                                                android:hint="Tanggal Serah Terima"
+                                                android:inputType="none" />
+                                        </com.google.android.material.textfield.TextInputLayout>
+
+                                        <ImageButton
+                                            android:id="@+id/btnDateHandoverReset"
+                                            android:layout_width="55dp"
+                                            android:layout_height="match_parent"
+                                            android:layout_marginTop="3dp"
+                                            android:layout_gravity="center_vertical"
+                                            android:layout_marginBottom="1dp"
+                                            android:background="@drawable/outline_box"
+                                            android:scaleType="centerInside"
+                                            android:src="@drawable/ic_outline_restore"
+                                            android:visibility="gone" />
+                                    </LinearLayout>
+                                    <TableLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content">
+                                        <TableRow>
+
+                                            <TextView
+                                                style="@style/TextAppearance.AppCompat.Body1"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:layout_column="1"
+                                                android:text="Validasi Tanggal"
+                                                android:textSize="14sp" />
+
+                                            <TextView
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:layout_column="2"
+                                                android:paddingHorizontal="10dp"
+                                                android:text=":"
+                                                android:textSize="14sp" />
+
+                                            <!--<TextView
+                                                style="@style/TextAppearance.AppCompat.Body1"
+                                                android:id="@+id/tvDateAndTimeApproved"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:layout_column="3"
+                                                android:layout_weight="1"
+                                                android:ellipsize="end"
+                                                android:maxLines="2"
+                                                android:text="dateNTime"
+                                                android:textSize="14sp" />-->
+
+                                            <LinearLayout
+
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:orientation="horizontal">
+
+                                                <androidx.appcompat.widget.SwitchCompat
+                                                    android:id="@+id/statusSwitchHandover"
+                                                    android:padding="0dp"
+                                                    android:layout_width="wrap_content"
+                                                    android:layout_height="20dp" />
+
+                                                <TextView
+                                                    style="@style/TextAppearance.AppCompat.Body1"
+                                                    android:layout_marginStart="4dp"
+                                                    android:id="@+id/tvStatusHandover"
+                                                    android:layout_width="match_parent"
+                                                    android:layout_height="wrap_content"
+                                                    android:textAlignment="center"
+                                                    android:maxLines="2"
+                                                    android:text="Belum Diterima" />
+                                            </LinearLayout>
+
+                                        </TableRow>
+                                    </TableLayout>
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="1dp"
+                                        android:background="@color/light_grey" />
 
                                     <TextView
                                         style="@style/TextAppearance.AppCompat.Title"
@@ -799,7 +924,7 @@
                                             android:focusable="false"
                                             android:layout_width="match_parent"
                                             android:layout_height="wrap_content"
-                                            android:hint="Disahkan Oleh"
+                                            android:hint="Disahkan Oleh (auto)"
                                             android:inputType="textCapCharacters" />
                                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -977,128 +1102,10 @@
                                             </LinearLayout>
                                         </TableRow>
 
-
-
-
-
-
                                     </TableLayout>
 
 
 
-
-                                    <!--
-                                                                <com.google.android.material.textfield.TextInputLayout
-                                                                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                                                                    android:layout_width="match_parent"
-                                                                    android:layout_height="wrap_content"
-                                                                    android:layout_weight="1"
-                                                                    app:startIconDrawable="@drawable/ic_outline_receipt">
-
-                                                                    <com.google.android.material.textfield.TextInputEditText
-                                                                        android:id="@+id/edtCoID"
-                                                                        android:layout_width="match_parent"
-                                                                        android:layout_height="wrap_content"
-                                                                        android:hint="Nomor ID CO" />
-                                                                </com.google.android.material.textfield.TextInputLayout>
-                                    -->
-
-                                    <!--<LinearLayout
-                                        android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
-                                        android:divider="@drawable/divider_transparent"
-                                        android:gravity="top"
-                                        android:orientation="horizontal"
-                                        android:showDividers="middle"
-                                        android:visibility="visible">
-
-                                        <com.google.android.material.textfield.TextInputLayout
-                                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                                            android:layout_width="match_parent"
-                                            android:layout_height="wrap_content"
-                                            android:layout_weight="1"
-                                            app:startIconDrawable="@drawable/ic_outline_person">
-
-                                            <com.google.android.material.textfield.TextInputEditText
-                                                android:id="@+id/edtCustName"
-                                                android:layout_width="match_parent"
-                                                android:layout_height="wrap_content"
-                                                android:hint="Customer" />
-                                        </com.google.android.material.textfield.TextInputLayout>
-
-                                    </LinearLayout>
-
-                                    <LinearLayout
-                                        android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
-                                        android:orientation="vertical"
-                                        android:divider="@drawable/divider_transparent"
-                                        android:showDividers="middle"
-                                        android:visibility="visible">
-                                        <LinearLayout
-                                            android:id="@+id/ll_wrap_filter_by_rouid"
-                                            android:layout_width="match_parent"
-                                            android:layout_height="wrap_content"
-                                            android:divider="@drawable/divider_transparent"
-                                            android:gravity="top"
-                                            android:orientation="horizontal"
-                                            android:showDividers="middle"
-                                            android:visibility="visible">
-
-                                            <com.google.android.material.textfield.TextInputLayout
-                                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                                                android:layout_width="match_parent"
-                                                android:layout_height="match_parent"
-                                                android:layout_weight="1"
-                                                app:startIconDrawable="@drawable/ic_outline_receipt">
-
-                                                <com.google.android.material.textfield.TextInputEditText
-                                                    android:id="@+id/edtROUID"
-                                                    android:layout_width="match_parent"
-                                                    android:layout_height="wrap_content"
-                                                    android:hint="ID Received Order" />
-                                            </com.google.android.material.textfield.TextInputLayout>
-
-                                            <ImageButton
-                                                android:id="@+id/btnResetRouid"
-                                                android:layout_width="55dp"
-                                                android:layout_height="match_parent"
-                                                android:layout_marginTop="4dp"
-                                                android:layout_gravity="center_vertical"
-                                                android:layout_marginBottom="1dp"
-                                                android:background="@drawable/outline_box"
-                                                android:scaleType="centerInside"
-                                                android:src="@drawable/ic_outline_restore"
-                                                android:visibility="gone" />
-                                        </LinearLayout>
-                                        <LinearLayout
-                                            android:id="@+id/ll_wrap_filter_by_pouid"
-                                            android:layout_width="match_parent"
-                                            android:layout_height="wrap_content"
-                                            android:divider="@drawable/divider_transparent"
-                                            android:gravity="center_vertical"
-                                            android:orientation="horizontal"
-                                            android:showDividers="middle"
-                                            android:visibility="visible">
-
-                                            <com.google.android.material.textfield.TextInputLayout
-                                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                                                android:layout_width="match_parent"
-                                                android:layout_height="wrap_content"
-                                                android:layout_weight="1"
-                                                app:startIconDrawable="@drawable/ic_outline_receipt">
-
-                                                <com.google.android.material.textfield.TextInputEditText
-                                                    android:id="@+id/edtPOUID"
-                                                    android:layout_width="match_parent"
-                                                    android:layout_height="wrap_content"
-                                                    android:hint="ID Nomor PO Customer"
-                                                    android:inputType="textCapCharacters"
-                                                    android:maxLines="1" />
-                                            </com.google.android.material.textfield.TextInputLayout>
-
-                                        </LinearLayout>
-                                    </LinearLayout>-->
 
                                     <LinearLayout
                                         android:layout_width="match_parent"
@@ -1115,59 +1122,6 @@
                                         android:layout_height="wrap_content"
                                         android:divider="@drawable/divider_transparent"
                                         android:showDividers="middle"/>
-                                    <!--<LinearLayout
-                                        android:id="@+id/ll_wrap_filter_by_date_range"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
-                                        android:divider="@drawable/divider_transparent"
-                                        android:orientation="horizontal"
-                                        android:showDividers="middle"
-                                        android:tag="firstView">
-
-                                        <com.google.android.material.textfield.TextInputLayout
-                                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                                            android:layout_width="match_parent"
-                                            android:layout_height="wrap_content"
-                                            android:layout_weight="1"
-                                            app:startIconDrawable="@drawable/ic_outline_today">
-
-                                            <com.google.android.material.textfield.TextInputEditText
-                                                android:id="@+id/edt_gi_date_filter_start"
-                                                android:layout_width="match_parent"
-                                                android:layout_height="wrap_content"
-                                                android:focusable="false"
-                                                android:hint="Mulai"
-                                                android:inputType="none" />
-                                        </com.google.android.material.textfield.TextInputLayout>
-
-                                        <com.google.android.material.textfield.TextInputLayout
-                                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                                            android:layout_width="match_parent"
-                                            android:layout_height="wrap_content"
-                                            android:layout_weight="1"
-                                            app:startIconDrawable="@drawable/ic_outline_today">
-
-                                            <com.google.android.material.textfield.TextInputEditText
-                                                android:id="@+id/edt_gi_date_filter_end"
-                                                android:layout_width="match_parent"
-                                                android:layout_height="wrap_content"
-                                                android:focusable="false"
-                                                android:hint="Akhir"
-                                                android:inputType="none" />
-                                        </com.google.android.material.textfield.TextInputLayout>
-
-                                        <ImageButton
-                                            android:id="@+id/btn_gi_search_date_reset"
-                                            android:layout_width="match_parent"
-                                            android:layout_height="match_parent"
-                                            android:layout_gravity="center_vertical"
-                                            android:layout_marginBottom="1dp"
-                                            android:layout_weight="1.3"
-                                            android:background="@drawable/outline_box"
-                                            android:scaleType="centerInside"
-                                            android:src="@drawable/ic_outline_restore"
-                                            android:visibility="gone" />
-                                    </LinearLayout>-->
 
                                     <Button
                                         android:visibility="gone"
@@ -1199,7 +1153,6 @@
                 </ScrollView>
 
             </LinearLayout>
-
 
         </androidx.cardview.widget.CardView>
 

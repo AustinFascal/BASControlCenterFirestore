@@ -7,6 +7,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -32,6 +33,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -66,7 +68,6 @@ import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.Image;
-import com.itextpdf.text.ListItem;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.BaseFont;
@@ -80,12 +81,14 @@ import com.ptbas.controlcenter.helper.ImageAndPositionRenderer;
 import com.ptbas.controlcenter.helper.NumberToWords;
 import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.adapter.GIManagementAdapter;
+import com.ptbas.controlcenter.model.CashOutModel;
 import com.ptbas.controlcenter.model.CustomerModel;
 import com.ptbas.controlcenter.model.GoodIssueModel;
 import com.ptbas.controlcenter.model.ProductItems;
+import com.ptbas.controlcenter.model.RecapGIModel;
 import com.ptbas.controlcenter.model.ReceivedOrderModel;
 import com.ptbas.controlcenter.model.SupplierModel;
-import com.ptbas.controlcenter.recap.RecapGoodIssueDataActivity;
+import com.ptbas.controlcenter.update.UpdateCashOutActivity;
 import com.ptbas.controlcenter.utils.LangUtils;
 
 import java.io.ByteArrayOutputStream;
@@ -106,6 +109,8 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.Random;
 
+import dev.shreyaspatil.MaterialDialog.MaterialDialog;
+
 public class AddCashOutActivity extends AppCompatActivity {
 
     private static final String ALLOWED_CHARACTERS = "0123456789QWERTYUIOPASDFGHJKLZXCVBNM";
@@ -113,14 +118,14 @@ public class AddCashOutActivity extends AppCompatActivity {
     float totalUnit;
     int invPoType;
     double matBuyPrice, transportServiceSellPrice;
-    String custDocumentID, roDocumentID, custIDVal, dateStartVal = "", dateEndVal = "", rouidVal= "", suppplieruidVal = "",
+    String rcpCoUID, rcpUIDVal, custDocumentID, roDocumentID, custIDVal, dateStartVal = "", dateEndVal = "", rouidVal= "", suppplieruidVal = "",
             currencyVal = "", pouidVal = "",
             monthStrVal, dayStrVal, roPoCustNumber, matTypeVal, matNameVal,
             invPoDate = "", invCustName = "", invPoUID = "", custNameVal = "",
             custAddressVal = "", coUID="", invPotypeVal = "", coCreatedBy="",
             supplierPayee, supplierBankAndAccountNumber, supplierAccountOwnerName,
             customerData = "", customerID ="", randomString="NULL", coDateDeliveryPeriod;
-    Boolean expandStatus = true, firstViewDataFirstTimeStatus = true;
+    Boolean expandStatus = true, firstViewDataFirstTimeStatus = true, rcpGiStatus;
 
     LinearLayout llBottomSelectionOptions, llNoData, llWrapFilter, llShowSpinnerRoAndEdtPo, llWrapSupplierDetail;
     ImageButton btnExitSelection;
@@ -128,7 +133,7 @@ public class AddCashOutActivity extends AppCompatActivity {
     ImageButton btnGiSearchByDateReset, btnResetRouid, btnResetCustomer, btnResetSupplier;
     ExtendedFloatingActionButton fabCreateCOR;
     Button btnSearchData, imgbtnExpandCollapseFilterLayout;
-    AutoCompleteTextView spinnerRoUID, spinnerCustName, spinnerSupplierName;
+    AutoCompleteTextView spinnerRoUID, spinnerCustName, spinnerSupplierName, spinnerRcpID;
     TextInputEditText edtPoUID, edtDateStart, edtDateEnd, edtBankNameAndAccountNumber, edtAccountOwnerName, edtPayee;
     DatePickerDialog datePicker;
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
@@ -145,7 +150,7 @@ public class AddCashOutActivity extends AppCompatActivity {
     DialogInterface dialogInterface = new DialogInterface();
     List<String> arrayListRoUID, arrayListPoUID, arrayListSupplierUID;
     List<ProductItems> productItemsList;
-    List<String> customerName, supplierName;
+    List<String> customerName, supplierName, recapID;
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -155,6 +160,12 @@ public class AddCashOutActivity extends AppCompatActivity {
     public static BaseColor baseColorBluePale, baseColorLightGrey;
 
     DecimalFormat df = new DecimalFormat("0.00");
+
+    boolean isSelectedAll = false;
+
+    private Menu menu;
+
+    String getCoUIDFromCoDocumentID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -177,9 +188,11 @@ public class AddCashOutActivity extends AppCompatActivity {
         spinnerRoUID = findViewById(R.id.rouid);
         spinnerCustName = findViewById(R.id.spinnerCustName);
         spinnerSupplierName = findViewById(R.id.spinnerSupplierName);
+        spinnerRcpID = findViewById(R.id.spinnerRcpID);
         spinnerSupplierName.setFilters(new InputFilter[] {new InputFilter.AllCaps()});
         spinnerCustName.setFilters(new InputFilter[] {new InputFilter.AllCaps()});
         spinnerRoUID.setFilters(new InputFilter[] {new InputFilter.AllCaps()});
+        spinnerRcpID.setFilters(new InputFilter[] {new InputFilter.AllCaps()});
 
         edtPoUID = findViewById(R.id.pouid);
         edtDateStart = findViewById(R.id.edt_gi_date_filter_start);
@@ -213,6 +226,7 @@ public class AddCashOutActivity extends AppCompatActivity {
         supplierName = new ArrayList<>();
         arrayListRoUID = new ArrayList<>();
         arrayListPoUID = new ArrayList<>();
+        recapID = new ArrayList<>();
         arrayListSupplierUID = new ArrayList<>();
 
         baseColorBluePale = new BaseColor(22,169,242);
@@ -297,6 +311,7 @@ public class AddCashOutActivity extends AppCompatActivity {
                 });
 
 
+
         spinnerCustName.setOnItemClickListener((adapterView, view, position, l) -> {
             String selectedSpinnerCustomerName = (String) adapterView.getItemAtPosition(position);
             customerData = selectedSpinnerCustomerName;
@@ -310,31 +325,6 @@ public class AddCashOutActivity extends AppCompatActivity {
 
             llShowSpinnerRoAndEdtPo.setVisibility(View.VISIBLE);
 
-
-
-           /* db.collection("ReceivedOrderData").whereEqualTo("roStatus", true)
-                    .addSnapshotListener((value, error) -> {
-                        arrayListRoUID.clear();
-                        if (value != null) {
-                            if (!value.isEmpty()) {
-                                for (DocumentSnapshot d : value.getDocuments()) {
-                                    String spinnerPurchaseOrders = Objects.requireNonNull(d.get("roUID")).toString();
-                                    String roCustName = Objects.requireNonNull(d.get("roCustName")).toString();
-                                    if (roCustName.equals(spinnerCustName.getText().toString())){
-                                        arrayListRoUID.add(spinnerPurchaseOrders);
-                                    }
-
-                                }
-                                ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddCashOutActivity.this, R.layout.style_spinner, arrayListRoUID);
-                                arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
-                                spinnerRoUID.setAdapter(arrayAdapter);
-                            } else {
-                                if(!this.isFinishing()) {
-                                    dialogInterface.roNotExistsDialogForInvoice(AddCashOutActivity.this);
-                                }
-                            }
-                        }
-                    });*/
 
             db.collection("ReceivedOrderData").whereEqualTo("roStatus", true)
                     .addSnapshotListener((value, error) -> {
@@ -485,13 +475,92 @@ public class AddCashOutActivity extends AppCompatActivity {
                             roPoCustNumber = receivedOrderModel.getRoPoCustNumber();
                             roDocumentID = receivedOrderModel.getRoDocumentID();
                             custDocumentID = receivedOrderModel.getCustDocumentID();
+
+
+                            db.collection("RecapData").whereEqualTo("roDocumentID", roDocumentID)
+                                    .addSnapshotListener((value, error) -> {
+                                        recapID.clear();
+                                        if (value != null) {
+                                            if (!value.isEmpty()) {
+                                                for (DocumentSnapshot d : value.getDocuments()) {
+                                                    String spinnerSupplierName = Objects.requireNonNull(d.get("rcpGiUID")).toString();
+                                                    //String supplierID = Objects.requireNonNull(d.get("supplierID")).toString();
+                                                    recapID.add(spinnerSupplierName);
+                                                }
+                                                ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddCashOutActivity.this, R.layout.style_spinner, recapID);
+                                                arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
+                                                spinnerRcpID.setAdapter(arrayAdapter);
+                                            } else {
+                                                Toast.makeText(AddCashOutActivity.this, "Not exists", Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
+                                    });
+
                         }
                         edtPoUID.setText(roPoCustNumber);
                     });
         });
+
+
+
+
+
+
+        spinnerRcpID.setOnItemClickListener((adapterView, view, i, l) -> {
+            spinnerRcpID.setError(null);
+            String selectedSpinnerRecapID = (String) adapterView.getItemAtPosition(i);
+
+
+            db.collection("RecapData").whereEqualTo("rcpGiUID", selectedSpinnerRecapID).get()
+                    .addOnSuccessListener(queryDocumentSnapshots -> {
+                        for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots){
+                            RecapGIModel recapGIModel = documentSnapshot.toObject(RecapGIModel.class);
+                            recapGIModel.setRcpGiDocumentID(documentSnapshot.getId());
+                            rcpUIDVal = recapGIModel.getRcpGiDocumentID();
+                            rcpCoUID = recapGIModel.getRcpGiCoUID();
+
+                            db.collection("CashOutData").whereEqualTo("coDocumentID", rcpCoUID).get()
+                                    .addOnSuccessListener(queryDocumentSnapshots2 -> {
+                                        for (QueryDocumentSnapshot documentSnapshot2 : queryDocumentSnapshots2) {
+                                            CashOutModel cashOutModel = documentSnapshot2.toObject(CashOutModel.class);
+                                            cashOutModel.setCoDocumentID(documentSnapshot2.getId());
+                                            getCoUIDFromCoDocumentID = cashOutModel.getCoUID();
+
+                                            if (!rcpCoUID.isEmpty()){
+                                                MaterialDialog md = new MaterialDialog.Builder(this)
+                                                        .setAnimation(R.raw.lottie_attention)
+                                                        .setTitle("Cash Out Sudah Dibuat")
+                                                        .setMessage("Rekap dengan ID "+selectedSpinnerRecapID+" telah dibuatkan Cash Out dengan ID Cash Out "+ getCoUIDFromCoDocumentID+".")
+                                                        .setPositiveButton("Buka Detail CO", R.drawable.ic_outline_navigate_next, (dialogInterface, which) -> {
+                                                            Intent intent = new Intent(context, UpdateCashOutActivity.class);
+                                                            intent.putExtra("key", rcpCoUID);
+                                                            context.startActivity(intent);
+                                                            dialogInterface.dismiss();
+                                                        })
+                                                        .setNegativeButton("Batal", R.drawable.ic_outline_close, (dialogInterface, which) -> {
+                                                            spinnerRcpID.setText(null);
+                                                            dialogInterface.dismiss();
+                                                        })
+                                                        .setCancelable(false)
+                                                        .build();
+
+                                                md.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
+                                                md.show();
+                                            }
+
+                                        }
+                                    });
+
+                        }
+                    });
+        });
+
+
         //spinnerRoUID.setOnFocusChangeListener((view, b) -> spinnerRoUID.setText(rouidVal));
 
         btnResetCustomer.setOnClickListener(view -> {
+            isSelectedAll = false;
+            menu.findItem(R.id.select_all_data_recap).setVisible(false);
             btnResetCustomer.setVisibility(View.GONE);
             btnResetRouid.setVisibility(View.GONE);
             spinnerCustName.setText(null);
@@ -548,6 +617,12 @@ public class AddCashOutActivity extends AppCompatActivity {
                 edtPoUID.setError(null);
             }
 
+            if (Objects.requireNonNull(spinnerRcpID.getText()).toString().isEmpty()){
+                spinnerRcpID.setError("");
+            } else{
+                spinnerRcpID.setError(null);
+            }
+
             if (spinnerSupplierName.getText().toString().isEmpty()){
                 spinnerSupplierName.setError("");
             } else{
@@ -577,16 +652,19 @@ public class AddCashOutActivity extends AppCompatActivity {
                     !spinnerRoUID.getText().toString().isEmpty()&&
                     !spinnerSupplierName.getText().toString().isEmpty()&&
                     !edtPoUID.getText().toString().isEmpty()&&
+                    !spinnerRcpID.getText().toString().isEmpty()&&
                     !edtBankNameAndAccountNumber.getText().toString().isEmpty()&&
                     !edtAccountOwnerName.getText().toString().isEmpty()&&
                     !edtPayee.getText().toString().isEmpty()){
                 searchQuery();
+
             }
         });
 
         btnExitSelection.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                menu.findItem(R.id.select_all_data_recap).setIcon(ContextCompat.getDrawable(AddCashOutActivity.this, R.drawable.ic_outline_select_all));
                 giManagementAdapter.clearSelection();
                 llBottomSelectionOptions.animate()
                         .translationY(llBottomSelectionOptions.getHeight()).alpha(0.0f)
@@ -602,7 +680,7 @@ public class AddCashOutActivity extends AppCompatActivity {
 
         imgbtnExpandCollapseFilterLayout.setOnClickListener(view -> {
             if (firstViewDataFirstTimeStatus){
-                view = View.inflate(context, R.layout.activity_recap_good_issue_data, null);
+                view = View.inflate(context, R.layout.activity_add_recap_good_issue_data, null);
                 firstViewData = view.findViewById(R.id.ll_wrap_filter_by_date_range);
                 firstViewDataFirstTimeStatus = false;
             }
@@ -656,8 +734,8 @@ public class AddCashOutActivity extends AppCompatActivity {
 
                     dialogInterface.confirmCreateCashOutProof(context, db, goodIssueModelArrayList,
                             coUID, coDateCreated + " | " + coTimeCreated + " WIB",
-                            helper.getUserId(), "-","-", "-", "-",
-                            suppplieruidVal, roDocumentID, coDateDeliveryPeriod, false, false, totalIDR);
+                            helper.getUserId(), "","", "", "",
+                            suppplieruidVal, roDocumentID, coDateDeliveryPeriod, false, false, totalIDR, rcpUIDVal);
 
                     String custNameValReplace = custNameVal.replace(" - ","-");
                     int indexCustNameVal = custNameValReplace.lastIndexOf('-');
@@ -693,6 +771,7 @@ public class AddCashOutActivity extends AppCompatActivity {
                 if (!Objects.requireNonNull(spinnerCustName.getText()).toString().isEmpty()
                         && !spinnerRoUID.getText().toString().isEmpty()
                         && !Objects.requireNonNull(edtPoUID.getText()).toString().isEmpty()
+                        && !Objects.requireNonNull(spinnerRcpID.getText()).toString().isEmpty()
                         && !spinnerSupplierName.getText().toString().isEmpty()){
 
                     int itemSelectedSize = giManagementAdapter.getSelected().size();
@@ -703,9 +782,11 @@ public class AddCashOutActivity extends AppCompatActivity {
                     String itemSelectedVolumeAndBuyPriceVal = df.format(itemSelectedVolume).concat(" m3");
                     //.concat("IDR "+itemSelectedBuyPriceVal);
 
+
                     if (giManagementAdapter.getSelected().size()>0){
 
                         fabCreateCOR.animate().translationY(0).setDuration(100).start();
+                        fabCreateCOR.show();
 
                         tvTotalSelectedItem.setText(itemSelectedSizeVal);
                         tvTotalSelectedItem2.setText(itemSelectedVolumeAndBuyPriceVal);
@@ -723,7 +804,10 @@ public class AddCashOutActivity extends AppCompatActivity {
 
                     } else {
                         totalUnit = 0;
+
                         fabCreateCOR.animate().translationY(800).setDuration(100).start();
+                        fabCreateCOR.hide();
+                        //fabCreateCOR.animate().translationY(800).setDuration(100).start();
                         llBottomSelectionOptions.animate()
                                 .translationY(llBottomSelectionOptions.getHeight()).alpha(0.0f)
                                 .setListener(new AnimatorListenerAdapter() {
@@ -1397,11 +1481,13 @@ public class AddCashOutActivity extends AppCompatActivity {
                         if (!rouidVal.isEmpty()){
                             if (Objects.requireNonNull(item.child("roDocumentID").getValue()).toString().equals(roDocumentID)) {
                                 if (Objects.equals(item.child("giStatus").getValue(), true)  &&
-                                        Objects.equals(item.child("giRecapped").getValue(), true)) {
+                                        Objects.equals(item.child("giRecapped").getValue(), true) &&
+                                        Objects.equals(item.child("giRecappedTo").getValue(), rcpUIDVal)) {
                                     if (Objects.equals(item.child("giCashedOut").getValue(), false)) {
+                                        menu.findItem(R.id.select_all_data_recap).setVisible(true);
                                         GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
                                         goodIssueModelArrayList.add(goodIssueModel);
-                                        //fabCreateGiRecap.show();
+                                        //fabCreateCOR.show();
                                         nestedScrollView.setVisibility(View.VISIBLE);
                                         llNoData.setVisibility(View.GONE);
                                     }
@@ -1412,7 +1498,7 @@ public class AddCashOutActivity extends AppCompatActivity {
 
                     }
                     if (goodIssueModelArrayList.size()==0) {
-                        fabCreateCOR.hide();
+                        //fabCreateCOR.hide();
                         nestedScrollView.setVisibility(View.GONE);
                         llNoData.setVisibility(View.VISIBLE);
                     }
@@ -1501,6 +1587,7 @@ public class AddCashOutActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(@NonNull Menu menu) {
+        this.menu = menu;
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.recap_gi_menu, menu);
         return super.onCreateOptionsMenu(menu);
@@ -1521,7 +1608,41 @@ public class AddCashOutActivity extends AppCompatActivity {
             }
             return true;
         }
-        finish();
+
+        if (item.getItemId() == R.id.select_all_data_recap) {
+
+            if (!isSelectedAll){
+                isSelectedAll = true;
+                item.setIcon(R.drawable.ic_outline_deselect);
+                giManagementAdapter.selectAll();
+                llBottomSelectionOptions.animate()
+                        .translationY(0).alpha(1.0f)
+                        .setDuration(100)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationStart(Animator animation) {
+                                super.onAnimationStart(animation);
+                                llBottomSelectionOptions.setVisibility(View.VISIBLE);
+                            }
+                        });
+            } else {
+                isSelectedAll = false;
+                item.setIcon(R.drawable.ic_outline_select_all);
+                giManagementAdapter.clearSelection();
+                llBottomSelectionOptions.animate()
+                        .translationY(llBottomSelectionOptions.getHeight()).alpha(0.0f)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                super.onAnimationEnd(animation);
+                                llBottomSelectionOptions.setVisibility(View.GONE);
+                            }
+                        });
+            }
+
+            return true;
+        }
+        onBackPressed();
         helper.ACTIVITY_NAME = null;
         custNameVal = "";
         return super.onOptionsItemSelected(item);
@@ -1531,6 +1652,7 @@ public class AddCashOutActivity extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         helper.ACTIVITY_NAME = null;
+        finish();
     }
 
     @Override

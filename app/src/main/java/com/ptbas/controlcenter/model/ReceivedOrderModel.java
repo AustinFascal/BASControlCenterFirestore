@@ -9,6 +9,8 @@ public class ReceivedOrderModel {
     String roDocumentID, roUID, roCreatedBy, roDateCreated, roMatType, roCurrency, roPoCustNumber,
             custDocumentID;
     Integer roType, roTOP;
+
+    Boolean custTaxType;
     Double roSubTotalBuy, roSubTotalSell, roCountQuantity, roTotalSellFinal, roEstProfit;
     Boolean roStatus;
     HashMap<String, List<ProductItems>> roOrderedItems;
@@ -23,7 +25,7 @@ public class ReceivedOrderModel {
                               String roPoCustNumber, String custDocumentID, Integer roType,
                               Integer roTOP, Double roSubTotalBuy, Double roSubTotalSell,
                               Double roCountQuantity, Double roTotalSellFinal, Double roEstProfit,
-                              Boolean roStatus, HashMap<String, List<ProductItems>> roOrderedItems) {
+                              Boolean roStatus, HashMap<String, List<ProductItems>> roOrderedItems, Boolean custTaxType) {
         this.roDocumentID = roDocumentID;
         this.roUID = roUID;
         this.roCreatedBy = roCreatedBy;
@@ -41,8 +43,16 @@ public class ReceivedOrderModel {
         this.roEstProfit = roEstProfit;
         this.roStatus = roStatus;
         this.roOrderedItems = roOrderedItems;
+        this.custTaxType = custTaxType;
     }
 
+    public Boolean getCustTaxType() {
+        return custTaxType;
+    }
+
+    public void setCustTaxType(Boolean custTaxType) {
+        this.custTaxType = custTaxType;
+    }
 
     public String getRoDocumentID() {
         return roDocumentID;

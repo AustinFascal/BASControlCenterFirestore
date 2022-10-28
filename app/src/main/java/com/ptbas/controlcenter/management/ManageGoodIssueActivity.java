@@ -53,7 +53,7 @@ import com.ptbas.controlcenter.helper.DialogInterface;
 import com.ptbas.controlcenter.helper.DragLinearLayout;
 import com.ptbas.controlcenter.helper.Helper;
 import com.ptbas.controlcenter.R;
-import com.ptbas.controlcenter.recap.RecapGoodIssueDataActivity;
+import com.ptbas.controlcenter.create.AddRecapGoodIssueDataActivity;
 import com.ptbas.controlcenter.adapter.GIManagementAdapter;
 import com.ptbas.controlcenter.create.AddGoodIssueActivity;
 import com.ptbas.controlcenter.model.GoodIssueModel;
@@ -202,7 +202,7 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
 
         // GO TO RECAP GOOD ISSUE ACTIVITY
         fabActionRecapData.setOnClickListener(view -> {
-            Intent intent = new Intent(ManageGoodIssueActivity.this, RecapGoodIssueDataActivity.class);
+            Intent intent = new Intent(ManageGoodIssueActivity.this, AddRecapGoodIssueDataActivity.class);
             startActivity(intent);
         });
 
@@ -582,18 +582,6 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
                                 goodIssueModelArrayList.add(goodIssueModel);
                             }
                         }
-
-                        /*if (searchTypeData.equals(searchTypeValue[1])){
-                            if(Objects.requireNonNull(goodIssueModel).getGiRoUID().contains(newText)) {
-                                goodIssueModelArrayList.add(goodIssueModel);
-                            }
-                        }
-
-                        if (searchTypeData.equals(searchTypeValue[2])){
-                            if(Objects.requireNonNull(goodIssueModel).getGiPoCustNumber().contains(newText)) {
-                                goodIssueModelArrayList.add(goodIssueModel);
-                            }
-                        }*/
 
                         if (searchTypeData.equals(searchTypeValue[3])){
                             if(Objects.requireNonNull(goodIssueModel).getVhlUID().contains(newText)) {
@@ -1037,23 +1025,10 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         int width = displayMetrics.widthPixels;
-        /*if (width<=1080){
-            RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 1);
-            rvGoodIssueList.setLayoutManager(mLayoutManager);
-        }
-        if (width>1080&&width<1366){
-            RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 2);
-            rvGoodIssueList.setLayoutManager(mLayoutManager);
-        }
-        if (width>=1366){
-            RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 3);
-            rvGoodIssueList.setLayoutManager(mLayoutManager);
-        }*/
+
         RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 1);
         rvGoodIssueList.setLayoutManager(mLayoutManager);
-        /*chip_filter_all.isSelected();
-        chip_filter_all.isChecked();
-        showDataDefaultQuery();*/
+
     }
 
     @Override

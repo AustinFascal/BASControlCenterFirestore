@@ -2,7 +2,7 @@ package com.ptbas.controlcenter.model;
 
 public class InvoiceModel {
 
-    String invDocumentUID, invUID, invCreatedBy, invDateNTimeCreated, invVerifiedBy,
+    String invDateHandover, invHandoverBy, invDocumentUID, invUID, invCreatedBy, invDateNTimeCreated, invVerifiedBy,
             invDueDateNTime, invDateVerified, invTransferReference, invDateDeliveryPeriod, custDocumentID, bankDocumentID, roDocumentID;
 
     private boolean isChecked = false;
@@ -10,7 +10,7 @@ public class InvoiceModel {
     public InvoiceModel() {
     }
 
-    public InvoiceModel(String invDocumentUID, String invUID, String invCreatedBy, String invDateNTimeCreated, String invDueDateNTime, String invVerifiedBy, String invDateVerified, String invTransferReference, String invDateDeliveryPeriod, String custDocumentID, String bankDocumentID, String roDocumentID) {
+    public InvoiceModel(String invDocumentUID, String invUID, String invCreatedBy, String invDateNTimeCreated, String invDueDateNTime, String invVerifiedBy, String invDateVerified, String invTransferReference, String invDateDeliveryPeriod, String custDocumentID, String bankDocumentID, String roDocumentID, String invDateHandover, String invHandoverBy) {
         this.invDocumentUID = invDocumentUID;
         this.invUID = invUID;
         this.invCreatedBy = invCreatedBy;
@@ -23,6 +23,24 @@ public class InvoiceModel {
         this.custDocumentID = custDocumentID;
         this.bankDocumentID = bankDocumentID;
         this.roDocumentID = roDocumentID;
+        this.invDateHandover = invDateHandover;
+        this.invHandoverBy = invHandoverBy;
+    }
+
+    public String getInvHandoverBy() {
+        return invHandoverBy;
+    }
+
+    public void setInvHandoverBy(String invHandoverBy) {
+        this.invHandoverBy = invHandoverBy;
+    }
+
+    public String getInvDateHandover() {
+        return invDateHandover;
+    }
+
+    public void setInvDateHandover(String invDateHandover) {
+        this.invDateHandover = invDateHandover;
     }
 
     public String getInvTransferReference() {
@@ -128,4 +146,6 @@ public class InvoiceModel {
     public void setChecked(boolean checked) {
         isChecked = checked;
     }
+
+
 }

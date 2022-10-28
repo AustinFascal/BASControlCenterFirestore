@@ -1,11 +1,15 @@
 package com.ptbas.controlcenter.update;
 
 import static android.content.ContentValues.TAG;
+import static com.gun0912.tedpermission.provider.TedPermissionProvider.context;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.Html;
@@ -17,6 +21,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -26,7 +31,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
@@ -37,9 +41,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
-import com.ptbas.controlcenter.helper.DialogInterface;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.ptbas.controlcenter.R;
+import com.ptbas.controlcenter.helper.DialogInterface;
 import com.ptbas.controlcenter.helper.Helper;
 import com.ptbas.controlcenter.model.GoodIssueModel;
 import com.ptbas.controlcenter.model.ReceivedOrderModel;
@@ -52,9 +57,11 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
 
+import dev.shreyaspatil.MaterialDialog.MaterialDialog;
+
 public class UpdateGoodIssueActivity extends AppCompatActivity {
 
-    String roDocumentID, vhlData, matName, matType, roNumber, poNumber,  roKey ="", giNoteNumber;
+    String supportPhoneNumber, roDocumentID, vhlData, matName, matType, roNumber, giNoteNumber;
     String monthStrVal, dayStrVal;
     Integer giYear = 0, giMonth = 0, giDay = 0;
 
@@ -64,7 +71,6 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
     TextInputEditText edtCreatedBy, edtApprovedBy, edtRequestedToCo, edtInvoicedTo;
     AutoCompleteTextView spinnerVhlUID;
 
-    //LinearLayout llHeightCorrectionFeature;
     DatePickerDialog datePicker;
     TimePickerDialog timePicker;
     RadioGroup radioGroupOperation;
@@ -77,10 +83,9 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
 
 
     DialogInterface dialogInterface = new DialogInterface();
-    //Helper helper = new Helper();
     List<String> vhlUIDList, matNameList, matTypeNameList, receiveOrderNumberList;
 
-    String giUIDVal, giCreatedBy, giVerifiedBy, giCashedOutTo;
+    String giUIDVal, giCreatedBy, giVerifiedBy, giCashedOutTo, giRecappedTo;
 
     Boolean giStatus, giRecapped, giInvoiced, giCashedOut;
 
@@ -88,10 +93,21 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
 
     Helper helper = new Helper();
 
+    private FirebaseRemoteConfig firebaseRemoteConfig;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_update_good_issue);
+
+        firebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
+
+        FirebaseRemoteConfigSettings firebaseRemoteConfigSettings = new FirebaseRemoteConfigSettings.Builder()
+                .setMinimumFetchIntervalInSeconds(60)
+                        .build();
+        firebaseRemoteConfig.setConfigSettingsAsync(firebaseRemoteConfigSettings);
+        firebaseRemoteConfig.setDefaultsAsync(R.xml.default_values);
+
+        getValueFromFirebaseConfig();
 
         LangUtils.setLocale(this, "en");
 
@@ -142,7 +158,7 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
         radioGroupOperation = findViewById(R.id.radio_group_operation);
         edtHeightCorrection = findViewById(R.id.edt_vhl_height_correction);
         tvHeightCorrection = findViewById(R.id.tv_vhl_height_correction);
-        tvVhlVolume = findViewById(R.id.tv_vhl_volume);
+        tvVhlVolume = findViewById(R.id.edtVhlVol);
 
         fabSaveGIData = findViewById(R.id.fab_save_gi_data);
 
@@ -168,8 +184,6 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
                         String giDateCreated = goodIssueModel.getGiDateCreated();
                         String giTimeCreated = goodIssueModel.getGiTimeCreted();
                         roDocumentID = goodIssueModel.getRoDocumentID();
-                       // roNumber = goodIssueModel.getGiRoUID();
-                        //poNumber = goodIssueModel.getGiPoCustNumber();
                         matName = goodIssueModel.getGiMatName();
                         matType = goodIssueModel.getGiMatType();
                         vhlData = goodIssueModel.getVhlUID();
@@ -179,36 +193,43 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
                         Integer giVhlLength = goodIssueModel.getVhlLength();
                         Integer giVhlHeightCorrection = goodIssueModel.getVhlHeightCorrection();
                         Integer giVhlHeightAfterCorrection = goodIssueModel.getVhlHeightAfterCorrection();
-                        float giVhlCubication = goodIssueModel.getGiVhlCubication();
+                        Double giVhlCubication = goodIssueModel.getGiVhlCubication();
                         giStatus = goodIssueModel.getGiStatus();
                         giInvoiced = goodIssueModel.getGiInvoiced();
                         giCashedOut = goodIssueModel.getGiCashedOut();
                         giRecapped = goodIssueModel.getGiRecapped();
+                        giRecappedTo = goodIssueModel.getGiRecappedTo();
+                        giCashedOutTo = goodIssueModel.getGiCashedOutTo();
 
 
                         db.collection("ReceivedOrderData").whereEqualTo("roDocumentID", roDocumentID).get()
-                                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                                    @Override
-                                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                                        for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots){
-                                            ReceivedOrderModel receivedOrderModel = documentSnapshot.toObject(ReceivedOrderModel.class);
-                                            edtPoNumberCust.setText(receivedOrderModel.getRoPoCustNumber());
-                                            spinnerRoNumber.setText(receivedOrderModel.getRoUID());
-                                        }
+                                .addOnSuccessListener(queryDocumentSnapshots -> {
+                                    for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots){
+                                        ReceivedOrderModel receivedOrderModel = documentSnapshot.toObject(ReceivedOrderModel.class);
+                                        edtPoNumberCust.setText(receivedOrderModel.getRoPoCustNumber());
+                                        spinnerRoNumber.setText(receivedOrderModel.getRoUID());
                                     }
                                 });
 
                         db.collection("CashOutData").whereEqualTo("coDocumentID", snapshot.child("giCashedOutTo").getValue(String.class)).get()
-                                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                                    @Override
-                                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                                        for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots){
-                                            ReceivedOrderModel receivedOrderModel = documentSnapshot.toObject(ReceivedOrderModel.class);
+                                .addOnSuccessListener(queryDocumentSnapshots -> {
+                                    for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots){
+                                        String coAccBy = documentSnapshot.get("coAccBy", String.class);
+                                        if (giCashedOut.equals(true)){
+                                            edtRequestedToCo.setText(documentSnapshot.get("coUID", String.class));
+                                        }
+                                        if (!coAccBy.isEmpty()){
+                                            fabSaveFormIsEmpty();
+                                        }
+                                    }
+                                });
 
-                                            if (giCashedOut.equals(true)){
-                                                edtRequestedToCo.setText(documentSnapshot.get("coUID", String.class));
-                                                fabSaveFormIsEmpty();
-                                            }
+                        db.collection("InvoiceData").whereEqualTo("invDocumentUID", snapshot.child("giInvoicedTo").getValue(String.class)).get()
+                                .addOnSuccessListener(queryDocumentSnapshots -> {
+                                    for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots){
+                                        String invUID = documentSnapshot.get("invUID", String.class);
+                                        if (giInvoiced.equals(true)){
+                                            edtInvoicedTo.setText(invUID);
                                         }
                                     }
                                 });
@@ -235,15 +256,8 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
                             }
                         });
 
-
-                        if (giInvoiced.equals(true)){
-                            //TODO get invoice UID
-                            edtInvoicedTo.setText("SUDAH DITAGIHKAN");
-                            //tvGiInvoicedStatus.setText("Status Ditagihkan ke Customer: SUDAH");
-                            fabSaveFormIsEmpty();
-                        } else{
+                        if (giInvoiced.equals(false)) {
                             edtInvoicedTo.setText("BELUM DITAGIHKAN");
-                            //tvGiInvoicedStatus.setText("Status Ditagihkan ke Customer: BELUM");
                             fabSaveBtnFormIsNotEmpty();
                         }
 
@@ -264,7 +278,7 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
                         edtVhlLength.setText(String.valueOf(giVhlLength));
                         tvVhlVolume.setText(Html.fromHtml(df.format(giVhlCubication) +" m\u00B3"));
 
-                        tvHeightCorrection.setText("Tinggi Hasil Koreksi (TK): "+String.valueOf(giVhlHeightAfterCorrection)+" cm");
+                        tvHeightCorrection.setText("Tinggi Hasil Koreksi (TK): "+giVhlHeightAfterCorrection+" cm");
 
                         if (giVhlHeightCorrection.toString().contains("-")){
                             edtHeightCorrection.setText(String.valueOf(giVhlHeightCorrection).substring(1));
@@ -273,11 +287,10 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
                         if (giVhlHeight<giVhlHeightAfterCorrection) {
                             int correction =  giVhlHeightAfterCorrection-giVhlHeight;
                             edtHeightCorrection.setText(String.valueOf(correction));
-                            tvHeightCorrection.setText("Tinggi Hasil Koreksi (TK): "+String.valueOf(giVhlHeightAfterCorrection)+" cm");
+                            tvHeightCorrection.setText("Tinggi Hasil Koreksi (TK): "+giVhlHeightAfterCorrection+" cm");
                             radioGroupOperation.check(R.id.radio_plus_operation);
                         }
                     }
-
                 }
 
                 @Override
@@ -396,10 +409,8 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
         });
 
         spinnerVhlUID.setOnItemClickListener((adapterView, view, position, l) -> {
-            String selectedSpinnerVhlRegistNumber = (String) adapterView.getItemAtPosition(position);
-            vhlData = selectedSpinnerVhlRegistNumber;
+            vhlData = (String) adapterView.getItemAtPosition(position);
             spinnerVhlUID.setError(null);
-            //llHeightCorrectionFeature.setVisibility(View.VISIBLE);
             edtHeightCorrection.setText("0");
 
             radioGroupOperation.check(R.id.radio_minus_operation);
@@ -421,7 +432,7 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
                                 (Float.parseFloat(edtVhlLength.getText().toString())*
                                         Float.parseFloat(edtVhlWidth.getText().toString())*
                                         Float.parseFloat(edtVhlHeight.getText().toString()))/1000000;
-                        tvVhlVolume.setText(Html.fromHtml(String.valueOf(df.format(finalVolumeDefault))+" m\u00B3"));
+                        tvVhlVolume.setText(Html.fromHtml(df.format(finalVolumeDefault)+" m\u00B3"));
 
                     } else {
                         Toast.makeText(UpdateGoodIssueActivity.this, "Null", Toast.LENGTH_SHORT).show();
@@ -435,12 +446,6 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
             });
         });
 
-        /*spinnerMatName.setOnItemClickListener((adapterView, view, position, l) -> {
-            String selectedSpinnerMaterialName = (String) adapterView.getItemAtPosition(position);
-            matName = selectedSpinnerMaterialName;
-            spinnerMatName.setError(null);
-        });
-*/
         edtGiNoteNumber.setOnClickListener(view -> dialogInterface.dataCannotBeChangedInformation(UpdateGoodIssueActivity.this));
         spinnerMatName.setOnClickListener(view -> dialogInterface.dataCannotBeChangedInformation(UpdateGoodIssueActivity.this));
         edtPoNumberCust.setOnClickListener(view -> dialogInterface.dataCannotBeChangedInformation(UpdateGoodIssueActivity.this));
@@ -468,45 +473,54 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
 
             }
         });
+    }
 
-        /*databaseReference.child("TransportTypeData").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()){
-                    for (DataSnapshot dataSnapshot: snapshot.getChildren()){
-                        String spinnerTransportTypeData = dataSnapshot.child("name").getValue(String.class);
-                        matTypeNameList.add(spinnerTransportTypeData);
+    private void getValueFromFirebaseConfig() {
+        firebaseRemoteConfig.fetchAndActivate()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()){
+                        supportPhoneNumber = firebaseRemoteConfig.getString("support_phone_number");
+                    } else {
+                        Toast.makeText(UpdateGoodIssueActivity.this, "Terjadi kesalahan", Toast.LENGTH_SHORT).show();
                     }
-                    ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(UpdateGoodIssueActivity.this, R.layout.style_spinner, matTypeNameList);
-                    arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
-                    spinnerMatType.setAdapter(arrayAdapter);
-                } else {
-                    Toast.makeText(UpdateGoodIssueActivity.this, "Not exists", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });*/
+                });
     }
 
     private void fabSaveFormIsEmpty(){
-        fabSaveGIData.setOnClickListener(view -> Toast.makeText(getApplicationContext(), "Anda tidak dapat mengubah data yang sudah ditagihkan.", Toast.LENGTH_SHORT).show());
+        fabSaveGIData.setOnClickListener(view -> {
+            MaterialDialog md = new MaterialDialog.Builder(UpdateGoodIssueActivity.this)
+                    .setAnimation(R.raw.lottie_attention)
+                    .setTitle("Gagal")
+                    .setMessage("Anda tidak dapat mengubah data yang sudah dibayarkan ke supplier. Hubungi administrator untuk bantuan.")
+                    .setPositiveButton("BANTUAN", R.drawable.ic_outline_support, (dialogInterface, which) -> {
+                        String url = "https://api.whatsapp.com/send?phone=" + supportPhoneNumber;
+                        try {
+                            PackageManager pm = context.getPackageManager();
+                            pm.getPackageInfo("com.whatsapp", PackageManager.GET_ACTIVITIES);
+                            Intent i = new Intent(Intent.ACTION_VIEW);
+                            i.setData(Uri.parse(url));
+                            startActivity(i);
+                        } catch (PackageManager.NameNotFoundException e) {
+                            Toast.makeText(UpdateGoodIssueActivity.this, "Whatsapp tidak terpasang di perangkat Anda", Toast.LENGTH_SHORT).show();
+                            e.printStackTrace();
+                        }
+                        dialogInterface.dismiss();
+                    })
+                    .setNegativeButton("TUTUP", R.drawable.ic_outline_close, (dialogInterface, which) -> {
+                        dialogInterface.dismiss();
+                    })
+                    .setCancelable(false)
+                    .build();
+
+            md.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
+            md.show();
+        });
     }
 
     private void fabSaveBtnFormIsNotEmpty(){
         fabSaveGIData.setOnClickListener(view -> {
             String giDate = Objects.requireNonNull(edtGiDate.getText()).toString();
             String giTime = Objects.requireNonNull(edtGiTime.getText()).toString();
-
-           /* String giRONumber = Objects.requireNonNull(spinnerRoNumber.getText()).toString();
-            String giPOCustomerNumber = Objects.requireNonNull(edtPoNumberCust.getText()).toString();*/
-
-
-            /*String giMatName = Objects.requireNonNull(spinnerMatName.getText()).toString();
-            String giMatType = Objects.requireNonNull(spinnerMatType.getText()).toString();*/
 
             String giVhlUID = Objects.requireNonNull(spinnerVhlUID.getText()).toString();
             String giHeightCorrection = Objects.requireNonNull(edtHeightCorrection.getText()).toString();
@@ -528,22 +542,6 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
                 edtGiTime.setError("Mohon masukkan waktu pembuatan");
                 edtGiTime.requestFocus();
             }
-            /*if (TextUtils.isEmpty(giRONumber)){
-                spinnerRoNumber.setError("Mohon masukkan nomor RO");
-                spinnerRoNumber.requestFocus();
-            }
-            if (TextUtils.isEmpty(giPOCustomerNumber)){
-                edtPoNumberCust.setError("Mohon masukkan nomor PO customer");
-                edtPoNumberCust.requestFocus();
-            }
-            if (TextUtils.isEmpty(giMatName)){
-                spinnerMatName.setError("Mohon masukkan nama material");
-                spinnerMatName.requestFocus();
-            }
-            if (TextUtils.isEmpty(giMatType)){
-                spinnerMatType.setError("Mohon masukkan jenis transport");
-                spinnerMatType.requestFocus();
-            }*/
             if (TextUtils.isEmpty(giVhlUID)){
                 spinnerVhlUID.setError("Mohon masukkan NOPOL kendaraan");
                 spinnerVhlUID.requestFocus();
@@ -578,8 +576,8 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
                         Integer.parseInt(giVhlHeight),
                         Integer.parseInt(radioOperation+giHeightCorrection.replaceAll("[^0-9]", "")),
                         Integer.parseInt(tvHeightCorrection.getText().toString().replaceAll("[^0-9]", "")),
-                        Float.parseFloat(df.format(Float.parseFloat(giVhlCubication.replaceAll("[^0-9.]", "")))),
-                        giStatus, giRecapped, giInvoiced, giCashedOut);
+                        Double.parseDouble(giVhlCubication.replaceAll("[^0-9.]", "")),
+                        giStatus, giRecapped, giInvoiced, giCashedOut, giCashedOutTo, giRecappedTo);
             }
 
         });
@@ -589,7 +587,7 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
                             String vhlUID, String giDateCreated, String giTimeCreted,
                             int vhlLength, int vhlWidth, int vhlHeight,
                             int vhlHeightCorrection, int vhlHeightAfterCorrection,
-                            float giVhlCubication, Boolean giStatus, Boolean giRecapped, Boolean giInvoiced, Boolean giCashedOut) {
+                            Double giVhlCubication, Boolean giStatus, Boolean giRecapped, Boolean giInvoiced, Boolean giCashedOut, String giCashedOutTo, String giRecappedTo) {
         VehicleModel vehicleModel =
                 new VehicleModel(vhlUID, true, vhlLength, vhlWidth, vhlHeight,
                         "", "", "", "");
@@ -610,7 +608,7 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
 
         GoodIssueModel goodIssueModel = new GoodIssueModel(giUID, giCreatedBy, giVerifiedBy, roDocumentID,
                 matName, matType, giNoteNumber, vhlUID, giDateCreated, giTimeCreted, vhlLength,
-                vhlWidth, vhlHeight, vhlHeightCorrection, vhlHeightAfterCorrection, giVhlCubication, giStatus, giRecapped, giInvoiced, giCashedOut);
+                vhlWidth, vhlHeight, vhlHeightCorrection, vhlHeightAfterCorrection, giVhlCubication, giStatus, giRecapped, giInvoiced, giCashedOut, giCashedOutTo, giRecappedTo);
         DatabaseReference refGI = FirebaseDatabase.getInstance().getReference("GoodIssueData");
         refGI.child(giUID).setValue(goodIssueModel).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
@@ -659,15 +657,6 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(@NonNull Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.delete_update_status, menu);
-        //menu.findItem(R.id.menu_verify).setVisible(giStatus.equals(false));
-
-
-        /*if (Objects.requireNonNull(edtPoNumberCust.getText()).toString().equals(":")){
-            menu.findItem(R.id.menu_verify).setVisible(giStatus.equals(false));
-        } else {
-            menu.findItem(R.id.menu_verify).setVisible(giStatus.equals(true));
-        }*/
-
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
@@ -709,7 +698,7 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        finish();
+        this.finish();
     }
 
 }

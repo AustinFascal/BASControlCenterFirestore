@@ -37,6 +37,9 @@ public class ROManagementAdapter extends RecyclerView.Adapter<ROManagementAdapte
     ArrayList<ReceivedOrderModel> receivedOrderModelArrayList;
     DialogInterface dialogInterface;
     Helper helper = new Helper();
+    String custName, taxStatus, custTaxStatus;
+
+    Boolean taxTypeVal;
 
     public ROManagementAdapter(Context context, ArrayList<ReceivedOrderModel> receivedOrderModelArrayList) {
         this.context = context;
@@ -77,6 +80,7 @@ public class ROManagementAdapter extends RecyclerView.Adapter<ROManagementAdapte
         String matNameVal;
 
         DecimalFormat df = new DecimalFormat("0.00");
+
 
 
         public ItemViewHolder(@NonNull View itemView) {
@@ -138,9 +142,12 @@ public class ROManagementAdapter extends RecyclerView.Adapter<ROManagementAdapte
             String poCustNumb = "PO: " + poCustNummVal;
             boolean giStatus = receivedOrderModel.getRoStatus();
 
+            taxTypeVal = receivedOrderModel.getCustTaxType();
             tvRoDateTime.setText(dateNTime + " | TOP: " + receivedOrderModel.getRoTOP() + " hari");
             tvRoUid.setText(roUID);
             tvPoCustNumber.setText(poCustNumb);
+
+
 
             String roType = null;
             if (receivedOrderModel.getRoType().equals(0)){
@@ -168,22 +175,27 @@ public class ROManagementAdapter extends RecyclerView.Adapter<ROManagementAdapte
 
             CollectionReference refCust = db.collection("CustomerData");
 
+            if (taxTypeVal){
+                custTaxStatus = "PKP";
+            } else {
+                custTaxStatus = "NON PKP";
+            }
+
+            tvCustName.setText(custTaxStatus);
+
             refCust.get().addOnCompleteListener(task -> {
                 if (task.isSuccessful()){
                     for(DocumentSnapshot documentSnapshot : task.getResult()){
                         String getDocumentID = documentSnapshot.getId();
                         if (getDocumentID.equals(receivedOrderModel.getCustDocumentID())){
                             CustomerModel customerModel = documentSnapshot.toObject(CustomerModel.class);
-                            tvCustName.setText(customerModel.getCustName());
+                            custName = customerModel.getCustName();
+                            //taxStatus = customerModel.getCustNPWP();
 
-                            String custTaxStatus;
-                            if (customerModel.getCustNPWP().equals("")||customerModel.getCustNPWP().isEmpty()){
-                                custTaxStatus = "NON PKP";
-                            } else {
-                                custTaxStatus = "PKP";
-                            }
 
-                            tvRoMatSellPriceCubicAndTaxType.setText(custTaxStatus + " | " + currency
+                            tvCustName.append(" | "+custName);
+
+                            tvRoMatSellPriceCubicAndTaxType.setText(currency
                                     + " " +
                                     currencyFormat(df.format(matSellPrice))
                                     + "/m3 | " +
@@ -216,7 +228,7 @@ public class ROManagementAdapter extends RecyclerView.Adapter<ROManagementAdapte
                 /*if (llStatusPOAvailable.getVisibility() == View.VISIBLE){
                     dialogInterface.noRoPoNumberInformation(context, receivedOrderModel.getRoDocumentID());
                 } else {*/
-                    dialogInterface.approveRoConfirmation(context, receivedOrderModel.getRoDocumentID());
+                dialogInterface.approveRoConfirmation(context, receivedOrderModel.getRoDocumentID());
                 //}
             });
 

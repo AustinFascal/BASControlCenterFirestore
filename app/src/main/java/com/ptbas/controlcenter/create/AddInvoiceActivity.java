@@ -7,6 +7,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -32,6 +33,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -58,6 +60,10 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
 import com.itextpdf.text.BadElementException;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Chunk;
@@ -74,6 +80,7 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.text.pdf.draw.LineSeparator;
+import com.journeyapps.barcodescanner.BarcodeEncoder;
 import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.adapter.GIManagementAdapter;
 import com.ptbas.controlcenter.helper.DialogInterface;
@@ -105,6 +112,8 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.Random;
 
+import dev.shreyaspatil.MaterialDialog.MaterialDialog;
+
 public class AddInvoiceActivity extends AppCompatActivity {
 
     private static final String ALLOWED_CHARACTERS = "0123456789QWERTYUIOPASDFGHJKLZXCVBNM";
@@ -112,7 +121,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
     double matSellPrice, transportServiceSellPrice, invTax1 = 0, invTax2 =0;
     String invDueDate, invDateNTimeCreated, invTimeCreated, custIDVal, dateStartVal = "", dateEndVal = "", rouidVal= "", currencyVal = "", pouidVal = "",
             monthStrVal, dayStrVal, roPoCustNumber, matTypeVal, matNameVal, transportServiceNameVal,
-            invPoDate = "", invCustName = "", invPoUID = "", custNameVal = "", roDocumentID = "", coDocumentID, coUID,
+            invPoDate = "", invCustName = "", invPoUID = "", custNameVal = "", roDocumentID = "", coDocumentID, coUID, coAccBy,
             custAddressVal = "", invUID="", invPotypeVal = "", customerData = "", customerID ="", bankAccountID = "", bankNameVal, bankAccountNumberVal, bankAccountOwnerNameVal;
     int invPoType, invPoTOP;
 
@@ -137,7 +146,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
     List<ProductItems> productItemsList;
     List<String> customerName, arrayListCustDocumentID;
 
-    LinearLayout ll_wrap_filter_by_couid, llShowSpinnerRoAndEdtPo, llWrapFilterByDateRange, llWrapFilterByRouid, llNoData, llWrapFilter, llBottomSelectionOptions;
+    LinearLayout llStatusCo, ll_wrap_filter_by_couid, llShowSpinnerRoAndEdtPo, llWrapFilterByDateRange, llWrapFilterByRouid, llNoData, llWrapFilter, llBottomSelectionOptions;
 
     ImageButton btnResetBankAccount, btnResetCustomer, btnGiSearchByDateReset, btnGiSearchByRoUIDReset, btnExitSelection, btnResetCoUID;
 
@@ -159,7 +168,13 @@ public class AddInvoiceActivity extends AppCompatActivity {
 
     float totalUnit;
 
+    boolean isSelectedAll = false;
+
+    private Menu menu;
+
     String invDateDeliveryPeriod, invCreatedBy="", custDocumentID ="";
+
+    private MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -208,6 +223,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
         edtDateEnd = findViewById(R.id.edt_gi_date_filter_end);
         rvGoodIssueList = findViewById(R.id.rvItemList);
         imgbtnExpandCollapseFilterLayout = findViewById(R.id.imgbtnExpandCollapseFilterLayout);
+        llStatusCo = findViewById(R.id.llStatusCo);
         ll_wrap_filter_by_couid = findViewById(R.id.ll_wrap_filter_by_couid);
         llWrapFilterByDateRange = findViewById(R.id.ll_wrap_filter_by_date_range);
         llWrapFilterByRouid = findViewById(R.id.ll_wrap_filter_by_rouid);
@@ -238,6 +254,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
         btnGiSearchByRoUIDReset.setColorFilter(color);
         btnResetBankAccount.setColorFilter(color);
         btnResetCustomer.setColorFilter(color);
+        btnResetCoUID.setColorFilter(color);
 
         ActionBar actionBar = getSupportActionBar();
 
@@ -391,25 +408,10 @@ public class AddInvoiceActivity extends AppCompatActivity {
         };
         runnable.run();
 
-        btnExitSelection.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                giManagementAdapter.clearSelection();
-                llBottomSelectionOptions.animate()
-                        .translationY(llBottomSelectionOptions.getHeight()).alpha(0.0f)
-                        .setListener(new AnimatorListenerAdapter() {
-                            @Override
-                            public void onAnimationEnd(Animator animation) {
-                                super.onAnimationEnd(animation);
-                                llBottomSelectionOptions.setVisibility(View.GONE);
-                            }
-                        });
-            }
-        });
 
         imgbtnExpandCollapseFilterLayout.setOnClickListener(view -> {
             if (firstViewDataFirstTimeStatus){
-                view = View.inflate(context, R.layout.activity_recap_good_issue_data, null);
+                view = View.inflate(context, R.layout.activity_add_recap_good_issue_data, null);
                 firstViewData = view.findViewById(R.id.ll_wrap_filter_by_date_range);
                 firstViewDataFirstTimeStatus = false;
             }
@@ -632,7 +634,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
             spinnerCoUID.setError(null);
             String selectedCoUID = (String) adapterView.getItemAtPosition(i);
 
-            btnGiSearchByRoUIDReset.setVisibility(View.VISIBLE);
+            btnResetCoUID.setVisibility(View.VISIBLE);
             ll_wrap_filter_by_couid.setVisibility(View.VISIBLE);
 
             db.collection("CashOutData").whereEqualTo("coUID", selectedCoUID).get()
@@ -642,6 +644,31 @@ public class AddInvoiceActivity extends AppCompatActivity {
                             cashOutModel.setCoDocumentID(documentSnapshot.getId());
                             coDocumentID = cashOutModel.getCoDocumentID();
                             coUID = cashOutModel.getCoUID();
+                            coAccBy = cashOutModel.getCoAccBy();
+
+                            if (coAccBy.isEmpty()){
+                                MaterialDialog md = new MaterialDialog.Builder(this)
+                                        .setAnimation(R.raw.lottie_attention)
+                                        .setTitle("Cash Out Belum Lunas")
+                                        .setMessage("Cash Out belum dibayar ke supplier. Apakah Anda yakin ingin melanjutkan penagihan?")
+                                        .setPositiveButton("LANJUT", R.drawable.ic_outline_navigate_next, (dialogInterface, which) -> {
+                                            dialogInterface.dismiss();
+                                            llStatusCo.setVisibility(View.VISIBLE);
+                                        })
+                                        .setNegativeButton("BATAL", R.drawable.ic_outline_close, (dialogInterface, which) -> {
+                                            dialogInterface.dismiss();
+                                            spinnerCoUID.setText(null);
+                                            llStatusCo.setVisibility(View.GONE);
+                                            btnResetCoUID.setVisibility(View.GONE);
+                                        })
+                                        .setCancelable(false)
+                                        .build();
+
+                                md.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
+                                md.show();
+                            } else {
+                                llStatusCo.setVisibility(View.GONE);
+                            }
                         }
                         //spinnerCoUID.setText(coUID);
                     });
@@ -710,6 +737,8 @@ public class AddInvoiceActivity extends AppCompatActivity {
 
 
         btnGiSearchByDateReset.setOnClickListener(view -> {
+            clearSelection();
+            menu.findItem(R.id.select_all_data_recap).setVisible(false);
             edtDateStart.setText(null);
             edtDateEnd.setText(null);
             edtDateStart.clearFocus();
@@ -718,6 +747,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
         });
 
         btnGiSearchByRoUIDReset.setOnClickListener(view -> {
+            llStatusCo.setVisibility(View.GONE);
             spinnerRoUID.setText(null);
             spinnerRoUID.requestFocus();
             edtPoUID.setText(null);
@@ -737,9 +767,23 @@ public class AddInvoiceActivity extends AppCompatActivity {
         btnResetBankAccount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                menu.findItem(R.id.select_all_data_recap).setVisible(false);
+                clearSelection();
                 spinnerBankAccount.setText(null);
                 spinnerBankAccount.requestFocus();
                 edtAccountOwnerName.setText(null);
+            }
+        });
+
+        btnResetCoUID.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                menu.findItem(R.id.select_all_data_recap).setVisible(false);
+                clearSelection();
+                spinnerCoUID.setText(null);
+                spinnerCoUID.requestFocus();
+                btnResetCoUID.setVisibility(View.GONE);
+                llStatusCo.setVisibility(View.GONE);
             }
         });
 
@@ -748,6 +792,9 @@ public class AddInvoiceActivity extends AppCompatActivity {
         btnResetCustomer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                menu.findItem(R.id.select_all_data_recap).setVisible(false);
+                clearSelection();
+                llStatusCo.setVisibility(View.GONE);
                 coUID = "";
                 coDocumentID = "";
                 rouidVal = "";
@@ -877,19 +924,21 @@ public class AddInvoiceActivity extends AppCompatActivity {
                 invDateNTimeCreated =
                         new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(new Date()).concat(" | "+invTimeCreated+" WIB");
 
-                Calendar c = Calendar.getInstance();
-                c.add(Calendar.DATE, invPoTOP);
+               /* Calendar c = Calendar.getInstance();
+                c.add(Calendar.DATE, invPoTOP);*/
 
+/*
                 Date invDueDateVal = c.getTime();
                 invDueDate = new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(invDueDateVal) + " | " + invTimeCreated + " WIB (" + invPoTOP + " hari)";
+*/
 
 
                 dialogInterface.confirmCreateInvoice(context, db,
                          goodIssueModelArrayList,
                          invUID,  invCreatedBy,
-                         invDateNTimeCreated,  invDueDate, "", "",
+                         invDateNTimeCreated,  "-", "", "",
                          "", invDateDeliveryPeriod,
-                         custDocumentID,  bankAccountID,  roDocumentID);
+                         custDocumentID,  bankAccountID,  roDocumentID, "", "");
             }
         });
 
@@ -901,18 +950,25 @@ public class AddInvoiceActivity extends AppCompatActivity {
         btnExitSelection.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                giManagementAdapter.clearSelection();
-                llBottomSelectionOptions.animate()
-                        .translationY(llBottomSelectionOptions.getHeight()).alpha(0.0f)
-                        .setListener(new AnimatorListenerAdapter() {
-                            @Override
-                            public void onAnimationEnd(Animator animation) {
-                                super.onAnimationEnd(animation);
-                                llBottomSelectionOptions.setVisibility(View.GONE);
-                            }
-                        });
+                clearSelection();
             }
         });
+    }
+
+    private  void clearSelection(){
+        isSelectedAll = false;
+        menu.findItem(R.id.select_all_data_recap).setIcon(ContextCompat.getDrawable(AddInvoiceActivity.this, R.drawable.ic_outline_select_all));
+
+        giManagementAdapter.clearSelection();
+        llBottomSelectionOptions.animate()
+                .translationY(llBottomSelectionOptions.getHeight()).alpha(0.0f)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        super.onAnimationEnd(animation);
+                        llBottomSelectionOptions.setVisibility(View.GONE);
+                    }
+                });
     }
 
     private static String getRandomString() {
@@ -983,7 +1039,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
         cell.addElement(image);
         cell.setBorder(PdfPCell.NO_BORDER);
         cell.setColspan(1);
-        cell.setRowspan(5);
+        cell.setRowspan(6);
         return cell;
     }
     public static PdfPCell cellTxtSpan4RowList() throws DocumentException {
@@ -1060,7 +1116,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
         cell.setBackgroundColor(baseColorLightGrey);
         cell.setBorderWidthLeft(0);
         cell.setBorderWidthRight(0);
-        cell.setPadding(5);
+        cell.setPadding(6);
         return cell;
     }
     public PdfPCell cellColHeaderNoBrdr(Paragraph paragraph, int alignment) {
@@ -1106,19 +1162,35 @@ public class AddInvoiceActivity extends AppCompatActivity {
             paragraphInvDateCreated.setAlignment(Element.ALIGN_RIGHT);
             paragraphInvDateCreated.setSpacingAfter(5);
 
-            // INIT IMAGE BCA QR CODE
-            Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.bca_qr_bas);
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            bm.compress(Bitmap.CompressFormat.JPEG, 90, stream);
             Image img = null;
-            byte[] byteArray = stream.toByteArray();
+
             try {
-                img = Image.getInstance(byteArray);
-                img.setAlignment(Image.TEXTWRAP);
-                img.scaleAbsolute(80f, 80f);
-            } catch (BadElementException | IOException e) {
-                e.printStackTrace();
+
+                BitMatrix bitMatrix = multiFormatWriter.encode(invUID, BarcodeFormat.QR_CODE, 100, 95);
+
+                BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
+                Bitmap bitmap = barcodeEncoder.createBitmap(bitMatrix);
+
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+
+                byte[] byteArray = stream.toByteArray();
+                try {
+                    img = Image.getInstance(byteArray);
+                    img.setAlignment(Image.TEXTWRAP);
+                    img.scaleAbsolute(100f, 110f);
+                } catch (BadElementException | IOException e) {
+                    e.printStackTrace();
+                }
+
+            } catch (WriterException e){
+
             }
+
+
+            // INIT IMAGE BCA QR CODE
+            //Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.bca_qr_bas);
+
 
             // TOTAL UNIT CALCULATION
             /*float totalUnit = 0;
@@ -1251,7 +1323,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
                     new Paragraph(":"+"\n"+":"+"\n"+":"+"\n"+":", fontNormal),
                     Element.ALIGN_LEFT));
             tblInvSection3.addCell(cellTxtNoBrdrNrml(
-                    new Paragraph(pouidVal+"\n"+invPoDate+"\n"+invPotypeVal+"\n"+invDueDate, fontNormal),
+                    new Paragraph(pouidVal+"\n"+invPoDate+"\n"+invPotypeVal+"\n"+"-", fontNormal),
                     Element.ALIGN_LEFT));
 
             List<String> datePeriod = new ArrayList<>();
@@ -1414,6 +1486,19 @@ public class AddInvoiceActivity extends AppCompatActivity {
                     Element.ALIGN_RIGHT));
             tblInvSection12.addCell(cellTxtNoBrdrNrml(
                     new Paragraph("BELUM LUNAS", fontMedium),
+                    Element.ALIGN_LEFT));
+            tblInvSection12.addCell(cellTxtNoBrdrNrml(
+                    new Paragraph("", fontNormalSmall),
+                    Element.ALIGN_LEFT));
+
+            tblInvSection12.addCell(cellTxtNoBrdrNrmlWthPadLft(
+                    new Paragraph("Tanggal Lunas", fontMedium),
+                    Element.ALIGN_LEFT));
+            tblInvSection12.addCell(cellTxtNoBrdrNrml(
+                    new Paragraph(":", fontMedium),
+                    Element.ALIGN_RIGHT));
+            tblInvSection12.addCell(cellTxtNoBrdrNrml(
+                    new Paragraph("-", fontMedium),
                     Element.ALIGN_LEFT));
             tblInvSection12.addCell(cellTxtNoBrdrNrml(
                     new Paragraph("", fontNormalSmall),
@@ -1722,6 +1807,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
                                         && Objects.equals(item.child("giCashedOut").getValue(), true)
                                         && Objects.equals(item.child("giInvoiced").getValue(), false)
                                         && Objects.equals(item.child("giRecapped").getValue(), true)) {
+                                    menu.findItem(R.id.select_all_data_recap).setVisible(true);
                                     GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
                                     goodIssueModelArrayList.add(goodIssueModel);
                                     //fabCreateGiRecap.show();
@@ -1925,6 +2011,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(@NonNull Menu menu) {
+        this.menu = menu;
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.recap_gi_menu, menu);
         return super.onCreateOptionsMenu(menu);
@@ -1943,6 +2030,40 @@ public class AddInvoiceActivity extends AppCompatActivity {
                 cdvFilter.setVisibility(View.GONE);
                 item.setIcon(R.drawable.ic_outline_filter_alt);
             }
+            return true;
+        }
+
+        if (item.getItemId() == R.id.select_all_data_recap) {
+
+            if (!isSelectedAll){
+                isSelectedAll = true;
+                item.setIcon(R.drawable.ic_outline_deselect);
+                giManagementAdapter.selectAll();
+                llBottomSelectionOptions.animate()
+                        .translationY(0).alpha(1.0f)
+                        .setDuration(100)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationStart(Animator animation) {
+                                super.onAnimationStart(animation);
+                                llBottomSelectionOptions.setVisibility(View.VISIBLE);
+                            }
+                        });
+            } else {
+                isSelectedAll = false;
+                item.setIcon(R.drawable.ic_outline_select_all);
+                giManagementAdapter.clearSelection();
+                llBottomSelectionOptions.animate()
+                        .translationY(llBottomSelectionOptions.getHeight()).alpha(0.0f)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                super.onAnimationEnd(animation);
+                                llBottomSelectionOptions.setVisibility(View.GONE);
+                            }
+                        });
+            }
+
             return true;
         }
 

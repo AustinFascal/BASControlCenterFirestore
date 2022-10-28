@@ -1,4 +1,4 @@
-package com.ptbas.controlcenter.recap;
+package com.ptbas.controlcenter.create;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
@@ -41,7 +41,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -73,10 +72,7 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.text.pdf.draw.LineSeparator;
-import com.ptbas.controlcenter.create.AddGoodIssueActivity;
-import com.ptbas.controlcenter.create.AddInvoiceActivity;
 import com.ptbas.controlcenter.helper.DialogInterface;
-import com.ptbas.controlcenter.helper.DragLinearLayout;
 import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.adapter.GIManagementAdapter;
 import com.ptbas.controlcenter.helper.Helper;
@@ -103,7 +99,7 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.Random;
 
-public class RecapGoodIssueDataActivity extends AppCompatActivity {
+public class AddRecapGoodIssueDataActivity extends AppCompatActivity {
 
     private static final String ALLOWED_CHARACTERS = "0123456789QWERTYUIOPASDFGHJKLZXCVBNM";
 
@@ -158,11 +154,13 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
 
     private Menu menu;
 
+
+    String rcpDateDeliveryPeriod;
     //List<String> receiveOrderNumberList;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_recap_good_issue_data);
+        setContentView(R.layout.activity_add_recap_good_issue_data);
 
         context = this;
 
@@ -248,7 +246,7 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                menu.findItem(R.id.select_all_data_recap).setIcon(ContextCompat.getDrawable(RecapGoodIssueDataActivity.this, R.drawable.ic_outline_select_all));
+                menu.findItem(R.id.select_all_data_recap).setIcon(ContextCompat.getDrawable(AddRecapGoodIssueDataActivity.this, R.drawable.ic_outline_select_all));
 
                 giManagementAdapter.clearSelection();
 
@@ -270,7 +268,7 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
             monthStrVal = String.valueOf(calendar.get(Calendar.MONTH));
             String yearStrVal = String.valueOf(calendar.get(Calendar.YEAR));
 
-            datePicker = new DatePickerDialog(RecapGoodIssueDataActivity.this,
+            datePicker = new DatePickerDialog(AddRecapGoodIssueDataActivity.this,
                     (datePicker, year, month, dayOfMonth) -> {
                         int monthInt = month + 1;
 
@@ -303,7 +301,7 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
             monthStrVal = String.valueOf(calendar.get(Calendar.MONTH));
             String yearStrVal = String.valueOf(calendar.get(Calendar.YEAR));
 
-            datePicker = new DatePickerDialog(RecapGoodIssueDataActivity.this,
+            datePicker = new DatePickerDialog(AddRecapGoodIssueDataActivity.this,
                     (datePicker, year, month, dayOfMonth) -> {
                         int monthInt = month + 1;
 
@@ -332,7 +330,7 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
 
         imgbtnExpandCollapseFilterLayout.setOnClickListener(view -> {
             if (firstViewDataFirstTimeStatus){
-                view = View.inflate(context, R.layout.activity_recap_good_issue_data, null);
+                view = View.inflate(context, R.layout.activity_add_recap_good_issue_data, null);
                 firstViewData = view.findViewById(R.id.ll_wrap_filter_by_date_range);
                 firstViewDataFirstTimeStatus = false;
             }
@@ -374,7 +372,7 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
                             String custList = Objects.requireNonNull(d.get("custUID")).toString().concat(" - " + Objects.requireNonNull(d.get("custName")).toString());
                             customerList.add(custList);
 
-                            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(RecapGoodIssueDataActivity.this, R.layout.style_spinner, customerList);
+                            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddRecapGoodIssueDataActivity.this, R.layout.style_spinner, customerList);
                             arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
                             spinnerCustUID.setAdapter(arrayAdapter);
                         }
@@ -469,7 +467,7 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
                                                                         if (selectedCustomer.contains(custIDVal)) {
                                                                             arrayListRoUID.add(spinnerPurchaseOrders);
                                                                         }
-                                                                        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(RecapGoodIssueDataActivity.this, R.layout.style_spinner, arrayListRoUID);
+                                                                        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddRecapGoodIssueDataActivity.this, R.layout.style_spinner, arrayListRoUID);
                                                                         arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
                                                                         spinnerRoUID.setAdapter(arrayAdapter);
                                                                     }
@@ -477,7 +475,7 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
                                                     }
                                                 } else {
                                                     if (!isFinishing()) {
-                                                        dialogInterface.roNotExistsDialog(RecapGoodIssueDataActivity.this);
+                                                        dialogInterface.roNotExistsDialog(AddRecapGoodIssueDataActivity.this);
                                                     }
                                                 }
                                             });
@@ -575,6 +573,7 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
 
                     int itemSelectedSize = giManagementAdapter.getSelected().size();
                     float itemSelectedVolume = giManagementAdapter.getSelectedVolume();
+                    //totalUnit = itemSelectedVolume;
 
                     //float itemSelectedBuyPrice = giManagementAdapter.getSelectedVolBuyPrice();
                     //String itemSelectedBuyPriceVal = df.format(itemSelectedBuyPrice);
@@ -634,7 +633,7 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
                 dialogInterface.mustAddDateRangeInformation(this);
             }*/
 
-            View viewLayout = RecapGoodIssueDataActivity.this.getCurrentFocus();
+            View viewLayout = AddRecapGoodIssueDataActivity.this.getCurrentFocus();
             if (viewLayout != null) {
                 InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(viewLayout.getWindowToken(), 0);
@@ -672,12 +671,22 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
                 ActivityCompat.requestPermissions((Activity) context,
                         new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 10);
             } else {
+                List<String> datePeriod = new ArrayList<>();
+                for (int i = 0; i < giManagementAdapter.getSelected().size(); i++) {
+                    totalUnit += giManagementAdapter.getSelected().get(i).getGiVhlCubication();
+                    datePeriod.add(giManagementAdapter.getSelected().get(i).getGiDateCreated());
+                }
+
+                HashSet<String> filter = new HashSet(datePeriod);
+                ArrayList<String> datePeriodFiltered = new ArrayList<>(filter);
+                rcpDateDeliveryPeriod = String.valueOf(datePeriodFiltered);
+
                 String coDateCreated = new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(new Date());
 
                 String coTimeCreated =
                         new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
                 rcpGiUID = getRandomString2(5)+" - "+pouidVal;
-                dialogInterface.confirmCreateRecap(context, rcpGiUID, coDateCreated + " | " + coTimeCreated + " WIB", helper.getUserId(), roDocumentID, roPoCustNumber, goodIssueModelArrayList);
+                dialogInterface.confirmCreateRecap(context, rcpGiUID, coDateCreated + " | " + coTimeCreated + " WIB", helper.getUserId(), roDocumentID, roPoCustNumber, rcpDateDeliveryPeriod, totalUnit, goodIssueModelArrayList);
             }
         });
 
@@ -878,8 +887,6 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
 
                 totalCubication += giManagementAdapter.getSelected().get(i).getGiVhlCubication();
 
-
-
                 // TODO FOR INVOICE WHEN FEW ITEMS HAS BEEN SELECTED
                 /*DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference("GoodIssueData").child(goodIssueModelArrayList.get(i).getGiUID());
                 rootRef.child("giInvoiced").setValue(true);*/
@@ -889,7 +896,19 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
 
 
 
+
+
             }
+
+
+            List<String> datePeriod = new ArrayList<>();
+            for (int i = 0; i < giManagementAdapter.getSelected().size(); i++) {
+                datePeriod.add(giManagementAdapter.getSelected().get(i).getGiDateCreated());
+            }
+            HashSet<String> filter = new HashSet(datePeriod);
+            ArrayList<String> datePeriodFiltered = new ArrayList<>(filter);
+
+            rcpDateDeliveryPeriod = String.valueOf(datePeriodFiltered);
 
             String totalCubicationStrVal = df.format(totalCubication);
             //String totalCubicationStrVal = String.valueOf(totalCubication);
@@ -1144,7 +1163,7 @@ public class RecapGoodIssueDataActivity extends AppCompatActivity {
             return true;
         }
         if (item.getItemId() == R.id.refresh_data_recap) {
-            View viewLayout = RecapGoodIssueDataActivity.this.getCurrentFocus();
+            View viewLayout = AddRecapGoodIssueDataActivity.this.getCurrentFocus();
             if (viewLayout != null) {
                 InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(viewLayout.getWindowToken(), 0);

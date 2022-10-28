@@ -18,6 +18,7 @@ import com.ptbas.controlcenter.management.ManageGoodIssueActivity;
 import com.ptbas.controlcenter.management.ManageCashOutActivity;
 import com.ptbas.controlcenter.management.ManageInvoiceActivity;
 import com.ptbas.controlcenter.management.ManageProductDataActivity;
+import com.ptbas.controlcenter.management.ManageRecapGoodIssueActivity;
 import com.ptbas.controlcenter.management.ManageReceivedOrderActivity;
 import com.ptbas.controlcenter.management.ManageSupplierActivity;
 import com.ptbas.controlcenter.management.ManageUserActivity;
@@ -81,6 +82,12 @@ public class MainFeaturesMenuAdapter extends RecyclerView.Adapter<MainFeatureVie
                 }
                 if (holder.tv1.getText().toString().equals("Data\nGood Issue")){
                     Intent intent2 = new Intent(context, ManageGoodIssueActivity.class);
+                    intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(intent2);
+                }
+
+                if (holder.tv1.getText().toString().equals("Data Rekap\nGood Issue")){
+                    Intent intent2 = new Intent(context, ManageRecapGoodIssueActivity.class);
                     intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(intent2);
                 }

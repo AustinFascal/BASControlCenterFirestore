@@ -174,7 +174,6 @@
                     android:ellipsize="end"
                     android:maxLines="1"
                     android:text="Nomor PO Customer"
-                    android:textSize="16sp"
                     android:textStyle="bold" />
 
                 <TextView
@@ -184,7 +183,6 @@
                     android:ellipsize="end"
                     android:maxLines="1"
                     android:text="Nomor RO UID"
-                    android:textSize="16sp"
                     android:textStyle="bold" />
 
                 <TextView
@@ -194,7 +192,6 @@
                     android:ellipsize="end"
                     android:maxLines="2"
                     android:text="Nama Customer"
-                    android:textSize="16sp"
                     android:textStyle="bold" />
 
 
@@ -228,28 +225,6 @@
                         android:textColor="@color/dark_red"
                         android:textStyle="bold" />
                 </LinearLayout>
-
-
-
-                <LinearLayout
-                    android:id="@+id/ll_status_po_unvailable"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/pill_red"
-                    android:paddingHorizontal="8dp"
-                    android:layout_marginTop="2dp"
-                    android:paddingVertical="2dp"
-                    android:textAlignment="center">
-
-                    <TextView
-                        android:textColor="@color/dark_red"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="NOMOR PO BELUM TERSEDIA"
-                        android:textSize="11sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-
             </LinearLayout>
 
             <!--<ImageView

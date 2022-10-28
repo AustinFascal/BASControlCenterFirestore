@@ -8,9 +8,9 @@ public class GoodIssueModel implements Parcelable {
     private boolean isChecked = false;
     //MANDATORY
     String giUID, giCreatedBy, giVerifiedBy, roDocumentID, giMatName, giMatType, giNoteNumber, vhlUID,
-            giDateCreated, giTimeCreted;
+            giDateCreated, giTimeCreted, giCashedOutTo, giRecappedTo;
     Integer vhlLength, vhlWidth, vhlHeight, vhlHeightCorrection, vhlHeightAfterCorrection;
-    Float giVhlCubication;
+    Double giVhlCubication;
     Boolean giStatus, giRecapped, giInvoiced, giCashedOut;
     private boolean isSelected;
 
@@ -22,8 +22,8 @@ public class GoodIssueModel implements Parcelable {
                           String giMatType, String giNoteNumber, String vhlUID,
                           String giDateCreated, String giTimeCreted, Integer vhlLength,
                           Integer vhlWidth, Integer vhlHeight, Integer vhlHeightCorrection,
-                          Integer vhlHeightAfterCorrection, Float giVhlCubication, Boolean giStatus,
-                          Boolean giRecapped, Boolean giInvoiced, Boolean giCashedOut) {
+                          Integer vhlHeightAfterCorrection, Double giVhlCubication, Boolean giStatus,
+                          Boolean giRecapped, Boolean giInvoiced, Boolean giCashedOut, String giCashedOutTo, String giRecappedTo) {
         this.giUID = giUID;
         this.giCreatedBy = giCreatedBy;
         this.giVerifiedBy = giVerifiedBy;
@@ -44,6 +44,8 @@ public class GoodIssueModel implements Parcelable {
         this.giRecapped = giRecapped;
         this.giInvoiced = giInvoiced;
         this.giCashedOut = giCashedOut;
+        this.giCashedOutTo = giCashedOutTo;
+        this.giRecappedTo = giRecappedTo;
     }
 
     protected GoodIssueModel(Parcel in) {
@@ -57,6 +59,8 @@ public class GoodIssueModel implements Parcelable {
         vhlUID = in.readString();
         giDateCreated = in.readString();
         giTimeCreted = in.readString();
+        giCashedOutTo = in.readString();
+        giRecappedTo = in.readString();
         if (in.readByte() == 0) {
             vhlLength = null;
         } else {
@@ -85,7 +89,7 @@ public class GoodIssueModel implements Parcelable {
         if (in.readByte() == 0) {
             giVhlCubication = null;
         } else {
-            giVhlCubication = in.readFloat();
+            giVhlCubication = in.readDouble();
         }
         byte tmpGiStatus = in.readByte();
         giStatus = tmpGiStatus == 0 ? null : tmpGiStatus == 1;
@@ -108,6 +112,22 @@ public class GoodIssueModel implements Parcelable {
             return new GoodIssueModel[size];
         }
     };
+
+    public String getGiRecappedTo() {
+        return giRecappedTo;
+    }
+
+    public void setGiRecappedTo(String giRecappedTo) {
+        this.giRecappedTo = giRecappedTo;
+    }
+
+    public String getGiCashedOutTo() {
+        return giCashedOutTo;
+    }
+
+    public void setGiCashedOutTo(String giCashedOutTo) {
+        this.giCashedOutTo = giCashedOutTo;
+    }
 
     public String getGiNoteNumber() {
         return giNoteNumber;
@@ -237,11 +257,11 @@ public class GoodIssueModel implements Parcelable {
         this.vhlHeightAfterCorrection = vhlHeightAfterCorrection;
     }
 
-    public Float getGiVhlCubication() {
+    public Double getGiVhlCubication() {
         return giVhlCubication;
     }
 
-    public void setGiVhlCubication(Float giVhlCubication) {
+    public void setGiVhlCubication(Double giVhlCubication) {
         this.giVhlCubication = giVhlCubication;
     }
 
@@ -286,6 +306,8 @@ public class GoodIssueModel implements Parcelable {
         parcel.writeString(vhlUID);
         parcel.writeString(giDateCreated);
         parcel.writeString(giTimeCreted);
+        parcel.writeString(giCashedOutTo);
+        parcel.writeString(giRecappedTo);
         if (vhlLength == null) {
             parcel.writeByte((byte) 0);
         } else {
@@ -320,7 +342,7 @@ public class GoodIssueModel implements Parcelable {
             parcel.writeByte((byte) 0);
         } else {
             parcel.writeByte((byte) 1);
-            parcel.writeFloat(giVhlCubication);
+            parcel.writeDouble(giVhlCubication);
         }
         parcel.writeByte((byte) (giStatus == null ? 0 : giStatus ? 1 : 2));
         parcel.writeByte((byte) (giRecapped == null ? 0 : giRecapped ? 1 : 2));
