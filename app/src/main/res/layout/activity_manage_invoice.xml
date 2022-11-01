@@ -49,10 +49,11 @@
                         app:tint="@color/light_grey" />
 
                     <com.google.android.material.textfield.TextInputLayout
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        app:boxBackgroundColor="@color/pure_grey"
                         app:placeholderText="Pilih Kategori">
 
                         <AutoCompleteTextView
@@ -65,16 +66,15 @@
 
                     <ImageButton
                         android:id="@+id/btn_gi_search_by_type_reset"
-                        android:layout_width="match_parent"
+                        android:layout_width="50dp"
                         android:layout_height="match_parent"
                         android:layout_gravity="center_vertical"
-                        android:layout_marginTop="3dp"
                         android:layout_marginBottom="1dp"
-                        android:layout_weight="3.8"
-                        android:background="@drawable/outline_box"
+                        android:background="@drawable/filled_box"
                         android:scaleType="centerInside"
                         android:src="@drawable/ic_outline_restore"
-                        android:visibility="gone" />
+                        android:visibility="gone"
+                        app:tint="@color/white" />
 
                     <!--
                                         <androidx.appcompat.widget.SearchView
@@ -129,9 +129,10 @@
                                 android:src="@drawable/ic_outline_drag_indicator" />
 
                             <com.google.android.material.textfield.TextInputLayout
-                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
+                                app:boxBackgroundColor="@color/pure_grey"
                                 android:layout_weight="1"
                                 app:startIconDrawable="@drawable/ic_outline_today">
 
@@ -145,9 +146,10 @@
                             </com.google.android.material.textfield.TextInputLayout>
 
                             <com.google.android.material.textfield.TextInputLayout
-                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
+                                app:boxBackgroundColor="@color/pure_grey"
                                 android:layout_weight="1"
                                 app:startIconDrawable="@drawable/ic_outline_today">
 
@@ -162,15 +164,15 @@
 
                             <ImageButton
                                 android:id="@+id/btn_gi_search_date_reset"
-                                android:layout_width="match_parent"
+                                android:layout_width="50dp"
                                 android:layout_height="match_parent"
                                 android:layout_gravity="center_vertical"
                                 android:layout_marginBottom="1dp"
-                                android:layout_weight="1.3"
-                                android:background="@drawable/outline_box"
+                                android:background="@drawable/filled_box"
                                 android:scaleType="centerInside"
                                 android:src="@drawable/ic_outline_restore"
-                                android:visibility="gone" />
+                                android:visibility="gone"
+                                app:tint="@color/white" />
 
                         </LinearLayout>
 

@@ -92,6 +92,7 @@
         <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/drawable/avd_anim.xml" value="0.1935" />
         <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/drawable/divider_transparent.xml" value="0.1685" />
         <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/drawable/filled_box.xml" value="0.2445" />
+        <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/drawable/filled_box_grey.xml" value="0.2555" />
         <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/drawable/ic_outline_add.xml" value="0.1" />
         <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/drawable/ic_outline_add_circle.xml" value="0.152" />
         <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/drawable/ic_outline_currency.xml" value="0.152" />
@@ -102,10 +103,10 @@
         <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/drawable/splash_inset.xml" value="0.1935" />
         <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/drawable/top_shadow_gradient.xml" value="0.1545" />
         <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/drawable/unselected.xml" value="0.229" />
-        <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/layout-land/activity_update_cash_out.xml" value="0.136" />
-        <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/layout-land/activity_update_invoice.xml" value="0.152" />
+        <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/layout-land/activity_update_cash_out.xml" value="0.17191977077363896" />
+        <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/layout-land/activity_update_invoice.xml" value="0.2" />
         <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/layout/activity_add_bank_account.xml" value="0.2" />
-        <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/layout/activity_add_cash_out.xml" value="0.1" />
+        <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/layout/activity_add_cash_out.xml" value="0.176" />
         <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/layout/activity_add_cash_out_request.xml" value="0.264" />
         <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/layout/activity_add_co.xml" value="0.1" />
         <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/layout/activity_add_customer.xml" value="0.1585144927536232" />
@@ -113,6 +114,7 @@
         <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/layout/activity_add_good_issue_data.xml" value="0.10963541666666667" />
         <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/layout/activity_add_invoice.xml" value="0.12" />
         <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/layout/activity_add_product_data.xml" value="0.1956521739130435" />
+        <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/layout/activity_add_recap_good_issue_data.xml" value="0.20521590423257802" />
         <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/layout/activity_add_received_order.xml" value="0.2" />
         <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/layout/activity_add_supplier.xml" value="0.2" />
         <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/layout/activity_add_vehicle.xml" value="0.17617753623188406" />
@@ -130,10 +132,10 @@
         <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/layout/activity_main.xml" value="0.2" />
         <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/layout/activity_manage_cashout.xml" value="0.264" />
         <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/layout/activity_manage_customer.xml" value="0.17617753623188406" />
-        <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/layout/activity_manage_good_issue.xml" value="0.176" />
+        <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/layout/activity_manage_good_issue.xml" value="0.264" />
         <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/layout/activity_manage_invoice.xml" value="0.11458333333333333" />
         <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/layout/activity_manage_material.xml" value="0.17617753623188406" />
-        <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/layout/activity_manage_recap_good_issue.xml" value="0.10400000000000001" />
+        <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/layout/activity_manage_recap_good_issue.xml" value="0.264" />
         <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/layout/activity_manage_received_order.xml" value="0.152" />
         <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/layout/activity_manage_supplier.xml" value="0.16304347826086957" />
         <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/layout/activity_manage_vehicle.xml" value="0.11231884057971014" />

@@ -250,11 +250,11 @@ public class AddInvoiceActivity extends AppCompatActivity {
         theme.resolveAttribute(androidx.appcompat.R.attr.colorPrimary, typedValue, true);
         @ColorInt int color = typedValue.data;
 
-        btnGiSearchByDateReset.setColorFilter(color);
+        /*btnGiSearchByDateReset.setColorFilter(color);
         btnGiSearchByRoUIDReset.setColorFilter(color);
         btnResetBankAccount.setColorFilter(color);
         btnResetCustomer.setColorFilter(color);
-        btnResetCoUID.setColorFilter(color);
+        btnResetCoUID.setColorFilter(color);*/
 
         ActionBar actionBar = getSupportActionBar();
 
@@ -811,7 +811,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
                 spinnerCoUID.setText(null);
                 spinnerCoUID.clearFocus();
                 ll_wrap_filter_by_couid.setVisibility(View.GONE);
-                btnResetCustomer.setVisibility(View.GONE);  
+                btnResetCustomer.setVisibility(View.GONE);
             }
         });
 
@@ -859,10 +859,18 @@ public class AddInvoiceActivity extends AppCompatActivity {
                 spinnerCoUID.setError(null);
             }
 
+            if (Objects.requireNonNull(spinnerBankAccount.getText()).toString().isEmpty()){
+                spinnerBankAccount.setError("Mohon pilih rekening pembayaran");
+            } else{
+                spinnerBankAccount.setError(null);
+            }
+
             if (!spinnerCustName.getText().toString().isEmpty()&&
                     !spinnerRoUID.getText().toString().isEmpty()&&
                     !spinnerCoUID.getText().toString().isEmpty()&&
-                    !edtPoUID.getText().toString().isEmpty()){
+                    !edtPoUID.getText().toString().isEmpty()&&
+                    !spinnerBankAccount.getText().toString().isEmpty()&&
+                    !edtAccountOwnerName.getText().toString().isEmpty()){
                 searchQuery();
             }
         });
@@ -934,11 +942,11 @@ public class AddInvoiceActivity extends AppCompatActivity {
 
 
                 dialogInterface.confirmCreateInvoice(context, db,
-                         goodIssueModelArrayList,
-                         invUID,  invCreatedBy,
-                         invDateNTimeCreated,  "-", "", "",
-                         "", invDateDeliveryPeriod,
-                         custDocumentID,  bankAccountID,  roDocumentID, "", "");
+                        goodIssueModelArrayList,
+                        invUID,  invCreatedBy,
+                        invDateNTimeCreated,  "-", "", "",
+                        "", invDateDeliveryPeriod,
+                        custDocumentID,  bankAccountID,  roDocumentID, "", "");
             }
         });
 
@@ -1128,7 +1136,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
         cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
         cell.setBorder(PdfPCell.NO_BORDER);
 
-        Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.bg_table_column_blue_pale);
+        Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.bg_table_column_grey);
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         bm.compress(Bitmap.CompressFormat.PNG, 30, stream);
         Image img = null;

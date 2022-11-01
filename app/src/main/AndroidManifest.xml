@@ -54,6 +54,9 @@
         <activity
             android:name=".management.ManageCashOutActivity"
             android:exported="false" />
+        <activity
+            android:name=".management.ManageAllInOneReportActivity"
+            android:exported="false" />
 
         <activity
             android:name=".management.ManageInvoiceActivity"

@@ -319,7 +319,7 @@ public class UpdateInvoiceActivity extends AppCompatActivity {
 
 
 
-        btnDatePaidReset.setColorFilter(color);
+        //btnDatePaidReset.setColorFilter(color);
 
         edtDatePaid.setOnClickListener(view -> {
             final Calendar calendar = Calendar.getInstance();
@@ -931,7 +931,7 @@ public class UpdateInvoiceActivity extends AppCompatActivity {
         cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
         cell.setBorder(PdfPCell.NO_BORDER);
 
-        Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.bg_table_column_blue_pale);
+        Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.bg_table_column_grey);
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         bm.compress(Bitmap.CompressFormat.PNG, 30, stream);
         Image img = null;

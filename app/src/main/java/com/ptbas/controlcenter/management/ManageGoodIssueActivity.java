@@ -145,8 +145,8 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
         theme.resolveAttribute(androidx.appcompat.R.attr.colorPrimary, typedValue, true);
         @ColorInt int color = typedValue.data;
 
-        btnGiSearchByDateReset.setColorFilter(color);
-        btnGiSearchByTypeReset.setColorFilter(color);
+        /*btnGiSearchByDateReset.setColorFilter(color);
+        btnGiSearchByTypeReset.setColorFilter(color);*/
 
         cdvFilter.getLayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
 

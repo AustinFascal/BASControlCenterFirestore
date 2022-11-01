@@ -155,7 +155,7 @@ public class ManageCashOutActivity extends AppCompatActivity {
         theme.resolveAttribute(androidx.appcompat.R.attr.colorPrimary, typedValue, true);
         @ColorInt int color = typedValue.data;
 
-        btnGiSearchByDateReset.setColorFilter(color);
+        //btnGiSearchByDateReset.setColorFilter(color);
         //btnGiSearchByTypeReset.setColorFilter(color);
 
         ActionBar actionBar = getSupportActionBar();

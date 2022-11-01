@@ -93,17 +93,21 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Random;
+import java.util.Set;
 
 public class UpdateCashOutActivity extends AppCompatActivity {
 
@@ -181,7 +185,7 @@ public class UpdateCashOutActivity extends AppCompatActivity {
 
 
     float totalUnitFinal;
-    double totalAmountForMaterials, totalAmountForTransportService, totalDue, totalDueForTransportService;
+    double totalAmountForMaterials, totalAmountForTransportService, totalDue, totalDueForTransportService, totalAmountForMaterialsFinal;
 
     String finalPaidDate, finalBookedStep1Date, finalBookedStep2Date, transferProofReference;
 
@@ -189,7 +193,9 @@ public class UpdateCashOutActivity extends AppCompatActivity {
 
     List<String> bankAccountDocumentID, bankAccount;
 
-    String bankAccountID = "", bankNameVal, bankAccountNumberVal, bankAccountOwnerNameVal;
+    String bankAccountID = "", bankNameVal, bankAccountNumberVal, bankAccountOwnerNameVal, coDateDeliveryPeriod;
+
+    float totalUnitAmountForMaterials;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -436,7 +442,7 @@ public class UpdateCashOutActivity extends AppCompatActivity {
         theme.resolveAttribute(androidx.appcompat.R.attr.colorPrimary, typedValue, true);
         @ColorInt int color = typedValue.data;
 
-        btnResetSupplier.setColorFilter(color);
+        //btnResetSupplier.setColorFilter(color);
 
         ActionBar actionBar = getSupportActionBar();
 
@@ -593,6 +599,7 @@ public class UpdateCashOutActivity extends AppCompatActivity {
             pd.setCancelable(false);
             DecimalFormat df = new DecimalFormat("0.00");
 
+
             coID = extras.getString("key");
 
             refCO.whereEqualTo("coDocumentID", coID).get()
@@ -616,7 +623,7 @@ public class UpdateCashOutActivity extends AppCompatActivity {
                             edtDatePaid.setText(cashOutModel.getCoDateAndTimeACC());
 
 
-                            tvTotalDue.setText("IDR "+currencyFormat(df.format(cashOutModel.getCoTotal())));
+
 
                             coVerifiedBy = cashOutModel.getCoAccBy();
                             bookedStep1By = cashOutModel.getCoBookedStep1By();
@@ -627,11 +634,18 @@ public class UpdateCashOutActivity extends AppCompatActivity {
                                 statusSwitch.setEnabled(false);
                                 statusSwitch.setChecked(true);
                                 tvStatus.setText("Lunas");
+                                btnResetSupplier.setVisibility(View.GONE);
+                                spinnerSupplierName.setOnClickListener(null);
+                                spinnerSupplierName.setAdapter(null);
+                                spinnerSupplierName.setFocusable(false);
+                                edtPayee.setFocusable(false);
                             } else{
                                 edtVerifiedBy.setText(null);
                                 statusSwitch.setEnabled(true);
                                 statusSwitch.setChecked(false);
                                 tvStatus.setText("Belum Lunas");
+                                btnResetSupplier.setVisibility(View.VISIBLE);
+                                edtPayee.setFocusable(true);
                             }
 
                             statusSwitch.setOnCheckedChangeListener((compoundButton, b) -> {
@@ -886,17 +900,6 @@ public class UpdateCashOutActivity extends AppCompatActivity {
                                                     invPotypeVal = "JASA ANGKUT SAJA";
                                                 }
 
-                                                /*HashMap<String, List<ProductItems>> map = receivedOrderModel.getRoOrderedItems();
-                                                for (HashMap.Entry<String, List<ProductItems>> e : map.entrySet()) {
-                                                    productItemsList = e.getValue();
-                                                    for (int i = 0; i<productItemsList.size();i++){
-                                                        matNameVal = productItemsList.get(i).getMatName();
-                                                        matBuyPrice = productItemsList.get(i).getMatBuyPrice();
-
-                                                    }
-
-                                                }*/
-
                                                 HashMap<String, List<ProductItems>> map = receivedOrderModel.getRoOrderedItems();
                                                 for (HashMap.Entry<String, List<ProductItems>> e : map.entrySet()) {
                                                     productItemsList = e.getValue();
@@ -925,6 +928,11 @@ public class UpdateCashOutActivity extends AppCompatActivity {
                                                 totalAmountForTransportService = transportServiceSellPrice*totalUnitFinal;
                                                 totalDue = totalAmountForMaterials+totalAmountForTransportService;
                                                 totalDueForTransportService = totalAmountForTransportService;
+
+                                                // TOTAL AMOUNT CALCULATION
+                                                totalAmountForMaterialsFinal = matBuyPrice *totalUnitFinal;
+                                                String totalInCurrency = currencyVal+" "+currencyFormat(df.format(Float.valueOf(String.valueOf(totalAmountForMaterialsFinal))));
+                                                tvTotalDue.setText(totalInCurrency);
                                             }
                                         }
                                     });
@@ -1136,7 +1144,7 @@ public class UpdateCashOutActivity extends AppCompatActivity {
         cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
         cell.setBorder(PdfPCell.NO_BORDER);
 
-        Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.bg_table_column_blue_pale);
+        Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.bg_table_column_grey);
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         bm.compress(Bitmap.CompressFormat.PNG, 30, stream);
         Image img = null;
@@ -1183,10 +1191,10 @@ public class UpdateCashOutActivity extends AppCompatActivity {
             }
 
 // TOTAL UNIT CALCULATION
-            float totalUnitFinal = 0;
+            /*float totalUnitFinal = 0;
             for (int i = 0; i < goodIssueModelArrayList.size(); i++) {
                 totalUnitFinal += goodIssueModelArrayList.get(i).getGiVhlCubication();
-            }
+            }*/
             // TOTAL UNIT CALCULATION
             //float totalUnitFinal = totalUnit;
             /*for (int i = 0; i < goodIssueModelArrayList.size(); i++){
@@ -1194,8 +1202,8 @@ public class UpdateCashOutActivity extends AppCompatActivity {
             }*/
 
             // TOTAL AMOUNT CALCULATION
-            double totalAmountForMaterials = matBuyPrice *totalUnitFinal;
-            double totalAmountForTransportService = transportServiceSellPrice*totalUnitFinal;
+            // double totalAmountForMaterials = matBuyPrice *totalUnitFinal;
+            //double totalAmountForTransportService = transportServiceSellPrice*totalUnitFinal;
             /*double taxPPN = (0.11)*totalAmountForMaterials;
             double taxPPH = (0.02)*totalAmountForTransportService;*/
             //double totalDue = totalAmountForMaterials+totalAmountForTransportService;
@@ -1336,12 +1344,12 @@ public class UpdateCashOutActivity extends AppCompatActivity {
             ArrayList<String> datePeriodFiltered = new ArrayList<>(filter);*/
 
             tblInvSectionDeliveryPeriod.addCell(cellTxtNoBrdrNrmlMainContent(
-                    new Paragraph("Pengiriman Tanggal: "+coDateDeliveryPeriodVal, fontNormal), Element.ALIGN_LEFT));
+                    new Paragraph(matNameVal, fontNormal), Element.ALIGN_LEFT));
             tblInvSectionDeliveryPeriod.addCell(cellTxtNoBrdrNrmlMainContent(
                     new Paragraph("", fontNormal), Element.ALIGN_LEFT));
 
 
-            for (int i = 0; i < productItemsList.size(); i++) {
+            /*for (int i = 0; i < productItemsList.size(); i++) {
                 tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
                         new Paragraph(matNameVal, fontNormal), Element.ALIGN_LEFT));
                 tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
@@ -1350,7 +1358,42 @@ public class UpdateCashOutActivity extends AppCompatActivity {
                         new Paragraph(df.format(totalUnitFinal), fontNormal), Element.ALIGN_RIGHT));
                 tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
                         new Paragraph(currencyVal + " " + currencyFormat(df.format(totalAmountForMaterials)), fontNormal), Element.ALIGN_RIGHT));
+            }*/
+
+           /* List<String> datePeriod = new ArrayList<>();
+            for (int i = 0; i < giManagementAdapter.getSelected().size(); i++) {
+                datePeriod.add(giManagementAdapter.getSelected().get(i).getGiDateCreated());
             }
+            HashSet<String> filter = new HashSet(datePeriod);
+            ArrayList<String> datePeriodFiltered = new ArrayList<>(filter);*/
+
+            coDateDeliveryPeriod = coDateDeliveryPeriodVal.replace("[","").replace("]","").replace(" ","");
+            String[] deliveryPeriod = coDateDeliveryPeriod.split(",");
+
+            //double totalAmountForMaterials;
+
+            for (String s : deliveryPeriod) {
+                tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
+                        new Paragraph(s, fontNormal), Element.ALIGN_LEFT));
+                tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
+                        new Paragraph(currencyVal + " " + currencyFormat(df.format(matBuyPrice)), fontNormal), Element.ALIGN_RIGHT));
+                for (int j = 0; j < goodIssueModelArrayList.size(); j++) {
+                    if (goodIssueModelArrayList.get(j).getGiDateCreated().equals(s)) {
+                        totalUnitAmountForMaterials += goodIssueModelArrayList.get(j).getGiVhlCubication();
+                    }
+                }
+
+                totalAmountForMaterials = matBuyPrice * totalUnitAmountForMaterials;
+
+                tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
+                        new Paragraph(df.format(totalUnitAmountForMaterials), fontNormal), Element.ALIGN_RIGHT));
+                tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
+                        new Paragraph(currencyVal + " " + currencyFormat(df.format(totalAmountForMaterials)), fontNormal), Element.ALIGN_RIGHT));
+
+                //totalUnitFinal = 0;
+                totalUnitAmountForMaterials=0;
+            }
+
 
             tblInvSection7.addCell(cellTxtNoBrdrNrmlMainContent(
                     new Paragraph(transportServiceNameVal, fontNormal), Element.ALIGN_LEFT));
@@ -1372,7 +1415,9 @@ public class UpdateCashOutActivity extends AppCompatActivity {
             tblInvSection9.addCell(cellColHeader(
                     new Paragraph("JUMLAH PEMBAYARAN (PEMBULATAN)", fontMedium), Element.ALIGN_LEFT));
             tblInvSection9.addCell(cellColHeader(
-                    new Paragraph(currencyVal+" "+currencyFormat(df.format(math(totalAmountForMaterials))), fontMedium), Element.ALIGN_RIGHT));
+                    new Paragraph(currencyVal+" "+currencyFormat(df.format(math(totalAmountForMaterialsFinal))), fontMedium), Element.ALIGN_RIGHT));
+            tblInvSection9.addCell(cellColHeader(
+                    new Paragraph(currencyVal+"", fontMedium), Element.ALIGN_RIGHT));
 
             tblInvSection10.addCell(cellColHeaderNoBrdr(
                     new Paragraph("TERBILANG", fontMediumWhite),
@@ -1390,9 +1435,13 @@ public class UpdateCashOutActivity extends AppCompatActivity {
 
             tblInvSection11.addCell(cellTxtNoBrdrNrml(
                     new Paragraph(
-                            NumberToWords.convert(math(totalAmountForMaterials)) +
+                            NumberToWords.convert(math(totalAmountForMaterialsFinal)) +
                                     " Rupiah", fontMedium),
                     Element.ALIGN_LEFT));
+            /*tblInvSection11.addCell(cellTxtNoBrdrNrml(
+                    new Paragraph(
+                            " Rupiah", fontMedium),
+                    Element.ALIGN_LEFT));*/
             tblInvSection11.addCell(cellTxtNoBrdrNrml(
                     new Paragraph("", fontMediumWhite),
                     Element.ALIGN_LEFT));

@@ -469,6 +469,11 @@ public class DashboardActivity extends AppCompatActivity {
         mInv.setImgName(R.drawable.ic_invoice);
         holder.add(mInv);
 
+        MainFeatureModel mAioRprt = new MainFeatureModel();
+        mAioRprt.setHeader("Data Laporan\nAll-in-One");
+        mAioRprt.setImgName(R.drawable.ic_aioreport);
+        holder.add(mAioRprt);
+
         return holder;
     }
 

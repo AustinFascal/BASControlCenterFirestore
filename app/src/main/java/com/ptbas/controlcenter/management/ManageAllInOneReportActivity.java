@@ -50,7 +50,6 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.ptbas.controlcenter.R;
-import com.ptbas.controlcenter.adapter.CashOutManagementAdapter;
 import com.ptbas.controlcenter.adapter.InvoiceManagementAdapter;
 import com.ptbas.controlcenter.create.AddInvoiceActivity;
 import com.ptbas.controlcenter.helper.DialogInterface;
@@ -67,7 +66,7 @@ import java.util.Objects;
 
 import dev.shreyaspatil.MaterialDialog.MaterialDialog;
 
-public class ManageInvoiceActivity extends AppCompatActivity {
+public class ManageAllInOneReportActivity extends AppCompatActivity {
 
     String[] searchTypeValue = {"giUID", "giRoUID", "giPoCustNumber", "vhlUID", "giMatName"};
     String dateStart = "", dateEnd = "", monthStrVal, dayStrVal;
@@ -162,7 +161,7 @@ public class ManageInvoiceActivity extends AppCompatActivity {
         // ACTION BAR FOR STANDARD ACTIVITY
         assert actionBar != null;
         helper.handleActionBarConfigForStandardActivity(
-                this, actionBar, "Data Invoice");
+                this, actionBar, "Data Laporan All-in-One");
 
         // SYSTEM UI MODE FOR STANDARD ACTIVITY
         helper.handleUIModeForStandardActivity(this, actionBar);
@@ -180,7 +179,7 @@ public class ManageInvoiceActivity extends AppCompatActivity {
 
         // GO TO ADD INVOICE ACTIVITY
         fabActionCreateInv.setOnClickListener(view -> {
-            Intent intent = new Intent(ManageInvoiceActivity.this, AddInvoiceActivity.class);
+            Intent intent = new Intent(ManageAllInOneReportActivity.this, AddInvoiceActivity.class);
             startActivity(intent);
         });
 
@@ -211,7 +210,7 @@ public class ManageInvoiceActivity extends AppCompatActivity {
             monthStrVal = String.valueOf(calendar.get(Calendar.MONTH));
             String yearStrVal = String.valueOf(calendar.get(Calendar.YEAR));
 
-            datePicker = new DatePickerDialog(ManageInvoiceActivity.this,
+            datePicker = new DatePickerDialog(ManageAllInOneReportActivity.this,
                     (datePicker, year, month, dayOfMonth) -> {
                         int monthInt = month + 1;
 
@@ -246,7 +245,7 @@ public class ManageInvoiceActivity extends AppCompatActivity {
             monthStrVal = String.valueOf(calendar.get(Calendar.MONTH));
             String yearStrVal = String.valueOf(calendar.get(Calendar.YEAR));
 
-            datePicker = new DatePickerDialog(ManageInvoiceActivity.this,
+            datePicker = new DatePickerDialog(ManageAllInOneReportActivity.this,
                     (datePicker, year, month, dayOfMonth) -> {
 
                         int monthInt = month + 1;
@@ -317,7 +316,7 @@ public class ManageInvoiceActivity extends AppCompatActivity {
 
         btnDeleteSelected.setOnClickListener(view -> {
             int size = invManagementAdapter.getSelected().size();
-            MaterialDialog md = new MaterialDialog.Builder(ManageInvoiceActivity.this)
+            MaterialDialog md = new MaterialDialog.Builder(ManageAllInOneReportActivity.this)
                     .setTitle("Hapus Data Terpilih")
                     .setAnimation(R.raw.lottie_delete)
                     .setMessage("Apakah Anda yakin ingin menghapus "+size+" data Invoice yang terpilih? Setelah dihapus, data tidak dapat dikembalikan.")
@@ -492,7 +491,7 @@ public class ManageInvoiceActivity extends AppCompatActivity {
                         Objects.requireNonNull(edtGiDateFilterStart.getText()).toString().isEmpty() ||
                         Objects.requireNonNull(edtGiDateFilterEnd.getText()).toString().isEmpty()){
                     if (!searchView.getQuery().toString().isEmpty()){
-                        dialogInterface.fillSearchFilter(ManageInvoiceActivity.this, searchView);
+                        dialogInterface.fillSearchFilter(ManageAllInOneReportActivity.this, searchView);
                     }
                 }
 

@@ -99,6 +99,7 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -253,10 +254,10 @@ public class AddCashOutActivity extends AppCompatActivity {
         theme.resolveAttribute(androidx.appcompat.R.attr.colorPrimary, typedValue, true);
         @ColorInt int color = typedValue.data;
 
-        btnGiSearchByDateReset.setColorFilter(color);
+       /* btnGiSearchByDateReset.setColorFilter(color);
         btnResetRouid.setColorFilter(color);
         btnResetCustomer.setColorFilter(color);
-        btnResetSupplier.setColorFilter(color);
+        btnResetSupplier.setColorFilter(color);*/
 
         ActionBar actionBar = getSupportActionBar();
 
@@ -935,7 +936,7 @@ public class AddCashOutActivity extends AppCompatActivity {
         cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
         cell.setBorder(PdfPCell.NO_BORDER);
 
-        Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.bg_table_column_blue_pale);
+        Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.bg_table_column_grey);
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         bm.compress(Bitmap.CompressFormat.PNG, 30, stream);
         Image img = null;
@@ -1118,22 +1119,25 @@ public class AddCashOutActivity extends AppCompatActivity {
             HashSet<String> filter = new HashSet(datePeriod);
             ArrayList<String> datePeriodFiltered = new ArrayList<>(filter);
 
-            coDateDeliveryPeriod = String.valueOf(datePeriodFiltered);
+            coDateDeliveryPeriod = String.valueOf(datePeriodFiltered).replace("[","").replace("]","").replace(" ","");
 
             tblInvSection7.addCell(cellTxtNoBrdrNrmlMainContent(
                     new Paragraph("Pengiriman Tanggal: "+datePeriodFiltered, fontNormal), Element.ALIGN_LEFT));
             tblInvSection7.addCell(cellTxtNoBrdrNrmlMainContent(
                     new Paragraph("", fontNormal), Element.ALIGN_LEFT));
 
-            tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
-                    new Paragraph(matNameVal, fontNormal), Element.ALIGN_LEFT));
-            tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
-                    new Paragraph(currencyVal+" "+currencyFormat(df.format(matBuyPrice)), fontNormal), Element.ALIGN_RIGHT));
-            tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
-                    new Paragraph(df.format(totalUnitFinal), fontNormal), Element.ALIGN_RIGHT));
-            tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
-                    new Paragraph(currencyVal+" "+currencyFormat(df.format(totalAmountForMaterials)), fontNormal), Element.ALIGN_RIGHT));
+            List<String> deliveryPeriod = Arrays.asList(coDateDeliveryPeriod.split(","));
 
+            for (int i = 0; i < deliveryPeriod.size(); i++) {
+                tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
+                        new Paragraph(matNameVal, fontNormal), Element.ALIGN_LEFT));
+                tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
+                        new Paragraph(currencyVal + " " + currencyFormat(df.format(matBuyPrice)), fontNormal), Element.ALIGN_RIGHT));
+                tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
+                        new Paragraph(df.format(totalUnitFinal), fontNormal), Element.ALIGN_RIGHT));
+                tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
+                        new Paragraph(currencyVal + " " + currencyFormat(df.format(totalAmountForMaterials)), fontNormal), Element.ALIGN_RIGHT));
+            }
 
             tblInvSection9.addCell(cellColHeader(
                     new Paragraph("", fontMedium), Element.ALIGN_LEFT));

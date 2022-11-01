@@ -22,7 +22,8 @@
             app:tint="@android:color/holo_red_dark" />
 
         <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+            app:boxBackgroundColor="@color/pure_grey"
             android:layout_width="wrap_content"
             android:minWidth="150dp"
             android:layout_height="wrap_content">
@@ -40,7 +41,8 @@
                 android:inputType="textFilter|textCapCharacters" />
         </com.google.android.material.textfield.TextInputLayout>
         <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+            app:boxBackgroundColor="@color/pure_grey"
             android:layout_width="wrap_content"
             android:minWidth="150dp"
             android:layout_height="match_parent">
@@ -53,7 +55,8 @@
                 android:inputType="number"/>
         </com.google.android.material.textfield.TextInputLayout>
         <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+            app:boxBackgroundColor="@color/pure_grey"
             android:layout_width="wrap_content"
             android:minWidth="120dp"
             android:layout_height="match_parent">
@@ -67,7 +70,8 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+            app:boxBackgroundColor="@color/pure_grey"
             android:layout_width="wrap_content"
             android:minWidth="120dp"
             android:layout_height="match_parent">
@@ -81,7 +85,8 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+            app:boxBackgroundColor="@color/pure_grey"
             android:layout_width="wrap_content"
             android:minWidth="200dp"
             android:layout_height="match_parent">
@@ -98,7 +103,8 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+            app:boxBackgroundColor="@color/pure_grey"
             android:layout_width="wrap_content"
             android:minWidth="200dp"
             android:layout_height="match_parent">

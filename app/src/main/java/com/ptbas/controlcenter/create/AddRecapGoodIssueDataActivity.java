@@ -203,8 +203,8 @@ public class AddRecapGoodIssueDataActivity extends AppCompatActivity {
         theme.resolveAttribute(androidx.appcompat.R.attr.colorPrimary, typedValue, true);
         @ColorInt int color = typedValue.data;
 
-        btnGiSearchByDateReset.setColorFilter(color);
-        btnGiSearchByRoUIDReset.setColorFilter(color);
+        /*btnGiSearchByDateReset.setColorFilter(color);
+        btnGiSearchByRoUIDReset.setColorFilter(color);*/
 
         ActionBar actionBar = getSupportActionBar();
 

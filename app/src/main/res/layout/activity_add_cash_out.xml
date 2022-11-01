@@ -65,7 +65,8 @@
                                 android:visibility="visible">
 
                                 <com.google.android.material.textfield.TextInputLayout
-                                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+                                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+                                    app:boxBackgroundColor="@color/pure_grey"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
@@ -82,13 +83,13 @@
                                     android:id="@+id/btnResetCustomer"
                                     android:layout_width="55dp"
                                     android:layout_height="match_parent"
-                                    android:layout_marginTop="4dp"
                                     android:layout_gravity="center_vertical"
                                     android:layout_marginBottom="1dp"
-                                    android:background="@drawable/outline_box"
+                                    android:background="@drawable/filled_box"
                                     android:scaleType="centerInside"
                                     android:src="@drawable/ic_outline_restore"
-                                    android:visibility="gone" />
+                                    android:visibility="gone"
+                                    app:tint="@color/white" />
                             </LinearLayout>
 
                             <LinearLayout
@@ -110,7 +111,8 @@
                                     android:visibility="visible">
 
                                     <com.google.android.material.textfield.TextInputLayout
-                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+                                        app:boxBackgroundColor="@color/pure_grey"
                                         android:layout_width="match_parent"
                                         android:layout_height="match_parent"
                                         android:layout_weight="1"
@@ -127,13 +129,13 @@
                                         android:id="@+id/btnResetRouid"
                                         android:layout_width="55dp"
                                         android:layout_height="match_parent"
-                                        android:layout_marginTop="4dp"
                                         android:layout_gravity="center_vertical"
                                         android:layout_marginBottom="1dp"
-                                        android:background="@drawable/outline_box"
+                                        android:background="@drawable/filled_box"
                                         android:scaleType="centerInside"
                                         android:src="@drawable/ic_outline_restore"
-                                        android:visibility="gone" />
+                                        android:visibility="gone"
+                                        app:tint="@color/white" />
                                 </LinearLayout>
                                 <LinearLayout
                                     android:id="@+id/ll_wrap_filter_by_pouid"
@@ -146,7 +148,8 @@
                                     android:visibility="visible">
 
                                     <com.google.android.material.textfield.TextInputLayout
-                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                                        app:boxBackgroundColor="@color/pure_grey"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:layout_weight="1"
@@ -172,7 +175,8 @@
                                     android:visibility="visible">
 
                                     <com.google.android.material.textfield.TextInputLayout
-                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+                                        app:boxBackgroundColor="@color/pure_grey"
                                         android:layout_width="match_parent"
                                         android:layout_height="match_parent"
                                         android:layout_weight="1"
@@ -189,13 +193,13 @@
                                         android:id="@+id/btnResetRcpID"
                                         android:layout_width="55dp"
                                         android:layout_height="match_parent"
-                                        android:layout_marginTop="4dp"
                                         android:layout_gravity="center_vertical"
                                         android:layout_marginBottom="1dp"
-                                        android:background="@drawable/outline_box"
+                                        android:background="@drawable/filled_box"
                                         android:scaleType="centerInside"
                                         android:src="@drawable/ic_outline_restore"
-                                        android:visibility="gone" />
+                                        android:visibility="gone"
+                                        app:tint="@color/white" />
                                 </LinearLayout>
 
                             </LinearLayout>
@@ -207,7 +211,8 @@
                                 android:orientation="horizontal"
                                 android:showDividers="middle">
                                 <com.google.android.material.textfield.TextInputLayout
-                                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+                                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+                                    app:boxBackgroundColor="@color/pure_grey"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
@@ -226,13 +231,13 @@
                                     android:id="@+id/btnResetSupplier"
                                     android:layout_width="55dp"
                                     android:layout_height="match_parent"
-                                    android:layout_marginTop="4dp"
                                     android:layout_gravity="center_vertical"
                                     android:layout_marginBottom="1dp"
-                                    android:background="@drawable/outline_box"
+                                    android:background="@drawable/filled_box"
                                     android:scaleType="centerInside"
                                     android:src="@drawable/ic_outline_restore"
-                                    android:visibility="gone" />
+                                    android:visibility="gone"
+                                    app:tint="@color/white" />
                             </LinearLayout>
 
                             <LinearLayout
@@ -244,7 +249,8 @@
                                 android:divider="@drawable/divider_transparent"
                                 android:showDividers="middle">
                                 <com.google.android.material.textfield.TextInputLayout
-                                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                                    app:boxBackgroundColor="@color/pure_grey"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
@@ -260,7 +266,8 @@
                                         android:inputType="none"/>
                                 </com.google.android.material.textfield.TextInputLayout>
                                 <com.google.android.material.textfield.TextInputLayout
-                                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                                    app:boxBackgroundColor="@color/pure_grey"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
@@ -276,7 +283,8 @@
                                         android:inputType="none"/>
                                 </com.google.android.material.textfield.TextInputLayout>
                                 <com.google.android.material.textfield.TextInputLayout
-                                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                                    app:boxBackgroundColor="@color/pure_grey"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
@@ -302,7 +310,8 @@
                                 android:tag="firstView">
 
                                 <com.google.android.material.textfield.TextInputLayout
-                                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                                    app:boxBackgroundColor="@color/pure_grey"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
@@ -318,7 +327,8 @@
                                 </com.google.android.material.textfield.TextInputLayout>
 
                                 <com.google.android.material.textfield.TextInputLayout
-                                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                                    app:boxBackgroundColor="@color/pure_grey"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
@@ -335,15 +345,15 @@
 
                                 <ImageButton
                                     android:id="@+id/btn_gi_search_date_reset"
-                                    android:layout_width="match_parent"
+                                    android:layout_width="55dp"
                                     android:layout_height="match_parent"
                                     android:layout_gravity="center_vertical"
                                     android:layout_marginBottom="1dp"
-                                    android:layout_weight="1.3"
-                                    android:background="@drawable/outline_box"
+                                    android:background="@drawable/filled_box"
                                     android:scaleType="centerInside"
                                     android:src="@drawable/ic_outline_restore"
-                                    android:visibility="gone" />
+                                    android:visibility="gone"
+                                    app:tint="@color/white" />
                             </LinearLayout>
 
                             <Button
