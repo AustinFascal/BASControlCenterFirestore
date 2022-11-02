@@ -8,7 +8,7 @@ public class GoodIssueModel implements Parcelable {
     private boolean isChecked = false;
     //MANDATORY
     String giUID, giCreatedBy, giVerifiedBy, roDocumentID, giMatName, giMatType, giNoteNumber, vhlUID,
-            giDateCreated, giTimeCreted, giCashedOutTo, giRecappedTo;
+            giDateCreated, giTimeCreted, giCashedOutTo, giRecappedTo, giInvoicedTo;
     Integer vhlLength, vhlWidth, vhlHeight, vhlHeightCorrection, vhlHeightAfterCorrection;
     Double giVhlCubication;
     Boolean giStatus, giRecapped, giInvoiced, giCashedOut;
@@ -23,7 +23,7 @@ public class GoodIssueModel implements Parcelable {
                           String giDateCreated, String giTimeCreted, Integer vhlLength,
                           Integer vhlWidth, Integer vhlHeight, Integer vhlHeightCorrection,
                           Integer vhlHeightAfterCorrection, Double giVhlCubication, Boolean giStatus,
-                          Boolean giRecapped, Boolean giInvoiced, Boolean giCashedOut, String giCashedOutTo, String giRecappedTo) {
+                          Boolean giRecapped, Boolean giInvoiced, String giInvoicedTo, Boolean giCashedOut, String giCashedOutTo, String giRecappedTo) {
         this.giUID = giUID;
         this.giCreatedBy = giCreatedBy;
         this.giVerifiedBy = giVerifiedBy;
@@ -43,6 +43,7 @@ public class GoodIssueModel implements Parcelable {
         this.giStatus = giStatus;
         this.giRecapped = giRecapped;
         this.giInvoiced = giInvoiced;
+        this.giInvoicedTo = giInvoicedTo;
         this.giCashedOut = giCashedOut;
         this.giCashedOutTo = giCashedOutTo;
         this.giRecappedTo = giRecappedTo;
@@ -59,6 +60,7 @@ public class GoodIssueModel implements Parcelable {
         vhlUID = in.readString();
         giDateCreated = in.readString();
         giTimeCreted = in.readString();
+        giInvoicedTo = in.readString();
         giCashedOutTo = in.readString();
         giRecappedTo = in.readString();
         if (in.readByte() == 0) {
@@ -112,6 +114,14 @@ public class GoodIssueModel implements Parcelable {
             return new GoodIssueModel[size];
         }
     };
+
+    public String getGiInvoicedTo() {
+        return giInvoicedTo;
+    }
+
+    public void setGiInvoicedTo(String giInvoicedTo) {
+        this.giInvoicedTo = giInvoicedTo;
+    }
 
     public String getGiRecappedTo() {
         return giRecappedTo;
@@ -306,6 +316,7 @@ public class GoodIssueModel implements Parcelable {
         parcel.writeString(vhlUID);
         parcel.writeString(giDateCreated);
         parcel.writeString(giTimeCreted);
+        parcel.writeString(giInvoicedTo);
         parcel.writeString(giCashedOutTo);
         parcel.writeString(giRecappedTo);
         if (vhlLength == null) {

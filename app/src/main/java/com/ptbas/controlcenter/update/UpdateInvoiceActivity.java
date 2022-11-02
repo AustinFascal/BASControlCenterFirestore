@@ -10,7 +10,6 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Paint;
 import android.os.Bundle;
 import android.text.Html;
 import android.transition.AutoTransition;
@@ -23,6 +22,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -51,6 +51,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -173,11 +174,13 @@ public class UpdateInvoiceActivity extends AppCompatActivity {
 
     TextInputEditText edtDateHandover, edtHandoverBy;
     SwitchCompat statusSwitchHandover;
+
     TextView tvStatusHandover;
     ImageButton btnDateHandoverReset;
 
 
-
+    SwitchCompat statusSwitchRecalculate, statusSwitchDefault;
+    TextView tvCubicationTotalRev, tvSubTotalRev, tvDiscRev, tvPPNRev, tvPPH23Rev, tvTotalDueRev, tvTotalDueMinus, tvStatusRecalculate, tvStatusDefault;
 
     float totalUnitFinal;
     double totalAmountForMaterials, totalAmountForTransportService, taxPPN, taxPPH, totalDue, totalDueForTransportService;
@@ -246,6 +249,23 @@ public class UpdateInvoiceActivity extends AppCompatActivity {
         edtDatePaid = findViewById(R.id.edtDatePaid);
 
         helper.ACTIVITY_NAME = "UPDATE";
+
+
+
+        statusSwitchRecalculate = findViewById(R.id.statusSwitchUseRecalculate);
+        statusSwitchDefault = findViewById(R.id.statusSwitchUseDefault);
+
+        tvCubicationTotalRev = findViewById(R.id.tvCubicationTotalRev);
+        tvSubTotalRev = findViewById(R.id.tvSubTotalRev);
+        tvDiscRev = findViewById(R.id.tvDiscRev);
+        tvPPNRev = findViewById(R.id.tvPPNRev);
+        tvPPH23Rev = findViewById(R.id.tvPPH23Rev);
+        tvTotalDueRev = findViewById(R.id.tvTotalDueRev);
+        tvTotalDueMinus = findViewById(R.id.tvTotalDueMinus);
+        tvStatusRecalculate = findViewById(R.id.tvStatusRecalculate);
+        tvStatusDefault = findViewById(R.id.tvStatusDefault);
+
+
         loadInvoiceData();
 
 
@@ -437,6 +457,12 @@ public class UpdateInvoiceActivity extends AppCompatActivity {
                             edtDateHandover.setText(invDateHandover);
 
 
+
+
+
+
+
+
                             if (!invHandOverBy.isEmpty()){
                                 statusSwitchHandover.setChecked(true);
                                 tvStatusHandover.setText("Sudah Diterima");
@@ -455,7 +481,82 @@ public class UpdateInvoiceActivity extends AppCompatActivity {
                                 edtDateHandover.setText(null);
                             }
 
+                            String cubicationTotalDefault = documentSnapshot.get("invTotalVol", String.class);
+                            String subTotalDefault = documentSnapshot.get("invSubTotal", String.class);
+                            String discDefault = documentSnapshot.get("invDiscount", String.class);
+                            String PPNDefault = documentSnapshot.get("invTaxPPN", String.class);
+                            String PPH23Default = documentSnapshot.get("invTaxPPH", String.class);
+                            String totalDueDefault = documentSnapshot.get("invTotalDue", String.class);
 
+
+                            searchQueryAll();
+
+
+                            Boolean invRecalculateStatus = invoiceModel.getInvRecalculate();
+
+                            if (!invRecalculateStatus){
+                                statusSwitchDefault.setChecked(true);
+                                statusSwitchRecalculate.setChecked(false);
+                            } else{
+                                statusSwitchDefault.setChecked(false);
+                                statusSwitchRecalculate.setChecked(true);
+                            }
+
+
+
+                            statusSwitchRecalculate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                                @Override
+                                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                                    pd.show();
+                                    CollectionReference refInv = db.collection("InvoiceData");
+
+                                    refInv.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                            if (task.isSuccessful()){
+                                                for(DocumentSnapshot documentSnapshot : task.getResult()){
+                                                    String getDocumentID = documentSnapshot.getId();
+
+                                                    if (statusSwitchRecalculate.isChecked()){
+                                                        db.collection("InvoiceData").document(invoiceModel.getInvDocumentUID()).update("invRecalculate", true);
+                                                        helper.UPDATE_GOOD_ISSUE_IN_INVOICE = true;
+                                                    } else{
+                                                        db.collection("InvoiceData").document(invoiceModel.getInvDocumentUID()).update("invRecalculate", false);
+                                                        helper.UPDATE_GOOD_ISSUE_IN_INVOICE = false;
+                                                    }
+
+
+
+                                                }
+
+                                                loadInvoiceData();
+                                                pd.hide();
+                                            }
+                                        }
+                                    });
+                                }
+                            });
+
+                            statusSwitchDefault.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                                @Override
+                                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                                    if (statusSwitchDefault.isChecked()){
+                                        db.collection("InvoiceData").document(invoiceModel.getInvDocumentUID()).update("invRecalculate", false);
+                                        helper.UPDATE_GOOD_ISSUE_IN_INVOICE = false;
+                                        loadInvoiceData();
+                                        pd.hide();
+                                    } else{
+                                        db.collection("InvoiceData").document(invoiceModel.getInvDocumentUID()).update("invRecalculate", true);
+                                        helper.UPDATE_GOOD_ISSUE_IN_INVOICE = true;
+                                        loadInvoiceData();
+                                        pd.hide();
+                                    }
+
+                                    /*tvStatusDefault.setText("On");
+                                    statusSwitchRecalculate.setChecked(false);
+                                    tvStatusRecalculate.setText("Off");*/
+                                }
+                            });
 
                             statusSwitchHandover.setOnCheckedChangeListener((compoundButton, b) -> {
                                 pd.show();
@@ -609,6 +710,8 @@ public class UpdateInvoiceActivity extends AppCompatActivity {
                             coStatusApprovalVal = documentSnapshot.get("coStatusApproval", Boolean.class);
                             coStatusPaymentVal = documentSnapshot.get("coStatusPayment", Boolean.class);
 
+
+
                             refRO.whereEqualTo("roDocumentID", roDocumentID).get()
                                     .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                                         @Override
@@ -651,6 +754,7 @@ public class UpdateInvoiceActivity extends AppCompatActivity {
                                                 }
 
 
+
                                                 tvPoTransportType.setText(invPotypeVal);
 
                                                 HashMap<String, List<ProductItems>> map = receivedOrderModel.getRoOrderedItems();
@@ -674,11 +778,10 @@ public class UpdateInvoiceActivity extends AppCompatActivity {
 
 
                                                 totalUnitFinal = 0;
+
                                                 for (int i = 0; i < goodIssueModelArrayList.size(); i++) {
                                                     totalUnitFinal += goodIssueModelArrayList.get(i).getGiVhlCubication();
                                                 }
-                                                tvCubicationTotal.setText(totalUnitFinal+" m3");
-
                                                 // TOTAL AMOUNT CALCULATION
                                                 totalAmountForMaterials = matSellPrice*totalUnitFinal;
                                                 totalAmountForTransportService = transportServiceSellPrice*totalUnitFinal;
@@ -687,26 +790,110 @@ public class UpdateInvoiceActivity extends AppCompatActivity {
                                                 totalDue = totalAmountForMaterials+totalAmountForTransportService+taxPPN-taxPPH;
                                                 totalDueForTransportService = totalAmountForTransportService-taxPPH;
 
-                                                if (invPoType == 2){
-                                                    taxPPN = 0;
-                                                    tvSubTotal.setText(currencyVal+" "+currencyFormat(df.format(totalAmountForTransportService)));
-                                                    tvDisc.setText(currencyVal+" "+"0");
-                                                    tvPPN.setText(currencyVal+" " +currencyFormat(df.format(taxPPN)));
-                                                    tvPPH23.setText("("+currencyVal+" " +currencyFormat(df.format(taxPPH))+")");
-                                                    tvTotalDue.setText(currencyVal+" " +currencyFormat(df.format(totalDueForTransportService)));
-                                                } else if (invPoType == 1){
-                                                    tvSubTotal.setText( currencyVal+" "+currencyFormat(df.format(totalAmountForMaterials)));
-                                                    tvDisc.setText(currencyVal+" "+"0");
-                                                    tvPPN.setText(currencyVal+" "+currencyFormat(df.format(taxPPN)));
-                                                    tvPPH23.setText("("+currencyVal+" "+currencyFormat(df.format(taxPPH))+")");
-                                                    tvTotalDue.setText(currencyVal+" "+currencyFormat(df.format(totalDue)));
-                                                } else if (invPoType == 0){
-                                                    tvSubTotal.setText(currencyVal+" "+currencyFormat(df.format(totalAmountForMaterials+totalAmountForTransportService)));
-                                                    tvDisc.setText(currencyVal+" "+"0");
-                                                    tvPPN.setText(currencyVal+" "+currencyFormat(df.format(taxPPN)));
-                                                    tvPPH23.setText("("+currencyVal+" "+currencyFormat(df.format(taxPPH))+")");
-                                                    tvTotalDue.setText(currencyVal+" "+currencyFormat(df.format(totalDue)));
+                                                Boolean invRecalculateStatus = invoiceModel.getInvRecalculate();
+
+                                                if (!invRecalculateStatus){
+                                                    tvCubicationTotal.setText(totalUnitFinal+" m3");
+
+                                                    if (invPoType == 2){
+                                                        taxPPN = 0;
+                                                        tvSubTotal.setText(currencyVal+" "+currencyFormat(df.format(totalAmountForTransportService)));
+                                                        tvDisc.setText(currencyVal+" "+"0");
+                                                        tvPPN.setText(currencyVal+" " +currencyFormat(df.format(taxPPN)));
+                                                        tvPPH23.setText("("+currencyVal+" " +currencyFormat(df.format(taxPPH))+")");
+                                                        tvTotalDue.setText(currencyVal+" " +currencyFormat(df.format(totalDueForTransportService)));
+                                                    } else if (invPoType == 1){
+                                                        tvSubTotal.setText( currencyVal+" "+currencyFormat(df.format(totalAmountForMaterials)));
+                                                        tvDisc.setText(currencyVal+" "+"0");
+                                                        tvPPN.setText(currencyVal+" "+currencyFormat(df.format(taxPPN)));
+                                                        tvPPH23.setText("("+currencyVal+" "+currencyFormat(df.format(taxPPH))+")");
+                                                        tvTotalDue.setText(currencyVal+" "+currencyFormat(df.format(totalDue)));
+                                                    } else if (invPoType == 0){
+                                                        tvSubTotal.setText(currencyVal+" "+currencyFormat(df.format(totalAmountForMaterials+totalAmountForTransportService)));
+                                                        tvDisc.setText(currencyVal+" "+"0");
+                                                        tvPPN.setText(currencyVal+" "+currencyFormat(df.format(taxPPN)));
+                                                        tvPPH23.setText("("+currencyVal+" "+currencyFormat(df.format(taxPPH))+")");
+                                                        tvTotalDue.setText(currencyVal+" "+currencyFormat(df.format(totalDue)));
+                                                    }
+
+                                                    tvCubicationTotalRev.setText(totalUnitFinal+" m3");
+                                                    if (invPoType == 2){
+                                                        taxPPN = 0;
+                                                        tvSubTotalRev.setText(currencyVal+" "+currencyFormat(df.format(totalAmountForTransportService)));
+                                                        tvDiscRev.setText(currencyVal+" "+"0");
+                                                        tvPPNRev.setText(currencyVal+" " +currencyFormat(df.format(taxPPN)));
+                                                        tvPPH23Rev.setText("("+currencyVal+" " +currencyFormat(df.format(taxPPH))+")");
+                                                        tvTotalDueRev.setText(currencyVal+" " +currencyFormat(df.format(totalDueForTransportService)));
+                                                    } else if (invPoType == 1){
+                                                        tvSubTotalRev.setText( currencyVal+" "+currencyFormat(df.format(totalAmountForMaterials)));
+                                                        tvDiscRev.setText(currencyVal+" "+"0");
+                                                        tvPPNRev.setText(currencyVal+" "+currencyFormat(df.format(taxPPN)));
+                                                        tvPPH23Rev.setText("("+currencyVal+" "+currencyFormat(df.format(taxPPH))+")");
+                                                        tvTotalDueRev.setText(currencyVal+" "+currencyFormat(df.format(totalDue)));
+                                                    } else if (invPoType == 0){
+                                                        tvSubTotalRev.setText(currencyVal+" "+currencyFormat(df.format(totalAmountForMaterials+totalAmountForTransportService)));
+                                                        tvDiscRev.setText(currencyVal+" "+"0");
+                                                        tvPPNRev.setText(currencyVal+" "+currencyFormat(df.format(taxPPN)));
+                                                        tvPPH23Rev.setText("("+currencyVal+" "+currencyFormat(df.format(taxPPH))+")");
+                                                        tvTotalDueRev.setText(currencyVal+" "+currencyFormat(df.format(totalDue)));
+                                                    }
+                                                } else {
+                                                    tvCubicationTotal.setText(totalUnitFinal+" m3");
+                                                    tvCubicationTotal.setText(cubicationTotalDefault);
+                                                    tvSubTotal.setText(subTotalDefault);
+                                                    tvDisc.setText(discDefault);
+                                                    tvPPN.setText(PPNDefault);
+                                                    tvPPH23.setText(PPH23Default);
+                                                    tvTotalDue.setText(totalDueDefault);
+
+                                                    tvCubicationTotalRev.setText(totalUnitFinal+" m3");
+                                                    if (invPoType == 2){
+                                                        taxPPN = 0;
+                                                        tvSubTotalRev.setText(currencyVal+" "+currencyFormat(df.format(totalAmountForTransportService)));
+                                                        tvDiscRev.setText(currencyVal+" "+"0");
+                                                        tvPPNRev.setText(currencyVal+" " +currencyFormat(df.format(taxPPN)));
+                                                        tvPPH23Rev.setText("("+currencyVal+" " +currencyFormat(df.format(taxPPH))+")");
+                                                        tvTotalDueRev.setText(currencyVal+" " +currencyFormat(df.format(totalDueForTransportService)));
+                                                    } else if (invPoType == 1){
+                                                        tvSubTotalRev.setText( currencyVal+" "+currencyFormat(df.format(totalAmountForMaterials)));
+                                                        tvDiscRev.setText(currencyVal+" "+"0");
+                                                        tvPPNRev.setText(currencyVal+" "+currencyFormat(df.format(taxPPN)));
+                                                        tvPPH23Rev.setText("("+currencyVal+" "+currencyFormat(df.format(taxPPH))+")");
+                                                        tvTotalDueRev.setText(currencyVal+" "+currencyFormat(df.format(totalDue)));
+                                                    } else if (invPoType == 0){
+                                                        tvSubTotalRev.setText(currencyVal+" "+currencyFormat(df.format(totalAmountForMaterials+totalAmountForTransportService)));
+                                                        tvDiscRev.setText(currencyVal+" "+"0");
+                                                        tvPPNRev.setText(currencyVal+" "+currencyFormat(df.format(taxPPN)));
+                                                        tvPPH23Rev.setText("("+currencyVal+" "+currencyFormat(df.format(taxPPH))+")");
+                                                        tvTotalDueRev.setText(currencyVal+" "+currencyFormat(df.format(totalDue)));
+                                                    }
                                                 }
+
+
+                                                //String invTotalVolRev = documentSnapshot.get("invTotalVol", String.class);
+                                                /*if (helper.UPDATE_GOOD_ISSUE_IN_INVOICE != null){
+
+                                                    //tvStatusRecalculate.setText("On");
+
+                                                    tvCubicationTotalRev.setText(totalUnitFinal+" m3");
+
+
+                                                    tvCubicationTotal.setText(cubicationTotalDefault);
+                                                    tvSubTotal.setText(subTotalDefault);
+                                                    tvDisc.setText(discDefault);
+                                                    tvPPN.setText(PPNDefault);
+                                                    tvPPH23.setText(PPH23Default);
+                                                    tvTotalDue.setText(totalDueDefault);
+
+                                                } else{
+
+                                                    tvCubicationTotal.setText(totalUnitFinal+" m3");
+
+                                                }*/
+
+
+
+
 
 
 
@@ -744,6 +931,8 @@ public class UpdateInvoiceActivity extends AppCompatActivity {
                                             }
                                         }
                                     });
+
+
 
 
                             refBankAccount.whereEqualTo("bankAccountID", bankAccountID).get()
@@ -824,7 +1013,7 @@ public class UpdateInvoiceActivity extends AppCompatActivity {
         paragraphTitle.setAlignment(Element.ALIGN_LEFT);
         document.add(paragraphTitle);
         preface0.setAlignment(Element.ALIGN_CENTER);
-        preface0.setSpacingAfter(120);
+        preface0.setSpacingAfter(100);
         document.add(preface0);
     }
     private void addInvTtl(Document document) throws DocumentException {
@@ -1193,6 +1382,7 @@ public class UpdateInvoiceActivity extends AppCompatActivity {
                 tblInvSection8.addCell(cellTxtBrdrTopNrmlMainContent(
                         new Paragraph(currencyVal+" "+currencyFormat(df.format(totalAmountForMaterials+totalAmountForTransportService   ))+"\n"+currencyVal+" "+"0"+"\n"+currencyVal+" "+currencyFormat(df.format(taxPPN))+"\n"+"("+currencyVal+" "+currencyFormat(df.format(taxPPH))+")"+"\n"+currencyVal+" "+currencyFormat(df.format(totalDue)), fontNormal), Element.ALIGN_RIGHT));
             }
+
 
 
             tblInvSection9.addCell(cellColHeader(
@@ -1608,6 +1798,7 @@ public class UpdateInvoiceActivity extends AppCompatActivity {
         }
         finish();
         helper.ACTIVITY_NAME = null;
+        helper.UPDATE_GOOD_ISSUE_IN_INVOICE = false;
         custNameVal = "";
         return super.onOptionsItemSelected(item);
     }
@@ -1616,12 +1807,14 @@ public class UpdateInvoiceActivity extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         helper.ACTIVITY_NAME = null;
+        helper.UPDATE_GOOD_ISSUE_IN_INVOICE = false;
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         helper.ACTIVITY_NAME = null;
+        helper.UPDATE_GOOD_ISSUE_IN_INVOICE = false;
         custNameVal = "";
     }
 

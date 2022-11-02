@@ -7,7 +7,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -114,7 +113,7 @@ import java.util.Random;
 
 import dev.shreyaspatil.MaterialDialog.MaterialDialog;
 
-public class AddInvoiceActivity extends AppCompatActivity {
+public class AddAIOReportActivity extends AppCompatActivity {
 
     private static final String ALLOWED_CHARACTERS = "0123456789QWERTYUIOPASDFGHJKLZXCVBNM";
 
@@ -175,10 +174,6 @@ public class AddInvoiceActivity extends AppCompatActivity {
     String invDateDeliveryPeriod, invCreatedBy="", custDocumentID ="";
 
     private MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
-
-    double totalAmountForMaterials, totalAmountForTransportService, taxPPN, taxPPH, totalDue, totalDueForTransportService;
-    String totalUnitFinalFinal, invSubTotalFinal, invDiscountFinal, invTaxPPNFinal, invTaxPPHFinal, invTotalDueFinal;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -282,7 +277,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
             monthStrVal = String.valueOf(calendar.get(Calendar.MONTH));
             String yearStrVal = String.valueOf(calendar.get(Calendar.YEAR));
 
-            datePicker = new DatePickerDialog(AddInvoiceActivity.this,
+            datePicker = new DatePickerDialog(AddAIOReportActivity.this,
                     (datePicker, year, month, dayOfMonth) -> {
                         int monthInt = month + 1;
 
@@ -314,7 +309,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
             monthStrVal = String.valueOf(calendar.get(Calendar.MONTH));
             String yearStrVal = String.valueOf(calendar.get(Calendar.YEAR));
 
-            datePicker = new DatePickerDialog(AddInvoiceActivity.this,
+            datePicker = new DatePickerDialog(AddAIOReportActivity.this,
                     (datePicker, year, month, dayOfMonth) -> {
                         int monthInt = month + 1;
 
@@ -352,7 +347,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(AddInvoiceActivity.this, "Terjadi kesalahan.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(AddAIOReportActivity.this, "Terjadi kesalahan.", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -444,11 +439,11 @@ public class AddInvoiceActivity extends AppCompatActivity {
                                 customerName.add(spinnerCustUID+" - "+spinnerCustName);
                                 //arrayListCustDocumentID.add(custDocumentID);
                             }
-                            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddInvoiceActivity.this, R.layout.style_spinner, customerName);
+                            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddAIOReportActivity.this, R.layout.style_spinner, customerName);
                             arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
                             spinnerCustName.setAdapter(arrayAdapter);
                         } else {
-                            Toast.makeText(AddInvoiceActivity.this, "Not exists", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(AddAIOReportActivity.this, "Not exists", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -538,7 +533,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
                                                                     if (selectedSpinnerCustomerName.contains(custNameVal)) {
                                                                         arrayListRoUID.add(spinnerPurchaseOrders);
                                                                     }
-                                                                    ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddInvoiceActivity.this, R.layout.style_spinner, arrayListRoUID);
+                                                                    ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddAIOReportActivity.this, R.layout.style_spinner, arrayListRoUID);
                                                                     arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
                                                                     spinnerRoUID.setAdapter(arrayAdapter);
                                                                 }
@@ -546,7 +541,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
                                                 }
                                             } else {
                                                 if (!isFinishing()) {
-                                                    dialogInterface.roNotExistsDialog(AddInvoiceActivity.this);
+                                                    dialogInterface.roNotExistsDialog(AddAIOReportActivity.this);
                                                 }
                                             }
                                         });
@@ -620,11 +615,11 @@ public class AddInvoiceActivity extends AppCompatActivity {
                                                     coUID = Objects.requireNonNull(d.get("coUID")).toString();
                                                     arrayListCoUID.add(coUID);
                                                 }
-                                                ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddInvoiceActivity.this, R.layout.style_spinner, arrayListCoUID);
+                                                ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddAIOReportActivity.this, R.layout.style_spinner, arrayListCoUID);
                                                 arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
                                                 spinnerCoUID.setAdapter(arrayAdapter);
                                             } else {
-                                                Toast.makeText(AddInvoiceActivity.this, "Not exists", Toast.LENGTH_SHORT).show();
+                                                Toast.makeText(AddAIOReportActivity.this, "Not exists", Toast.LENGTH_SHORT).show();
                                             }
                                         }
                                     });
@@ -698,11 +693,11 @@ public class AddInvoiceActivity extends AppCompatActivity {
                                 //bankAccountDocumentID.add(bankAccountID);
                                 //edtAccountOwnerName.setText(bankAccountOwnerName);
                             }
-                            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddInvoiceActivity.this, R.layout.style_spinner, bankAccount);
+                            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddAIOReportActivity.this, R.layout.style_spinner, bankAccount);
                             arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
                             spinnerBankAccount.setAdapter(arrayAdapter);
                         } else {
-                            Toast.makeText(AddInvoiceActivity.this, "Not exists", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(AddAIOReportActivity.this, "Not exists", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -833,7 +828,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
                 dialogInterface.mustAddDateRangeInformation(this);
             }*/
 
-            View viewLayout = AddInvoiceActivity.this.getCurrentFocus();
+            View viewLayout = AddAIOReportActivity.this.getCurrentFocus();
             if (viewLayout != null) {
                 InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(viewLayout.getWindowToken(), 0);
@@ -907,7 +902,28 @@ public class AddInvoiceActivity extends AppCompatActivity {
                 invUID = getRandomString()+"-INV-"+roUIDValNoSpace;
 
 
+
                 String invCreatedBy = helper.getUserId();
+
+/*
+                dialogInterface.confirmCreateInvoice(context, db, goodIssueModelArrayList,
+                        invUID, invPotypeVal, invCreatedBy, invDateCreated, invPoDate, invPoUID, invCustName, totalIDR, invTax1, invTax2, invDateDeliveryPeriod);
+*/
+
+
+
+
+               /* String custNameValReplace = custNameVal.replace(" - ","-");
+                int indexCustNameVal = custNameValReplace.lastIndexOf('-');
+                db.collection("CustomerData").whereEqualTo("custUID", custNameValReplace.substring(0, indexCustNameVal)).get()
+                        .addOnSuccessListener(queryDocumentSnapshots2 -> {
+                            for (QueryDocumentSnapshot documentSnapshot2 : queryDocumentSnapshots2){
+                                CustomerModel customerModel = documentSnapshot2.toObject(CustomerModel.class);
+                                custAddressVal = customerModel.getCustAddress();
+                                //custDocumentID = customerModel.getCustDocumentID();
+                            }
+                        });*/
+
 
 
                 invTimeCreated =
@@ -915,66 +931,21 @@ public class AddInvoiceActivity extends AppCompatActivity {
                 invDateNTimeCreated =
                         new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(new Date()).concat(" | "+invTimeCreated+" WIB");
 
+               /* Calendar c = Calendar.getInstance();
+                c.add(Calendar.DATE, invPoTOP);*/
 
-                // TOTAL AMOUNT CALCULATION
-                totalAmountForMaterials = matSellPrice*totalUnit;
-                totalAmountForTransportService = transportServiceSellPrice*totalUnit;
-                taxPPN = (0.11)*totalAmountForMaterials;
-                taxPPH = (0.02)*totalAmountForTransportService;
-                totalDue = totalAmountForMaterials+totalAmountForTransportService+taxPPN-taxPPH;
-                totalDueForTransportService = totalAmountForTransportService-taxPPH;
-
-                //Toast.makeText(context, String.valueOf(totalAmountForMaterials), Toast.LENGTH_SHORT).show();
-
-                if (invPoType == 2){
-                    taxPPN = 0;
-                    String totalUnitFinalFinal = totalUnit+" m3";
-                    String invSubTotalFinal = currencyVal+" "+currencyFormat(df.format(totalAmountForTransportService));
-                    String invDiscountFinal = currencyVal+" "+"0";
-                    String invTaxPPNFinal = currencyVal+" " +currencyFormat(df.format(taxPPN));
-                    String  invTaxPPHFinal = "("+currencyVal+" " +currencyFormat(df.format(taxPPH))+")";
-                    String invTotalDueFinal = currencyVal+" " +currencyFormat(df.format(totalDueForTransportService));
-                    dialogInterface.confirmCreateInvoice(context, db,
-                            goodIssueModelArrayList,
-                            invUID,  invCreatedBy,
-                            invDateNTimeCreated,  "-", "", "",
-                            "", invDateDeliveryPeriod,
-                            custDocumentID,  bankAccountID,  roDocumentID, "", "",
-                            totalUnitFinalFinal, invSubTotalFinal, invDiscountFinal, invTaxPPNFinal, invTaxPPHFinal, invTotalDueFinal);
-
-                } else if (invPoType == 1){
-                    String totalUnitFinalFinal = totalUnit+" m3";
-                    String invSubTotalFinal = currencyVal+" "+currencyFormat(df.format(totalAmountForMaterials));
-                    String invDiscountFinal = currencyVal+" "+"0";
-                    String invTaxPPNFinal = currencyVal+" " +currencyFormat(df.format(taxPPN));
-                    String invTaxPPHFinal = "("+currencyVal+" " +currencyFormat(df.format(taxPPH))+")";
-                    String invTotalDueFinal = currencyVal+" " +currencyFormat(df.format(totalDue));
-                    dialogInterface.confirmCreateInvoice(context, db,
-                            goodIssueModelArrayList,
-                            invUID,  invCreatedBy,
-                            invDateNTimeCreated,  "-", "", "",
-                            "", invDateDeliveryPeriod,
-                            custDocumentID,  bankAccountID,  roDocumentID, "", "",
-                            totalUnitFinalFinal, invSubTotalFinal, invDiscountFinal, invTaxPPNFinal, invTaxPPHFinal, invTotalDueFinal);
-
-                } else if (invPoType == 0){
-                    String totalUnitFinalFinal = totalUnit+" m3";
-                    String invSubTotalFinal = currencyVal+" "+currencyFormat(df.format(totalAmountForMaterials+totalAmountForTransportService));
-                    String invDiscountFinal = currencyVal+" "+"0";
-                    String invTaxPPNFinal = currencyVal+" " +currencyFormat(df.format(taxPPN));
-                    String invTaxPPHFinal = "("+currencyVal+" " +currencyFormat(df.format(taxPPH))+")";
-                    String invTotalDueFinal = currencyVal+" " +currencyFormat(df.format(totalDue));
-                    dialogInterface.confirmCreateInvoice(context, db,
-                            goodIssueModelArrayList,
-                            invUID,  invCreatedBy,
-                            invDateNTimeCreated,  "-", "", "",
-                            "", invDateDeliveryPeriod,
-                            custDocumentID,  bankAccountID,  roDocumentID, "", "",
-                            totalUnitFinalFinal, invSubTotalFinal, invDiscountFinal, invTaxPPNFinal, invTaxPPHFinal, invTotalDueFinal);
-                }
+/*
+                Date invDueDateVal = c.getTime();
+                invDueDate = new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(invDueDateVal) + " | " + invTimeCreated + " WIB (" + invPoTOP + " hari)";
+*/
 
 
-
+                /*dialogInterface.confirmCreateInvoice(context, db,
+                        goodIssueModelArrayList,
+                        invUID,  invCreatedBy,
+                        invDateNTimeCreated,  "-", "", "",
+                        "", invDateDeliveryPeriod,
+                        custDocumentID,  bankAccountID,  roDocumentID, "", "");*/
             }
         });
 
@@ -993,7 +964,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
 
     private  void clearSelection(){
         isSelectedAll = false;
-        menu.findItem(R.id.select_all_data_recap).setIcon(ContextCompat.getDrawable(AddInvoiceActivity.this, R.drawable.ic_outline_select_all));
+        menu.findItem(R.id.select_all_data_recap).setIcon(ContextCompat.getDrawable(AddAIOReportActivity.this, R.drawable.ic_outline_select_all));
 
         giManagementAdapter.clearSelection();
         llBottomSelectionOptions.animate()

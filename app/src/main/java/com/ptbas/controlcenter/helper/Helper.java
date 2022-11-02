@@ -29,6 +29,7 @@ import java.util.List;
 
 public class Helper {
 
+    public static Boolean UPDATE_GOOD_ISSUE_IN_INVOICE = false;
     public static String ACTIVITY_NAME = null;
 
     public FirebaseAuth authProfile;

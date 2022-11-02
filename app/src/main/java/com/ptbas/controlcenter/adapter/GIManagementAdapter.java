@@ -1,6 +1,8 @@
 package com.ptbas.controlcenter.adapter;
 
 
+import static android.content.ContentValues.TAG;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -9,6 +11,7 @@ import android.os.Build;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +22,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
@@ -26,13 +30,17 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.ptbas.controlcenter.R;
+import com.ptbas.controlcenter.create.AddGoodIssueActivity;
 import com.ptbas.controlcenter.helper.DialogInterface;
 import com.ptbas.controlcenter.helper.Helper;
 import com.ptbas.controlcenter.model.CashOutModel;
@@ -62,13 +70,6 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
         this.context = context;
         this.goodIssueModelArrayList = goodIssueModelArrayList;
     }
-
-    /*public void setGoodIssueSelected(ArrayList<GoodIssueModel> goodIssueModelArrayList) {
-        this.goodIssueModelArrayList = new ArrayList<>();
-        this.goodIssueModelArrayList = goodIssueModelArrayList;
-        notifyDataSetChanged();
-    }*/
-
 
     @NonNull
     @Override
@@ -105,12 +106,11 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
 
 
     public class ItemViewHolder extends RecyclerView.ViewHolder {
-        //llStatusPOAvailable
         LinearLayout llStatusApproved, llStatusRecapped, llStatusInvoiced, llCashedOutStatus, llRoNeedsUpdate, llHiddenView, llWrapGiStatus;
         TextView tvCubication, tvGiDateTime, tvGiUid, tvRoUid, tvGiMatDetail, tvGiVhlDetail,
                 tvVhlUid, tvPoCustNumber, tvCustomerName;
-        RelativeLayout btnDeleteGi, btnApproveGi;
-        Button btn1, btn2, btn3;
+        RelativeLayout btnDeleteGi, btnApproveGi, btnCloneGi;
+        Button btn1, btn2, btn3, btn4;
         CardView cardView;
         CheckBox cbSelectItem;
         String customerNameVal, custDocumentID, coAccBy;
@@ -124,7 +124,6 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
             llCashedOutStatus = itemView.findViewById(R.id.llCashedOutStatus);
             llStatusRecapped = itemView.findViewById(R.id.llStatusRecapped);
             llStatusInvoiced = itemView.findViewById(R.id.ll_status_invoiced);
-            //llStatusPOAvailable = itemView.findViewById(R.id.ll_status_po_unvailable);
             llRoNeedsUpdate = itemView.findViewById(R.id.ll_ro_needs_update);
             tvCubication = itemView.findViewById(R.id.tv_cubication);
             tvGiDateTime = itemView.findViewById(R.id.tvDateCreated);
@@ -137,15 +136,13 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
             tvCustomerName = itemView.findViewById(R.id.tvCustomerName);
             btnDeleteGi = itemView.findViewById(R.id.btn_delete_gi);
             btnApproveGi = itemView.findViewById(R.id.btn_approve_gi);
+            btnCloneGi = itemView.findViewById(R.id.btn_clone_gi);
             btn1 = itemView.findViewById(R.id.btnDeleteItem);
             btn2 = itemView.findViewById(R.id.btnApproveItem);
             btn3 = itemView.findViewById(R.id.btnOpenItemDetail);
+            btn4 = itemView.findViewById(R.id.btnClone);
             cbSelectItem = itemView.findViewById(R.id.cbSelectItem);
-
-
-
         }
-
 
 
         public void viewBind(final GoodIssueModel goodIssueModel) {
@@ -154,23 +151,28 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
 
             if (Objects.equals(helper.ACTIVITY_NAME, "UPDATE")){
                 btnDeleteGi.setVisibility(View.GONE);
-                //cbSelectItem.setVisibility(View.GONE);
             }
 
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    goodIssueModel.setChecked(!goodIssueModel.isChecked());
-                    cbSelectItem.setChecked(goodIssueModel.isChecked());
-                }
+            if (helper.UPDATE_GOOD_ISSUE_IN_INVOICE){
+                btnCloneGi.setVisibility(View.VISIBLE);
+            } else{
+                btnCloneGi.setVisibility(View.GONE);
+            }
+
+            /*if (tvGiUid.getText().toString().contains("CL")){
+                btnCloneGi.setVisibility(View.GONE);
+            } else{
+                btnCloneGi.setVisibility(View.VISIBLE);
+            }*/
+
+            itemView.setOnClickListener(view -> {
+                goodIssueModel.setChecked(!goodIssueModel.isChecked());
+                cbSelectItem.setChecked(goodIssueModel.isChecked());
             });
 
-            cbSelectItem.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    goodIssueModel.setChecked(!goodIssueModel.isChecked());
-                    cbSelectItem.setChecked(goodIssueModel.isChecked());
-                }
+            cbSelectItem.setOnClickListener(view -> {
+                goodIssueModel.setChecked(!goodIssueModel.isChecked());
+                cbSelectItem.setChecked(goodIssueModel.isChecked());
             });
 
             DecimalFormat df = new DecimalFormat("0.00");
@@ -181,13 +183,6 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
             String giUID = partGiUID[0];
 
             String roDocumentID = goodIssueModel.getRoDocumentID();
-
-            /*String[] partRoUID = goodIssueModel.getGiRoUID().split(" - ");
-            String roUID = "RO: "+ partRoUID[2];*/
-
-            //String customerName = partRoUID[0];
-
-            //String
 
             FirebaseFirestore db1 = FirebaseFirestore.getInstance();
             db1.collection("ReceivedOrderData").whereEqualTo("roDocumentID", roDocumentID)
@@ -202,14 +197,7 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
                                     String poNumber = receivedOrderModel.getRoPoCustNumber();
                                     custDocumentID = receivedOrderModel.getCustDocumentID();
 
-                                    //tvRoUid.setText("RO: " + roNumber);
                                     tvPoCustNumber.setText("PO: " + poNumber);
-
-
-                                    /*String spinnerPurchaseOrders = Objects.requireNonNull(d.get("roCustName")).toString();
-                                    if (Objects.requireNonNull(d.get("roCustName")).toString().contains(customerName)) {
-                                        tvCustomerName.setText(spinnerPurchaseOrders);
-                                    }*/
 
                                     db1.collection("CustomerData").whereEqualTo("custDocumentID", custDocumentID)
                                             .addSnapshotListener((value2, error2) -> {
@@ -238,18 +226,9 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
                 if (task.isSuccessful()){
                     for(DocumentSnapshot documentSnapshot : task.getResult()){
                         String getDocumentID = documentSnapshot.getId();
-                        /*if (getDocumentID.equals(customerName)){
-                            CustomerModel customerModel = documentSnapshot.toObject(CustomerModel.class);
-                            //db.collection("CustomerData").document(receivedOrderModel.getCustDocumentID());
-                            tvCustomerName.setText(customerModel.getCustName());
-                        }*/
                     }
                 }
             });
-
-            //String poCustNumb = "PO: "+goodIssueModel.getGiPoCustNumber();
-
-
 
             String matDetail = goodIssueModel.getGiMatType()+" - "+goodIssueModel.getGiMatName();
             String vhlDetail = "(P) "+goodIssueModel.getVhlLength().toString()+" (L) "+goodIssueModel.getVhlWidth().toString()+" (T) "+goodIssueModel.getVhlHeight().toString()+" | "+"(K) "+goodIssueModel.getVhlHeightCorrection().toString()+" (TK) "+goodIssueModel.getVhlHeightAfterCorrection().toString();
@@ -257,21 +236,18 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
             boolean giStatus = goodIssueModel.getGiStatus();
             boolean giRecapped = goodIssueModel.getGiRecapped();
             boolean giInvoiced = goodIssueModel.getGiInvoiced();
+            String giInvoicedTo = goodIssueModel.getGiInvoicedTo();
             boolean giCashedOut = goodIssueModel.getGiCashedOut();
             String giCashedOutTo = goodIssueModel.getGiCashedOutTo();
 
             tvCubication.setText(Html.fromHtml(df.format(cubication) +" m\u00B3"));
             tvGiDateTime.setText(dateNTime);
             tvGiUid.setText(giUID);
-            //tvRoUid.setText(roUID);
-            //tvCustomerName.setText(customerNameVal);
-            //tvPoCustNumber.setText(poCustNumb);
             tvGiMatDetail.setText(matDetail);
             tvGiVhlDetail.setText(vhlDetail);
             tvVhlUid.setText(vhlUID);
 
             String giUIDVal =goodIssueModel.getGiUID();
-            //String giRoUIDVal =goodIssueModel.getGiRoUID();
 
             if (goodIssueModel.getGiMatName().contentEquals("JASA ANGKUT")){
                 tvVhlUid.setVisibility(View.GONE);
@@ -280,16 +256,6 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
 
             DatabaseReference databaseReferenceGI = FirebaseDatabase.getInstance().getReference();
             FirebaseFirestore db = FirebaseFirestore.getInstance();
-            /*db.collection("ReceivedOrderData").whereEqualTo("roUID", giRoUIDVal)
-                    .addSnapshotListener((value, error) -> {
-                        String poUIDUpdate = "";
-                        for (DocumentSnapshot d : value.getDocuments()) {
-                            ReceivedOrderModel receivedOrderModel = d.toObject(ReceivedOrderModel.class);
-                            receivedOrderModel.setRoDocumentID(d.getId());
-                            poUIDUpdate = receivedOrderModel.getRoPoCustNumber();
-                        }
-                        databaseReferenceGI.child("GoodIssueData").child(giUIDVal).child("giPoCustNumber").setValue(poUIDUpdate);
-                    });*/
 
             if (giStatus){
                 llWrapGiStatus.setVisibility(View.VISIBLE);
@@ -320,7 +286,6 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
             }
 
 
-
             db.collection("CashOutData").whereEqualTo("coDocumentID", giCashedOutTo).get()
                     .addOnSuccessListener(queryDocumentSnapshots -> {
                                 for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
@@ -336,32 +301,58 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
                             }
                     );
 
+            btn4.setOnClickListener(view -> {
 
 
-            /*if (tvPoCustNumber.getText().toString().equals("PO: -")){
-                tvPoCustNumber.setVisibility(View.GONE);
-                llStatusPOAvailable.setVisibility(View.VISIBLE);
-            } else {
-                tvPoCustNumber.setVisibility(View.VISIBLE);
-                llStatusPOAvailable.setVisibility(View.GONE);
-            }*/
 
-                btn3.setOnClickListener(view -> {
-                    String giUID1 =goodIssueModel.getGiUID();
-                    Intent i = new Intent(context, UpdateGoodIssueActivity.class);
-                    i.putExtra("key", giUID1);
-                    context.startActivity(i);
-                /*if (helper.ACTIVITY_NAME.equals("UPDATE")){
+                if (tvGiUid.getText().toString().contains("CL")){
+                    Toast.makeText(context, "Tidak dapat menduplikat GI karena GI ini merupakah hasil duplikasi.", Toast.LENGTH_SHORT).show();
+                } else{
+                    GoodIssueModel goodIssueModelClone = new GoodIssueModel("CL-"+goodIssueModel.getGiUID(), goodIssueModel.getGiCreatedBy(), goodIssueModel.getGiVerifiedBy(),goodIssueModel.getRoDocumentID(),
+                            goodIssueModel.getGiMatName(), goodIssueModel.getGiMatType(), goodIssueModel.getGiNoteNumber(), vhlUID, goodIssueModel.getGiDateCreated(), goodIssueModel.getGiTimeCreted(), goodIssueModel.getVhlLength(),
+                            goodIssueModel.getVhlWidth(), goodIssueModel.getVhlHeight(), goodIssueModel.getVhlHeightCorrection(), goodIssueModel.getVhlHeightAfterCorrection(), goodIssueModel.getGiVhlCubication(), giStatus, giRecapped, giInvoiced, goodIssueModel.getGiInvoicedTo(), goodIssueModel.getGiCashedOut(), goodIssueModel.getGiCashedOutTo(), goodIssueModel.getGiRecappedTo());
+                    DatabaseReference refGI = FirebaseDatabase.getInstance("https://bas-delivery-report-default-rtdb.asia-southeast1.firebasedatabase.app").getReference("GoodIssueData");
+                    refGI.child("CL-"+goodIssueModel.getGiUID()).setValue(goodIssueModelClone).addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(context, "Berhasil diduplikat", Toast.LENGTH_SHORT).show();
+                        } else {
+                            try{
+                                throw task.getException();
+                            } catch (Exception e){
+                                Log.e(TAG, e.getMessage());
+                                Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
 
-                }*/ /*else {
-                    Toast.makeText(context, "OPEN DETAIL", Toast.LENGTH_SHORT).show();
-                }*/
+                    GoodIssueModel goodIssueModelUpdate = new GoodIssueModel(goodIssueModel.getGiUID(), goodIssueModel.getGiCreatedBy(), goodIssueModel.getGiVerifiedBy(),goodIssueModel.getRoDocumentID(),
+                            goodIssueModel.getGiMatName(), goodIssueModel.getGiMatType(), goodIssueModel.getGiNoteNumber(), vhlUID, goodIssueModel.getGiDateCreated(), goodIssueModel.getGiTimeCreted(), goodIssueModel.getVhlLength(),
+                            goodIssueModel.getVhlWidth(), goodIssueModel.getVhlHeight(), goodIssueModel.getVhlHeightCorrection(), goodIssueModel.getVhlHeightAfterCorrection(), goodIssueModel.getGiVhlCubication(), giStatus, giRecapped, giInvoiced, "ARC-"+goodIssueModel.getGiInvoicedTo(), goodIssueModel.getGiCashedOut(), goodIssueModel.getGiCashedOutTo(), goodIssueModel.getGiRecappedTo());
+                    refGI.child(goodIssueModel.getGiUID()).setValue(goodIssueModelUpdate).addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(context, "Berhasil diduplikat", Toast.LENGTH_SHORT).show();
+                        } else {
+                            try{
+                                throw task.getException();
+                            } catch (Exception e){
+                                Log.e(TAG, e.getMessage());
+                                Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+                }
 
-                });
+            });
+
+            btn3.setOnClickListener(view -> {
+                String giUID1 =goodIssueModel.getGiUID();
+                Intent i = new Intent(context, UpdateGoodIssueActivity.class);
+                i.putExtra("key", giUID1);
+                context.startActivity(i);
+            });
 
             btn2.setOnClickListener(view -> {
                 if (tvPoCustNumber.getText().toString().equals("PO: -")){
-                    //dialogInterface.noPoNumberInformation(context);
                     Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                         vibrator.vibrate(VibrationEffect.createOneShot(100,
@@ -402,7 +393,6 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
 
                     md.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
                     md.show();
-                    //dialogInterface.approveGiConfirmation(context, goodIssueModel.getGiUID());
                 }
             });
 
@@ -431,10 +421,6 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
                 md.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
                 md.show();
             });
-
-            //dialogInterface.deleteGiConfirmation(context, goodIssueModel.getGiUID()));
-
-
 
         }
     }

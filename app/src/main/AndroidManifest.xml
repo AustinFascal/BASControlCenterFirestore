@@ -48,6 +48,10 @@
         <activity
             android:name=".create.AddRecapGoodIssueDataActivity"
             android:exported="false" />
+
+        <activity
+            android:name=".create.AddAIOReportActivity"
+            android:exported="false" />
         <activity
             android:name=".create.AddCustomerActivity"
             android:exported="false" />

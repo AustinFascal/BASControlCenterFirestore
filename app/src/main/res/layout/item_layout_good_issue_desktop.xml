@@ -295,6 +295,36 @@
                 android:paddingHorizontal="5dp">
 
                 <RelativeLayout
+                    android:visibility="gone"
+                    android:id="@+id/btn_clone_gi"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_alignStart="@+id/btnClone"
+                        android:layout_alignTop="@+id/btnClone"
+                        android:layout_alignEnd="@+id/btnClone"
+                        android:layout_alignBottom="@+id/btnClone"
+                        android:scaleType="center"
+                        android:src="@drawable/ic_baseline_content_copy"
+                        app:tint="?colorPrimary" />
+
+                    <Button
+                        android:id="@+id/btnClone"
+                        style="@style/MaterialDialog.NegativeButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:tag="DeleteGI" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
                     android:id="@+id/btn_delete_gi"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"

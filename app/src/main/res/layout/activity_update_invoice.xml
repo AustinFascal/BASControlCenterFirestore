@@ -106,6 +106,67 @@
                                     </TableRow>
                                     <TableRow>
 
+                                        <TextView
+                                            style="@style/TextAppearance.AppCompat.Body1"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_column="1"
+                                            android:text="Periode Pengiriman"
+                                            android:textSize="14sp" />
+
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_column="2"
+                                            android:paddingHorizontal="10dp"
+                                            android:text=":"
+                                            android:textSize="14sp" />
+
+                                        <TextView
+                                            style="@style/TextAppearance.AppCompat.Body1"
+                                            android:id="@+id/tvDateDeliveryPeriod"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_column="3"
+                                            android:layout_weight="1"
+                                            android:ellipsize="end"
+                                            android:maxLines="2"
+                                            android:text="dateArray"
+                                            android:textSize="14sp" />
+                                    </TableRow>
+                                    <TableRow>
+
+                                        <TextView
+                                            style="@style/TextAppearance.AppCompat.Body1"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_column="1"
+                                            android:text="Nama Material"
+                                            android:textSize="14sp" />
+
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_column="2"
+                                            android:paddingHorizontal="10dp"
+                                            android:text=":"
+                                            android:textSize="14sp" />
+
+                                        <TextView
+                                            style="@style/TextAppearance.AppCompat.Body1"
+                                            android:id="@+id/tvMatName"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_column="3"
+                                            android:layout_weight="1"
+                                            android:ellipsize="end"
+                                            android:maxLines="2"
+                                            android:text="string"
+                                            android:textSize="14sp" />
+                                    </TableRow>
+
+                                    <TableRow>
+
 
                                         <TextView
                                             style="@style/TextAppearance.AppCompat.Body1"
@@ -360,80 +421,43 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="1dp"
                                     android:background="@color/light_grey" />
-                                <TextView
-                                    style="@style/TextAppearance.AppCompat.Title"
-                                    android:layout_width="wrap_content"
+                                <LinearLayout
+                                    android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:ellipsize="end"
-                                    android:gravity="center_vertical"
-                                    android:text="Rincian Tagihan"
-                                    android:textSize="16sp"
-                                    android:textStyle="bold" />
+                                    android:orientation="horizontal">
+                                    <TextView
+                                        style="@style/TextAppearance.AppCompat.Title"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:ellipsize="end"
+                                        android:gravity="center_vertical"
+                                        android:text="Rincian Tagihan"
+                                        android:textSize="16sp"
+                                        android:textStyle="bold" />
+
+                                    <androidx.appcompat.widget.SwitchCompat
+                                        android:id="@+id/statusSwitchUseDefault"
+                                        android:padding="0dp"
+                                        android:checked="true"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="20dp" />
+                                    <TextView
+                                        style="@style/TextAppearance.AppCompat.Body1"
+                                        android:layout_marginStart="4dp"
+                                        android:id="@+id/tvStatusDefault"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginEnd="20dp"
+                                        android:textAlignment="center"
+                                        android:maxLines="2"
+                                        android:text="On" />
+
+                                </LinearLayout>
 
                                 <TableLayout
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content">
-                                    <TableRow>
-
-                                        <TextView
-                                            style="@style/TextAppearance.AppCompat.Body1"
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:layout_column="1"
-                                            android:text="Periode Pengiriman"
-                                            android:textSize="14sp" />
-
-                                        <TextView
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:layout_column="2"
-                                            android:paddingHorizontal="10dp"
-                                            android:text=":"
-                                            android:textSize="14sp" />
-
-                                        <TextView
-                                            style="@style/TextAppearance.AppCompat.Body1"
-                                            android:id="@+id/tvDateDeliveryPeriod"
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:layout_column="3"
-                                            android:layout_weight="1"
-                                            android:ellipsize="end"
-                                            android:maxLines="2"
-                                            android:text="dateArray"
-                                            android:textSize="14sp" />
-                                    </TableRow>
-                                    <TableRow>
-
-                                        <TextView
-                                            style="@style/TextAppearance.AppCompat.Body1"
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:layout_column="1"
-                                            android:text="Nama Material"
-                                            android:textSize="14sp" />
-
-                                        <TextView
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:layout_column="2"
-                                            android:paddingHorizontal="10dp"
-                                            android:text=":"
-                                            android:textSize="14sp" />
-
-                                        <TextView
-                                            style="@style/TextAppearance.AppCompat.Body1"
-                                            android:id="@+id/tvMatName"
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:layout_column="3"
-                                            android:layout_weight="1"
-                                            android:ellipsize="end"
-                                            android:maxLines="2"
-                                            android:text="string"
-                                            android:textSize="14sp" />
-                                    </TableRow>
 
                                     <TableRow>
 
@@ -549,7 +573,6 @@
                                             android:text="double"
                                             android:textSize="14sp" />
                                     </TableRow>
-
                                     <TableRow>
 
                                         <TextView
@@ -606,6 +629,239 @@
                                             android:text="double"
                                             android:textSize="14sp" />
                                     </TableRow>
+
+                                </TableLayout>
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="1dp"
+                                    android:background="@color/light_grey" />
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal">
+                                    <TextView
+                                        style="@style/TextAppearance.AppCompat.Title"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:ellipsize="end"
+                                        android:gravity="center_vertical"
+                                        android:text="Rincian Rekalkulasi"
+                                        android:textSize="16sp"
+                                        android:textStyle="bold" />
+
+                                    <androidx.appcompat.widget.SwitchCompat
+                                        android:id="@+id/statusSwitchUseRecalculate"
+                                        android:padding="0dp"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="20dp" />
+                                    <TextView
+                                        style="@style/TextAppearance.AppCompat.Body1"
+                                        android:layout_marginStart="4dp"
+                                        android:id="@+id/tvStatusRecalculate"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginEnd="20dp"
+                                        android:textAlignment="center"
+                                        android:maxLines="2"
+                                        android:text="Off" />
+
+                                </LinearLayout>
+                                <TableLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content">
+                                    <TableRow>
+
+                                        <TextView
+                                            style="@style/TextAppearance.AppCompat.Body1"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_column="1"
+                                            android:text="Total Kubikasi"
+                                            android:textSize="14sp" />
+
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_column="2"
+                                            android:paddingHorizontal="10dp"
+                                            android:text=":"
+                                            android:textSize="14sp" />
+
+                                        <TextView
+                                            style="@style/TextAppearance.AppCompat.Body1"
+                                            android:id="@+id/tvCubicationTotalRev"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_column="3"
+                                            android:layout_weight="1"
+                                            android:ellipsize="end"
+                                            android:maxLines="2"
+                                            android:textSize="14sp" />
+                                    </TableRow>
+                                    <TableRow>
+
+                                        <TextView
+                                            style="@style/TextAppearance.AppCompat.Body1"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_column="1"
+                                            android:text="Sub Total"
+                                            android:textSize="14sp" />
+
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_column="2"
+                                            android:paddingHorizontal="10dp"
+                                            android:text=":"
+                                            android:textSize="14sp" />
+
+                                        <TextView
+                                            style="@style/TextAppearance.AppCompat.Body1"
+                                            android:id="@+id/tvSubTotalRev"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_column="3"
+                                            android:layout_weight="1"
+                                            android:textSize="14sp" />
+                                    </TableRow>
+                                    <TableRow>
+
+                                        <TextView
+                                            style="@style/TextAppearance.AppCompat.Body1"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_column="1"
+                                            android:text="Diskon"
+                                            android:textSize="14sp" />
+
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_column="2"
+                                            android:paddingHorizontal="10dp"
+                                            android:text=":"
+                                            android:textSize="14sp" />
+
+                                        <TextView
+                                            style="@style/TextAppearance.AppCompat.Body1"
+                                            android:id="@+id/tvDiscRev"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_column="3"
+                                            android:layout_weight="1"
+                                            android:textSize="14sp" />
+                                    </TableRow>
+                                    <TableRow>
+
+                                        <TextView
+                                            style="@style/TextAppearance.AppCompat.Body1"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_column="1"
+                                            android:text="PPN 11%"
+                                            android:textSize="14sp" />
+
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_column="2"
+                                            android:paddingHorizontal="10dp"
+                                            android:text=":"
+                                            android:textSize="14sp" />
+
+                                        <TextView
+                                            style="@style/TextAppearance.AppCompat.Body1"
+                                            android:id="@+id/tvPPNRev"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_column="3"
+                                            android:layout_weight="1"
+                                            android:textSize="14sp" />
+                                    </TableRow>
+                                    <TableRow>
+
+                                        <TextView
+                                            style="@style/TextAppearance.AppCompat.Body1"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_column="1"
+                                            android:text="PPh23"
+                                            android:textSize="14sp" />
+
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_column="2"
+                                            android:paddingHorizontal="10dp"
+                                            android:text=":"
+                                            android:textSize="14sp" />
+
+                                        <TextView
+                                            style="@style/TextAppearance.AppCompat.Body1"
+                                            android:id="@+id/tvPPH23Rev"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_column="3"
+                                            android:layout_weight="1"
+                                            android:textSize="14sp" />
+                                    </TableRow>
+                                    <TableRow>
+
+                                        <TextView
+                                            style="@style/TextAppearance.AppCompat.Body1"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_column="1"
+                                            android:text="Total Tagihan"
+                                            android:textSize="14sp" />
+
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_column="2"
+                                            android:paddingHorizontal="10dp"
+                                            android:text=":"
+                                            android:textSize="14sp" />
+
+                                        <TextView
+                                            style="@style/TextAppearance.AppCompat.Body1"
+                                            android:id="@+id/tvTotalDueRev"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_column="3"
+                                            android:layout_weight="1"
+                                            android:textSize="14sp" />
+                                    </TableRow>
+                                    <TableRow>
+
+                                        <TextView
+                                            style="@style/TextAppearance.AppCompat.Body1"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_column="1"
+                                            android:text="Selisih Total Tagihan"
+                                            android:textSize="14sp" />
+
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_column="2"
+                                            android:paddingHorizontal="10dp"
+                                            android:text=":"
+                                            android:textSize="14sp" />
+
+                                        <TextView
+                                            style="@style/TextAppearance.AppCompat.Body1"
+                                            android:id="@+id/tvTotalDueMinus"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_column="3"
+                                            android:layout_weight="1"
+                                            android:textSize="14sp" />
+                                    </TableRow>
+
                                 </TableLayout>
 
                                 <LinearLayout
@@ -701,17 +957,6 @@
                                             android:text=":"
                                             android:textSize="14sp" />
 
-                                        <!--<TextView
-                                            style="@style/TextAppearance.AppCompat.Body1"
-                                            android:id="@+id/tvDateAndTimeApproved"
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:layout_column="3"
-                                            android:layout_weight="1"
-                                            android:ellipsize="end"
-                                            android:maxLines="2"
-                                            android:text="dateNTime"
-                                            android:textSize="14sp" />-->
 
                                         <LinearLayout
 
@@ -754,41 +999,6 @@
                                     android:text="Rincian Pelunasan"
                                     android:textSize="16sp"
                                     android:textStyle="bold" />
-                                <!--<TextView
-                                    android:textSize="14sp"
-                                    style="@style/TextAppearance.AppCompat.Body1"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:text="Status Pembayaran" />-->
-
-                                <!--
-                                                            <RadioGroup
-                                                                android:id="@+id/radio_group_status"
-                                                                android:layout_width="match_parent"
-                                                                android:layout_height="wrap_content"
-                                                                android:background="@drawable/outline_box"
-                                                                android:orientation="horizontal"
-                                                                android:padding="5dp">
-                                                                <RadioButton
-                                                                    android:id="@+id/radioPaid"
-                                                                    android:layout_width="match_parent"
-                                                                    android:layout_height="wrap_content"
-                                                                    android:layout_weight="1"
-
-                                                                    android:text="Lunas"
-                                                                    style="@style/Theme.TravelPermitBAS"
-                                                                    android:textSize="16sp" />
-                                                                <RadioButton
-                                                                    android:id="@+id/radioUnpaid"
-                                                                    android:layout_width="match_parent"
-                                                                    android:layout_height="wrap_content"
-                                                                    android:layout_weight="1"
-                                                                    android:checked="true"
-                                                                    android:text="Belum Lunas"
-                                                                    style="@style/Theme.TravelPermitBAS"
-                                                                    android:textSize="16sp" />
-                                                            </RadioGroup>
-                                -->
                                 <LinearLayout
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
@@ -920,67 +1130,6 @@
                                     android:layout_height="wrap_content">
 
 
-                                    <!--<TableRow>
-
-                                        <TextView
-                                            style="@style/TextAppearance.AppCompat.Body1"
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:layout_column="1"
-                                            android:text="Disahkan Oleh"
-                                            android:textSize="14sp" />
-
-                                        <TextView
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:layout_column="2"
-                                            android:paddingHorizontal="10dp"
-                                            android:text=":"
-                                            android:textSize="14sp" />
-
-                                        <TextView
-                                            style="@style/TextAppearance.AppCompat.Body1"
-                                            android:id="@+id/tvApprovedBy"
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:layout_column="3"
-                                            android:layout_weight="1"
-                                            android:ellipsize="end"
-                                            android:maxLines="2"
-                                            android:text="name"
-                                            android:textSize="14sp" />
-                                    </TableRow>
-
-                                    <TableRow>
-
-                                        <TextView
-                                            style="@style/TextAppearance.AppCompat.Body1"
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:layout_column="1"
-                                            android:text="Tgl-Wkt Disahkan"
-                                            android:textSize="14sp" />
-
-                                        <TextView
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:layout_column="2"
-                                            android:paddingHorizontal="10dp"
-                                            android:text=":"
-                                            android:textSize="14sp" />
-
-                                        <TextView
-                                            style="@style/TextAppearance.AppCompat.Body1"
-                                            android:id="@+id/tvDateAndTimeApproved"
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:layout_column="3"
-                                            android:layout_weight="1"
-                                            android:ellipsize="end"
-                                            android:maxLines="2"
-                                            android:text="dateNTime"
-                                            android:textSize="14sp" />
-                                    </TableRow>-->
                                     <TableRow>
 
                                         <TextView
@@ -999,17 +1148,6 @@
                                             android:text=":"
                                             android:textSize="14sp" />
 
-                                        <!--<TextView
-                                            style="@style/TextAppearance.AppCompat.Body1"
-                                            android:id="@+id/tvDateAndTimeApproved"
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:layout_column="3"
-                                            android:layout_weight="1"
-                                            android:ellipsize="end"
-                                            android:maxLines="2"
-                                            android:text="dateNTime"
-                                            android:textSize="14sp" />-->
 
                                         <LinearLayout
                                             android:id="@+id/ll_wrap_gi_status"
@@ -1044,122 +1182,6 @@
                                 </TableLayout>
 
 
-
-
-
-                                <!--
-                                                            <com.google.android.material.textfield.TextInputLayout
-                                                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                                                                android:layout_width="match_parent"
-                                                                android:layout_height="wrap_content"
-                                                                android:layout_weight="1"
-                                                                app:startIconDrawable="@drawable/ic_outline_receipt">
-
-                                                                <com.google.android.material.textfield.TextInputEditText
-                                                                    android:id="@+id/edtCoID"
-                                                                    android:layout_width="match_parent"
-                                                                    android:layout_height="wrap_content"
-                                                                    android:hint="Nomor ID CO" />
-                                                            </com.google.android.material.textfield.TextInputLayout>
-                                -->
-
-                                <!--<LinearLayout
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:divider="@drawable/divider_transparent"
-                                    android:gravity="top"
-                                    android:orientation="horizontal"
-                                    android:showDividers="middle"
-                                    android:visibility="visible">
-
-                                    <com.google.android.material.textfield.TextInputLayout
-                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
-                                        android:layout_weight="1"
-                                        app:startIconDrawable="@drawable/ic_outline_person">
-
-                                        <com.google.android.material.textfield.TextInputEditText
-                                            android:id="@+id/edtCustName"
-                                            android:layout_width="match_parent"
-                                            android:layout_height="wrap_content"
-                                            android:hint="Customer" />
-                                    </com.google.android.material.textfield.TextInputLayout>
-
-                                </LinearLayout>
-
-                                <LinearLayout
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:orientation="vertical"
-                                    android:divider="@drawable/divider_transparent"
-                                    android:showDividers="middle"
-                                    android:visibility="visible">
-                                    <LinearLayout
-                                        android:id="@+id/ll_wrap_filter_by_rouid"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
-                                        android:divider="@drawable/divider_transparent"
-                                        android:gravity="top"
-                                        android:orientation="horizontal"
-                                        android:showDividers="middle"
-                                        android:visibility="visible">
-
-                                        <com.google.android.material.textfield.TextInputLayout
-                                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                                            android:layout_width="match_parent"
-                                            android:layout_height="match_parent"
-                                            android:layout_weight="1"
-                                            app:startIconDrawable="@drawable/ic_outline_receipt">
-
-                                            <com.google.android.material.textfield.TextInputEditText
-                                                android:id="@+id/edtROUID"
-                                                android:layout_width="match_parent"
-                                                android:layout_height="wrap_content"
-                                                android:hint="ID Received Order" />
-                                        </com.google.android.material.textfield.TextInputLayout>
-
-                                        <ImageButton
-                                            android:id="@+id/btnResetRouid"
-                                            android:layout_width="55dp"
-                                            android:layout_height="match_parent"
-                                            android:layout_marginTop="4dp"
-                                            android:layout_gravity="center_vertical"
-                                            android:layout_marginBottom="1dp"
-                                            android:background="@drawable/outline_box"
-                                            android:scaleType="centerInside"
-                                            android:src="@drawable/ic_outline_restore"
-                                            android:visibility="gone" />
-                                    </LinearLayout>
-                                    <LinearLayout
-                                        android:id="@+id/ll_wrap_filter_by_pouid"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
-                                        android:divider="@drawable/divider_transparent"
-                                        android:gravity="center_vertical"
-                                        android:orientation="horizontal"
-                                        android:showDividers="middle"
-                                        android:visibility="visible">
-
-                                        <com.google.android.material.textfield.TextInputLayout
-                                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                                            android:layout_width="match_parent"
-                                            android:layout_height="wrap_content"
-                                            android:layout_weight="1"
-                                            app:startIconDrawable="@drawable/ic_outline_receipt">
-
-                                            <com.google.android.material.textfield.TextInputEditText
-                                                android:id="@+id/edtPOUID"
-                                                android:layout_width="match_parent"
-                                                android:layout_height="wrap_content"
-                                                android:hint="ID Nomor PO Customer"
-                                                android:inputType="textCapCharacters"
-                                                android:maxLines="1" />
-                                        </com.google.android.material.textfield.TextInputLayout>
-
-                                    </LinearLayout>
-                                </LinearLayout>-->
-
                                 <LinearLayout
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
@@ -1175,59 +1197,6 @@
                                     android:layout_height="wrap_content"
                                     android:divider="@drawable/divider_transparent"
                                     android:showDividers="middle"/>
-                                <!--<LinearLayout
-                                    android:id="@+id/ll_wrap_filter_by_date_range"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:divider="@drawable/divider_transparent"
-                                    android:orientation="horizontal"
-                                    android:showDividers="middle"
-                                    android:tag="firstView">
-
-                                    <com.google.android.material.textfield.TextInputLayout
-                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
-                                        android:layout_weight="1"
-                                        app:startIconDrawable="@drawable/ic_outline_today">
-
-                                        <com.google.android.material.textfield.TextInputEditText
-                                            android:id="@+id/edt_gi_date_filter_start"
-                                            android:layout_width="match_parent"
-                                            android:layout_height="wrap_content"
-                                            android:focusable="false"
-                                            android:hint="Mulai"
-                                            android:inputType="none" />
-                                    </com.google.android.material.textfield.TextInputLayout>
-
-                                    <com.google.android.material.textfield.TextInputLayout
-                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
-                                        android:layout_weight="1"
-                                        app:startIconDrawable="@drawable/ic_outline_today">
-
-                                        <com.google.android.material.textfield.TextInputEditText
-                                            android:id="@+id/edt_gi_date_filter_end"
-                                            android:layout_width="match_parent"
-                                            android:layout_height="wrap_content"
-                                            android:focusable="false"
-                                            android:hint="Akhir"
-                                            android:inputType="none" />
-                                    </com.google.android.material.textfield.TextInputLayout>
-
-                                    <ImageButton
-                                        android:id="@+id/btn_gi_search_date_reset"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="match_parent"
-                                        android:layout_gravity="center_vertical"
-                                        android:layout_marginBottom="1dp"
-                                        android:layout_weight="1.3"
-                                        android:background="@drawable/outline_box"
-                                        android:scaleType="centerInside"
-                                        android:src="@drawable/ic_outline_restore"
-                                        android:visibility="gone" />
-                                </LinearLayout>-->
 
                                 <Button
                                     android:visibility="gone"

@@ -85,7 +85,7 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
     DialogInterface dialogInterface = new DialogInterface();
     List<String> vhlUIDList, matNameList, matTypeNameList, receiveOrderNumberList;
 
-    String giUIDVal, giCreatedBy, giVerifiedBy, giCashedOutTo, giRecappedTo;
+    String giUIDVal, giCreatedBy, giVerifiedBy, giCashedOutTo, giRecappedTo, giInvoicedTo;
 
     Boolean giStatus, giRecapped, giInvoiced, giCashedOut;
 
@@ -200,6 +200,7 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
                         giRecapped = goodIssueModel.getGiRecapped();
                         giRecappedTo = goodIssueModel.getGiRecappedTo();
                         giCashedOutTo = goodIssueModel.getGiCashedOutTo();
+                        giInvoicedTo = goodIssueModel.getGiInvoicedTo();
 
 
                         db.collection("ReceivedOrderData").whereEqualTo("roDocumentID", roDocumentID).get()
@@ -220,6 +221,9 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
                                         }
                                         if (!coAccBy.isEmpty()){
                                             fabSaveFormIsEmpty();
+                                        }
+                                        if (giUIDVal.contains("CL")){
+                                            fabSaveBtnFormIsNotEmpty();
                                         }
                                     }
                                 });
@@ -487,6 +491,7 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
     }
 
     private void fabSaveFormIsEmpty(){
+
         fabSaveGIData.setOnClickListener(view -> {
             MaterialDialog md = new MaterialDialog.Builder(UpdateGoodIssueActivity.this)
                     .setAnimation(R.raw.lottie_attention)
@@ -577,7 +582,7 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
                         Integer.parseInt(radioOperation+giHeightCorrection.replaceAll("[^0-9]", "")),
                         Integer.parseInt(tvHeightCorrection.getText().toString().replaceAll("[^0-9]", "")),
                         Double.parseDouble(giVhlCubication.replaceAll("[^0-9.]", "")),
-                        giStatus, giRecapped, giInvoiced, giCashedOut, giCashedOutTo, giRecappedTo);
+                        giStatus, giRecapped, giInvoiced, giInvoicedTo, giCashedOut, giCashedOutTo, giRecappedTo);
             }
 
         });
@@ -587,7 +592,7 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
                             String vhlUID, String giDateCreated, String giTimeCreted,
                             int vhlLength, int vhlWidth, int vhlHeight,
                             int vhlHeightCorrection, int vhlHeightAfterCorrection,
-                            Double giVhlCubication, Boolean giStatus, Boolean giRecapped, Boolean giInvoiced, Boolean giCashedOut, String giCashedOutTo, String giRecappedTo) {
+                            Double giVhlCubication, Boolean giStatus, Boolean giRecapped, Boolean giInvoiced, String giInvoicedTo, Boolean giCashedOut, String giCashedOutTo, String giRecappedTo) {
         VehicleModel vehicleModel =
                 new VehicleModel(vhlUID, true, vhlLength, vhlWidth, vhlHeight,
                         "", "", "", "");
@@ -608,7 +613,7 @@ public class UpdateGoodIssueActivity extends AppCompatActivity {
 
         GoodIssueModel goodIssueModel = new GoodIssueModel(giUID, giCreatedBy, giVerifiedBy, roDocumentID,
                 matName, matType, giNoteNumber, vhlUID, giDateCreated, giTimeCreted, vhlLength,
-                vhlWidth, vhlHeight, vhlHeightCorrection, vhlHeightAfterCorrection, giVhlCubication, giStatus, giRecapped, giInvoiced, giCashedOut, giCashedOutTo, giRecappedTo);
+                vhlWidth, vhlHeight, vhlHeightCorrection, vhlHeightAfterCorrection, giVhlCubication, giStatus, giRecapped, giInvoiced, giInvoicedTo, giCashedOut, giCashedOutTo, giRecappedTo);
         DatabaseReference refGI = FirebaseDatabase.getInstance().getReference("GoodIssueData");
         refGI.child(giUID).setValue(goodIssueModel).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {

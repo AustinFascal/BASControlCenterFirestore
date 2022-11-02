@@ -853,7 +853,8 @@ public class DialogInterface {
                                      String invUID, String invCreatedBy,
                                      String invDateNTimeCreated, String invDueDateNTime, String invVerifiedBy, String invTransferReference,
                                      String invDateNTimeVerified, String invDateDeliveryPeriod,
-                                     String custDocumentID, String bankDocumentID, String roDocumentID, String invDateHandover, String invHandOverBy) {
+                                     String custDocumentID, String bankDocumentID, String roDocumentID, String invDateHandover, String invHandOverBy,
+                                     String invTotalVol,String invSubTotal,String invDiscount,String invTaxPPN,String invTaxPPH,String invTotalDue) {
         MaterialDialog materialDialog = new MaterialDialog.Builder((Activity) context)
                 .setTitle("Buat Invoice")
                 .setAnimation(R.raw.lottie_generate_bill)
@@ -863,7 +864,8 @@ public class DialogInterface {
                     generatingInvoice(context, db,
                             goodIssueModelArrayList,
                             invUID, invCreatedBy, invDateNTimeCreated, invDueDateNTime, invVerifiedBy, invTransferReference,
-                            invDateNTimeVerified, invDateDeliveryPeriod, custDocumentID, bankDocumentID, roDocumentID, invDateHandover, invHandOverBy);
+                            invDateNTimeVerified, invDateDeliveryPeriod, custDocumentID, bankDocumentID, roDocumentID, invDateHandover, invHandOverBy,
+                            invTotalVol, invSubTotal, invDiscount, invTaxPPN, invTaxPPH, invTotalDue);
                     dialogInterface.dismiss();
                 })
                 .setNegativeButton("TIDAK", R.drawable.ic_outline_close, (dialogInterface, which) -> dialogInterface.dismiss())
@@ -880,7 +882,8 @@ public class DialogInterface {
                                   String invUID, String invCreatedBy,
                                   String invDateNTimeCreated, String invDueDateNTime, String invVerifiedBy, String invTransferReference,
                                   String invDateNTimeVerified, String invDateDeliveryPeriod,
-                                  String custDocumentID, String bankDocumentID, String roDocumentID, String invDateHandover,  String invHandOverBy) {
+                                  String custDocumentID, String bankDocumentID, String roDocumentID, String invDateHandover,  String invHandOverBy,
+                                  String invTotalVol,String invSubTotal,String invDiscount,String invTaxPPN,String invTaxPPH,String invTotalDue) {
 
         GIManagementAdapter giManagementAdapter;
 
@@ -910,7 +913,8 @@ public class DialogInterface {
 
                 InvoiceModel invoiceModel = new InvoiceModel(
                         invDocumentID, invUID, invCreatedBy, invDateNTimeCreated, invDueDateNTime, invVerifiedBy, invTransferReference,
-                        invDateNTimeVerified, invDateDeliveryPeriod, custDocumentID, bankDocumentID, roDocumentID, invDateHandover, invHandOverBy);
+                        invDateNTimeVerified, invDateDeliveryPeriod, custDocumentID, bankDocumentID, roDocumentID, invDateHandover, invHandOverBy, false,
+                        invTotalVol, invSubTotal, invDiscount, invTaxPPN, invTaxPPH, invTotalDue);
 
                 ref.set(invoiceModel);
 
