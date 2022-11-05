@@ -122,37 +122,34 @@ public class RecapGoodIssueManagementAdapter extends RecyclerView.Adapter<RecapG
             DecimalFormat df = new DecimalFormat("0.00");
 
 
-           /* DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
 
             Query query = databaseReference.child("GoodIssueData");
             query.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-
                     if (snapshot.exists()){
                         for (DataSnapshot item : snapshot.getChildren()) {
                             if (Objects.equals(item.child("giRecappedTo").getValue(), rcpDocumentID)) {
                                 GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
                                 goodIssueModelArrayList.add(goodIssueModel);
                             }
-
                         }
-                        for (int i = 0; i < goodIssueModelArrayList.size(); i++) {
-                            totalUnit += goodIssueModelArrayList.get(i).getGiVhlCubication();
-                        }
-
-                        tvCubication.setText(Html.fromHtml(df.format(totalUnit) +" m\u00B3"));
                     }
+                    for (int i = 0; i < goodIssueModelArrayList.size(); i++) {
+                        totalUnit += goodIssueModelArrayList.get(i).getGiVhlCubication();
+                    }
+                    tvCubication.setText(Html.fromHtml(df.format(totalUnit) +" m\u00B3"));
                 }
+
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
 
                 }
-            });*/
+            });
 
-
-            tvCubication.setText(Html.fromHtml(df.format(recapGIModel.getRoCubication()) +" m\u00B3"));
+            //tvCubication.setText(Html.fromHtml(df.format(recapGIModel.getRoCubication()) +" m\u00B3"));
 
 
 

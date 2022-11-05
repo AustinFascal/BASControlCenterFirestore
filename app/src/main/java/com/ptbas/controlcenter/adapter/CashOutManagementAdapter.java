@@ -1,15 +1,11 @@
 package com.ptbas.controlcenter.adapter;
 
 import android.Manifest;
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.os.Handler;
-import android.os.UserManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,33 +21,32 @@ import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.transition.AutoTransition;
-import androidx.transition.TransitionManager;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.ptbas.controlcenter.helper.DialogInterface;
 import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.helper.Helper;
 import com.ptbas.controlcenter.model.CashOutModel;
-import com.ptbas.controlcenter.model.CustomerModel;
 import com.ptbas.controlcenter.model.GoodIssueModel;
+import com.ptbas.controlcenter.model.ProductItems;
 import com.ptbas.controlcenter.model.ReceivedOrderModel;
 import com.ptbas.controlcenter.model.SupplierModel;
 import com.ptbas.controlcenter.update.UpdateCashOutActivity;
-import com.ptbas.controlcenter.update.UpdateGoodIssueActivity;
 
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
-
-import kotlinx.android.parcel.IgnoredOnParcel;
 
 public class CashOutManagementAdapter extends RecyclerView.Adapter<CashOutManagementAdapter.ItemViewHolder> {
 
@@ -95,9 +90,16 @@ public class CashOutManagementAdapter extends RecyclerView.Adapter<CashOutManage
 
         DecimalFormat df = new DecimalFormat("0.00");
 
+
+
         Double coTotalTemp;
         boolean coStatusApproval, coStatusPayment;
         String coAccBy, coSupplierName, coDateCreated, coUID, coDocumentID, coPoUID, coSupplierNameTemp, coTotal;
+
+        double matBuyPrice;
+        List<ProductItems> productItemsList;
+        float totalUnit = 0;
+        ArrayList<GoodIssueModel> goodIssueModelArrayList = new ArrayList<>();
 
         public ItemViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -157,6 +159,8 @@ public class CashOutManagementAdapter extends RecyclerView.Adapter<CashOutManage
             coDateCreated = cashOutModel.getCoDateAndTimeCreated();
             coUID = cashOutModel.getCoUID();
 
+
+
             db.collection("ReceivedOrderData").whereEqualTo("roDocumentID", cashOutModel.getRoDocumentID()).get()
                     .addOnSuccessListener(queryDocumentSnapshots -> {
                         for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots){
@@ -164,6 +168,53 @@ public class CashOutManagementAdapter extends RecyclerView.Adapter<CashOutManage
                             //receivedOrderModel.setRoDocumentID(documentSnapshot.getId());
                             coPoUID = receivedOrderModel.getRoPoCustNumber();
                             tvPoNumber.setText("PO: "+coPoUID);
+
+
+                            HashMap<String, List<ProductItems>> map = receivedOrderModel.getRoOrderedItems();
+                            for (HashMap.Entry<String, List<ProductItems>> e : map.entrySet()) {
+                                productItemsList = e.getValue();
+                                for (int i = 0; i<productItemsList.size();i++){
+                                    if (productItemsList.get(0).getMatName().equals("JASA ANGKUT")){
+                                        //transportServiceNameVal = productItemsList.get(0).getMatName();
+                                        //transportServiceSellPrice = productItemsList.get(0).getMatBuyPrice();
+                                    } else {
+                                        //matNameVal = productItemsList.get(i).getMatName();
+                                        //matCubication = productItemsList.get(i).getMatQuantity();
+                                        matBuyPrice = productItemsList.get(i).getMatBuyPrice();
+                                    }
+                                }
+                            }
+
+                            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+
+                            Query query = databaseReference.child("GoodIssueData");
+                            query.addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    if (snapshot.exists()){
+                                        for (DataSnapshot item : snapshot.getChildren()) {
+                                            if (Objects.equals(item.child("giCashedOutTo").getValue(), cashOutModel.getCoDocumentID())) {
+                                                GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
+                                                goodIssueModelArrayList.add(goodIssueModel);
+                                            }
+                                        }
+                                    }
+                                    for (int i = 0; i < goodIssueModelArrayList.size(); i++) {
+                                        totalUnit += goodIssueModelArrayList.get(i).getGiVhlCubication();
+                                    }
+
+                                    //Toast.makeText(context, "buy "+matBuyPrice+" - unit"+totalUnit, Toast.LENGTH_LONG).show();
+                                    double totalIDR = matBuyPrice *totalUnit;
+                                    coTotal = "IDR " + currencyFormat(df.format(totalIDR));
+                                    tvTotalDue.setText(coTotal);
+                                }
+
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+
+                                }
+                            });
                         }
                         tvSupplierName.setText(coSupplierName);
                     });
@@ -172,14 +223,20 @@ public class CashOutManagementAdapter extends RecyclerView.Adapter<CashOutManage
             coDocumentID = cashOutModel.getCoDocumentID();
             //coPoUID = "PO: "+;
             coSupplierNameTemp = cashOutModel.getCoSupplier();
-            coTotalTemp = cashOutModel.getCoTotal();
-            coTotal = "IDR " + currencyFormat(String.valueOf(coTotalTemp));
+            ///coTotalTemp = cashOutModel.getCoTotal();
+
+
+
+
+            //coTotal = "IDR " + currencyFormat(String.valueOf(coTotalTemp));
             coStatusApproval = cashOutModel.getCoStatusApproval();
             coStatusPayment = cashOutModel.getCoStatusPayment();
             coAccBy = cashOutModel.getCoAccBy();
 
             tvDateCreated.setText(coDateCreated);
             tvCoUID.setText("CO: "+ coUID);
+
+           // tvTotalDue.setText(coTotal);
 
             //tvPoNumber.setText(coPoUID);
             db.collection("SupplierData").whereEqualTo("supplierID", coSupplierNameTemp).get()
@@ -191,7 +248,9 @@ public class CashOutManagementAdapter extends RecyclerView.Adapter<CashOutManage
                         }
                         tvSupplierName.setText(coSupplierName);
                     });
-            tvTotalDue.setText(coTotal);
+
+
+
             if (!coAccBy.isEmpty()){
                 llWrapItemStatus.setVisibility(View.VISIBLE);
                 llStatusApproved.setVisibility(View.VISIBLE);
