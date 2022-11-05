@@ -13,6 +13,7 @@ import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -963,6 +964,8 @@ public class AddReceivedOrder extends AppCompatActivity {
 
         spinnerMaterialName.setText("JASA ANGKUT");
 
+        edtBuyPrice.setVisibility(View.GONE);
+        edtPoTotalBuyPrice.setVisibility(View.GONE);
 
         edtPoQuantity.addTextChangedListener(new NumberTextWatcher(edtPoQuantity));
         edtBuyPrice.addTextChangedListener(new NumberTextWatcher(edtBuyPrice));
@@ -984,6 +987,9 @@ public class AddReceivedOrder extends AppCompatActivity {
                     final Handler handler = new Handler();
                     Runnable runnable = new Runnable() {
                         public void run() {
+                            if (!edtSalePrice.getText().toString().isEmpty()){
+                                edtBuyPrice.setText(edtSalePrice.getText().toString());
+                            }
                             if(!edtPoQuantity.getText().toString().equals("")){
                                 double quantity = Double.parseDouble(NumberTextWatcher.trimCommaOfString(edtPoQuantity.getText().toString()));
                                 if (edtBuyPrice.getText().toString().equals("")){
@@ -1021,7 +1027,7 @@ public class AddReceivedOrder extends AppCompatActivity {
 
                             edtPoTotalBuyPrice.setText(currencyFormat(String.format("%.2f", totalBuyPrice)));
                             edtPoTotalSellPrice.setText(currencyFormat(String.format("%.2f", totalSellPrice)));
-                            handler.postDelayed(this, 500);
+                            handler.postDelayed(this, 100);
 
                         }
                     };

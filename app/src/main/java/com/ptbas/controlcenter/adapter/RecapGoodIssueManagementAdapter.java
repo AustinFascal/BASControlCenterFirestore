@@ -91,6 +91,8 @@ public class RecapGoodIssueManagementAdapter extends RecyclerView.Adapter<RecapG
         CheckBox cbSelectItem;
         String roPoUID, roCustName;
 
+        Helper helper;
+
         List<ProductItems> productItemsList;
         double matSellPrice, matQuantity, transportServiceSellPrice;
         String matNameVal, matDetail;
@@ -120,7 +122,7 @@ public class RecapGoodIssueManagementAdapter extends RecyclerView.Adapter<RecapG
             DecimalFormat df = new DecimalFormat("0.00");
 
 
-            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+           /* DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
 
             Query query = databaseReference.child("GoodIssueData");
             query.addValueEventListener(new ValueEventListener() {
@@ -147,7 +149,10 @@ public class RecapGoodIssueManagementAdapter extends RecyclerView.Adapter<RecapG
                 public void onCancelled(@NonNull DatabaseError error) {
 
                 }
-            });
+            });*/
+
+
+            tvCubication.setText(Html.fromHtml(df.format(recapGIModel.getRoCubication()) +" m\u00B3"));
 
 
 
@@ -228,6 +233,7 @@ public class RecapGoodIssueManagementAdapter extends RecyclerView.Adapter<RecapG
                 public void onClick(View view) {
                     recapGIModel.setChecked(!recapGIModel.isChecked());
                     cbSelectItem.setChecked(recapGIModel.isChecked());
+                    //Toast.makeText(context, recapGIModel.getRcpGiDocumentID(), Toast.LENGTH_SHORT).show();
                 }
             });
 
@@ -239,6 +245,20 @@ public class RecapGoodIssueManagementAdapter extends RecyclerView.Adapter<RecapG
                 }
             });
 
+            /*if (helper.ACTIVITY_NAME == "UPDATE"){
+                btnDelete.setVisibility(View.GONE);
+            }*/
+
+            //Boolean recapStatus = recapGIModel.get
+            /*if (giStatus){
+                llWrapGiStatus.setVisibility(View.VISIBLE);
+                llStatusApproved.setVisibility(View.VISIBLE);
+                btnApproveGi.setVisibility(View.GONE);
+            } else {
+                llWrapGiStatus.setVisibility(View.GONE);
+                llStatusApproved.setVisibility(View.GONE);
+                btnApproveGi.setVisibility(View.VISIBLE);
+            }*/
 
 
         }

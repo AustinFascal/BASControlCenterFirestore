@@ -10,6 +10,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.Html;
+import android.text.InputFilter;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -92,7 +93,7 @@ public class AddGoodIssueActivity extends AppCompatActivity {
 
     FloatingActionButton fabSaveGIData;
 
-    private static final String ALLOWED_CHARACTERS ="0123456789QWERTYUIOPASDFGHJKLZXCVBNM";
+    //private static final String ALLOWED_CHARACTERS ="0123456789QWERTYUIOPASDFGHJKLZXCVBNM";
 
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
 
@@ -166,6 +167,10 @@ public class AddGoodIssueActivity extends AppCompatActivity {
         edtVhlVol = findViewById(R.id.edtVhlVol);
         edtVhlVolDefault = findViewById(R.id.edtVhlVolDefault);
 
+
+        spinnerCustUID.setFilters(new InputFilter[] {new InputFilter.AllCaps()});
+        spinnerVhlUID.setFilters(new InputFilter[] {new InputFilter.AllCaps()});
+        edtGiNoteNumber.setFilters(new InputFilter[] {new InputFilter.AllCaps()});
 
 
         //tvVhlVol2 = findViewById(R.id.tvVhlVol2);

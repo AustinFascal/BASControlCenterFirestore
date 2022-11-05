@@ -165,7 +165,7 @@
                                     </com.google.android.material.textfield.TextInputLayout>
 
                                 </LinearLayout>
-                                <LinearLayout
+                                <!--<LinearLayout
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:divider="@drawable/divider_transparent"
@@ -200,7 +200,7 @@
                                         android:src="@drawable/ic_outline_restore"
                                         android:visibility="gone"
                                         app:tint="@color/white" />
-                                </LinearLayout>
+                                </LinearLayout>-->
 
                             </LinearLayout>
                             <LinearLayout
@@ -419,7 +419,7 @@
                 android:paddingTop="10dp"
                 android:paddingBottom="80dp"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:listitem="@layout/item_layout_good_issue" />
+                tools:listitem="@layout/item_layout_recap_gi_desktop" />
         </androidx.core.widget.NestedScrollView>
 
         <LinearLayout

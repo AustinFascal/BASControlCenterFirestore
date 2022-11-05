@@ -180,6 +180,8 @@ public class AddInvoiceActivity extends AppCompatActivity {
     String totalUnitFinalFinal, invSubTotalFinal, invDiscountFinal, invTaxPPNFinal, invTaxPPHFinal, invTotalDueFinal;
 
 
+    List<String> receiveOrderNumberList;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -430,6 +432,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
         arrayListRoUID = new ArrayList<>();
         arrayListPoUID = new ArrayList<>();
         arrayListCoUID = new ArrayList<>();
+        receiveOrderNumberList = new ArrayList<>();
 
 
         db.collection("CustomerData").whereEqualTo("custStatus", true)
@@ -473,15 +476,23 @@ public class AddInvoiceActivity extends AppCompatActivity {
                     }
                 });*/
 
-        spinnerCustName.setOnItemClickListener((adapterView, view, position, l) -> {
-            String selectedSpinnerCustomerName = (String) adapterView.getItemAtPosition(position);
-            customerData = selectedSpinnerCustomerName;
-            spinnerCustName.setError(null);
-            String[] custID =  selectedSpinnerCustomerName.split("-");
-            customerID = custID[0];
+        spinnerCustName.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
-            btnResetCustomer.setVisibility(View.VISIBLE);
-            //clearRoPoData();
+                String selectedCustomer = (String) adapterView.getItemAtPosition(i);
+                String[] custNameSplit = selectedCustomer.split(" - ");
+                String custNameSplit1 = custNameSplit[1];
+
+                //String selectedSpinnerCustomerName = (String) adapterView.getItemAtPosition(position);
+                customerData = selectedCustomer;
+                spinnerCustName.setError(null);
+
+                //String[] custID = selectedCustomer.split("-");
+                customerID = custNameSplit[0];
+
+                btnResetCustomer.setVisibility(View.VISIBLE);
+                //clearRoPoData();
 
 
             /*custDocumentID = arrayListCustDocumentID.get(adapterView.getSelectedItemPosition());
@@ -514,54 +525,71 @@ public class AddInvoiceActivity extends AppCompatActivity {
                     });*/
 
 
-
-
-
-            db.collection("ReceivedOrderData").whereEqualTo("roStatus", true)
-                    .addSnapshotListener((value, error) -> {
-                        if (!Objects.requireNonNull(value).isEmpty()) {
-                            for (DocumentSnapshot d : value.getDocuments()) {
-                                //custDocumentID = d.get("custDocumentID").toString();
-                                custDocumentID = Objects.requireNonNull(d.get("custDocumentID")).toString();
-                                db.collection("CustomerData").whereEqualTo("custDocumentID", custDocumentID)
-                                        .addSnapshotListener((value2, error2) -> {
-                                            arrayListRoUID.clear();
-                                            if (!Objects.requireNonNull(value2).isEmpty()) {
-                                                for (DocumentSnapshot e : value2.getDocuments()) {
-                                                    custNameVal = Objects.requireNonNull(e.get("custName")).toString();
-                                                    custAddressVal = Objects.requireNonNull(e.get("custAddress")).toString();
-                                                    //custIDVal = Objects.requireNonNull(e.get("custName")).toString();
-                                                    db.collection("ReceivedOrderData").whereEqualTo("roStatus", true)
-                                                            .addSnapshotListener((value3, error3) -> {
-                                                                if (!Objects.requireNonNull(value3).isEmpty()) {
-                                                                    String spinnerPurchaseOrders = Objects.requireNonNull(d.get("roPoCustNumber")).toString();
-                                                                    if (selectedSpinnerCustomerName.contains(custNameVal)) {
-                                                                        arrayListRoUID.add(spinnerPurchaseOrders);
+                /*db.collection("ReceivedOrderData").whereEqualTo("roStatus", true)
+                        .addSnapshotListener((value, error) -> {
+                            if (!Objects.requireNonNull(value).isEmpty()) {
+                                for (DocumentSnapshot d : value.getDocuments()) {
+                                    //custDocumentID = d.get("custDocumentID").toString();
+                                    custDocumentID = Objects.requireNonNull(d.get("custDocumentID")).toString();
+                                    db.collection("CustomerData").whereEqualTo("custDocumentID", custDocumentID)
+                                            .addSnapshotListener((value2, error2) -> {
+                                                arrayListRoUID.clear();
+                                                if (!Objects.requireNonNull(value2).isEmpty()) {
+                                                    for (DocumentSnapshot e : value2.getDocuments()) {
+                                                        custNameVal = Objects.requireNonNull(e.get("custName")).toString();
+                                                        custAddressVal = Objects.requireNonNull(e.get("custAddress")).toString();
+                                                        //custIDVal = Objects.requireNonNull(e.get("custName")).toString();
+                                                        db.collection("ReceivedOrderData").whereEqualTo("roStatus", true)
+                                                                .addSnapshotListener((value3, error3) -> {
+                                                                    if (!Objects.requireNonNull(value3).isEmpty()) {
+                                                                        String spinnerPurchaseOrders = Objects.requireNonNull(d.get("roPoCustNumber")).toString();
+                                                                        if (selectedSpinnerCustomerName.contains(custNameVal)) {
+                                                                            arrayListRoUID.add(spinnerPurchaseOrders);
+                                                                        }
+                                                                        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddInvoiceActivity.this, R.layout.style_spinner, arrayListRoUID);
+                                                                        arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
+                                                                        spinnerRoUID.setAdapter(arrayAdapter);
                                                                     }
-                                                                    ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddInvoiceActivity.this, R.layout.style_spinner, arrayListRoUID);
-                                                                    arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
-                                                                    spinnerRoUID.setAdapter(arrayAdapter);
-                                                                }
-                                                            });
+                                                                });
+                                                    }
+                                                } else {
+                                                    if (!isFinishing()) {
+                                                        dialogInterface.roNotExistsDialog(AddInvoiceActivity.this);
+                                                    }
                                                 }
-                                            } else {
-                                                if (!isFinishing()) {
-                                                    dialogInterface.roNotExistsDialog(AddInvoiceActivity.this);
-                                                }
-                                            }
-                                        });
+                                            });
+                                }
                             }
-                        }
-                    });
+                        });*/
 
 
+                db.collection("CustomerData").whereEqualTo("custName", custNameSplit1)
+                        .addSnapshotListener((value2, error2) -> {
+                            receiveOrderNumberList.clear();
+                            if (!Objects.requireNonNull(value2).isEmpty()) {
+                                for (DocumentSnapshot d : value2.getDocuments()) {
+                                    custDocumentID = Objects.requireNonNull(d.get("custDocumentID")).toString();
+
+                                    db.collection("ReceivedOrderData").whereEqualTo("custDocumentID", custDocumentID)
+                                            .addSnapshotListener((value, error) -> {
+                                                if (!Objects.requireNonNull(value).isEmpty()) {
+                                                    for (DocumentSnapshot e : value.getDocuments()) {
+                                                        String spinnerPurchaseOrders = Objects.requireNonNull(e.get("roPoCustNumber")).toString();
+                                                        receiveOrderNumberList.add(spinnerPurchaseOrders);
+                                                    }
+                                                    ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddInvoiceActivity.this, R.layout.style_spinner, receiveOrderNumberList);
+                                                    arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
+                                                    spinnerRoUID.setAdapter(arrayAdapter);
+                                                }
+                                            });
+                                }
+
+                            }
+                        });
 
 
-
-
-
-
-            llShowSpinnerRoAndEdtPo.setVisibility(View.VISIBLE);
+                llShowSpinnerRoAndEdtPo.setVisibility(View.VISIBLE);
+            }
         });
         spinnerCustName.setOnKeyListener(new View.OnKeyListener() {
             @Override
@@ -572,7 +600,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
                 return false;
             }
         });
-        spinnerCustName.setOnFocusChangeListener((view, b) -> spinnerCustName.setText(customerData));
+        //spinnerCustName.setOnFocusChangeListener((view, b) -> spinnerCustName.setText(customerData));
 
 
         /*spinnerRoUID.setOnItemClickListener((adapterView, view, i, l) -> {
@@ -766,6 +794,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
 
             ll_wrap_filter_by_couid.setVisibility(View.GONE);
             btnGiSearchByRoUIDReset.setVisibility(View.GONE);
+            btnResetCoUID.setVisibility(View.GONE);
         });
 
         btnResetBankAccount.setOnClickListener(new View.OnClickListener() {
@@ -964,6 +993,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
                     String invTaxPPNFinal = currencyVal+" " +currencyFormat(df.format(taxPPN));
                     String invTaxPPHFinal = "("+currencyVal+" " +currencyFormat(df.format(taxPPH))+")";
                     String invTotalDueFinal = currencyVal+" " +currencyFormat(df.format(totalDue));
+
                     dialogInterface.confirmCreateInvoice(context, db,
                             goodIssueModelArrayList,
                             invUID,  invCreatedBy,

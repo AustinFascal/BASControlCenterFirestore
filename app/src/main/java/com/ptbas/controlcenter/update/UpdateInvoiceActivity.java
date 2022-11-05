@@ -187,6 +187,7 @@ public class UpdateInvoiceActivity extends AppCompatActivity {
 
     private MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
 
+    Boolean invRecalculateStatus;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -492,7 +493,7 @@ public class UpdateInvoiceActivity extends AppCompatActivity {
                             searchQueryAll();
 
 
-                            Boolean invRecalculateStatus = invoiceModel.getInvRecalculate();
+                            invRecalculateStatus = invoiceModel.getInvRecalculate();
 
                             if (!invRecalculateStatus){
                                 statusSwitchDefault.setChecked(true);
@@ -792,82 +793,47 @@ public class UpdateInvoiceActivity extends AppCompatActivity {
 
                                                 Boolean invRecalculateStatus = invoiceModel.getInvRecalculate();
 
-                                                if (!invRecalculateStatus){
-                                                    tvCubicationTotal.setText(totalUnitFinal+" m3");
+                                                //tvCubicationTotal.setText(totalUnitFinal+" m3");
+                                                tvCubicationTotal.setText(cubicationTotalDefault);
+                                                tvSubTotal.setText(subTotalDefault);
+                                                tvDisc.setText(discDefault);
+                                                tvPPN.setText(PPNDefault);
+                                                tvPPH23.setText(PPH23Default);
+                                                tvTotalDue.setText(totalDueDefault);
 
-                                                    if (invPoType == 2){
-                                                        taxPPN = 0;
-                                                        tvSubTotal.setText(currencyVal+" "+currencyFormat(df.format(totalAmountForTransportService)));
-                                                        tvDisc.setText(currencyVal+" "+"0");
-                                                        tvPPN.setText(currencyVal+" " +currencyFormat(df.format(taxPPN)));
-                                                        tvPPH23.setText("("+currencyVal+" " +currencyFormat(df.format(taxPPH))+")");
-                                                        tvTotalDue.setText(currencyVal+" " +currencyFormat(df.format(totalDueForTransportService)));
-                                                    } else if (invPoType == 1){
-                                                        tvSubTotal.setText( currencyVal+" "+currencyFormat(df.format(totalAmountForMaterials)));
-                                                        tvDisc.setText(currencyVal+" "+"0");
-                                                        tvPPN.setText(currencyVal+" "+currencyFormat(df.format(taxPPN)));
-                                                        tvPPH23.setText("("+currencyVal+" "+currencyFormat(df.format(taxPPH))+")");
-                                                        tvTotalDue.setText(currencyVal+" "+currencyFormat(df.format(totalDue)));
-                                                    } else if (invPoType == 0){
-                                                        tvSubTotal.setText(currencyVal+" "+currencyFormat(df.format(totalAmountForMaterials+totalAmountForTransportService)));
-                                                        tvDisc.setText(currencyVal+" "+"0");
-                                                        tvPPN.setText(currencyVal+" "+currencyFormat(df.format(taxPPN)));
-                                                        tvPPH23.setText("("+currencyVal+" "+currencyFormat(df.format(taxPPH))+")");
-                                                        tvTotalDue.setText(currencyVal+" "+currencyFormat(df.format(totalDue)));
-                                                    }
+                                                /*if (invRecalculateStatus){
 
-                                                    tvCubicationTotalRev.setText(totalUnitFinal+" m3");
-                                                    if (invPoType == 2){
-                                                        taxPPN = 0;
-                                                        tvSubTotalRev.setText(currencyVal+" "+currencyFormat(df.format(totalAmountForTransportService)));
-                                                        tvDiscRev.setText(currencyVal+" "+"0");
-                                                        tvPPNRev.setText(currencyVal+" " +currencyFormat(df.format(taxPPN)));
-                                                        tvPPH23Rev.setText("("+currencyVal+" " +currencyFormat(df.format(taxPPH))+")");
-                                                        tvTotalDueRev.setText(currencyVal+" " +currencyFormat(df.format(totalDueForTransportService)));
-                                                    } else if (invPoType == 1){
-                                                        tvSubTotalRev.setText( currencyVal+" "+currencyFormat(df.format(totalAmountForMaterials)));
-                                                        tvDiscRev.setText(currencyVal+" "+"0");
-                                                        tvPPNRev.setText(currencyVal+" "+currencyFormat(df.format(taxPPN)));
-                                                        tvPPH23Rev.setText("("+currencyVal+" "+currencyFormat(df.format(taxPPH))+")");
-                                                        tvTotalDueRev.setText(currencyVal+" "+currencyFormat(df.format(totalDue)));
-                                                    } else if (invPoType == 0){
-                                                        tvSubTotalRev.setText(currencyVal+" "+currencyFormat(df.format(totalAmountForMaterials+totalAmountForTransportService)));
-                                                        tvDiscRev.setText(currencyVal+" "+"0");
-                                                        tvPPNRev.setText(currencyVal+" "+currencyFormat(df.format(taxPPN)));
-                                                        tvPPH23Rev.setText("("+currencyVal+" "+currencyFormat(df.format(taxPPH))+")");
-                                                        tvTotalDueRev.setText(currencyVal+" "+currencyFormat(df.format(totalDue)));
-                                                    }
-                                                } else {
-                                                    tvCubicationTotal.setText(totalUnitFinal+" m3");
-                                                    tvCubicationTotal.setText(cubicationTotalDefault);
-                                                    tvSubTotal.setText(subTotalDefault);
-                                                    tvDisc.setText(discDefault);
-                                                    tvPPN.setText(PPNDefault);
-                                                    tvPPH23.setText(PPH23Default);
-                                                    tvTotalDue.setText(totalDueDefault);
 
-                                                    tvCubicationTotalRev.setText(totalUnitFinal+" m3");
-                                                    if (invPoType == 2){
-                                                        taxPPN = 0;
-                                                        tvSubTotalRev.setText(currencyVal+" "+currencyFormat(df.format(totalAmountForTransportService)));
-                                                        tvDiscRev.setText(currencyVal+" "+"0");
-                                                        tvPPNRev.setText(currencyVal+" " +currencyFormat(df.format(taxPPN)));
-                                                        tvPPH23Rev.setText("("+currencyVal+" " +currencyFormat(df.format(taxPPH))+")");
-                                                        tvTotalDueRev.setText(currencyVal+" " +currencyFormat(df.format(totalDueForTransportService)));
-                                                    } else if (invPoType == 1){
-                                                        tvSubTotalRev.setText( currencyVal+" "+currencyFormat(df.format(totalAmountForMaterials)));
-                                                        tvDiscRev.setText(currencyVal+" "+"0");
-                                                        tvPPNRev.setText(currencyVal+" "+currencyFormat(df.format(taxPPN)));
-                                                        tvPPH23Rev.setText("("+currencyVal+" "+currencyFormat(df.format(taxPPH))+")");
-                                                        tvTotalDueRev.setText(currencyVal+" "+currencyFormat(df.format(totalDue)));
-                                                    } else if (invPoType == 0){
-                                                        tvSubTotalRev.setText(currencyVal+" "+currencyFormat(df.format(totalAmountForMaterials+totalAmountForTransportService)));
-                                                        tvDiscRev.setText(currencyVal+" "+"0");
-                                                        tvPPNRev.setText(currencyVal+" "+currencyFormat(df.format(taxPPN)));
-                                                        tvPPH23Rev.setText("("+currencyVal+" "+currencyFormat(df.format(taxPPH))+")");
-                                                        tvTotalDueRev.setText(currencyVal+" "+currencyFormat(df.format(totalDue)));
-                                                    }
+
+                                                }*/
+
+                                                tvCubicationTotalRev.setText(totalUnitFinal+" m3");
+                                                if (invPoType == 2){
+                                                    taxPPN = 0;
+                                                    tvSubTotalRev.setText(currencyVal+" "+currencyFormat(df.format(totalAmountForTransportService)));
+                                                    tvDiscRev.setText(currencyVal+" "+"0");
+                                                    tvPPNRev.setText(currencyVal+" " +currencyFormat(df.format(taxPPN)));
+                                                    tvPPH23Rev.setText("("+currencyVal+" " +currencyFormat(df.format(taxPPH))+")");
+                                                    tvTotalDueRev.setText(currencyVal+" " +currencyFormat(df.format(totalDueForTransportService)));
+                                                } else if (invPoType == 1){
+                                                    tvSubTotalRev.setText( currencyVal+" "+currencyFormat(df.format(totalAmountForMaterials)));
+                                                    tvDiscRev.setText(currencyVal+" "+"0");
+                                                    tvPPNRev.setText(currencyVal+" "+currencyFormat(df.format(taxPPN)));
+                                                    tvPPH23Rev.setText("("+currencyVal+" "+currencyFormat(df.format(taxPPH))+")");
+                                                    tvTotalDueRev.setText(currencyVal+" "+currencyFormat(df.format(totalDue)));
+                                                } else if (invPoType == 0){
+                                                    tvSubTotalRev.setText(currencyVal+" "+currencyFormat(df.format(totalAmountForMaterials+totalAmountForTransportService)));
+                                                    tvDiscRev.setText(currencyVal+" "+"0");
+                                                    tvPPNRev.setText(currencyVal+" "+currencyFormat(df.format(taxPPN)));
+                                                    tvPPH23Rev.setText("("+currencyVal+" "+currencyFormat(df.format(taxPPH))+")");
+                                                    tvTotalDueRev.setText(currencyVal+" "+currencyFormat(df.format(totalDue)));
                                                 }
+
+                                                float trimTotalDueDefault = Float.valueOf(tvTotalDue.getText().toString().replaceAll(",","").replaceAll("IDR", "").trim());
+                                                float trimTotalDueRev = Float.valueOf(tvTotalDueRev.getText().toString().replaceAll(",","").replaceAll("IDR", "").trim());
+                                                float minusTotalDueVal = trimTotalDueDefault-trimTotalDueRev;
+
+                                                tvTotalDueMinus.setText(currencyVal+" "+currencyFormat(String.valueOf(minusTotalDueVal).replaceAll("-", "")));
 
 
                                                 //String invTotalVolRev = documentSnapshot.get("invTotalVol", String.class);
@@ -1339,29 +1305,21 @@ public class UpdateInvoiceActivity extends AppCompatActivity {
             tblInvSection5.addCell(cellColHeader(
                     new Paragraph("Jumlah", fontMedium), Element.ALIGN_RIGHT));
 
-            for (int i = 0; i<productItemsList.size();i++){
-                tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
-                        new Paragraph(matNameVal, fontNormal), Element.ALIGN_LEFT));
-                tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
-                        new Paragraph(currencyVal+" "+currencyFormat(df.format(matSellPrice)), fontNormal), Element.ALIGN_RIGHT));
-                tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
-                        new Paragraph(df.format(totalUnitFinal), fontNormal), Element.ALIGN_RIGHT));
-                tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
-                        new Paragraph(currencyVal+" "+currencyFormat(df.format(taxPPN)), fontNormal), Element.ALIGN_RIGHT));
-                tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
-                        new Paragraph(currencyVal+" "+currencyFormat(df.format(totalAmountForMaterials)), fontNormal), Element.ALIGN_RIGHT));
-            }
+            float docValUnitTotal = Float.valueOf(tvCubicationTotal.getText().toString().replaceAll(",", "").replaceAll("m3", "").trim());
+            float docValSubTotal = Float.valueOf(tvSubTotal.getText().toString().replaceAll(",", "").replaceAll("IDR", "").trim());
+            float docValDisc = Float.valueOf(tvDisc.getText().toString().replaceAll(",", "").replaceAll("IDR", "").trim());
+            float docValPPN = Float.valueOf(tvPPN.getText().toString().replaceAll(",", "").replaceAll("IDR", "").trim());
+            float docValPPH = Float.valueOf(tvPPH23.getText().toString().replaceAll("IDR ","").replaceAll(",", "").replaceAll("\\(", "").replaceAll("\\)", "").trim());
+            float docValTotalDue = Float.valueOf(tvTotalDue.getText().toString().replaceAll(",", "").replaceAll("IDR", "").trim());
 
-            tblInvSection7.addCell(cellTxtNoBrdrNrmlMainContent(
-                    new Paragraph(transportServiceNameVal, fontNormal), Element.ALIGN_LEFT));
-            tblInvSection7.addCell(cellTxtNoBrdrNrmlMainContent(
-                    new Paragraph(currencyVal+" "+currencyFormat(df.format(transportServiceSellPrice)), fontNormal), Element.ALIGN_RIGHT));
-            tblInvSection7.addCell(cellTxtNoBrdrNrmlMainContent(
-                    new Paragraph(df.format(totalUnitFinal), fontNormal), Element.ALIGN_RIGHT));
-            tblInvSection7.addCell(cellTxtNoBrdrNrmlMainContent(
-                    new Paragraph(currencyVal+" "+currencyFormat(df.format(taxPPH)), fontNormal), Element.ALIGN_RIGHT));
-            tblInvSection7.addCell(cellTxtNoBrdrNrmlMainContent(
-                    new Paragraph(currencyVal+" "+currencyFormat(df.format(totalAmountForTransportService)), fontNormal), Element.ALIGN_RIGHT));
+            double totalAmountForMaterialsDefault = matSellPrice*docValUnitTotal;
+            double totalAmountForTransportServiceDefault = transportServiceSellPrice*docValUnitTotal;
+            double taxPPNDefault = (0.11)*totalAmountForMaterialsDefault;
+            double taxPPHDefault = (0.02)*totalAmountForTransportServiceDefault;
+            double totalDueDefault = totalAmountForMaterialsDefault+totalAmountForTransportServiceDefault+taxPPNDefault-taxPPHDefault;
+            double totalDueForTransportServiceDefault = totalAmountForTransportServiceDefault-taxPPHDefault;
+
+
 
             tblInvSection8.addCell(cellTxtBrdrTopNrmlMainContent(
                     new Paragraph("", fontMedium), Element.ALIGN_LEFT));
@@ -1371,17 +1329,90 @@ public class UpdateInvoiceActivity extends AppCompatActivity {
                     new Paragraph("", fontMedium), Element.ALIGN_LEFT));
             tblInvSection8.addCell(cellTxtBrdrTopNrmlMainContent(
                     new Paragraph("Sub Total :"+"\n"+"Diskon :"+"\n"+"PPN 11% :"+"\n"+"PPh 23 :"+"\n"+"Total Tagihan:", fontNormal), Element.ALIGN_RIGHT));
-            if (invPoType == 2){
-                taxPPN = 0;
-                tblInvSection8.addCell(cellTxtBrdrTopNrmlMainContent(
-                        new Paragraph(currencyVal+" "+currencyFormat(df.format(totalAmountForTransportService))+"\n"+currencyVal+" "+"0"+"\n"+currencyVal+" "+currencyFormat(df.format(taxPPN))+"\n"+"("+currencyVal+" "+currencyFormat(df.format(taxPPH))+")"+"\n"+currencyVal+" "+currencyFormat(df.format(totalDueForTransportService)), fontNormal), Element.ALIGN_RIGHT));
-            } else if (invPoType == 1){
-                tblInvSection8.addCell(cellTxtBrdrTopNrmlMainContent(
-                        new Paragraph(currencyVal+" "+currencyFormat(df.format(totalAmountForMaterials))+"\n"+currencyVal+" "+"0"+"\n"+currencyVal+" "+currencyFormat(df.format(taxPPN))+"\n"+"("+currencyVal+" "+currencyFormat(df.format(taxPPH))+")"+"\n"+currencyVal+" "+currencyFormat(df.format(totalDue)), fontNormal), Element.ALIGN_RIGHT));
-            } else if (invPoType == 0){
-                tblInvSection8.addCell(cellTxtBrdrTopNrmlMainContent(
-                        new Paragraph(currencyVal+" "+currencyFormat(df.format(totalAmountForMaterials+totalAmountForTransportService   ))+"\n"+currencyVal+" "+"0"+"\n"+currencyVal+" "+currencyFormat(df.format(taxPPN))+"\n"+"("+currencyVal+" "+currencyFormat(df.format(taxPPH))+")"+"\n"+currencyVal+" "+currencyFormat(df.format(totalDue)), fontNormal), Element.ALIGN_RIGHT));
+
+
+            if (invRecalculateStatus){
+
+                for (int i = 0; i<productItemsList.size();i++){
+                    tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
+                            new Paragraph(matNameVal, fontNormal), Element.ALIGN_LEFT));
+                    tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
+                            new Paragraph(currencyVal+" "+currencyFormat(df.format(matSellPrice)), fontNormal), Element.ALIGN_RIGHT));
+                    tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
+                            new Paragraph(df.format(totalUnitFinal), fontNormal), Element.ALIGN_RIGHT));
+                    tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
+                            new Paragraph(currencyVal+" "+currencyFormat(df.format(taxPPN)), fontNormal), Element.ALIGN_RIGHT));
+                    tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
+                            new Paragraph(currencyVal+" "+currencyFormat(df.format(totalAmountForMaterials)), fontNormal), Element.ALIGN_RIGHT));
+                }
+
+
+
+                tblInvSection7.addCell(cellTxtNoBrdrNrmlMainContent(
+                        new Paragraph(transportServiceNameVal, fontNormal), Element.ALIGN_LEFT));
+                tblInvSection7.addCell(cellTxtNoBrdrNrmlMainContent(
+                        new Paragraph(currencyVal+" "+currencyFormat(df.format(transportServiceSellPrice)), fontNormal), Element.ALIGN_RIGHT));
+                tblInvSection7.addCell(cellTxtNoBrdrNrmlMainContent(
+                        new Paragraph(df.format(totalUnitFinal), fontNormal), Element.ALIGN_RIGHT));
+                tblInvSection7.addCell(cellTxtNoBrdrNrmlMainContent(
+                        new Paragraph(currencyVal+" "+currencyFormat(df.format(taxPPH)), fontNormal), Element.ALIGN_RIGHT));
+                tblInvSection7.addCell(cellTxtNoBrdrNrmlMainContent(
+                        new Paragraph(currencyVal+" "+currencyFormat(df.format(totalAmountForTransportService)), fontNormal), Element.ALIGN_RIGHT));
+
+                if (invPoType == 2){
+                    taxPPN = 0;
+                    tblInvSection8.addCell(cellTxtBrdrTopNrmlMainContent(
+                            new Paragraph(currencyVal+" "+currencyFormat(df.format(totalAmountForTransportService))+"\n"+currencyVal+" "+"0"+"\n"+currencyVal+" "+currencyFormat(df.format(taxPPN))+"\n"+"("+currencyVal+" "+currencyFormat(df.format(taxPPH))+")"+"\n"+currencyVal+" "+currencyFormat(df.format(totalDueForTransportService)), fontNormal), Element.ALIGN_RIGHT));
+                } else if (invPoType == 1){
+                    tblInvSection8.addCell(cellTxtBrdrTopNrmlMainContent(
+                            new Paragraph(currencyVal+" "+currencyFormat(df.format(totalAmountForMaterials))+"\n"+currencyVal+" "+"0"+"\n"+currencyVal+" "+currencyFormat(df.format(taxPPN))+"\n"+"("+currencyVal+" "+currencyFormat(df.format(taxPPH))+")"+"\n"+currencyVal+" "+currencyFormat(df.format(totalDue)), fontNormal), Element.ALIGN_RIGHT));
+                } else if (invPoType == 0){
+                    tblInvSection8.addCell(cellTxtBrdrTopNrmlMainContent(
+                            new Paragraph(currencyVal+" "+currencyFormat(df.format(totalAmountForMaterials+totalAmountForTransportService   ))+"\n"+currencyVal+" "+"0"+"\n"+currencyVal+" "+currencyFormat(df.format(taxPPN))+"\n"+"("+currencyVal+" "+currencyFormat(df.format(taxPPH))+")"+"\n"+currencyVal+" "+currencyFormat(df.format(totalDue)), fontNormal), Element.ALIGN_RIGHT));
+                }
+            } else{
+
+                for (int i = 0; i<productItemsList.size();i++){
+                    tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
+                            new Paragraph(matNameVal, fontNormal), Element.ALIGN_LEFT));
+                    tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
+                            new Paragraph(currencyVal+" "+currencyFormat(df.format(matSellPrice)), fontNormal), Element.ALIGN_RIGHT));
+                    tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
+                            new Paragraph(df.format(docValUnitTotal), fontNormal), Element.ALIGN_RIGHT));
+                    tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
+                            new Paragraph(currencyVal+" "+currencyFormat(df.format(taxPPNDefault)), fontNormal), Element.ALIGN_RIGHT));
+                    tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
+                            new Paragraph(currencyVal+" "+currencyFormat(df.format(totalAmountForMaterialsDefault)), fontNormal), Element.ALIGN_RIGHT));
+                }
+
+                tblInvSection7.addCell(cellTxtNoBrdrNrmlMainContent(
+                        new Paragraph(transportServiceNameVal, fontNormal), Element.ALIGN_LEFT));
+                tblInvSection7.addCell(cellTxtNoBrdrNrmlMainContent(
+                        new Paragraph(currencyVal+" "+currencyFormat(df.format(transportServiceSellPrice)), fontNormal), Element.ALIGN_RIGHT));
+                tblInvSection7.addCell(cellTxtNoBrdrNrmlMainContent(
+                        new Paragraph(df.format(docValUnitTotal), fontNormal), Element.ALIGN_RIGHT));
+                tblInvSection7.addCell(cellTxtNoBrdrNrmlMainContent(
+                        new Paragraph(currencyVal+" "+currencyFormat(df.format(taxPPHDefault)), fontNormal), Element.ALIGN_RIGHT));
+                tblInvSection7.addCell(cellTxtNoBrdrNrmlMainContent(
+                        new Paragraph(currencyVal+" "+currencyFormat(df.format(totalAmountForTransportServiceDefault)), fontNormal), Element.ALIGN_RIGHT));
+
+                if (invPoType == 2){
+                    taxPPN = 0;
+                    tblInvSection8.addCell(cellTxtBrdrTopNrmlMainContent(
+                            new Paragraph(currencyVal+" "+currencyFormat(df.format(totalAmountForTransportServiceDefault))+"\n"+currencyVal+" "+"0"+"\n"+currencyVal+" "+currencyFormat(df.format(taxPPNDefault))+"\n"+"("+currencyVal+" "+currencyFormat(df.format(taxPPHDefault))+")"+"\n"+currencyVal+" "+currencyFormat(df.format(totalDueForTransportServiceDefault)), fontNormal), Element.ALIGN_RIGHT));
+                } else if (invPoType == 1){
+                    tblInvSection8.addCell(cellTxtBrdrTopNrmlMainContent(
+                            new Paragraph(currencyVal+" "+currencyFormat(df.format(totalAmountForMaterialsDefault))+"\n"+currencyVal+" "+"0"+"\n"+currencyVal+" "+currencyFormat(df.format(taxPPNDefault))+"\n"+"("+currencyVal+" "+currencyFormat(df.format(taxPPHDefault))+")"+"\n"+currencyVal+" "+currencyFormat(df.format(totalDueDefault)), fontNormal), Element.ALIGN_RIGHT));
+                } else if (invPoType == 0){
+                    tblInvSection8.addCell(cellTxtBrdrTopNrmlMainContent(
+                            new Paragraph(currencyVal+" "+currencyFormat(df.format(totalAmountForMaterialsDefault+totalAmountForTransportServiceDefault))+"\n"+currencyVal+" "+"0"+"\n"+currencyVal+" "+currencyFormat(df.format(taxPPNDefault))+"\n"+"("+currencyVal+" "+currencyFormat(df.format(taxPPHDefault))+")"+"\n"+currencyVal+" "+currencyFormat(df.format(totalDueDefault)), fontNormal), Element.ALIGN_RIGHT));
+                }
+
             }
+
+
+
+
 
 
 

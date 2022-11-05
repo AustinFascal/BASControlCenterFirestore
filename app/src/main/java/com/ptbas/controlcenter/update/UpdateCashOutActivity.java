@@ -517,6 +517,15 @@ public class UpdateCashOutActivity extends AppCompatActivity {
             }
         });
 
+        btnResetBankAccount.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                btnResetSupplier.setVisibility(View.GONE);
+                spinnerBankAccount.setText(null);
+                edtAccountOwnerName.setText(null);
+            }
+        });
+
         spinnerSupplierName.setOnItemClickListener((adapterView, view, i, l) -> {
             View viewLayout = UpdateCashOutActivity.this.getCurrentFocus();
             if (viewLayout != null) {

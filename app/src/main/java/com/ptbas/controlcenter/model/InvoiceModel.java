@@ -30,7 +30,15 @@ public class InvoiceModel {
         this.invDateHandover = invDateHandover;
         this.invHandoverBy = invHandoverBy;
         this.invRecalculate = invRecalculate;
+        this.invTotalVol = invTotalVol;
+        this.invSubTotal = invSubTotal;
+        this.invDiscount = invDiscount;
+        this.invTaxPPN = invTaxPPN;
+        this.invTaxPPH = invTaxPPH;
+        this.invTotalDue = invTotalDue;
     }
+
+
 
     public Boolean getInvRecalculate() {
         return invRecalculate;

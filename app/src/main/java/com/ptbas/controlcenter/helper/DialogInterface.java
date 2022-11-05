@@ -1,7 +1,5 @@
 package com.ptbas.controlcenter.helper;
 
-
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -11,6 +9,7 @@ import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.view.MenuItem;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SearchView;
@@ -21,30 +20,40 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.WriteBatch;
 import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.adapter.GIManagementAdapter;
+import com.ptbas.controlcenter.adapter.RecapGoodIssueManagementAdapter;
 import com.ptbas.controlcenter.create.AddInvoiceActivity;
 import com.ptbas.controlcenter.create.AddReceivedOrder;
 import com.ptbas.controlcenter.management.ManageReceivedOrderActivity;
 import com.ptbas.controlcenter.model.CashOutModel;
 import com.ptbas.controlcenter.model.GoodIssueModel;
 import com.ptbas.controlcenter.model.InvoiceModel;
+import com.ptbas.controlcenter.model.ProductItems;
 import com.ptbas.controlcenter.model.RecapGIModel;
 import com.ptbas.controlcenter.create.AddRecapGoodIssueDataActivity;
+import com.ptbas.controlcenter.model.ReceivedOrderModel;
 import com.ptbas.controlcenter.update.UpdateCashOutActivity;
 
 import java.io.File;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 
 import dev.shreyaspatil.MaterialDialog.MaterialDialog;
@@ -861,6 +870,7 @@ public class DialogInterface {
                 .setMessage("Apakah Anda yakin ingin membuat Invoice dari Good Issue yang terpilih?")
                 .setCancelable(true)
                 .setPositiveButton("YA", R.drawable.ic_outline_check, (dialogInterface, which) -> {
+
                     generatingInvoice(context, db,
                             goodIssueModelArrayList,
                             invUID, invCreatedBy, invDateNTimeCreated, invDueDateNTime, invVerifiedBy, invTransferReference,
@@ -958,12 +968,12 @@ public class DialogInterface {
     }
 
     public void confirmCreateCashOutProof(Context context, FirebaseFirestore db,
-                                          ArrayList<GoodIssueModel> goodIssueModelArrayList,
+
                                           String coUID, String coDateAndTimeCreated, String coCreatedBy,
                                           String coDateAndTimeApproved, String coApprovedBy,
                                           String coDateAndTimeACC, String coAccBy, String coSupplier,
-                                          String roDocumentID, String coDateDeliveryPeriod, Boolean coStatusApproval,
-                                          Boolean coStatusPayment, Double coTotal, String rcpUIDVal) {
+                                          String roDocumentID, Boolean coStatusApproval,
+                                          Boolean coStatusPayment, String rcpUIDVal, RecapGoodIssueManagementAdapter recapGiManagementAdapter) {
 
         MaterialDialog materialDialog = new MaterialDialog.Builder((Activity) context)
                 .setTitle("Buat Cash Out")
@@ -972,10 +982,10 @@ public class DialogInterface {
                 .setCancelable(true)
                 .setPositiveButton("YA", R.drawable.ic_outline_check, (dialogInterface, which) -> {
                     generatingCashOut(context, db,
-                            goodIssueModelArrayList,
+
                             coUID, coDateAndTimeCreated, coCreatedBy,
                             coDateAndTimeApproved, coApprovedBy, coDateAndTimeACC, coAccBy, coSupplier,
-                            roDocumentID, coDateDeliveryPeriod, coStatusApproval, coStatusPayment, coTotal, rcpUIDVal);
+                            roDocumentID, coStatusApproval, coStatusPayment, rcpUIDVal, recapGiManagementAdapter);
                     dialogInterface.dismiss();
                 })
                 .setNegativeButton("TIDAK", R.drawable.ic_outline_close, (dialogInterface, which) -> dialogInterface.dismiss())
@@ -986,16 +996,15 @@ public class DialogInterface {
     }
 
     public void generatingCashOut(Context context, FirebaseFirestore db,
-                                  ArrayList<GoodIssueModel> goodIssueModelArrayList,
-                                  String coUID, String coDateAndTimeCreated, String coCreatedBy,
+                                                                    String coUID, String coDateAndTimeCreated, String coCreatedBy,
                                   String coDateAndTimeApproved, String coApprovedBy,
                                   String coDateAndTimeACC, String coAccBy, String coSupplier,
-                                  String roDocumentID, String coDateDeliveryPeriod, Boolean coStatusApproval,
-                                  Boolean coStatusPayment, Double coTotal, String rcpUIDVal) {
+                                  String roDocumentID, Boolean coStatusApproval,
+                                  Boolean coStatusPayment, String rcpUIDVal, RecapGoodIssueManagementAdapter recapGiManagementAdapter) {
 
 
-        GIManagementAdapter giManagementAdapter;
-        giManagementAdapter = new GIManagementAdapter(context, goodIssueModelArrayList);
+        /*GIManagementAdapter giManagementAdapter;
+        giManagementAdapter = new GIManagementAdapter(context, goodIssueModelArrayList);*/
 
         MaterialDialog generatingCashOutProofDialog = new MaterialDialog.Builder((Activity) context)
                 .setTitle("Memproses Permintaan")
@@ -1006,7 +1015,7 @@ public class DialogInterface {
 
         generatingCashOutProofDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
         generatingCashOutProofDialog.show();
-
+        ArrayList<GoodIssueModel> goodIssueModelArrayList  = new ArrayList<>();
         new CountDownTimer(2000, 1000) {
             public void onTick(long millisUntilFinished) {
             }
@@ -1017,13 +1026,106 @@ public class DialogInterface {
                 DocumentReference refCO = db.collection("CashOutData").document();
                 String coDocumentID = refCO.getId();
 
-                CashOutModel cashOutModel = new CashOutModel(
-                        coDocumentID, coUID, coDateAndTimeCreated, coCreatedBy,
-                        coDateAndTimeApproved, coApprovedBy, coDateAndTimeACC, coAccBy, coSupplier,
-                        roDocumentID, coDateDeliveryPeriod, coStatusApproval, coStatusPayment, coTotal,
-                        "", "", "", "", "", "");
+                List<String> rcpGiUID = new ArrayList<>();
+                Query query = databaseReferenceGI.child("GoodIssueData");
 
-                refCO.set(cashOutModel);
+                query.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists()) {
+                            for (int k = 0; k < recapGiManagementAdapter.getSelected().size(); k++) {
+                                rcpGiUID.add(recapGiManagementAdapter.getSelected().get(k).getRcpGiDocumentID());
+                            }
+                            for (int l = 0; l < rcpGiUID.size(); l++) {
+                                for (DataSnapshot item : snapshot.getChildren()) {
+                                    GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
+
+                                    if (goodIssueModel.getGiRecappedTo().equals(rcpGiUID.get(l))) {
+                                        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+                                        goodIssueModelArrayList.add(goodIssueModel);
+                                        databaseReference.child("GoodIssueData").child(goodIssueModel.getGiUID()).child("giCashedOutTo").setValue(coDocumentID);
+                                        databaseReference.child("GoodIssueData").child(goodIssueModel.getGiUID()).child("giCashedOut").setValue(true);
+                                    }
+                                }
+
+                            }
+
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+                DecimalFormat df = new DecimalFormat("0.00");
+
+
+                db.collection("ReceivedOrderData").whereEqualTo("roDocumentID", roDocumentID).get()
+                        .addOnSuccessListener(queryDocumentSnapshots -> {
+
+                            List<ProductItems> productItemsList;
+                            double transportServiceSellPrice = 0;
+                            double matBuyPrice = 0;
+                            String matNameVal;
+
+                            for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots){
+                                ReceivedOrderModel receivedOrderModel = documentSnapshot.toObject(ReceivedOrderModel.class);
+                                receivedOrderModel.setRoDocumentID(documentSnapshot.getId());
+
+                                /*matTypeVal = receivedOrderModel.getRoMatType();
+                                roPoCustNumber = receivedOrderModel.getRoPoCustNumber();
+                                currencyVal = receivedOrderModel.getRoCurrency();
+                                invCustName = receivedOrderModel.getCustDocumentID();
+                                invPoUID = receivedOrderModel.getRoUID();
+                                invPoDate = receivedOrderModel.getRoDateCreated();
+                                invPoType = receivedOrderModel.getRoType();*/
+
+                                HashMap<String, List<ProductItems>> map = receivedOrderModel.getRoOrderedItems();
+                                for (HashMap.Entry<String, List<ProductItems>> e : map.entrySet()) {
+                                    productItemsList = e.getValue();
+                                    for (int i = 0; i<productItemsList.size();i++){
+                                        if (productItemsList.get(0).getMatName().equals("JASA ANGKUT")){
+                                            transportServiceSellPrice = productItemsList.get(0).getMatBuyPrice();
+                                        } else {
+                                            matNameVal = productItemsList.get(i).getMatName();
+                                            matBuyPrice = productItemsList.get(i).getMatBuyPrice();
+                                        }
+                                    }
+
+                                }
+
+
+                            }
+
+                            float totalUnit = 0;
+
+                            List<String> datePeriod = new ArrayList<>();
+
+                            for (int i = 0; i < goodIssueModelArrayList.size(); i++) {
+                                totalUnit += goodIssueModelArrayList.get(i).getGiVhlCubication();
+                                datePeriod.add(goodIssueModelArrayList.get(i).getGiDateCreated());
+                            }
+
+                            HashSet<String> filter = new HashSet(datePeriod);
+                            ArrayList<String> datePeriodFiltered = new ArrayList<>(filter);
+                            String coDateDeliveryPeriod = String.valueOf(datePeriodFiltered);
+
+                            double totalIDR = matBuyPrice *Double.parseDouble(df.format(totalUnit));
+
+                            CashOutModel cashOutModel = new CashOutModel(
+                                    coDocumentID, coUID, coDateAndTimeCreated, coCreatedBy,
+                                    coDateAndTimeApproved, coApprovedBy, coDateAndTimeACC, coAccBy, coSupplier,
+                                    roDocumentID, coDateDeliveryPeriod, coStatusApproval, coStatusPayment, totalIDR,
+                                    "", "", "", "", "", "");
+
+                            refCO.set(cashOutModel);
+                        });
+
+
+
+
+
 
                 refRecap.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -1041,10 +1143,10 @@ public class DialogInterface {
                 });
 
 
-                for (int i = 0; i < giManagementAdapter.getSelected().size(); i++) {
+                /*for (int i = 0; i < giManagementAdapter.getSelected().size(); i++) {
                     databaseReferenceGI.child("GoodIssueData").child(giManagementAdapter.getSelected().get(i).getGiUID()).child("giCashedOut").setValue(true);
                     databaseReferenceGI.child("GoodIssueData").child(giManagementAdapter.getSelected().get(i).getGiUID()).child("giCashedOutTo").setValue(coDocumentID);
-                }
+                }*/
                 cashOutProofGeneratedInformation(context);
                 /*AddCashOutActivity addCashOutActivity = (AddCashOutActivity) context;
                 addCashOutActivity.createCashOutProofPDF(Helper.getAppPathCashOut(context)+coUID+".pdf");*/

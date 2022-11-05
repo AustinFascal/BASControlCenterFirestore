@@ -154,8 +154,9 @@ public class AddRecapGoodIssueDataActivity extends AppCompatActivity {
 
     private Menu menu;
 
+    List<String> receiveOrderNumberList;
 
-    String rcpDateDeliveryPeriod;
+    String rcpDateDeliveryPeriod, custDocumentID;
     //List<String> receiveOrderNumberList;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -340,6 +341,7 @@ public class AddRecapGoodIssueDataActivity extends AppCompatActivity {
 
         arrayListRoUID = new ArrayList<>();
         customerList = new ArrayList<>();
+        receiveOrderNumberList = new ArrayList<>();
         //arrayListPoUID = new ArrayList<>();
 
         /*db.collection("ReceivedOrderData").whereEqualTo("roStatus", true)
@@ -439,6 +441,11 @@ public class AddRecapGoodIssueDataActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 String selectedCustomer = (String) adapterView.getItemAtPosition(i);
+                String[] custNameSplit = selectedCustomer.split(" - ");
+                String custNameSplit1 = custNameSplit[1];
+
+                //spinnerCustUID.setText(selectedCustName);
+
                 selectedCustName = selectedCustomer;
                 spinnerCustUID.setError(null);
                 spinnerRoUID.setText(null);
@@ -449,8 +456,31 @@ public class AddRecapGoodIssueDataActivity extends AppCompatActivity {
 
                 llShowSpinnerRoAndEdtPo.setVisibility(View.VISIBLE);
 
+                db.collection("CustomerData").whereEqualTo("custName", custNameSplit1)
+                        .addSnapshotListener((value2, error2) -> {
+                            receiveOrderNumberList.clear();
+                            if (!Objects.requireNonNull(value2).isEmpty()) {
+                                for (DocumentSnapshot d : value2.getDocuments()) {
+                                    custDocumentID = Objects.requireNonNull(d.get("custDocumentID")).toString();
 
-                db.collection("ReceivedOrderData").whereEqualTo("roStatus", true)
+                                    db.collection("ReceivedOrderData").whereEqualTo("custDocumentID", custDocumentID)
+                                            .addSnapshotListener((value, error) -> {
+                                                if (!Objects.requireNonNull(value).isEmpty()) {
+                                                    for (DocumentSnapshot e : value.getDocuments()) {
+                                                        String spinnerPurchaseOrders = Objects.requireNonNull(e.get("roPoCustNumber")).toString();
+                                                        receiveOrderNumberList.add(spinnerPurchaseOrders);
+                                                    }
+                                                    ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddRecapGoodIssueDataActivity.this, R.layout.style_spinner, receiveOrderNumberList);
+                                                    arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
+                                                    spinnerRoUID.setAdapter(arrayAdapter);
+                                                }
+                                            });
+                                }
+
+                            }
+                        });
+
+                /*db.collection("ReceivedOrderData").whereEqualTo("roStatus", true)
                         .addSnapshotListener((value, error) -> {
                             if (!Objects.requireNonNull(value).isEmpty()) {
                                 for (DocumentSnapshot d : value.getDocuments()) {
@@ -481,7 +511,7 @@ public class AddRecapGoodIssueDataActivity extends AppCompatActivity {
                                             });
                                 }
                             }
-                        });
+                        });*/
 
             }
         });
@@ -505,7 +535,7 @@ public class AddRecapGoodIssueDataActivity extends AppCompatActivity {
                 return false;
             }
         });
-        spinnerCustUID.setOnFocusChangeListener((view, b) -> spinnerCustUID.setText(selectedCustName));
+        //spinnerCustUID.setOnFocusChangeListener((view, b) -> spinnerCustUID.setText(selectedCustName));
 
 
         spinnerRoUID.setOnItemClickListener((adapterView, view, i, l) -> {
