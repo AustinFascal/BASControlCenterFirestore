@@ -8,6 +8,7 @@ import android.os.CountDownTimer;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -32,6 +33,7 @@ import com.google.firebase.firestore.WriteBatch;
 import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.adapter.GIManagementAdapter;
 import com.ptbas.controlcenter.adapter.RecapGoodIssueManagementAdapter;
+import com.ptbas.controlcenter.create.AddGoodIssueActivity;
 import com.ptbas.controlcenter.create.AddInvoiceActivity;
 import com.ptbas.controlcenter.create.AddReceivedOrder;
 import com.ptbas.controlcenter.management.ManageReceivedOrderActivity;
@@ -166,7 +168,57 @@ public class DialogInterface {
                 .setAnimation(R.raw.lottie_success_2)
                 .setTitle("Sukses!")
                 .setMessage("Berhasil menambahkan data. Mau menambah data lagi?")
-                .setPositiveButton("TAMBAH LAGI", R.drawable.ic_outline_add, (dialogInterface, which) -> dialogInterface.dismiss())
+                .setPositiveButton("TAMBAH LAGI", R.drawable.ic_outline_add, (dialogInterface, which) -> {
+                    dialogInterface.dismiss();
+                })
+                .setNegativeButton("SELESAI", R.drawable.ic_outline_close, (dialogInterface, which) -> {
+                    dialogInterface.dismiss();
+                    activity.finish();
+                })
+                .setCancelable(false)
+                .build();
+        md.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
+        md.show();
+    }
+
+    public void savedGIInformationFromManagement(Activity activity, List<String> vhlUIDList) {
+
+        Vibrator vibrator = (Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            vibrator.vibrate(VibrationEffect.createOneShot(100,
+                    VibrationEffect.DEFAULT_AMPLITUDE));
+        } else {
+            vibrator.vibrate(100);
+        }
+        md = new MaterialDialog.Builder(activity)
+                .setAnimation(R.raw.lottie_success_2)
+                .setTitle("Sukses!")
+                .setMessage("Berhasil menambahkan data. Mau menambah data lagi?")
+                .setPositiveButton("TAMBAH LAGI", R.drawable.ic_outline_add, (dialogInterface, which) -> {
+                    dialogInterface.dismiss();
+                    vhlUIDList.clear();
+                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+                    databaseReference.child("VehicleData").addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if (snapshot.exists()){
+                                for (DataSnapshot dataSnapshot: snapshot.getChildren()){
+                                    if (Objects.equals(dataSnapshot.child("vhlStatus").getValue(), true)){
+                                        String spinnerVhlRegistNumber = dataSnapshot.child("vhlUID").getValue(String.class);
+                                        vhlUIDList.add(spinnerVhlRegistNumber);
+                                    }
+                                }
+                            } else {
+                                Toast.makeText(activity, "Data tidak ditemukan", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
+                })
                 .setNegativeButton("SELESAI", R.drawable.ic_outline_close, (dialogInterface, which) -> {
                     dialogInterface.dismiss();
                     activity.finish();
@@ -973,7 +1025,7 @@ public class DialogInterface {
                                           String coDateAndTimeApproved, String coApprovedBy,
                                           String coDateAndTimeACC, String coAccBy, String coSupplier,
                                           String roDocumentID, Boolean coStatusApproval,
-                                          Boolean coStatusPayment, String rcpUIDVal, RecapGoodIssueManagementAdapter recapGiManagementAdapter) {
+                                          Boolean coStatusPayment, Boolean rcpStatus, RecapGoodIssueManagementAdapter recapGiManagementAdapter) {
 
         MaterialDialog materialDialog = new MaterialDialog.Builder((Activity) context)
                 .setTitle("Buat Cash Out")
@@ -985,7 +1037,7 @@ public class DialogInterface {
 
                             coUID, coDateAndTimeCreated, coCreatedBy,
                             coDateAndTimeApproved, coApprovedBy, coDateAndTimeACC, coAccBy, coSupplier,
-                            roDocumentID, coStatusApproval, coStatusPayment, rcpUIDVal, recapGiManagementAdapter);
+                            roDocumentID, coStatusApproval, coStatusPayment, rcpStatus, recapGiManagementAdapter);
                     dialogInterface.dismiss();
                 })
                 .setNegativeButton("TIDAK", R.drawable.ic_outline_close, (dialogInterface, which) -> dialogInterface.dismiss())
@@ -1000,7 +1052,7 @@ public class DialogInterface {
                                   String coDateAndTimeApproved, String coApprovedBy,
                                   String coDateAndTimeACC, String coAccBy, String coSupplier,
                                   String roDocumentID, Boolean coStatusApproval,
-                                  Boolean coStatusPayment, String rcpUIDVal, RecapGoodIssueManagementAdapter recapGiManagementAdapter) {
+                                  Boolean coStatusPayment, Boolean rcpStatus, RecapGoodIssueManagementAdapter recapGiManagementAdapter) {
 
 
         /*GIManagementAdapter giManagementAdapter;
@@ -1113,6 +1165,27 @@ public class DialogInterface {
 
                             double totalIDR = matBuyPrice *Double.parseDouble(df.format(totalUnit));
 
+                            refRecap.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                    if (task.isSuccessful()){
+                                        for(DocumentSnapshot documentSnapshot : task.getResult()){
+                                            String getDocumentID = documentSnapshot.getId();
+                                            RecapGIModel recapGIModel = documentSnapshot.toObject(RecapGIModel.class);
+                                            recapGIModel.setRcpGiDocumentID(documentSnapshot.getId());
+
+                                            String rcpGiUIDVal = recapGIModel.getRcpGiDocumentID();
+                                            String roDocumentIdVal = recapGIModel.getRoDocumentID();
+
+                                            if (recapGIModel.getRoDocumentID().equals(roDocumentID)){
+                                                db.collection("RecapData").document(rcpGiUIDVal).update("rcpGiStatus", true);
+                                                db.collection("RecapData").document(rcpGiUIDVal).update("rcpGiCoUID", coDocumentID);
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+
                             CashOutModel cashOutModel = new CashOutModel(
                                     coDocumentID, coUID, coDateAndTimeCreated, coCreatedBy,
                                     coDateAndTimeApproved, coApprovedBy, coDateAndTimeACC, coAccBy, coSupplier,
@@ -1127,20 +1200,7 @@ public class DialogInterface {
 
 
 
-                refRecap.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()){
-                            for(DocumentSnapshot documentSnapshot : task.getResult()){
-                                String getDocumentID = documentSnapshot.getId();
-                                if (getDocumentID.equals(rcpUIDVal)){
-                                    db.collection("RecapData").document(rcpUIDVal).update("rcpGiStatus", true);
-                                    db.collection("RecapData").document(rcpUIDVal).update("rcpGiCoUID", coDocumentID);
-                                }
-                            }
-                        }
-                    }
-                });
+
 
 
                 /*for (int i = 0; i < giManagementAdapter.getSelected().size(); i++) {

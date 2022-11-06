@@ -431,6 +431,9 @@ public class AddGoodIssueActivity extends AppCompatActivity {
 
                 btnResetCustomer.setVisibility(View.GONE);
                 selectedCustName = null;
+
+                receiveOrderNumberList.clear();
+                spinnerRoNumber.setAdapter(null);
             }
         });
 
@@ -674,7 +677,7 @@ public class AddGoodIssueActivity extends AppCompatActivity {
             edtVhlVol.setFocusable(false);
 
             String giDate = Objects.requireNonNull(edtGiDate.getText()).toString();
-            String giTime = Objects.requireNonNull(edtGiTime.getText()).toString();
+            //String giTime = Objects.requireNonNull(edtGiTime.getText()).toString();
 
             String giRONumber = Objects.requireNonNull(edtPoNumberCust.getText()).toString();
             String giPOCustomerNumber = Objects.requireNonNull(spinnerRoNumber.getText()).toString();
@@ -794,7 +797,7 @@ public class AddGoodIssueActivity extends AppCompatActivity {
 
 
                                         insertData(giUID, giCreatedBy, giVerifiedBy, roDocumentID, giMatName, giMatType,
-                                                giNoteNumber, giVhlUID, giDate, giTime,
+                                                giNoteNumber, giVhlUID, giDate, new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date()),
                                                 Integer.parseInt(giVhlLength),
                                                 Integer.parseInt(giVhlWidth),
                                                 Integer.parseInt(giVhlHeight),
@@ -810,7 +813,7 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                             confirmVolChange.show();
                         } else {
                             insertData(giUID, giCreatedBy, giVerifiedBy, roDocumentID, giMatName, giMatType,
-                                    giNoteNumber, giVhlUID, giDate, giTime,
+                                    giNoteNumber, giVhlUID, giDate, new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date()),
                                     Integer.parseInt(giVhlLength),
                                     Integer.parseInt(giVhlWidth),
                                     Integer.parseInt(giVhlHeight),
@@ -918,7 +921,7 @@ public class AddGoodIssueActivity extends AppCompatActivity {
 
 
                                         insertData(giUID, giCreatedBy, giVerifiedBy, roDocumentID, giMatName, giMatType,
-                                                giNoteNumber, giVhlUID, giDate, giTime,
+                                                giNoteNumber, giVhlUID, giDate, new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date()),
                                                 Integer.parseInt(giVhlLength),
                                                 Integer.parseInt(giVhlWidth),
                                                 Integer.parseInt(giVhlHeight),
@@ -934,7 +937,7 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                             confirmVolChange.show();
                         } else {
                             insertData(giUID, giCreatedBy, giVerifiedBy, roDocumentID, giMatName, giMatType,
-                                    giNoteNumber, giVhlUID, giDate, giTime,
+                                    giNoteNumber, giVhlUID, giDate, new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date()),
                                     Integer.parseInt(giVhlLength),
                                     Integer.parseInt(giVhlWidth),
                                     Integer.parseInt(giVhlHeight),
@@ -992,7 +995,7 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                     DatabaseReference refGI = FirebaseDatabase.getInstance("https://bas-delivery-report-default-rtdb.asia-southeast1.firebasedatabase.app").getReference("GoodIssueData");
                     refGI.child(giUID).setValue(goodIssueModel).addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
-                            dialogInterface.savedInformationFromManagement(AddGoodIssueActivity.this);
+                            dialogInterface.savedGIInformationFromManagement(AddGoodIssueActivity.this, vhlUIDList);
                         } else {
                             try{
                                 throw task.getException();

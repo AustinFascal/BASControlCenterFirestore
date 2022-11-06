@@ -794,7 +794,7 @@ public class AddCashOutActivity extends AppCompatActivity {
                     dialogInterface.confirmCreateCashOutProof(context, db,
                             coUID, coDateCreated + " | " + coTimeCreated + " WIB",
                             helper.getUserId(), "","", "", "",
-                            suppplieruidVal, roDocumentID, false, false, rcpUIDVal, recapGiManagementAdapter);
+                            suppplieruidVal, roDocumentID, false, false, true, recapGiManagementAdapter);
 
                     String custNameValReplace = custNameVal.replace(" - ","-");
                     int indexCustNameVal = custNameValReplace.lastIndexOf('-');

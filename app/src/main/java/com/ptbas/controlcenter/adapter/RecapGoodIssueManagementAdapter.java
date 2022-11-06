@@ -99,6 +99,8 @@ public class RecapGoodIssueManagementAdapter extends RecyclerView.Adapter<RecapG
 
         float totalUnit = 0;
 
+        LinearLayout llWrapItemStatus, llStatusApproved;
+
         ArrayList<GoodIssueModel> goodIssueModelArrayList = new ArrayList<>();
 
         public ItemViewHolder(@NonNull View itemView) {
@@ -110,6 +112,9 @@ public class RecapGoodIssueManagementAdapter extends RecyclerView.Adapter<RecapG
             tvPoCustNumber = itemView.findViewById(R.id.tvPoCustNumber);
             tvMatNTransportType = itemView.findViewById(R.id.tvMatNTransportType);
             tvCustomerName = itemView.findViewById(R.id.tvCustomerName);
+
+            llWrapItemStatus = itemView.findViewById(R.id.llWrapItemStatus);
+            llStatusApproved = itemView.findViewById(R.id.llStatusApproved);
         }
 
         public void viewBind(RecapGIModel recapGIModel) {
@@ -118,6 +123,7 @@ public class RecapGoodIssueManagementAdapter extends RecyclerView.Adapter<RecapG
             cbSelectItem.setChecked(false);
 
             String rcpDocumentID = recapGIModel.getRcpGiDocumentID();
+            String rcpGiCoUID = recapGIModel.getRcpGiCoUID();
 
             DecimalFormat df = new DecimalFormat("0.00");
 
@@ -247,15 +253,13 @@ public class RecapGoodIssueManagementAdapter extends RecyclerView.Adapter<RecapG
             }*/
 
             //Boolean recapStatus = recapGIModel.get
-            /*if (giStatus){
-                llWrapGiStatus.setVisibility(View.VISIBLE);
+            if (!rcpGiCoUID.isEmpty()){
                 llStatusApproved.setVisibility(View.VISIBLE);
-                btnApproveGi.setVisibility(View.GONE);
+                llStatusApproved.setVisibility(View.VISIBLE);
             } else {
-                llWrapGiStatus.setVisibility(View.GONE);
                 llStatusApproved.setVisibility(View.GONE);
-                btnApproveGi.setVisibility(View.VISIBLE);
-            }*/
+                llStatusApproved.setVisibility(View.GONE);
+            }
 
 
         }
