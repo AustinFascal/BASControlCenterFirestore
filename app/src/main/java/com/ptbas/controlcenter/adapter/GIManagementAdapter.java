@@ -147,7 +147,7 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
 
         public void viewBind(final GoodIssueModel goodIssueModel) {
             cbSelectItem.setChecked(false);
-            tvRoUid.setVisibility(View.GONE);
+            tvRoUid.setVisibility(View.INVISIBLE);
 
             if (Objects.equals(helper.ACTIVITY_NAME, "UPDATE")){
                 btnDeleteGi.setVisibility(View.GONE);

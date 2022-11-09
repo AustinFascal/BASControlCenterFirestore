@@ -130,8 +130,10 @@ public class RecapGoodIssueManagementAdapter extends RecyclerView.Adapter<RecapG
 
             DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
 
+
             Query query = databaseReference.child("GoodIssueData");
-            query.addValueEventListener(new ValueEventListener() {
+            query.keepSynced(false);
+            query.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     if (snapshot.exists()){
@@ -139,6 +141,12 @@ public class RecapGoodIssueManagementAdapter extends RecyclerView.Adapter<RecapG
                             if (Objects.equals(item.child("giRecappedTo").getValue(), rcpDocumentID)) {
                                 GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
                                 goodIssueModelArrayList.add(goodIssueModel);
+
+                                if (!rcpGiCoUID.isEmpty()){
+                                    databaseReference.child("GoodIssueData").child(goodIssueModel.getGiUID()).child("giCashedOutTo").setValue(rcpGiCoUID);
+                                    databaseReference.child("GoodIssueData").child(goodIssueModel.getGiUID()).child("giCashedOut").setValue(true);
+                                }
+
                             }
                         }
                     }
@@ -147,7 +155,6 @@ public class RecapGoodIssueManagementAdapter extends RecyclerView.Adapter<RecapG
                     }
                     tvCubication.setText(Html.fromHtml(df.format(totalUnit) +" m\u00B3"));
                 }
-
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {

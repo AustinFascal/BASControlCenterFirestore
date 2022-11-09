@@ -791,10 +791,32 @@ public class AddCashOutActivity extends AppCompatActivity {
                             new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
 
 
-                    dialogInterface.confirmCreateCashOutProof(context, db,
-                            coUID, coDateCreated + " | " + coTimeCreated + " WIB",
-                            helper.getUserId(), "","", "", "",
-                            suppplieruidVal, roDocumentID, false, false, true, recapGiManagementAdapter);
+                    for (int l = 0; l<recapGiModelArrayList.size();l++){
+                        if  (recapGiManagementAdapter.getSelected().get(l).getRcpGiCoUID().isEmpty()){
+                            dialogInterface.confirmCreateCashOutProof(context, db,
+                                    coUID, coDateCreated + " | " + coTimeCreated + " WIB",
+                                    helper.getUserId(), "","", "", "",
+                                    suppplieruidVal, roDocumentID, false, false, true, recapGiManagementAdapter);
+                        } else  {
+
+
+                                MaterialDialog materialDialog = new MaterialDialog.Builder((Activity) context)
+                                        .setTitle("Cash Out Sudah Dibuat")
+                                        .setAnimation(R.raw.lottie_generate_bill)
+                                        .setMessage("Pembuatan Cash Out gagal karena Anda telah membuat Cash Out dari rekap ini. Lihat rekap?")
+                                        .setCancelable(true)
+                                        .setPositiveButton("YA", R.drawable.ic_outline_check, (dialogInterface, which) -> {
+                                            dialogInterface.dismiss();
+                                        })
+                                        .setNegativeButton("TIDAK", R.drawable.ic_outline_close, (dialogInterface, which) -> dialogInterface.dismiss())
+                                        .build();
+
+                                materialDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
+                                materialDialog.show();
+
+                        }
+                    }
+
 
                     String custNameValReplace = custNameVal.replace(" - ","-");
                     int indexCustNameVal = custNameValReplace.lastIndexOf('-');

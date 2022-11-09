@@ -6,13 +6,13 @@ public class RecapGIModel {
 
     String rcpGiDocumentID, rcpGiUID, rcpGiDateAndTimeCreated, rcpGiCreatedBy, roDocumentID, rcpGiCoUID;
     float roCubication;
-   // Boolean rcpGiStatus;
+    Boolean rcpGiStatus;
 
     public RecapGIModel() {
     }
 
     public RecapGIModel(String rcpGiDocumentID, String rcpGiUID, String rcpGiDateAndTimeCreated,
-                        String rcpGiCreatedBy, String roDocumentID, float roCubication, String rcpGiCoUID) {
+                        String rcpGiCreatedBy, String roDocumentID, float roCubication, String rcpGiCoUID, Boolean rcpGiStatus) {
         this.rcpGiDocumentID = rcpGiDocumentID;
         this.rcpGiUID = rcpGiUID;
         this.rcpGiDateAndTimeCreated = rcpGiDateAndTimeCreated;
@@ -20,6 +20,15 @@ public class RecapGIModel {
         this.roDocumentID = roDocumentID;
         this.roCubication = roCubication;
         this.rcpGiCoUID = rcpGiCoUID;
+        this.rcpGiStatus = rcpGiStatus;
+    }
+
+    public Boolean getRcpGiStatus() {
+        return rcpGiStatus;
+    }
+
+    public void setRcpGiStatus(Boolean rcpGiStatus) {
+        this.rcpGiStatus = rcpGiStatus;
     }
 
     public String getRcpGiCoUID() {

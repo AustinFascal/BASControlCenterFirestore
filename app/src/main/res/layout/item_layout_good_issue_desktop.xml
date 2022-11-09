@@ -58,232 +58,283 @@
                     android:maxLines="2"
                     android:text="Kubikasi"
                     android:textAlignment="center"
-                    android:textSize="11sp"
+                    android:textSize="12sp"
                     android:textStyle="bold" />
 
 
-                <TextView
-                    android:id="@+id/tv_vhl_uid"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="NOPOL"
-                    android:textAlignment="center"
-                    android:textSize="11sp" />
 
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="match_parent"
+                android:id="@+id/llWrapStatusAndDate"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:layout_marginEnd="8dp"
+                android:layout_marginHorizontal="8dp"
                 android:layout_toStartOf="@+id/llHiddenView"
                 android:layout_toEndOf="@+id/ll_wrap_cubication"
-                android:gravity="center"
-                android:orientation="horizontal"
-                android:weightSum="5">
+                android:gravity="center_vertical"
+                android:orientation="vertical">
 
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical"
-                    android:orientation="vertical">
+                <TableLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
-                    <LinearLayout
-                        android:id="@+id/llWrapItemStatus"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="horizontal"
-                        android:visibility="visible">
+                    <TableRow
+                        android:weightSum="9">
 
 
                         <LinearLayout
-                            android:layout_marginStart="4dp"
+                            android:layout_weight="1"
+                            android:id="@+id/llWrapItemStatus"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:visibility="visible">
 
-                            android:id="@+id/llStatusApproved"
-                            android:layout_width="18dp"
-                            android:layout_height="18dp"
-                            android:background="@drawable/pill_green"
-                            android:gravity="center"
-                            android:padding="3dp"
-                            android:visibility="gone">
 
-                            <ImageView
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:src="@drawable/ic_outline_verified" />
+                            <LinearLayout
+                                android:id="@+id/llStatusApproved"
+
+                                android:layout_width="18dp"
+                                android:layout_height="18dp"
+                                android:layout_marginStart="4dp"
+                                android:background="@drawable/pill_green"
+                                android:gravity="center"
+                                android:padding="3dp"
+                                android:visibility="gone">
+
+                                <ImageView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:src="@drawable/ic_outline_verified" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:id="@+id/llStatusRecapped"
+
+                                android:layout_width="18dp"
+                                android:layout_height="18dp"
+                                android:layout_marginStart="4dp"
+                                android:background="@drawable/pill_green"
+                                android:gravity="center"
+                                android:padding="3dp"
+                                android:visibility="gone">
+
+                                <ImageView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:src="@drawable/ic_outline_bookmarked" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:id="@+id/llCashedOutStatus"
+
+                                android:layout_width="18dp"
+                                android:layout_height="18dp"
+                                android:layout_marginStart="4dp"
+                                android:background="@drawable/pill_green"
+                                android:gravity="center"
+                                android:padding="3dp"
+                                android:visibility="gone">
+
+                                <ImageView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:src="@drawable/ic_outline_cashed_out" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:id="@+id/ll_status_invoiced"
+
+                                android:layout_width="18dp"
+                                android:layout_height="18dp"
+                                android:layout_marginStart="4dp"
+                                android:background="@drawable/pill_green"
+                                android:gravity="center"
+                                android:padding="3dp"
+                                android:visibility="gone">
+
+                                <ImageView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:src="@drawable/ic_outline_receipt_long" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:id="@+id/llStatusArchived"
+                                android:layout_width="18dp"
+                                android:layout_height="18dp"
+                                android:layout_marginStart="4dp"
+                                android:background="@drawable/pill_green"
+                                android:gravity="center"
+                                android:padding="3dp"
+                                android:visibility="gone">
+
+                                <ImageView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:src="@drawable/ic_outline_archive" />
+                            </LinearLayout>
+
+
                         </LinearLayout>
 
-                        <LinearLayout
-                            android:layout_marginStart="4dp"
+                        <TextView
+                            android:layout_weight="1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_column="2"
+                            android:paddingHorizontal="10dp"
+                            android:text=":"
+                            android:textSize="14sp" />
 
-                            android:id="@+id/llStatusRecapped"
-                            android:layout_width="18dp"
-                            android:layout_height="18dp"
-                            android:background="@drawable/pill_green"
-                            android:gravity="center"
-                            android:padding="3dp"
-                            android:visibility="gone">
+                        <TextView
+                            android:layout_weight="1"
+                            android:id="@+id/tv_vhl_uid"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="NOPOL" />
 
-                            <ImageView
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:src="@drawable/ic_outline_bookmarked" />
-                        </LinearLayout>
+                        <TextView
+                            android:layout_weight="1"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:paddingHorizontal="10dp"
+                            android:text=":" />
 
-                        <LinearLayout
-                            android:layout_marginStart="4dp"
+                        <TextView
 
-                            android:id="@+id/llCashedOutStatus"
-                            android:layout_width="18dp"
-                            android:layout_height="18dp"
-                            android:background="@drawable/pill_green"
-                            android:gravity="center"
-                            android:padding="3dp"
-                            android:visibility="gone">
+                            android:layout_weight="1"
+                            android:layout_width="150dp"
+                            android:layout_height="match_parent"
+                            android:text=":" />
 
-                            <ImageView
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:src="@drawable/ic_outline_cashed_out" />
-                        </LinearLayout>
+                        <TextView
+                            android:layout_weight="1"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:paddingHorizontal="10dp"
+                            android:text=":" />
 
-                        <LinearLayout
-                            android:layout_marginStart="4dp"
+                        <TextView
+                            android:layout_weight="1"
+                            android:id="@+id/tvCoTotal"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:ellipsize="end"
+                            android:maxLines="2"
+                            android:text="Nomor RO UID"
+                            android:textSize="11sp"
+                            android:textStyle="bold"
+                            android:visibility="invisible" />
 
-                            android:id="@+id/ll_status_invoiced"
-                            android:layout_width="18dp"
-                            android:layout_height="18dp"
-                            android:background="@drawable/pill_green"
-                            android:gravity="center"
-                            android:padding="3dp"
-                            android:visibility="gone">
+                        <TextView
+                            android:layout_weight="1"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:paddingHorizontal="10dp"
+                            android:text=":" />
 
-                            <ImageView
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:src="@drawable/ic_outline_receipt_long" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_marginStart="4dp"
-                            android:id="@+id/llStatusArchived"
-                            android:layout_width="18dp"
-                            android:layout_height="18dp"
-                            android:background="@drawable/pill_green"
-                            android:gravity="center"
-                            android:padding="3dp"
-                            android:visibility="gone">
-
-                            <ImageView
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:src="@drawable/ic_outline_archive" />
-                        </LinearLayout>
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:text=":" />
 
 
-                    </LinearLayout>
 
-                    <TextView
-                        android:id="@+id/tvDateCreated"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:ellipsize="end"
-                        android:maxLines="2"
-                        android:text="12/12/2022 | 12:15 WIB"
-                        android:textSize="11sp" />
+                    </TableRow>
+
+                    <TableRow
+                        android:weightSum="9">
 
 
-                </LinearLayout>
+                        <TextView
+                            android:layout_weight="1"
+                            android:id="@+id/tvDateCreated"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:ellipsize="end"
+                            android:maxLines="2"
+                            android:text="12/12/2022 | 12:15 WIB" />
 
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="12dp"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
+                        <TextView
+                            android:layout_weight="1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_column="2"
+                            android:paddingHorizontal="10dp"
+                            android:text=":"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:layout_weight="1"
+                            android:id="@+id/tv_gi_vhl_detail"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:ellipsize="end"
+                            android:maxLines="2"
+                            android:text="(P) 200 (L) 200 (T) 190 | (C) -20 (FT) 170" />
+
+                        <TextView
+                            android:layout_weight="1"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:paddingHorizontal="10dp"
+                            android:text=":" />
+
+                        <TextView
+                            android:layout_weight="1"
+                            android:id="@+id/tvCustomerName"
+                            android:layout_width="150dp"
+                            android:layout_height="wrap_content"
+                            android:ellipsize="end"
+                            android:maxLines="2"
+                            android:text="Nama Customer" />
+
+                        <TextView
+                            android:layout_weight="1"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:paddingHorizontal="10dp"
+                            android:text=":" />
+
+                        <TextView
+                            android:layout_weight="1"
+                            android:id="@+id/tv_po_cust_number"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:ellipsize="end"
+                            android:maxLines="2"
+                            android:text="Nomor PO Customer"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_weight="1"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:paddingHorizontal="10dp"
+                            android:text=":" />
+
+                        <TextView
+                            android:layout_weight="1"
+                            android:id="@+id/tv_gi_mat_detail"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:ellipsize="end"
+                            android:maxLines="2"
+                            android:text="Jenis Material | Nama Material" />
 
 
-                    <TextView
-                        android:id="@+id/tv_po_cust_number"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:ellipsize="end"
-                        android:maxLines="2"
-                        android:text="Nomor PO Customer"
-                        android:textSize="11sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/tvCoTotal"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:ellipsize="end"
-                        android:maxLines="2"
-                        android:text="Nomor RO UID"
-                        android:textSize="11sp"
-                        android:textStyle="bold"
-                        android:visibility="gone" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="12dp"
-                    android:layout_weight="1"
-                    android:gravity="center"
-
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/tv_gi_mat_detail"
-
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:ellipsize="end"
-                        android:maxLines="2"
-                        android:text="Jenis Material | Nama Material"
-                        android:textSize="11sp" />
-
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="12dp"
-                    android:layout_weight="1"
-
-                    android:orientation="vertical">
-
-                    <TextView
-
-                        android:id="@+id/tvCustomerName"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:ellipsize="end"
-                        android:maxLines="2"
-                        android:text="Nama Customer"
-                        android:textSize="11sp" />
-
-
-                </LinearLayout>
-
-                <TextView
-                    android:id="@+id/tv_gi_vhl_detail"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="12dp"
-                    android:layout_weight="1"
-                    android:ellipsize="end"
-                    android:maxLines="2"
-                    android:text="(P) 200 (L) 200 (T) 190 | (C) -20 (FT) 170"
-                    android:textSize="11sp" />
+                    </TableRow>
+                </TableLayout>
 
 
             </LinearLayout>
+
+
+
+
 
             <LinearLayout
                 android:id="@+id/llHiddenView"

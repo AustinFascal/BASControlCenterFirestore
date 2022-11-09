@@ -1030,7 +1030,7 @@ public class DialogInterface {
         MaterialDialog materialDialog = new MaterialDialog.Builder((Activity) context)
                 .setTitle("Buat Cash Out")
                 .setAnimation(R.raw.lottie_generate_bill)
-                .setMessage("Apakah Anda yakin ingin membuat Cash Out dari data Good Issue terpilih?")
+                .setMessage("Apakah Anda yakin ingin membuat Cash Out dari data Rekap Good Issue terpilih?")
                 .setCancelable(true)
                 .setPositiveButton("YA", R.drawable.ic_outline_check, (dialogInterface, which) -> {
                     generatingCashOut(context, db,
@@ -1078,17 +1078,17 @@ public class DialogInterface {
                 DocumentReference refCO = db.collection("CashOutData").document();
                 String coDocumentID = refCO.getId();
 
-                List<String> rcpGiUID = new ArrayList<>();
-                Query query = databaseReferenceGI.child("GoodIssueData");
+                //List<String> rcpGiUID = new ArrayList<>();
+                /*Query query = databaseReferenceGI.child("GoodIssueData");
 
-                query.addValueEventListener(new ValueEventListener() {
+                query.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         if (snapshot.exists()) {
                             for (int k = 0; k < recapGiManagementAdapter.getSelected().size(); k++) {
                                 rcpGiUID.add(recapGiManagementAdapter.getSelected().get(k).getRcpGiDocumentID());
                             }
-                            for (int l = 0; l < rcpGiUID.size(); l++) {
+                            *//*for (int l = 0; l < rcpGiUID.size(); l++) {
                                 for (DataSnapshot item : snapshot.getChildren()) {
                                     GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
 
@@ -1100,7 +1100,7 @@ public class DialogInterface {
                                     }
                                 }
 
-                            }
+                            }*//*
 
                         }
                     }
@@ -1109,7 +1109,7 @@ public class DialogInterface {
                     public void onCancelled(@NonNull DatabaseError error) {
 
                     }
-                });
+                });*/
                 DecimalFormat df = new DecimalFormat("0.00");
 
 
@@ -1273,7 +1273,7 @@ public class DialogInterface {
                             DocumentReference refRCPGI = db.collection("RecapData").document();
                             String rcpGiDocumentID = refRCPGI.getId();
 
-                            RecapGIModel recapGIModel = new RecapGIModel(rcpGiDocumentID, rcpGiUID, rcpGiDateAndTimeCreated, rcpGiCreatedBy, roUIDVal, totalUnit, "");
+                            RecapGIModel recapGIModel = new RecapGIModel(rcpGiDocumentID, rcpGiUID, rcpGiDateAndTimeCreated, rcpGiCreatedBy, roUIDVal, totalUnit, "", false);
 
                             refRCPGI.set(recapGIModel);
 
