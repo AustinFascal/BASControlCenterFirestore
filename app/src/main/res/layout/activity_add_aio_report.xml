@@ -89,7 +89,7 @@
                             android:orientation="vertical"
                             android:divider="@drawable/divider_transparent"
                             android:showDividers="middle"
-                            android:visibility="gone">
+                            android:visibility="visible">
                             <LinearLayout
                                 android:id="@+id/ll_wrap_filter_by_rouid"
                                 android:layout_width="match_parent"
@@ -503,12 +503,13 @@
                 android:layout_height="wrap_content"
                 android:text="Data tidak ditemukan"/>
         </LinearLayout>
+
         <androidx.core.widget.NestedScrollView
-            android:visibility="visible"
             android:id="@+id/nestedScrollView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/cdv_filter">
+            android:layout_below="@+id/cdv_filter"
+            android:visibility="visible">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvItemList"
@@ -516,8 +517,7 @@
                 android:layout_height="match_parent"
                 android:paddingTop="10dp"
                 android:paddingBottom="80dp"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:listitem="@layout/item_layout_good_issue" />
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
         </androidx.core.widget.NestedScrollView>
         <LinearLayout
             android:visibility="gone"

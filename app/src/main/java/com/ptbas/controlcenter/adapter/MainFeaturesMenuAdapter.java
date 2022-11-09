@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ptbas.controlcenter.R;
+import com.ptbas.controlcenter.create.AddAIOReportActivity;
 import com.ptbas.controlcenter.create.AddBankAccountActivity;
 import com.ptbas.controlcenter.create.AddSupplierActivity;
 import com.ptbas.controlcenter.management.ManageCustomerActivity;
@@ -85,6 +86,12 @@ public class MainFeaturesMenuAdapter extends RecyclerView.Adapter<MainFeatureVie
                     intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(intent2);
                 }
+                if (holder.tv1.getText().toString().equals("Data Laporan\nAll-in-One")){
+                    Intent intent2 = new Intent(context, AddAIOReportActivity.class);
+                    intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(intent2);
+                }
+
 
                 if (holder.tv1.getText().toString().equals("Data Rekap\nGood Issue")){
                     Intent intent2 = new Intent(context, ManageRecapGoodIssueActivity.class);

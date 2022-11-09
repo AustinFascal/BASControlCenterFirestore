@@ -258,11 +258,11 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
             FirebaseFirestore db = FirebaseFirestore.getInstance();
 
             if (giStatus){
-                llWrapGiStatus.setVisibility(View.VISIBLE);
+                //llWrapGiStatus.setVisibility(View.VISIBLE);
                 llStatusApproved.setVisibility(View.VISIBLE);
                 btnApproveGi.setVisibility(View.GONE);
             } else {
-                llWrapGiStatus.setVisibility(View.GONE);
+                //llWrapGiStatus.setVisibility(View.GONE);
                 llStatusApproved.setVisibility(View.GONE);
                 btnApproveGi.setVisibility(View.VISIBLE);
             }

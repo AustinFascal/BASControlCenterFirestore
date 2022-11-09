@@ -74,6 +74,7 @@ import com.itextpdf.text.Image;
 import com.itextpdf.text.ListItem;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
@@ -156,7 +157,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     public static BaseFont baseNormal, baseMedium, baseBold;
-    public static Font fontNormal, fontNormalSmall, fontNormalSmallItalic,
+    public static Font fontMediumSmall, fontNormal, fontNormalSmall, fontNormalSmallItalic,
             fontMedium, fontMediumWhite, fontBold, fontTransparent;
     public static BaseColor baseColorBluePale, baseColorLightGrey;
 
@@ -200,6 +201,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
         }
 
         fontNormal = new Font(baseNormal, 10, Font.NORMAL, BaseColor.BLACK);
+        fontMediumSmall = new Font(baseMedium, 8, Font.NORMAL, BaseColor.BLACK);
         fontNormalSmall = new Font(baseNormal, 8, Font.NORMAL, BaseColor.BLACK);
         fontNormalSmallItalic = new Font(baseNormal, 8, Font.ITALIC, BaseColor.BLACK);
         fontMedium = new Font(baseMedium, 10, Font.NORMAL, BaseColor.BLACK);
@@ -262,7 +264,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
         // ACTION BAR FOR STANDARD ACTIVITY
         assert actionBar != null;
         helper.handleActionBarConfigForStandardActivity(
-                this, actionBar, "Buat Invoice");
+                this, actionBar, "Buat Laporan All-In-One");
 
         // SYSTEM UI MODE FOR STANDARD ACTIVITY
         helper.handleUIModeForStandardActivity(this, actionBar);
@@ -355,7 +357,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
         giManagementAdapter = new GIManagementAdapter(this, goodIssueModelArrayList);
 
         // HIDE FAB CREATE COR ON CREATE
-        fabCreateDocument.animate().translationY(800).setDuration(100).start();
+        //fabCreateDocument.animate().translationY(800).setDuration(100).start();
 
         // NOTIFY REAL-TIME CHANGES AS USER CHOOSE THE ITEM
         final Handler handler = new Handler();
@@ -940,12 +942,14 @@ public class AddAIOReportActivity extends AppCompatActivity {
 */
 
 
-                /*dialogInterface.confirmCreateInvoice(context, db,
+                /*dialogInterface.confirmCreateAIO(context, db,
                         goodIssueModelArrayList,
                         invUID,  invCreatedBy,
                         invDateNTimeCreated,  "-", "", "",
                         "", invDateDeliveryPeriod,
                         custDocumentID,  bankAccountID,  roDocumentID, "", "");*/
+
+                createAIOPDF(Helper.getAppPathAIOReport(context)+"test.pdf");
             }
         });
 
@@ -986,14 +990,29 @@ public class AddAIOReportActivity extends AppCompatActivity {
         return sb.toString();
     }
 
-    public void createInvPDF(String dest){
+    public void createAIOPDF(String dest){
 
         if (new File(dest).exists()){
             new File(dest).deleteOnExit();
         }
 
         try {
-            Document document = new Document();
+
+             /*float width = mmToPt(248);
+            float height = mmToPt(157);*/
+            Rectangle f4Landscape = new Rectangle(936, 596);
+            Document document = new Document(f4Landscape, 10, 10, 10, 10);
+            PdfWriter.getInstance(document, new FileOutputStream(dest));
+            document.open();
+            document.addAuthor("PT BAS");
+            document.addCreator("BAS Control Center");
+            document.addCreationDate();
+            addAIOTtl(document);
+            addAIOMainContent(document);
+            document.close();
+            dialogInterface.aioDocumentGeneratedInformation(context, dest);
+
+           /* Document document = new Document();
             PdfWriter.getInstance(document, new FileOutputStream(dest));
             document.open();
             document.setPageSize(PageSize.A4);
@@ -1013,7 +1032,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
             document.close();
 
             // OPEN GENERATED FILE
-            dialogInterface.invoiceGeneratedInformation(context, dest);
+            dialogInterface.invoiceGeneratedInformation(context, dest);*/
 
         } catch (DocumentException | FileNotFoundException e) {
             e.printStackTrace();
@@ -1031,14 +1050,14 @@ public class AddAIOReportActivity extends AppCompatActivity {
         preface0.setSpacingAfter(120);
         document.add(preface0);
     }
-    private void addInvTtl(Document document) throws DocumentException {
+    private void addAIOTtl(Document document) throws DocumentException {
         Paragraph preface1 = new Paragraph();
-        Chunk title = new Chunk("INVOICE", fontBold);
+        Chunk title = new Chunk("All-In-One Report", fontBold);
         Paragraph paragraphTitle = new Paragraph(title);
         paragraphTitle.setAlignment(Element.ALIGN_LEFT);
         document.add(paragraphTitle);
         preface1.setAlignment(Element.ALIGN_CENTER);
-        preface1.setSpacingAfter(20);
+        preface1.setSpacingAfter(1);
         document.add(preface1);
     }
     public static PdfPCell cellImgQrSqr(Image image) throws DocumentException {
@@ -1152,7 +1171,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
         cell.setPaddingLeft(7);
         return cell;
     }
-    private void addInvMainContent(Document document) throws DocumentException{
+    private void addAIOMainContent(Document document) throws DocumentException{
         try {
             /*String invDateCreated =
                     new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(new Date());
@@ -1219,8 +1238,10 @@ public class AddAIOReportActivity extends AppCompatActivity {
             double totalDueForTransportService = totalAmountForTransportService-taxPPH;
 
             // INIT TABLE
-            PdfPTable tblInvSection1 = new PdfPTable(7);
-            PdfPTable tblInvSection2 = new PdfPTable(7);
+            PdfPTable tblInvSection0 = new PdfPTable(3);
+            PdfPTable tblInvSection1 = new PdfPTable(18);
+            PdfPTable tblInvSection2 = new PdfPTable(19);
+            /*PdfPTable tblInvSection2 = new PdfPTable(7);
             PdfPTable tblInvSection3 = new PdfPTable(7);
             PdfPTable tblInvSection4 = new PdfPTable(7);
             PdfPTable tblInvSectionDatePeriod = new PdfPTable(2);
@@ -1232,11 +1253,13 @@ public class AddAIOReportActivity extends AppCompatActivity {
             PdfPTable tblInvSection10 = new PdfPTable(2);
             PdfPTable tblInvSection11 = new PdfPTable(2);
             PdfPTable tblInvSection12 = new PdfPTable(6);
-            PdfPTable tblInvSection13 = new PdfPTable(6);
+            PdfPTable tblInvSection13 = new PdfPTable(6);*/
 
             // WIDTH PERCENTAGE CONFIG
+            tblInvSection0.setWidthPercentage(100);
             tblInvSection1.setWidthPercentage(100);
             tblInvSection2.setWidthPercentage(100);
+            /*tblInvSection2.setWidthPercentage(100);
             tblInvSection3.setWidthPercentage(100);
             tblInvSection4.setWidthPercentage(100);
             tblInvSectionDatePeriod.setWidthPercentage(100);
@@ -1248,11 +1271,13 @@ public class AddAIOReportActivity extends AppCompatActivity {
             tblInvSection10.setWidthPercentage(100);
             tblInvSection11.setWidthPercentage(100);
             tblInvSection12.setWidthPercentage(100);
-            tblInvSection13.setWidthPercentage(100);
+            tblInvSection13.setWidthPercentage(100);*/
 
             // WIDTH FLOAT CONFIG
-            tblInvSection1.setWidths(new float[]{5,1,7,1,6,1,9}); //7 COLS
-            tblInvSection2.setWidths(new float[]{3,1,9,1,4,1,11}); //7 COLS
+            tblInvSection0.setWidths(new float[]{1,43,16});
+            tblInvSection1.setWidths(new float[]{1,3,3,3,4,4,3,4,4,4,4,4,3,3,4,4,3,2});
+            tblInvSection2.setWidths(new float[]{1,3,3,3,4,4,3,4,1,3,4,4,4,3,3,4,4,3,2});
+            /*tblInvSection2.setWidths(new float[]{3,1,9,1,4,1,11}); //7 COLS
             tblInvSection3.setWidths(new float[]{3,1,9,1,4,1,11}); //7 COLS
             tblInvSection4.setWidths(new float[]{3,1,9,1,4,1,11}); //5 COLS
             tblInvSectionDatePeriod.setWidths(new float[]{1,1}); //2 COLS
@@ -1264,33 +1289,80 @@ public class AddAIOReportActivity extends AppCompatActivity {
             tblInvSection10.setWidths(new float[]{2,10}); //2 COLS
             tblInvSection11.setWidths(new float[]{9,1}); //2 COLS
             tblInvSection12.setWidths(new float[]{3,3,1,4,1,9}); //6 COLS
-            tblInvSection13.setWidths(new float[]{5,2,5,3,1,5}); //6 COLS
+            tblInvSection13.setWidths(new float[]{5,2,5,3,1,5}); //6 COLS*/
+
+            tblInvSection0.addCell(cellTxtNrml(
+                    new Paragraph("", fontMediumSmall),
+                    Element.ALIGN_LEFT));
+
+            tblInvSection0.addCell(cellTxtNrml(
+                    new Paragraph("PENJUALAN", fontMediumSmall),
+                    Element.ALIGN_LEFT));
+            tblInvSection0.addCell(cellTxtNrml(
+                    new Paragraph("PEMBELIAN", fontMediumSmall),
+                    Element.ALIGN_LEFT));
 
             // ADD CELL TO RESPECTIVE TABLES
-            tblInvSection1.addCell(cellColHeaderNoBrdr(
-                    new Paragraph("DITAGIH KE", fontMediumWhite),
+            tblInvSection1.addCell(cellTxtNrml(
+                    new Paragraph("No", fontMediumSmall),
                     Element.ALIGN_LEFT));
-            tblInvSection1.addCell(cellTxtNoBrdrNrml(
-                    new Paragraph("", fontMediumWhite),
+            tblInvSection1.addCell(cellTxtNrml(
+                    new Paragraph("Tgl. Kirim", fontMediumSmall),
                     Element.ALIGN_LEFT));
-            tblInvSection1.addCell(cellTxtNoBrdrNrml(
-                    new Paragraph("", fontMediumWhite),
+            tblInvSection1.addCell(cellTxtNrml(
+                    new Paragraph("Kubikasi", fontMediumSmall),
                     Element.ALIGN_LEFT));
-            tblInvSection1.addCell(cellTxtNoBrdrNrml(
-                    new Paragraph("", fontMediumWhite),
+            tblInvSection1.addCell(cellTxtNrml(
+                    new Paragraph("HJ", fontMediumSmall),
                     Element.ALIGN_LEFT));
-            tblInvSection1.addCell(cellColHeaderNoBrdr(
-                    new Paragraph("DETAIL TAGIHAN", fontMediumWhite),
+            tblInvSection1.addCell(cellTxtNrml(
+                    new Paragraph("Total Material", fontMediumSmall),
                     Element.ALIGN_LEFT));
-            tblInvSection1.addCell(cellTxtNoBrdrNrml(
-                    new Paragraph("", fontMediumWhite),
+            tblInvSection1.addCell(cellTxtNrml(
+                    new Paragraph("PPN Material", fontMediumSmall),
                     Element.ALIGN_LEFT));
-            tblInvSection1.addCell(cellTxtNoBrdrNrml(
-                    new Paragraph("", fontMediumWhite),
+            tblInvSection1.addCell(cellTxtNrml(
+                    new Paragraph("Jasa", fontMediumSmall),
+                    Element.ALIGN_LEFT));
+            tblInvSection1.addCell(cellTxtNrml(
+                    new Paragraph("Total Jasa", fontMediumSmall),
+                    Element.ALIGN_LEFT));
+            tblInvSection1.addCell(cellTxtNrml(
+                    new Paragraph("%PPH23", fontMediumSmall),
+                    Element.ALIGN_LEFT));
+            tblInvSection1.addCell(cellTxtNrml(
+                    new Paragraph("PPH23", fontMediumSmall),
+                    Element.ALIGN_LEFT));
+            tblInvSection1.addCell(cellTxtNrml(
+                    new Paragraph("PPN Jasa", fontMediumSmall),
+                    Element.ALIGN_LEFT));
+            tblInvSection1.addCell(cellTxtNrml(
+                    new Paragraph("Total", fontMediumSmall),
+                    Element.ALIGN_LEFT));
+            tblInvSection1.addCell(cellTxtNrml(
+                    new Paragraph("Dibayar", fontMediumSmall),
+                    Element.ALIGN_LEFT));
+            tblInvSection1.addCell(cellTxtNrml(
+                    new Paragraph("Tgl. Bayar", fontMediumSmall),
+                    Element.ALIGN_LEFT));
+            tblInvSection1.addCell(cellTxtNrml(
+                    new Paragraph("HB", fontMediumSmall),
+                    Element.ALIGN_LEFT));
+            tblInvSection1.addCell(cellTxtNrml(
+                    new Paragraph("Total Pembelian", fontMediumSmall),
+                    Element.ALIGN_LEFT));
+            tblInvSection1.addCell(cellTxtNrml(
+                    new Paragraph("Transfer Supplier", fontMediumSmall),
+                    Element.ALIGN_LEFT));
+            tblInvSection1.addCell(cellTxtNrml(
+                    new Paragraph("Tgl. Tf.", fontMediumSmall),
+                    Element.ALIGN_LEFT));
+            tblInvSection1.addCell(cellTxtNrml(
+                    new Paragraph("", fontMediumSmall),
                     Element.ALIGN_LEFT));
 
-            tblInvSection2.addCell(cellTxtNoBrdrNrml(
-                    new Paragraph("Nama", fontNormal),
+            /*tblInvSection2.addCell(cellTxtNoBrdrNrml(
+                    new Paragraph("", fontNormal),
                     Element.ALIGN_LEFT));
             tblInvSection2.addCell(cellTxtNoBrdrNrml(
                     new Paragraph(":", fontNormal),
@@ -1356,9 +1428,9 @@ public class AddAIOReportActivity extends AppCompatActivity {
             tblInvSection5.addCell(cellColHeader(
                     new Paragraph("Pajak", fontMedium), Element.ALIGN_RIGHT));
             tblInvSection5.addCell(cellColHeader(
-                    new Paragraph("Jumlah", fontMedium), Element.ALIGN_RIGHT));
+                    new Paragraph("Jumlah", fontMedium), Element.ALIGN_RIGHT));*/
 
-            for (int i = 0; i<productItemsList.size();i++){
+            /*for (int i = 0; i<productItemsList.size();i++){
                 tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
                         new Paragraph(matNameVal, fontNormal), Element.ALIGN_LEFT));
                 tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
@@ -1369,9 +1441,9 @@ public class AddAIOReportActivity extends AppCompatActivity {
                         new Paragraph(currencyVal+" "+currencyFormat(df.format(taxPPN)), fontNormal), Element.ALIGN_RIGHT));
                 tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
                         new Paragraph(currencyVal+" "+currencyFormat(df.format(totalAmountForMaterials)), fontNormal), Element.ALIGN_RIGHT));
-            }
+            }*/
 
-            tblInvSection7.addCell(cellTxtNoBrdrNrmlMainContent(
+            /*tblInvSection7.addCell(cellTxtNoBrdrNrmlMainContent(
                     new Paragraph(transportServiceNameVal, fontNormal), Element.ALIGN_LEFT));
             tblInvSection7.addCell(cellTxtNoBrdrNrmlMainContent(
                     new Paragraph(currencyVal+" "+currencyFormat(df.format(transportServiceSellPrice)), fontNormal), Element.ALIGN_RIGHT));
@@ -1528,10 +1600,11 @@ public class AddAIOReportActivity extends AppCompatActivity {
                     Element.ALIGN_LEFT));
             tblInvSection13.addCell(cellTxtNoBrdrNrml(
                     new Paragraph("", fontNormalSmall),
-                    Element.ALIGN_LEFT));
+                    Element.ALIGN_LEFT));*/
 
+            document.add(tblInvSection0);
             document.add(tblInvSection1);
-            document.add(tblInvSection2);
+           /* document.add(tblInvSection2);
             document.add(tblInvSection3);
             document.add(paragraphBlank); // SPACE SEPARATOR
             document.add(tblInvSection5);
@@ -1553,7 +1626,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
             document.add(tblInvSection11);
             document.add(paragraphBlank); // SPACE SEPARATOR
             document.add(tblInvSection13);
-            document.add(tblInvSection12);
+            document.add(tblInvSection12);*/
             document.add(paragraphBlank); // SPACE SEPARATOR
             document.add(paragraphInvDateCreated);
 

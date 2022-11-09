@@ -86,6 +86,30 @@ public class Helper {
         return dir.getPath() + File.separator;
     }
 
+    public static String getAppPathAIOReport(Context context) {
+        /*String fullPath = context.getExternalFilesDir(null) + File.separator
+                +"Invoice"
+                +File.separator ;
+
+        File dir = new File(fullPath);*/
+
+        String fullPath = File.separator +  "mnt" + File.separator
+                + "windows" + File.separator
+                + "BstSharedFolder" + File.separator
+                +"AIO Report"
+                +File.separator ;
+
+        File dir = new File(fullPath);
+
+        if (!dir.exists()) {
+            dir.mkdir();
+        } else{
+            dir.canWrite();
+        }
+
+        return dir.getPath() + File.separator;
+    }
+
     public static String getAppPathCashOut(Context context) {
         /*String fullPath = context.getExternalFilesDir(null) + File.separator
                 +"Cash Out"
