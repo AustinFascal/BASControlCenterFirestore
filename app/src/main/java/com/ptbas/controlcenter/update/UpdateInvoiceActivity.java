@@ -1672,6 +1672,7 @@ public class UpdateInvoiceActivity extends AppCompatActivity {
                 datePeriod.add(giManagementAdapter.getSelected().get(i).getGiDateCreated());
             }*/
             float totalCubication = 0;
+            Collections.reverse(goodIssueModelArrayList);
             for (int i = 0; i < goodIssueModelArrayList.size(); i++){
                 String rowNumberStrVal = String.valueOf(i+1);
                 String rowDateStrVal = goodIssueModelArrayList.get(i).getGiDateCreated();

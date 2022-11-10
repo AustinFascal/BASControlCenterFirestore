@@ -185,7 +185,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
 
     private Menu menu;
 
-    public String coDateDeliveryPeriodVal;
+    public String coDateDeliveryPeriodVal, invDateVerified;
     String invDateDeliveryPeriod, invCreatedBy="", custDocumentID ="", selectedCustName, coDateDeliveryPeriod;
 
     private MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
@@ -1143,45 +1143,11 @@ public class AddAIOReportActivity extends AppCompatActivity {
 
 
 
-            Query query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated");
-            query.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    goodIssueModelArrayList.clear();
-                    if (snapshot.exists()){
-                        for (DataSnapshot item : snapshot.getChildren()) {
-                            if (Objects.equals(item.child("roDocumentID").getValue(), roDocumentID)) {
-                                GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
-                                goodIssueModelArrayList.add(goodIssueModel);
-                            }
-                        }
-                    }
-                }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-
-                }
-            });
 
 
             // String s : deliveryPeriod
             for (int i=0; i<deliveryPeriod.length;i++) {
-                String rowNumberStrVal = String.valueOf(i+1);
-                tblInvSection2.addCell(cellTxtNrml(
-                        new Paragraph(rowNumberStrVal, fontNormalSmall), Element.ALIGN_LEFT));
-                tblInvSection2.addCell(cellTxtNrml(
-                        new Paragraph(deliveryPeriod[i], fontNormalSmall), Element.ALIGN_LEFT));
-                tblInvSection2.addCell(cellTxtNrml(
-                        new Paragraph(df.format(totalUnitAmountForMaterials), fontNormalSmall), Element.ALIGN_RIGHT));
-                tblInvSection2.addCell(cellTxtNrml(
-                        new Paragraph(currencyFormat(df.format(matBuyPrice)), fontNormalSmall), Element.ALIGN_RIGHT));
-
-
-
-
-
-
                 for (int j = 0; j < goodIssueModelArrayList.size(); j++) {
                     if (goodIssueModelArrayList.get(j).getGiDateCreated().equals(deliveryPeriod[i])) {
                         totalUnitAmountForMaterials += goodIssueModelArrayList.get(j).getGiVhlCubication();
@@ -1191,10 +1157,27 @@ public class AddAIOReportActivity extends AppCompatActivity {
                 totalAmountForMaterials = matSellPrice * totalUnitAmountForMaterials;
                 totalAmountMatBuyPrice = matBuyPrice * totalUnitAmountForMaterials;
 
+                double taxPPN = (0.11)*totalAmountForMaterials;
+                //double taxPPH = (0.02)*totalAmountForTransportService;
+                //double totalDue = totalAmountForMaterials+totalAmountForTransportService+taxPPN-taxPPH;
+                //double totalDueForTransportService = totalAmountForTransportService-taxPPH;
+
+                String rowNumberStrVal = String.valueOf(i+1);
+                tblInvSection2.addCell(cellTxtNrml(
+                        new Paragraph(rowNumberStrVal, fontNormalSmall), Element.ALIGN_LEFT));
+                tblInvSection2.addCell(cellTxtNrml(
+                        new Paragraph(deliveryPeriod[i], fontNormalSmall), Element.ALIGN_LEFT));
+                tblInvSection2.addCell(cellTxtNrml(
+                        new Paragraph(df.format(totalUnitAmountForMaterials), fontNormalSmall), Element.ALIGN_RIGHT));
+                tblInvSection2.addCell(cellTxtNrml(
+                        new Paragraph(currencyFormat(df.format(matSellPrice)), fontNormalSmall), Element.ALIGN_RIGHT));
+
+
+
                 tblInvSection2.addCell(cellTxtNrml(
                         new Paragraph(currencyFormat(df.format(totalAmountForMaterials)), fontNormalSmall), Element.ALIGN_RIGHT));
                 tblInvSection2.addCell(cellTxtNrml(
-                        new Paragraph("", fontNormalSmall), Element.ALIGN_LEFT));
+                        new Paragraph(currencyFormat(df.format(taxPPN)), fontNormalSmall), Element.ALIGN_LEFT));
                 tblInvSection2.addCell(cellTxtNrml(
                         new Paragraph("", fontNormalSmall), Element.ALIGN_LEFT));
                 tblInvSection2.addCell(cellTxtNrml(
@@ -1210,11 +1193,11 @@ public class AddAIOReportActivity extends AppCompatActivity {
                 tblInvSection2.addCell(cellTxtNrml(
                         new Paragraph("", fontNormalSmall), Element.ALIGN_LEFT));
                 tblInvSection2.addCell(cellTxtNrml(
-                        new Paragraph("", fontNormalSmall), Element.ALIGN_LEFT));
+                        new Paragraph(invDateVerified, fontNormalSmall), Element.ALIGN_LEFT));
                 tblInvSection2.addCell(cellTxtNrml(
                         new Paragraph(currencyFormat(df.format(matBuyPrice)), fontNormalSmall), Element.ALIGN_LEFT));
                 tblInvSection2.addCell(cellTxtNrml(
-                        new Paragraph("", fontNormalSmall), Element.ALIGN_LEFT));
+                        new Paragraph(currencyFormat(df.format(totalAmountMatBuyPrice)), fontNormalSmall), Element.ALIGN_LEFT));
                 tblInvSection2.addCell(cellTxtNrml(
                         new Paragraph("", fontNormalSmall), Element.ALIGN_LEFT));
                 tblInvSection2.addCell(cellTxtNrml(
@@ -1751,16 +1734,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
             }
         });*/
 
-        CollectionReference refInv = db.collection("InvoiceData");
-        refInv.whereEqualTo("roDocumentID", roDocumentID).get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots){
-                        InvoiceModel invoiceModel = documentSnapshot.toObject(InvoiceModel.class);
 
-                        coDateDeliveryPeriodVal = invoiceModel.getInvDateDeliveryPeriod();
-
-                    }
-                });
 
 
 
@@ -1811,6 +1785,39 @@ public class AddAIOReportActivity extends AppCompatActivity {
                                     }
                                 }
                             }
+
+                            Query query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated");
+                            query.addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    goodIssueModelArrayList.clear();
+                                    if (snapshot.exists()){
+                                        for (DataSnapshot item : snapshot.getChildren()) {
+                                            if (Objects.equals(item.child("roDocumentID").getValue(), roDocumentID)) {
+                                                GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
+                                                goodIssueModelArrayList.add(goodIssueModel);
+                                            }
+                                        }
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+
+                                }
+                            });
+
+                            CollectionReference refInv = db.collection("InvoiceData");
+                            refInv.whereEqualTo("roDocumentID", roDocumentID).get()
+                                    .addOnSuccessListener(queryDocumentSnapshotsInv -> {
+                                        for (QueryDocumentSnapshot documentSnapshotInv : queryDocumentSnapshotsInv){
+                                            InvoiceModel invoiceModel = documentSnapshotInv.toObject(InvoiceModel.class);
+
+                                            coDateDeliveryPeriodVal = invoiceModel.getInvDateDeliveryPeriod();
+                                            invDateVerified =  invoiceModel.getInvDateVerified();
+
+                                        }
+                                    });
 
                             //double totalIDR = matBuyPrice *Double.parseDouble(df.format(totalUnit));
                         }

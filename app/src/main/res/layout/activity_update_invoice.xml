@@ -432,7 +432,7 @@
                                         android:layout_weight="1"
                                         android:ellipsize="end"
                                         android:gravity="center_vertical"
-                                        android:text="Rincian Tagihan"
+                                        android:text="Gunakan Rincian Tagihan Default"
                                         android:textSize="16sp"
                                         android:textStyle="bold" />
 
@@ -646,7 +646,7 @@
                                         android:layout_weight="1"
                                         android:ellipsize="end"
                                         android:gravity="center_vertical"
-                                        android:text="Rincian Rekalkulasi"
+                                        android:text="Gunakan Rincian Rekalkulasi"
                                         android:textSize="16sp"
                                         android:textStyle="bold" />
 
