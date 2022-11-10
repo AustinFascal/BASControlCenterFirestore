@@ -975,7 +975,7 @@ public class AddRecapGoodIssueDataActivity extends AppCompatActivity {
 
     private void searchQueryAll(){
         Query query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated");
-        query.addValueEventListener(new ValueEventListener() {
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 goodIssueModelArrayList.clear();
@@ -1096,7 +1096,7 @@ public class AddRecapGoodIssueDataActivity extends AppCompatActivity {
         if (dateStartVal.isEmpty()&&dateEndVal.isEmpty()){
             query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated");
         }
-        query.addValueEventListener(new ValueEventListener() {
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 goodIssueModelArrayList.clear();

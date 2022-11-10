@@ -8,6 +8,7 @@ import android.os.CountDownTimer;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -51,6 +52,7 @@ import java.io.File;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -1032,11 +1034,11 @@ public class DialogInterface {
 
 
     public void generatingAIOReport(Context context, FirebaseFirestore db,
-                                  ArrayList<GoodIssueModel> goodIssueModelArrayList,
-                                  String invUID, String invCreatedBy,
-                                  String invDateNTimeCreated, String invDueDateNTime, String invVerifiedBy, String invTransferReference,
-                                  String invDateNTimeVerified, String invDateDeliveryPeriod,
-                                  String custDocumentID, String bankDocumentID, String roDocumentID, String invDateHandover,  String invHandOverBy) {
+                                    ArrayList<GoodIssueModel> goodIssueModelArrayList,
+                                    String invUID, String invCreatedBy,
+                                    String invDateNTimeCreated, String invDueDateNTime, String invVerifiedBy, String invTransferReference,
+                                    String invDateNTimeVerified, String invDateDeliveryPeriod,
+                                    String custDocumentID, String bankDocumentID, String roDocumentID, String invDateHandover,  String invHandOverBy) {
 
         GIManagementAdapter giManagementAdapter;
 
@@ -1086,8 +1088,9 @@ public class DialogInterface {
                     databaseReferenceGI.child("GoodIssueData").child(giManagementAdapter.getSelected().get(i).getGiUID()).child("giInvoiced").setValue(true);
                     databaseReferenceGI.child("GoodIssueData").child(giManagementAdapter.getSelected().get(i).getGiUID()).child("giInvoicedTo").setValue(invDocumentID);
                 }*/
+
                 AddAIOReportActivity addAIOReportActivity = (AddAIOReportActivity) context;
-                addAIOReportActivity.createAIOPDF(Helper.getAppPathInvoice(context)+invUID+".pdf");
+                addAIOReportActivity.createAIOPDF(Helper.getAppPathAIOReport(context)+"test"+".pdf");
                 generatingInvoiceDialog.dismiss();
             }
         }.start();
@@ -1139,7 +1142,7 @@ public class DialogInterface {
     }
 
     public void generatingCashOut(Context context, FirebaseFirestore db,
-                                                                    String coUID, String coDateAndTimeCreated, String coCreatedBy,
+                                  String coUID, String coDateAndTimeCreated, String coCreatedBy,
                                   String coDateAndTimeApproved, String coApprovedBy,
                                   String coDateAndTimeACC, String coAccBy, String coSupplier,
                                   String roDocumentID, Boolean coStatusApproval,
@@ -1158,7 +1161,7 @@ public class DialogInterface {
 
         generatingCashOutProofDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
         generatingCashOutProofDialog.show();
-        ArrayList<GoodIssueModel> goodIssueModelArrayList  = new ArrayList<>();
+        //ArrayList<GoodIssueModel> goodIssueModelArrayList  = new ArrayList<>();
         new CountDownTimer(2000, 1000) {
             public void onTick(long millisUntilFinished) {
             }
@@ -1241,20 +1244,10 @@ public class DialogInterface {
 
                             }
 
-                            float totalUnit = 0;
 
-                            List<String> datePeriod = new ArrayList<>();
 
-                            for (int i = 0; i < goodIssueModelArrayList.size(); i++) {
-                                totalUnit += goodIssueModelArrayList.get(i).getGiVhlCubication();
-                                datePeriod.add(goodIssueModelArrayList.get(i).getGiDateCreated());
-                            }
 
-                            HashSet<String> filter = new HashSet(datePeriod);
-                            ArrayList<String> datePeriodFiltered = new ArrayList<>(filter);
-                            String coDateDeliveryPeriod = String.valueOf(datePeriodFiltered);
 
-                            double totalIDR = matBuyPrice *Double.parseDouble(df.format(totalUnit));
 
                             refRecap.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                                 @Override
@@ -1277,13 +1270,24 @@ public class DialogInterface {
                                 }
                             });
 
+
+                            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+
+                            ArrayList<GoodIssueModel> goodIssueModelArrayList = new ArrayList<>();
+                            //giManagementAdapter = new GIManagementAdapter(context, goodIssueModelArrayList);
+
+
+
+
                             CashOutModel cashOutModel = new CashOutModel(
                                     coDocumentID, coUID, coDateAndTimeCreated, coCreatedBy,
                                     coDateAndTimeApproved, coApprovedBy, coDateAndTimeACC, coAccBy, coSupplier,
-                                    roDocumentID, coDateDeliveryPeriod, coStatusApproval, coStatusPayment, totalIDR,
+                                    roDocumentID, "[]", coStatusApproval, coStatusPayment, 0.0,
                                     "", "", "", "", "", "");
 
                             refCO.set(cashOutModel);
+
+
                         });
 
 

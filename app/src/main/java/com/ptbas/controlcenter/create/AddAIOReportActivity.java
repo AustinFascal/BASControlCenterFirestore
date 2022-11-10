@@ -48,6 +48,9 @@ import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.database.DataSnapshot;
@@ -56,9 +59,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
@@ -83,15 +88,21 @@ import com.itextpdf.text.pdf.draw.LineSeparator;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.adapter.GIManagementAdapter;
+import com.ptbas.controlcenter.adapter.InvoiceManagementAdapter;
+import com.ptbas.controlcenter.adapter.RecapGoodIssueManagementAdapter;
 import com.ptbas.controlcenter.helper.DialogInterface;
 import com.ptbas.controlcenter.helper.Helper;
 import com.ptbas.controlcenter.helper.ImageAndPositionRenderer;
 import com.ptbas.controlcenter.helper.NumberToWords;
 import com.ptbas.controlcenter.model.BankAccountModel;
 import com.ptbas.controlcenter.model.CashOutModel;
+import com.ptbas.controlcenter.model.CustomerModel;
 import com.ptbas.controlcenter.model.GoodIssueModel;
+import com.ptbas.controlcenter.model.InvoiceModel;
 import com.ptbas.controlcenter.model.ProductItems;
+import com.ptbas.controlcenter.model.RecapGIModel;
 import com.ptbas.controlcenter.model.ReceivedOrderModel;
+import com.ptbas.controlcenter.update.UpdateCashOutActivity;
 import com.ptbas.controlcenter.utils.LangUtils;
 
 import java.io.ByteArrayOutputStream;
@@ -117,7 +128,7 @@ import dev.shreyaspatil.MaterialDialog.MaterialDialog;
 public class AddAIOReportActivity extends AppCompatActivity {
 
     private static final String ALLOWED_CHARACTERS = "0123456789QWERTYUIOPASDFGHJKLZXCVBNM";
-
+    String[] deliveryPeriod;
     double matSellPrice, transportServiceSellPrice, invTax1 = 0, invTax2 =0;
     String invDueDate, invDateNTimeCreated, invTimeCreated, custIDVal, dateStartVal = "", dateEndVal = "", rouidVal= "", currencyVal = "", pouidVal = "",
             monthStrVal, dayStrVal, roPoCustNumber, matTypeVal, matNameVal, transportServiceNameVal,
@@ -126,12 +137,14 @@ public class AddAIOReportActivity extends AppCompatActivity {
     int invPoType, invPoTOP;
 
     Button btnSearchData, imgbtnExpandCollapseFilterLayout;
-    AutoCompleteTextView spinnerRoUID, spinnerCustName, spinnerBankAccount, spinnerCoUID;
-    TextInputEditText edtPoUID, edtDateStart, edtDateEnd, edtAccountOwnerName;
+    AutoCompleteTextView spinnerRoUID, spinnerCustName;
+    TextInputEditText edtPoUID, edtDateStart, edtDateEnd;
     DatePickerDialog datePicker;
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
     ArrayList<GoodIssueModel> goodIssueModelArrayList = new ArrayList<>();
+    ArrayList<InvoiceModel> invoiceModelArrayList = new ArrayList<>();
     GIManagementAdapter giManagementAdapter;
+    InvoiceManagementAdapter invoiceManagementAdapter;
     RecyclerView rvGoodIssueList;
     Context context;
     Helper helper = new Helper();
@@ -146,9 +159,9 @@ public class AddAIOReportActivity extends AppCompatActivity {
     List<ProductItems> productItemsList;
     List<String> customerName, arrayListCustDocumentID;
 
-    LinearLayout llStatusCo, ll_wrap_filter_by_couid, llShowSpinnerRoAndEdtPo, llWrapFilterByDateRange, llWrapFilterByRouid, llNoData, llWrapFilter, llBottomSelectionOptions;
+    LinearLayout llShowSpinnerRoAndEdtPo, llWrapFilterByDateRange, llWrapFilterByRouid, llNoData, llWrapFilter, llBottomSelectionOptions;
 
-    ImageButton btnResetBankAccount, btnResetCustomer, btnGiSearchByDateReset, btnGiSearchByRoUIDReset, btnExitSelection, btnResetCoUID;
+    ImageButton btnResetCustomer, btnGiSearchByDateReset, btnGiSearchByRoUIDReset, btnExitSelection;
 
     ExtendedFloatingActionButton fabCreateDocument;
 
@@ -172,14 +185,19 @@ public class AddAIOReportActivity extends AppCompatActivity {
 
     private Menu menu;
 
-    String invDateDeliveryPeriod, invCreatedBy="", custDocumentID ="";
+    public String coDateDeliveryPeriodVal;
+    String invDateDeliveryPeriod, invCreatedBy="", custDocumentID ="", selectedCustName, coDateDeliveryPeriod;
 
     private MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
+
+    float totalUnitAmountForMaterials;
+
+    double matBuyPrice;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_invoice);
+        setContentView(R.layout.activity_add_aio_report);
 
         vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         LangUtils.setLocale(this, "en");
@@ -214,18 +232,13 @@ public class AddAIOReportActivity extends AppCompatActivity {
         cdvFilter = findViewById(R.id.cdv_filter);
         btnSearchData = findViewById(R.id.caridata);
 
-        spinnerCoUID = findViewById(R.id.spinnerCoUID);
-        spinnerBankAccount = findViewById(R.id.spinnerBankAccount);
         spinnerCustName = findViewById(R.id.spinnerCustName);
         spinnerRoUID = findViewById(R.id.rouid);
-        edtAccountOwnerName = findViewById(R.id.edtAccountOwnerName);
         edtPoUID = findViewById(R.id.pouid);
         edtDateStart = findViewById(R.id.edt_gi_date_filter_start);
         edtDateEnd = findViewById(R.id.edt_gi_date_filter_end);
         rvGoodIssueList = findViewById(R.id.rvItemList);
         imgbtnExpandCollapseFilterLayout = findViewById(R.id.imgbtnExpandCollapseFilterLayout);
-        llStatusCo = findViewById(R.id.llStatusCo);
-        ll_wrap_filter_by_couid = findViewById(R.id.ll_wrap_filter_by_couid);
         llWrapFilterByDateRange = findViewById(R.id.ll_wrap_filter_by_date_range);
         llWrapFilterByRouid = findViewById(R.id.ll_wrap_filter_by_rouid);
         llWrapFilter = findViewById(R.id.llWrapFilter);
@@ -239,8 +252,6 @@ public class AddAIOReportActivity extends AppCompatActivity {
         btnExitSelection = findViewById(R.id.btnExitSelection);
         llBottomSelectionOptions = findViewById(R.id.llBottomSelectionOptions);
 
-        btnResetCoUID = findViewById(R.id.btnResetCoUID);
-        btnResetBankAccount = findViewById(R.id.btnResetBankAccount);
         btnResetCustomer = findViewById(R.id.btnResetCustomer);
         btnGiSearchByDateReset = findViewById(R.id.btn_gi_search_date_reset);
         btnGiSearchByRoUIDReset = findViewById(R.id.btnResetRouid);
@@ -355,6 +366,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
 
         // CREATE GI MANAGEMENT ADAPTER
         giManagementAdapter = new GIManagementAdapter(this, goodIssueModelArrayList);
+        invoiceManagementAdapter = new InvoiceManagementAdapter(this, invoiceModelArrayList);
 
         // HIDE FAB CREATE COR ON CREATE
         //fabCreateDocument.animate().translationY(800).setDuration(100).start();
@@ -364,19 +376,19 @@ public class AddAIOReportActivity extends AppCompatActivity {
         Runnable runnable = new Runnable() {
             public void run() {
                 // CHECK IF DATE AND RO/PO NUMBER IS SELECTED
-                if (!spinnerRoUID.getText().toString().isEmpty()
+                /*if (!spinnerRoUID.getText().toString().isEmpty()
                         && !Objects.requireNonNull(edtPoUID.getText()).toString().isEmpty()){
 
-                    int itemSelectedSize = giManagementAdapter.getSelected().size();
-                    float itemSelectedVolume = giManagementAdapter.getSelectedVolume();
+                    int itemSelectedSize = invoiceManagementAdapter.getSelected().size();
+                    //float itemSelectedVolume = invoiceManagementAdapter.getSelectedVolume();
                     String itemSelectedSizeVal = String.valueOf(itemSelectedSize).concat(" item terpilih");
-                    String itemSelectedVolumeAndBuyPriceVal = df.format(itemSelectedVolume).concat(" m3");
+                    //String itemSelectedVolumeAndBuyPriceVal = df.format(itemSelectedVolume).concat(" m3");
                     if (giManagementAdapter.getSelected().size()>0){
 
                         fabCreateDocument.animate().translationY(0).setDuration(100).start();
 
                         tvTotalSelectedItem.setText(itemSelectedSizeVal);
-                        tvTotalSelectedItem2.setText(itemSelectedVolumeAndBuyPriceVal);
+                       // tvTotalSelectedItem2.setText(itemSelectedVolumeAndBuyPriceVal);
                         llBottomSelectionOptions.animate()
                                 .translationY(0).alpha(1.0f)
                                 .setDuration(100)
@@ -402,7 +414,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
                                     }
                                 });
                     }
-                }
+                }*/
 
                 handler.postDelayed(this, 100);
             }
@@ -471,94 +483,49 @@ public class AddAIOReportActivity extends AppCompatActivity {
                 });*/
 
         spinnerCustName.setOnItemClickListener((adapterView, view, position, l) -> {
-            String selectedSpinnerCustomerName = (String) adapterView.getItemAtPosition(position);
-            customerData = selectedSpinnerCustomerName;
+            String selectedCustomer = (String) adapterView.getItemAtPosition(position);
+            String[] custNameSplit = selectedCustomer.split(" - ");
+            String custNameSplit1 = custNameSplit[1];
+
+            //spinnerCustUID.setText(selectedCustName);
+
+            selectedCustName = selectedCustomer;
             spinnerCustName.setError(null);
-            String[] custID =  selectedSpinnerCustomerName.split("-");
-            customerID = custID[0];
+            spinnerRoUID.setText(null);
+            edtPoUID.setText(null);
 
             btnResetCustomer.setVisibility(View.VISIBLE);
-            //clearRoPoData();
+            clearRoPoData();
 
+            llShowSpinnerRoAndEdtPo.setVisibility(View.VISIBLE);
 
-            /*custDocumentID = arrayListCustDocumentID.get(adapterView.getSelectedItemPosition());
-            String custDocumentIDValReplace = custDocumentID.replace(" - ","-");
-            int indexCustDocumentIDVal = custDocumentIDValReplace.lastIndexOf('-');
+            arrayListRoUID.clear();
+            spinnerRoUID.setAdapter(null);
 
-
-            db.collection("ReceivedOrderData").whereEqualTo("roStatus", true)
-                    .addSnapshotListener((value, error) -> {
+            db.collection("CustomerData").whereEqualTo("custName", custNameSplit1)
+                    .addSnapshotListener((value2, error2) -> {
                         arrayListRoUID.clear();
-                        if (value != null) {
-                            if (!value.isEmpty()) {
-                                for (DocumentSnapshot d : value.getDocuments()) {
-                                    String spinnerPurchaseOrders = Objects.requireNonNull(d.get("roPoCustNumber")).toString();
-                                    String custDocumentID = Objects.requireNonNull(d.get("custDocumentID")).toString();
-                                    if (custDocumentID.equals(custDocumentIDValReplace.substring(0, indexCustDocumentIDVal))){
-                                        arrayListRoUID.add(spinnerPurchaseOrders);
-                                    }
-
-                                }
-                                ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddInvoiceActivity.this, R.layout.style_spinner, arrayListRoUID);
-                                arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
-                                spinnerRoUID.setAdapter(arrayAdapter);
-                            } else {
-                                if(!this.isFinishing()) {
-                                    dialogInterface.roNotExistsDialogForInvoice(AddInvoiceActivity.this);
-                                }
-                            }
-                        }
-                    });*/
-
-
-
-
-
-            db.collection("ReceivedOrderData").whereEqualTo("roStatus", true)
-                    .addSnapshotListener((value, error) -> {
-                        if (!Objects.requireNonNull(value).isEmpty()) {
-                            for (DocumentSnapshot d : value.getDocuments()) {
-                                //custDocumentID = d.get("custDocumentID").toString();
+                        if (!Objects.requireNonNull(value2).isEmpty()) {
+                            for (DocumentSnapshot d : value2.getDocuments()) {
                                 custDocumentID = Objects.requireNonNull(d.get("custDocumentID")).toString();
-                                db.collection("CustomerData").whereEqualTo("custDocumentID", custDocumentID)
-                                        .addSnapshotListener((value2, error2) -> {
-                                            arrayListRoUID.clear();
-                                            if (!Objects.requireNonNull(value2).isEmpty()) {
-                                                for (DocumentSnapshot e : value2.getDocuments()) {
-                                                    custNameVal = Objects.requireNonNull(e.get("custName")).toString();
-                                                    custAddressVal = Objects.requireNonNull(e.get("custAddress")).toString();
-                                                    //custIDVal = Objects.requireNonNull(e.get("custName")).toString();
-                                                    db.collection("ReceivedOrderData").whereEqualTo("roStatus", true)
-                                                            .addSnapshotListener((value3, error3) -> {
-                                                                if (!Objects.requireNonNull(value3).isEmpty()) {
-                                                                    String spinnerPurchaseOrders = Objects.requireNonNull(d.get("roPoCustNumber")).toString();
-                                                                    if (selectedSpinnerCustomerName.contains(custNameVal)) {
-                                                                        arrayListRoUID.add(spinnerPurchaseOrders);
-                                                                    }
-                                                                    ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddAIOReportActivity.this, R.layout.style_spinner, arrayListRoUID);
-                                                                    arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
-                                                                    spinnerRoUID.setAdapter(arrayAdapter);
-                                                                }
-                                                            });
+
+                                db.collection("ReceivedOrderData").whereEqualTo("custDocumentID", custDocumentID)
+                                        .addSnapshotListener((value, error) -> {
+                                            if (!Objects.requireNonNull(value).isEmpty()) {
+                                                for (DocumentSnapshot e : value.getDocuments()) {
+                                                    String spinnerPurchaseOrders = Objects.requireNonNull(e.get("roPoCustNumber")).toString();
+                                                    arrayListRoUID.add(spinnerPurchaseOrders);
                                                 }
-                                            } else {
-                                                if (!isFinishing()) {
-                                                    dialogInterface.roNotExistsDialog(AddAIOReportActivity.this);
-                                                }
+                                                ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddAIOReportActivity.this, R.layout.style_spinner, arrayListRoUID);
+                                                arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
+                                                spinnerRoUID.setAdapter(arrayAdapter);
                                             }
                                         });
                             }
+
                         }
                     });
 
-
-
-
-
-
-
-
-            llShowSpinnerRoAndEdtPo.setVisibility(View.VISIBLE);
         });
         spinnerCustName.setOnKeyListener(new View.OnKeyListener() {
             @Override
@@ -569,7 +536,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
                 return false;
             }
         });
-        spinnerCustName.setOnFocusChangeListener((view, b) -> spinnerCustName.setText(customerData));
+
 
 
         /*spinnerRoUID.setOnItemClickListener((adapterView, view, i, l) -> {
@@ -596,7 +563,6 @@ public class AddAIOReportActivity extends AppCompatActivity {
             String selectedSpinnerPoPtBasNumber = (String) adapterView.getItemAtPosition(i);
 
             btnGiSearchByRoUIDReset.setVisibility(View.VISIBLE);
-            ll_wrap_filter_by_couid.setVisibility(View.VISIBLE);
 
             db.collection("ReceivedOrderData").whereEqualTo("roPoCustNumber", selectedSpinnerPoPtBasNumber).get()
                     .addOnSuccessListener(queryDocumentSnapshots -> {
@@ -607,135 +573,12 @@ public class AddAIOReportActivity extends AppCompatActivity {
                             roPoCustNumber = receivedOrderModel.getRoPoCustNumber();
                             roDocumentID = receivedOrderModel.getRoDocumentID();
 
-                            db.collection("CashOutData").whereEqualTo("roDocumentID", roDocumentID)
-                                    .addSnapshotListener((value, error) -> {
-                                        arrayListCoUID.clear();
-                                        if (value != null) {
-                                            if (!value.isEmpty()) {
-                                                for (DocumentSnapshot d : value.getDocuments()) {
-                                                    //coDocumentID = Objects.requireNonNull(d.get("coDocumentID")).toString();
-                                                    coUID = Objects.requireNonNull(d.get("coUID")).toString();
-                                                    arrayListCoUID.add(coUID);
-                                                }
-                                                ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddAIOReportActivity.this, R.layout.style_spinner, arrayListCoUID);
-                                                arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
-                                                spinnerCoUID.setAdapter(arrayAdapter);
-                                            } else {
-                                                Toast.makeText(AddAIOReportActivity.this, "Not exists", Toast.LENGTH_SHORT).show();
-                                            }
-                                        }
-                                    });
+
                         }
                         edtPoUID.setText(roPoCustNumber);
                     });
 
         });
-
-        spinnerCoUID.setOnItemClickListener((adapterView, view, i, l) -> {
-            spinnerCoUID.setError(null);
-            String selectedCoUID = (String) adapterView.getItemAtPosition(i);
-
-            btnResetCoUID.setVisibility(View.VISIBLE);
-            ll_wrap_filter_by_couid.setVisibility(View.VISIBLE);
-
-            db.collection("CashOutData").whereEqualTo("coUID", selectedCoUID).get()
-                    .addOnSuccessListener(queryDocumentSnapshots -> {
-                        for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots){
-                            CashOutModel cashOutModel = documentSnapshot.toObject(CashOutModel.class);
-                            cashOutModel.setCoDocumentID(documentSnapshot.getId());
-                            coDocumentID = cashOutModel.getCoDocumentID();
-                            coUID = cashOutModel.getCoUID();
-                            coAccBy = cashOutModel.getCoAccBy();
-
-                            if (coAccBy.isEmpty()){
-                                MaterialDialog md = new MaterialDialog.Builder(this)
-                                        .setAnimation(R.raw.lottie_attention)
-                                        .setTitle("Cash Out Belum Lunas")
-                                        .setMessage("Cash Out belum dibayar ke supplier. Apakah Anda yakin ingin melanjutkan penagihan?")
-                                        .setPositiveButton("LANJUT", R.drawable.ic_outline_navigate_next, (dialogInterface, which) -> {
-                                            dialogInterface.dismiss();
-                                            llStatusCo.setVisibility(View.VISIBLE);
-                                        })
-                                        .setNegativeButton("BATAL", R.drawable.ic_outline_close, (dialogInterface, which) -> {
-                                            dialogInterface.dismiss();
-                                            spinnerCoUID.setText(null);
-                                            llStatusCo.setVisibility(View.GONE);
-                                            btnResetCoUID.setVisibility(View.GONE);
-                                        })
-                                        .setCancelable(false)
-                                        .build();
-
-                                md.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
-                                md.show();
-                            } else {
-                                llStatusCo.setVisibility(View.GONE);
-                            }
-                        }
-                        //spinnerCoUID.setText(coUID);
-                    });
-        });
-
-
-        db.collection("BankAccountData").whereEqualTo("bankType", "PERUSAHAAN")
-                .addSnapshotListener((value, error) -> {
-                    bankAccount.clear();
-                    bankAccountDocumentID.clear();
-                    if (value != null) {
-                        if (!value.isEmpty()) {
-                            for (DocumentSnapshot d : value.getDocuments()) {
-                                //String bankAccountID = Objects.requireNonNull(d.get("bankAccountID")).toString();
-                                String bankName = Objects.requireNonNull(d.get("bankName")).toString();
-                                String bankAccountNumber = Objects.requireNonNull(d.get("bankAccountNumber")).toString();
-                                //String bankAccountOwnerName = Objects.requireNonNull(d.get("bankAccountOwnerName")).toString();
-
-                                String a = bankName.replace(" - ","-");
-                                int b = a.lastIndexOf('-');
-
-                                bankAccount.add(a.substring(0,b)+" - "+bankAccountNumber);
-                                //bankAccountDocumentID.add(bankAccountID);
-                                //edtAccountOwnerName.setText(bankAccountOwnerName);
-                            }
-                            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddAIOReportActivity.this, R.layout.style_spinner, bankAccount);
-                            arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
-                            spinnerBankAccount.setAdapter(arrayAdapter);
-                        } else {
-                            Toast.makeText(AddAIOReportActivity.this, "Not exists", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-
-
-
-
-        spinnerBankAccount.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                spinnerBankAccount.setError(null);
-                btnResetBankAccount.setVisibility(View.VISIBLE);
-                String selectedSpinnerBankAccount = (String) adapterView.getItemAtPosition(i);
-
-                String a = selectedSpinnerBankAccount.replace(" - ","-");
-                int b = a.lastIndexOf('-');
-
-                db.collection("BankAccountData").whereEqualTo("bankAccountNumber", a.substring(b+1)).get()
-                        .addOnSuccessListener(queryDocumentSnapshots -> {
-                            for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots){
-                                BankAccountModel bankAccountModel = documentSnapshot.toObject(BankAccountModel.class);
-                                //bankAccountModel.setBankAccountID(documentSnapshot.getId());
-                                //bankAccountID = selectedSpinnerBankAccount;
-                                bankAccountID = bankAccountModel.getBankAccountID();
-                                bankNameVal = bankAccountModel.getBankName();
-                                bankAccountNumberVal = bankAccountModel.getBankAccountNumber();
-                                bankAccountOwnerNameVal = bankAccountModel.getBankAccountOwnerName();
-
-                                edtAccountOwnerName.setText(bankAccountModel.getBankAccountOwnerName());
-                            }
-                            edtPoUID.setText(roPoCustNumber);
-                        });
-
-            }
-        });
-
 
         btnGiSearchByDateReset.setOnClickListener(view -> {
             clearSelection();
@@ -748,44 +591,17 @@ public class AddAIOReportActivity extends AppCompatActivity {
         });
 
         btnGiSearchByRoUIDReset.setOnClickListener(view -> {
-            llStatusCo.setVisibility(View.GONE);
             spinnerRoUID.setText(null);
             spinnerRoUID.requestFocus();
             edtPoUID.setText(null);
             edtPoUID.clearFocus();
-            spinnerCoUID.setText(null);
-            spinnerCoUID.clearFocus();
             coUID = "";
             coDocumentID = "";
             roDocumentID = "";
             rouidVal = "";
             pouidVal = "";
 
-            ll_wrap_filter_by_couid.setVisibility(View.GONE);
             btnGiSearchByRoUIDReset.setVisibility(View.GONE);
-        });
-
-        btnResetBankAccount.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                menu.findItem(R.id.select_all_data_recap).setVisible(false);
-                clearSelection();
-                spinnerBankAccount.setText(null);
-                spinnerBankAccount.requestFocus();
-                edtAccountOwnerName.setText(null);
-            }
-        });
-
-        btnResetCoUID.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                menu.findItem(R.id.select_all_data_recap).setVisible(false);
-                clearSelection();
-                spinnerCoUID.setText(null);
-                spinnerCoUID.requestFocus();
-                btnResetCoUID.setVisibility(View.GONE);
-                llStatusCo.setVisibility(View.GONE);
-            }
         });
 
         //fabCreateGiRecap.hide();
@@ -795,7 +611,6 @@ public class AddAIOReportActivity extends AppCompatActivity {
             public void onClick(View view) {
                 menu.findItem(R.id.select_all_data_recap).setVisible(false);
                 clearSelection();
-                llStatusCo.setVisibility(View.GONE);
                 coUID = "";
                 coDocumentID = "";
                 rouidVal = "";
@@ -809,10 +624,11 @@ public class AddAIOReportActivity extends AppCompatActivity {
                 edtPoUID.clearFocus();
                 spinnerRoUID.clearFocus();
 
-                spinnerCoUID.setText(null);
-                spinnerCoUID.clearFocus();
-                ll_wrap_filter_by_couid.setVisibility(View.GONE);
+                arrayListRoUID.clear();
+                spinnerRoUID.setAdapter(null);
+
                 btnResetCustomer.setVisibility(View.GONE);
+                btnGiSearchByRoUIDReset.setVisibility(View.GONE);
             }
         });
 
@@ -854,24 +670,10 @@ public class AddAIOReportActivity extends AppCompatActivity {
                 edtPoUID.setError(null);
             }
 
-            if (Objects.requireNonNull(spinnerCoUID.getText()).toString().isEmpty()){
-                spinnerCoUID.setError("Mohon pilih nomor ID Cash Out");
-            } else{
-                spinnerCoUID.setError(null);
-            }
-
-            if (Objects.requireNonNull(spinnerBankAccount.getText()).toString().isEmpty()){
-                spinnerBankAccount.setError("Mohon pilih rekening pembayaran");
-            } else{
-                spinnerBankAccount.setError(null);
-            }
 
             if (!spinnerCustName.getText().toString().isEmpty()&&
                     !spinnerRoUID.getText().toString().isEmpty()&&
-                    !spinnerCoUID.getText().toString().isEmpty()&&
-                    !edtPoUID.getText().toString().isEmpty()&&
-                    !spinnerBankAccount.getText().toString().isEmpty()&&
-                    !edtAccountOwnerName.getText().toString().isEmpty()){
+                    !edtPoUID.getText().toString().isEmpty()){
                 searchQuery();
             }
         });
@@ -885,20 +687,20 @@ public class AddAIOReportActivity extends AppCompatActivity {
                 ActivityCompat.requestPermissions((Activity) context,
                         new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 10);
             } else {
-                for (int i = 0; i < giManagementAdapter.getSelected().size(); i++) {
+               /* for (int i = 0; i < giManagementAdapter.getSelected().size(); i++) {
                     totalUnit += giManagementAdapter.getSelected().get(i).getGiVhlCubication();
-                }
+                }*/
 
-                double totalIDR = matSellPrice *Double.parseDouble(df.format(totalUnit));
+                // double totalIDR = matSellPrice *Double.parseDouble(df.format(totalUnit));
 
-                List<String> datePeriod = new ArrayList<>();
+                /*List<String> datePeriod = new ArrayList<>();
                 for (int i = 0; i < giManagementAdapter.getSelected().size(); i++) {
                     datePeriod.add(giManagementAdapter.getSelected().get(i).getGiDateCreated());
-                }
-                HashSet<String> filter = new HashSet(datePeriod);
-                ArrayList<String> datePeriodFiltered = new ArrayList<>(filter);
+                }*/
+                /*HashSet<String> filter = new HashSet(datePeriod);
+                ArrayList<String> datePeriodFiltered = new ArrayList<>(filter);*/
 
-                invDateDeliveryPeriod = String.valueOf(datePeriodFiltered);
+                //invDateDeliveryPeriod = String.valueOf(datePeriodFiltered);
 
                 String roUIDValNoSpace = rouidVal.replaceAll("\\s","");
                 invUID = getRandomString()+"-INV-"+roUIDValNoSpace;
@@ -942,14 +744,14 @@ public class AddAIOReportActivity extends AppCompatActivity {
 */
 
 
-                /*dialogInterface.confirmCreateAIO(context, db,
+                dialogInterface.confirmCreateAIO(context, db,
                         goodIssueModelArrayList,
                         invUID,  invCreatedBy,
                         invDateNTimeCreated,  "-", "", "",
                         "", invDateDeliveryPeriod,
-                        custDocumentID,  bankAccountID,  roDocumentID, "", "");*/
+                        custDocumentID,  bankAccountID,  roDocumentID, "", "");
 
-                createAIOPDF(Helper.getAppPathAIOReport(context)+"test.pdf");
+
             }
         });
 
@@ -964,6 +766,14 @@ public class AddAIOReportActivity extends AppCompatActivity {
                 clearSelection();
             }
         });
+    }
+
+    private void clearRoPoData() {
+        rouidVal = null;
+        pouidVal = null;
+
+        spinnerRoUID.setText(null);
+        edtPoUID.setText(null);
     }
 
     private  void clearSelection(){
@@ -1214,6 +1024,8 @@ public class AddAIOReportActivity extends AppCompatActivity {
             }
 
 
+
+
             // INIT IMAGE BCA QR CODE
             //Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.bca_qr_bas);
 
@@ -1224,7 +1036,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
                 totalUnit += goodIssueModelArrayList.get(i).getGiVhlCubication();
             }*/
 
-            float totalUnitFinal = 0;
+           /* float totalUnitFinal = 0;
             for (int i = 0; i < giManagementAdapter.getSelected().size(); i++) {
                 totalUnitFinal += giManagementAdapter.getSelected().get(i).getGiVhlCubication();
             }
@@ -1235,61 +1047,25 @@ public class AddAIOReportActivity extends AppCompatActivity {
             double taxPPN = (0.11)*totalAmountForMaterials;
             double taxPPH = (0.02)*totalAmountForTransportService;
             double totalDue = totalAmountForMaterials+totalAmountForTransportService+taxPPN-taxPPH;
-            double totalDueForTransportService = totalAmountForTransportService-taxPPH;
+            double totalDueForTransportService = totalAmountForTransportService-taxPPH;*/
 
             // INIT TABLE
             PdfPTable tblInvSection0 = new PdfPTable(3);
             PdfPTable tblInvSection1 = new PdfPTable(18);
             PdfPTable tblInvSection2 = new PdfPTable(19);
-            /*PdfPTable tblInvSection2 = new PdfPTable(7);
-            PdfPTable tblInvSection3 = new PdfPTable(7);
-            PdfPTable tblInvSection4 = new PdfPTable(7);
-            PdfPTable tblInvSectionDatePeriod = new PdfPTable(2);
-            PdfPTable tblInvSection5 = new PdfPTable(5);
-            PdfPTable tblInvSection6 = new PdfPTable(5);
-            PdfPTable tblInvSection7 = new PdfPTable(5);
-            PdfPTable tblInvSection8 = new PdfPTable(5);
-            PdfPTable tblInvSection9 = new PdfPTable(5);
-            PdfPTable tblInvSection10 = new PdfPTable(2);
-            PdfPTable tblInvSection11 = new PdfPTable(2);
-            PdfPTable tblInvSection12 = new PdfPTable(6);
-            PdfPTable tblInvSection13 = new PdfPTable(6);*/
+
 
             // WIDTH PERCENTAGE CONFIG
             tblInvSection0.setWidthPercentage(100);
             tblInvSection1.setWidthPercentage(100);
             tblInvSection2.setWidthPercentage(100);
-            /*tblInvSection2.setWidthPercentage(100);
-            tblInvSection3.setWidthPercentage(100);
-            tblInvSection4.setWidthPercentage(100);
-            tblInvSectionDatePeriod.setWidthPercentage(100);
-            tblInvSection5.setWidthPercentage(100);
-            tblInvSection6.setWidthPercentage(100);
-            tblInvSection7.setWidthPercentage(100);
-            tblInvSection8.setWidthPercentage(100);
-            tblInvSection9.setWidthPercentage(100);
-            tblInvSection10.setWidthPercentage(100);
-            tblInvSection11.setWidthPercentage(100);
-            tblInvSection12.setWidthPercentage(100);
-            tblInvSection13.setWidthPercentage(100);*/
+
 
             // WIDTH FLOAT CONFIG
             tblInvSection0.setWidths(new float[]{1,43,16});
             tblInvSection1.setWidths(new float[]{1,3,3,3,4,4,3,4,4,4,4,4,3,3,4,4,3,2});
             tblInvSection2.setWidths(new float[]{1,3,3,3,4,4,3,4,1,3,4,4,4,3,3,4,4,3,2});
-            /*tblInvSection2.setWidths(new float[]{3,1,9,1,4,1,11}); //7 COLS
-            tblInvSection3.setWidths(new float[]{3,1,9,1,4,1,11}); //7 COLS
-            tblInvSection4.setWidths(new float[]{3,1,9,1,4,1,11}); //5 COLS
-            tblInvSectionDatePeriod.setWidths(new float[]{1,1}); //2 COLS
-            tblInvSection5.setWidths(new float[]{3,2,2,3,4}); //5 COLS
-            tblInvSection6.setWidths(new float[]{3,2,2,3,4}); //5 COLS
-            tblInvSection7.setWidths(new float[]{3,2,2,3,4}); //5 COLS
-            tblInvSection8.setWidths(new float[]{3,2,2,3,4}); //5 COLS
-            tblInvSection9.setWidths(new float[]{3,2,2,3,4}); //5 COLS
-            tblInvSection10.setWidths(new float[]{2,10}); //2 COLS
-            tblInvSection11.setWidths(new float[]{9,1}); //2 COLS
-            tblInvSection12.setWidths(new float[]{3,3,1,4,1,9}); //6 COLS
-            tblInvSection13.setWidths(new float[]{5,2,5,3,1,5}); //6 COLS*/
+
 
             tblInvSection0.addCell(cellTxtNrml(
                     new Paragraph("", fontMediumSmall),
@@ -1301,8 +1077,6 @@ public class AddAIOReportActivity extends AppCompatActivity {
             tblInvSection0.addCell(cellTxtNrml(
                     new Paragraph("PEMBELIAN", fontMediumSmall),
                     Element.ALIGN_LEFT));
-
-            // ADD CELL TO RESPECTIVE TABLES
             tblInvSection1.addCell(cellTxtNrml(
                     new Paragraph("No", fontMediumSmall),
                     Element.ALIGN_LEFT));
@@ -1326,9 +1100,6 @@ public class AddAIOReportActivity extends AppCompatActivity {
                     Element.ALIGN_LEFT));
             tblInvSection1.addCell(cellTxtNrml(
                     new Paragraph("Total Jasa", fontMediumSmall),
-                    Element.ALIGN_LEFT));
-            tblInvSection1.addCell(cellTxtNrml(
-                    new Paragraph("%PPH23", fontMediumSmall),
                     Element.ALIGN_LEFT));
             tblInvSection1.addCell(cellTxtNrml(
                     new Paragraph("PPH23", fontMediumSmall),
@@ -1360,6 +1131,160 @@ public class AddAIOReportActivity extends AppCompatActivity {
             tblInvSection1.addCell(cellTxtNrml(
                     new Paragraph("", fontMediumSmall),
                     Element.ALIGN_LEFT));
+
+
+
+            coDateDeliveryPeriod = coDateDeliveryPeriodVal.replace("[","").replace("]","").replace(" ","");
+            deliveryPeriod = coDateDeliveryPeriod.split(",");
+
+            double totalAmountForMaterials;
+            double totalAmountMatBuyPrice;
+
+
+
+
+            Query query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated");
+            query.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    goodIssueModelArrayList.clear();
+                    if (snapshot.exists()){
+                        for (DataSnapshot item : snapshot.getChildren()) {
+                            if (Objects.equals(item.child("roDocumentID").getValue(), roDocumentID)) {
+                                GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
+                                goodIssueModelArrayList.add(goodIssueModel);
+                            }
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+
+
+            // String s : deliveryPeriod
+            for (int i=0; i<deliveryPeriod.length;i++) {
+                String rowNumberStrVal = String.valueOf(i+1);
+                tblInvSection2.addCell(cellTxtNrml(
+                        new Paragraph(rowNumberStrVal, fontNormalSmall), Element.ALIGN_LEFT));
+                tblInvSection2.addCell(cellTxtNrml(
+                        new Paragraph(deliveryPeriod[i], fontNormalSmall), Element.ALIGN_LEFT));
+                tblInvSection2.addCell(cellTxtNrml(
+                        new Paragraph(df.format(totalUnitAmountForMaterials), fontNormalSmall), Element.ALIGN_RIGHT));
+                tblInvSection2.addCell(cellTxtNrml(
+                        new Paragraph(currencyFormat(df.format(matBuyPrice)), fontNormalSmall), Element.ALIGN_RIGHT));
+
+
+
+
+
+
+                for (int j = 0; j < goodIssueModelArrayList.size(); j++) {
+                    if (goodIssueModelArrayList.get(j).getGiDateCreated().equals(deliveryPeriod[i])) {
+                        totalUnitAmountForMaterials += goodIssueModelArrayList.get(j).getGiVhlCubication();
+                    }
+                }
+
+                totalAmountForMaterials = matSellPrice * totalUnitAmountForMaterials;
+                totalAmountMatBuyPrice = matBuyPrice * totalUnitAmountForMaterials;
+
+                tblInvSection2.addCell(cellTxtNrml(
+                        new Paragraph(currencyFormat(df.format(totalAmountForMaterials)), fontNormalSmall), Element.ALIGN_RIGHT));
+                tblInvSection2.addCell(cellTxtNrml(
+                        new Paragraph("", fontNormalSmall), Element.ALIGN_LEFT));
+                tblInvSection2.addCell(cellTxtNrml(
+                        new Paragraph("", fontNormalSmall), Element.ALIGN_LEFT));
+                tblInvSection2.addCell(cellTxtNrml(
+                        new Paragraph("", fontNormalSmall), Element.ALIGN_LEFT));
+                tblInvSection2.addCell(cellTxtNrml(
+                        new Paragraph("", fontNormalSmall), Element.ALIGN_LEFT));
+                tblInvSection2.addCell(cellTxtNrml(
+                        new Paragraph("", fontNormalSmall), Element.ALIGN_LEFT));
+                tblInvSection2.addCell(cellTxtNrml(
+                        new Paragraph("", fontNormalSmall), Element.ALIGN_LEFT));
+                tblInvSection2.addCell(cellTxtNrml(
+                        new Paragraph("", fontNormalSmall), Element.ALIGN_LEFT));
+                tblInvSection2.addCell(cellTxtNrml(
+                        new Paragraph("", fontNormalSmall), Element.ALIGN_LEFT));
+                tblInvSection2.addCell(cellTxtNrml(
+                        new Paragraph("", fontNormalSmall), Element.ALIGN_LEFT));
+                tblInvSection2.addCell(cellTxtNrml(
+                        new Paragraph(currencyFormat(df.format(matBuyPrice)), fontNormalSmall), Element.ALIGN_LEFT));
+                tblInvSection2.addCell(cellTxtNrml(
+                        new Paragraph("", fontNormalSmall), Element.ALIGN_LEFT));
+                tblInvSection2.addCell(cellTxtNrml(
+                        new Paragraph("", fontNormalSmall), Element.ALIGN_LEFT));
+                tblInvSection2.addCell(cellTxtNrml(
+                        new Paragraph("", fontNormalSmall), Element.ALIGN_LEFT));
+                tblInvSection2.addCell(cellTxtNrml(
+                        new Paragraph("", fontNormalSmall), Element.ALIGN_LEFT));
+                //totalUnitFinal = 0;
+                totalUnitAmountForMaterials=0;
+            }
+
+
+            //double totalAmountForMaterials;
+            /*double totalAmountForMaterials;
+            // String s : deliveryPeriod
+            for (int i=0; i<deliveryPeriod.length;i++) {
+                String rowNumberStrVal = String.valueOf(i+1);
+                tblInvSection2.addCell(cellTxtNoBrdrNrmlMainContent(
+                        new Paragraph(rowNumberStrVal, fontNormal), Element.ALIGN_LEFT));
+                tblInvSection2.addCell(cellTxtNoBrdrNrmlMainContent(
+                        new Paragraph(deliveryPeriod[i], fontNormal), Element.ALIGN_LEFT));
+
+                *//*tblInvSection2.addCell(cellTxtNoBrdrNrmlMainContent(
+                        new Paragraph(currencyVal + " " + currencyFormat(df.format(matBuyPrice)), fontNormal), Element.ALIGN_RIGHT));*//*
+
+                for (int j = 0; j < goodIssueModelArrayList.size(); j++) {
+                    if (goodIssueModelArrayList.get(j).getGiDateCreated().equals(deliveryPeriod[i])) {
+                        totalUnitAmountForMaterials += goodIssueModelArrayList.get(j).getGiVhlCubication();
+                    }
+                }
+
+
+                totalAmountForMaterials = matBuyPrice * totalUnitAmountForMaterials;
+
+                tblInvSection2.addCell(cellTxtNoBrdrNrmlMainContent(
+                        new Paragraph(df.format(totalUnitAmountForMaterials), fontNormal), Element.ALIGN_RIGHT));
+                tblInvSection2.addCell(cellTxtNoBrdrNrmlMainContent(
+                        new Paragraph(currencyVal + " " + currencyFormat(df.format(totalAmountForMaterials)), fontNormal), Element.ALIGN_RIGHT));
+                tblInvSection2.addCell(cellTxtNoBrdrNrmlMainContent(
+                        new Paragraph("", fontNormal), Element.ALIGN_LEFT));
+                tblInvSection2.addCell(cellTxtNoBrdrNrmlMainContent(
+                        new Paragraph("", fontNormal), Element.ALIGN_LEFT));
+                tblInvSection2.addCell(cellTxtNoBrdrNrmlMainContent(
+                        new Paragraph("", fontNormal), Element.ALIGN_LEFT));
+                tblInvSection2.addCell(cellTxtNoBrdrNrmlMainContent(
+                        new Paragraph("", fontNormal), Element.ALIGN_LEFT));
+                tblInvSection2.addCell(cellTxtNoBrdrNrmlMainContent(
+                        new Paragraph("", fontNormal), Element.ALIGN_LEFT));
+                tblInvSection2.addCell(cellTxtNoBrdrNrmlMainContent(
+                        new Paragraph("", fontNormal), Element.ALIGN_LEFT));
+                tblInvSection2.addCell(cellTxtNoBrdrNrmlMainContent(
+                        new Paragraph("", fontNormal), Element.ALIGN_LEFT));
+                tblInvSection2.addCell(cellTxtNoBrdrNrmlMainContent(
+                        new Paragraph("", fontNormal), Element.ALIGN_LEFT));
+                tblInvSection2.addCell(cellTxtNoBrdrNrmlMainContent(
+                        new Paragraph("", fontNormal), Element.ALIGN_LEFT));
+                tblInvSection2.addCell(cellTxtNoBrdrNrmlMainContent(
+                        new Paragraph("", fontNormal), Element.ALIGN_LEFT));
+                tblInvSection2.addCell(cellTxtNoBrdrNrmlMainContent(
+                        new Paragraph("", fontNormal), Element.ALIGN_LEFT));
+                tblInvSection2.addCell(cellTxtNoBrdrNrmlMainContent(
+                        new Paragraph("", fontNormal), Element.ALIGN_LEFT));
+                tblInvSection2.addCell(cellTxtNoBrdrNrmlMainContent(
+                        new Paragraph("", fontNormal), Element.ALIGN_LEFT));
+                tblInvSection2.addCell(cellTxtNoBrdrNrmlMainContent(
+                        new Paragraph("", fontNormal), Element.ALIGN_LEFT));
+                tblInvSection2.addCell(cellTxtNoBrdrNrmlMainContent(
+                        new Paragraph("", fontNormal), Element.ALIGN_LEFT));
+                //totalUnitFinal = 0;
+                totalUnitAmountForMaterials=0;
+            }*/
 
             /*tblInvSection2.addCell(cellTxtNoBrdrNrml(
                     new Paragraph("", fontNormal),
@@ -1604,6 +1529,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
 
             document.add(tblInvSection0);
             document.add(tblInvSection1);
+            document.add(tblInvSection2);
            /* document.add(tblInvSection2);
             document.add(tblInvSection3);
             document.add(paragraphBlank); // SPACE SEPARATOR
@@ -1642,152 +1568,6 @@ public class AddAIOReportActivity extends AppCompatActivity {
         return (n - c) % 2 == 0 ? (int) d : c;
     }
 
-    private void addGiRcpTtl(Document document) throws DocumentException {
-        Paragraph preface = new Paragraph();
-        Chunk title = new Chunk("Rekapitulasi Good Issue", fontBold);
-        Paragraph paragraphTitle = new Paragraph(title);
-        paragraphTitle.setAlignment(Element.ALIGN_CENTER);
-        document.add(paragraphTitle);
-        preface.setAlignment(Element.ALIGN_CENTER);
-        preface.setSpacingAfter(15);
-        document.add(preface);
-        document.add(new LineSeparator());
-    }
-    private void addGiRcpMainContent(Document document) throws DocumentException{
-        DecimalFormat df = new DecimalFormat("0.00");
-        String currentDate = new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(new Date());
-
-        try {
-            String roMatNameTypeStrVal = "Material: "+ matNameVal +" | "+ matTypeVal;
-            String roCustNameStrVal = "Customer: "+custNameVal;
-            String roPoCustNumberStrVal = "Nomor PO: "+roPoCustNumber;
-            String roRecapDateCreatedStrVal = "Tanggal rekap dibuat: "+invDateNTimeCreated;
-
-            Chunk roMatNameType = new Chunk(roMatNameTypeStrVal, fontNormal);
-            Chunk roCustName = new Chunk(roCustNameStrVal, fontNormal);
-
-            Paragraph paragraphROMatNameType = new Paragraph(roMatNameType);
-            paragraphROMatNameType.setAlignment(Element.ALIGN_LEFT);
-            paragraphROMatNameType.setSpacingAfter(0);
-
-            Paragraph paragraphROCustName = new Paragraph(roCustName);
-            paragraphROCustName.setAlignment(Element.ALIGN_LEFT);
-            paragraphROCustName.setSpacingAfter(5);
-
-            Paragraph preface2 = new Paragraph();
-            preface2.setSpacingAfter(10);
-
-            PdfPTable table0 = new PdfPTable(2);
-            table0.setWidthPercentage(100);
-
-            PdfPTable table1 = new PdfPTable(10);
-            table1.setWidthPercentage(100);
-            table1.setWidths(new float[]{2,4,3,4,2,2,2,2,2,3});
-
-            PdfPTable table2 = new PdfPTable(2);
-            table2.setWidthPercentage(100);
-            table2.setWidths(new float[]{23,3});
-
-            PdfPTable table3 = new PdfPTable(2);
-            table3.setWidthPercentage(100);
-            table3.setWidths(new float[]{5, 4});
-
-            table0.addCell(cellTxtNoBrdrNrml(
-                    new Paragraph(roPoCustNumberStrVal, fontNormal),
-                    Element.ALIGN_LEFT));
-            table0.addCell(cellTxtNoBrdrNrml(
-                    new Paragraph(roRecapDateCreatedStrVal, fontNormal),
-                    Element.ALIGN_RIGHT));
-
-            table1.addCell(cellColHeader(
-                    new Paragraph("No", fontMedium), Element.ALIGN_CENTER));
-            table1.addCell(cellColHeader(
-                    new Paragraph("Tanggal", fontMedium), Element.ALIGN_CENTER));
-            table1.addCell(cellColHeader(
-                    new Paragraph("ID", fontMedium), Element.ALIGN_CENTER));
-            table1.addCell(cellColHeader(
-                    new Paragraph("NOPOL", fontMedium), Element.ALIGN_CENTER));
-            table1.addCell(cellColHeader(
-                    new Paragraph("P", fontMedium), Element.ALIGN_CENTER));
-            table1.addCell(cellColHeader(
-                    new Paragraph("L", fontMedium), Element.ALIGN_CENTER));
-            table1.addCell(cellColHeader(
-                    new Paragraph("T", fontMedium), Element.ALIGN_CENTER));
-            table1.addCell(cellColHeader(
-                    new Paragraph("K", fontMedium), Element.ALIGN_CENTER));
-            table1.addCell(cellColHeader(
-                    new Paragraph("TK", fontMedium), Element.ALIGN_CENTER));
-            table1.addCell(cellColHeader(
-                    new Paragraph(String.valueOf(Html.fromHtml("M\u00B3")), fontMedium), Element.ALIGN_CENTER));
-
-            /*List<String> datePeriod = new ArrayList<>();
-            for (int i = 0; i < giManagementAdapter.getSelected().size(); i++) {
-                datePeriod.add(giManagementAdapter.getSelected().get(i).getGiDateCreated());
-            }*/
-            float totalCubication = 0;
-            for (int i = 0; i < giManagementAdapter.getSelected().size(); i++){
-                String rowNumberStrVal = String.valueOf(i+1);
-                String rowDateStrVal = giManagementAdapter.getSelected().get(i).getGiDateCreated();
-                String rowIDStrVal = giManagementAdapter.getSelected().get(i).getGiUID().substring(0,5);
-                String rowVhlUIDStrVal = giManagementAdapter.getSelected().get(i).getVhlUID();
-                String rowVhLengthStrVal = giManagementAdapter.getSelected().get(i).getVhlLength().toString();
-                String rowVhWidthStrVal = giManagementAdapter.getSelected().get(i).getVhlWidth().toString();
-                String rowVhHeightStrVal = giManagementAdapter.getSelected().get(i).getVhlHeight().toString();
-                String rowVhHeightCorrectionStrVal = giManagementAdapter.getSelected().get(i).getVhlHeightCorrection().toString();
-                String rowVhHeightAfterCorrectionStrVal = giManagementAdapter.getSelected().get(i).getVhlHeightAfterCorrection().toString();
-                String vhlCubicationStrVal = df.format(giManagementAdapter.getSelected().get(i).getGiVhlCubication());
-
-                table1.addCell(cellTxtNrml(
-                        new Paragraph(rowNumberStrVal, fontNormal), Element.ALIGN_CENTER));
-                table1.addCell(cellTxtNrml(
-                        new Paragraph(rowDateStrVal, fontNormal), Element.ALIGN_CENTER));
-                table1.addCell(cellTxtNrml(
-                        new Paragraph(rowIDStrVal, fontNormal), Element.ALIGN_CENTER));
-                table1.addCell(cellTxtNrml(
-                        new Paragraph(rowVhlUIDStrVal, fontNormal), Element.ALIGN_CENTER));
-                table1.addCell(cellTxtNrml(
-                        new Paragraph(rowVhLengthStrVal, fontNormal), Element.ALIGN_CENTER));
-                table1.addCell(cellTxtNrml(
-                        new Paragraph(rowVhWidthStrVal, fontNormal), Element.ALIGN_CENTER));
-                table1.addCell(cellTxtNrml(
-                        new Paragraph(rowVhHeightStrVal, fontNormal), Element.ALIGN_CENTER));
-                table1.addCell(cellTxtNrml(
-                        new Paragraph(rowVhHeightCorrectionStrVal, fontNormal), Element.ALIGN_CENTER));
-                table1.addCell(cellTxtNrml(
-                        new Paragraph(rowVhHeightAfterCorrectionStrVal, fontNormal), Element.ALIGN_CENTER));
-                table1.addCell(cellTxtNrml(
-                        new Paragraph(vhlCubicationStrVal, fontNormal), Element.ALIGN_CENTER));
-
-                totalCubication += giManagementAdapter.getSelected().get(i).getGiVhlCubication();
-
-            }
-
-            String totalCubicationStrVal = df.format(totalCubication);
-            double totalIDR = matSellPrice*Double.parseDouble(df.format(totalCubication))    ;
-            String totalIDRStrVal = currencyVal+" "+currencyFormat(df.format(totalIDR));
-
-            table2.addCell(cellColHeader(
-                    new Paragraph("Total Unit", fontMedium), Element.ALIGN_CENTER));
-            table2.addCell(cellTxtNrml(
-                    new Paragraph(totalCubicationStrVal, fontNormal), Element.ALIGN_CENTER));
-            table3.addCell(cellColHeader(
-                    new Paragraph("Total", fontMedium), Element.ALIGN_CENTER));
-            table3.addCell(cellTxtNrml(
-                    new Paragraph(totalIDRStrVal, fontNormal), Element.ALIGN_CENTER));
-
-            document.add(table0);
-            document.add(paragraphROMatNameType);
-            document.add(paragraphROCustName);
-            document.add(new LineSeparator());
-            document.add(preface2);
-            document.add(table1);
-            document.add(table2);
-            document.add(table3);
-        } catch (DocumentException e) {
-            e.printStackTrace();
-            Toast.makeText(context, e.toString(), Toast.LENGTH_LONG).show();
-        }
-    }
 
 
     public static String currencyFormat(String amount) {
@@ -1812,7 +1592,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
         rouidVal = spinnerRoUID.getText().toString();
         pouidVal = Objects.requireNonNull(edtPoUID.getText()).toString();
 
-        db.collection("ReceivedOrderData").whereEqualTo("roPoCustNumber", pouidVal).get()
+        /*db.collection("ReceivedOrderData").whereEqualTo("roPoCustNumber", pouidVal).get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     if (productItemsList != null){
                         productItemsList.clear();
@@ -1860,9 +1640,9 @@ public class AddAIOReportActivity extends AppCompatActivity {
 
                         }
                     }
-                });
+                });*/
 
-        Query query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated");
+        /*Query query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated");
         if (!dateEndVal.isEmpty()){
             query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated").endAt(dateEndVal);
         }
@@ -1920,7 +1700,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError error) {
 
             }
-        });
+        });*/
 
         /*Query query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated").startAt(dateStartVal).endAt(dateEndVal);
         query.addValueEventListener(new ValueEventListener() {
@@ -1970,58 +1750,106 @@ public class AddAIOReportActivity extends AppCompatActivity {
 
             }
         });*/
-    }
 
-    private void searchQueryAll(){
-/*
-        db.collection("ReceivedOrderData").orderBy("invDateCreated").get()
+        CollectionReference refInv = db.collection("InvoiceData");
+        refInv.whereEqualTo("roDocumentID", roDocumentID).get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
-                    if (productItemsList != null){
-                        productItemsList.clear();
-                    }
-                    transportServiceSellPrice = 0;
-                    matSellPrice = 0;
-
                     for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots){
-                        ReceivedOrderModel receivedOrderModel = documentSnapshot.toObject(ReceivedOrderModel.class);
-                        receivedOrderModel.setRoDocumentID(documentSnapshot.getId());
+                        InvoiceModel invoiceModel = documentSnapshot.toObject(InvoiceModel.class);
 
-                        matTypeVal = receivedOrderModel.getRoMatType();
-                        roPoCustNumber = receivedOrderModel.getRoPoCustNumber();
-                        custNameVal = receivedOrderModel.getRoCustName();
-                        currencyVal = receivedOrderModel.getRoCurrency();
-                        invCustName = receivedOrderModel.getRoCustName();
-                        invPoUID = receivedOrderModel.getRoPoCustNumber();
-                        invPoDate = receivedOrderModel.getRoDateCreated();
-                        invPoType = receivedOrderModel.getRoType();
+                        coDateDeliveryPeriodVal = invoiceModel.getInvDateDeliveryPeriod();
 
-                        if (invPoType == 0){
-                            invPotypeVal = "MATERIAL + JASA ANGKUT";
-                        }
-                        if (invPoType == 1){
-                            invPotypeVal = "MATERIAL SAJA";
-                        }
-                        if (invPoType == 2){
-                            invPotypeVal = "JASA ANGKUT SAJA";
+                    }
+                });
+
+
+
+
+
+
+        CollectionReference refRO = db.collection("ReceivedOrderData");
+
+        refRO.whereEqualTo("roDocumentID", roDocumentID).get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        if (productItemsList != null){
+                            productItemsList.clear();
                         }
 
-                        HashMap<String, List<ProductItems>> map = receivedOrderModel.getRoOrderedItems();
-                        for (HashMap.Entry<String, List<ProductItems>> e : map.entrySet()) {
-                            productItemsList = e.getValue();
-                            for (int i = 0; i<productItemsList.size();i++){
-                                if (productItemsList.get(0).getMatName().equals("JASA ANGKUT")){
-                                    transportServiceNameVal = productItemsList.get(0).getMatName();
-                                    transportServiceSellPrice = productItemsList.get(0).getMatSellPrice();
-                                } else {
-                                    matNameVal = productItemsList.get(i).getMatName();
-                                    matSellPrice = productItemsList.get(i).getMatSellPrice();
+                        transportServiceSellPrice = 0;
+                        matBuyPrice = 0;
+
+                        for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots){
+                            ReceivedOrderModel receivedOrderModel = documentSnapshot.toObject(ReceivedOrderModel.class);
+                            receivedOrderModel.setRoDocumentID(documentSnapshot.getId());
+
+                            custDocumentID = receivedOrderModel.getRoDocumentID();
+
+                            matTypeVal = receivedOrderModel.getRoMatType();
+                            roPoCustNumber = receivedOrderModel.getRoPoCustNumber();
+                            custNameVal = receivedOrderModel.getCustDocumentID();
+                            currencyVal = receivedOrderModel.getRoCurrency();
+                            invCustName = receivedOrderModel.getCustDocumentID();
+                            invPoUID = receivedOrderModel.getRoUID();
+                            invPoDate = receivedOrderModel.getRoDateCreated();
+                            invPoType = receivedOrderModel.getRoType();
+
+
+                            HashMap<String, List<ProductItems>> map = receivedOrderModel.getRoOrderedItems();
+                            for (HashMap.Entry<String, List<ProductItems>> e : map.entrySet()) {
+                                productItemsList = e.getValue();
+                                for (int i = 0; i<productItemsList.size();i++){
+                                    if (productItemsList.get(0).getMatName().equals("JASA ANGKUT")){
+                                        transportServiceNameVal = productItemsList.get(0).getMatName();
+                                        transportServiceSellPrice = productItemsList.get(0).getMatBuyPrice();
+                                    } else {
+                                        matNameVal = productItemsList.get(i).getMatName();
+                                        //matCubication = productItemsList.get(i).getMatQuantity();
+                                        matBuyPrice = productItemsList.get(i).getMatBuyPrice();
+                                        matSellPrice = productItemsList.get(i).getMatSellPrice();
+                                    }
                                 }
                             }
 
+                            //double totalIDR = matBuyPrice *Double.parseDouble(df.format(totalUnit));
                         }
                     }
                 });
-*/
+
+
+
+
+        db.collection("InvoiceData").orderBy("invDateNTimeCreated")
+                .addSnapshotListener((value, error) -> {
+                    invoiceModelArrayList.clear();
+                    if (!value.isEmpty()){
+                        for (DocumentSnapshot d : value.getDocuments()) {
+
+                            InvoiceModel invoiceModel = d.toObject(InvoiceModel.class);
+                            if (invoiceModel.getRoDocumentID().contains(roDocumentID)) {
+                                invoiceModelArrayList.add(invoiceModel);
+                            }
+
+                        }
+                        llNoData.setVisibility(View.GONE);
+                        nestedScrollView.setVisibility(View.VISIBLE);
+                        if (invoiceModelArrayList.size()==0) {
+                            fabCreateDocument.hide();
+                            nestedScrollView.setVisibility(View.GONE);
+                            llNoData.setVisibility(View.VISIBLE);
+                        }
+                    } else{
+                        llNoData.setVisibility(View.VISIBLE);
+                        nestedScrollView.setVisibility(View.GONE);
+                    }
+                    Collections.reverse(invoiceModelArrayList);
+                    invoiceManagementAdapter = new InvoiceManagementAdapter(context, invoiceModelArrayList);
+                    rvGoodIssueList.setAdapter(invoiceManagementAdapter);
+                });
+    }
+
+    private void searchQueryAll(){
 
         Query query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated");
         query.addValueEventListener(new ValueEventListener() {
@@ -2042,16 +1870,16 @@ public class AddAIOReportActivity extends AppCompatActivity {
                         }
 
                     }
-                    if (goodIssueModelArrayList.size()==0) {
+                   /* if (goodIssueModelArrayList.size()==0) {
                         fabCreateDocument.hide();
                         nestedScrollView.setVisibility(View.GONE);
                         llNoData.setVisibility(View.VISIBLE);
-                    }
+                    }*/
 
                 } else  {
-                    fabCreateDocument.hide();
+                    /*fabCreateDocument.hide();
                     nestedScrollView.setVisibility(View.GONE);
-                    llNoData.setVisibility(View.VISIBLE);
+                    llNoData.setVisibility(View.VISIBLE);*/
                 }
 
                 Collections.reverse(goodIssueModelArrayList);

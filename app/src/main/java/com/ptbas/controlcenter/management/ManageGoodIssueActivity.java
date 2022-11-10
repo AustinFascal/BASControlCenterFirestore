@@ -59,6 +59,7 @@ import com.ptbas.controlcenter.create.AddGoodIssueActivity;
 import com.ptbas.controlcenter.model.GoodIssueModel;
 import com.ptbas.controlcenter.utils.LangUtils;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -93,7 +94,7 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
     ImageButton btnGiSearchByDateReset, btnGiSearchByTypeReset, btnExitSelection, btnDeleteSelected, btnSelectAll, btnVerifySelected;
     DatePickerDialog datePicker;
     RecyclerView rvGoodIssueList;
-    TextView tvTotalSelectedItem;
+    TextView tvTotalSelectedItem, tvTotalSelectedItem2;
 
     Boolean expandStatus = true;
     List<String> arrayListMaterialName, arrayListCompanyName;
@@ -104,6 +105,8 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
 
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
     DialogInterface dialogInterface = new DialogInterface();
+
+    DecimalFormat df = new DecimalFormat("0.00");
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -121,6 +124,7 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
 
         llBottomSelectionOptions = findViewById(R.id.llBottomSelectionOptions);
         tvTotalSelectedItem = findViewById(R.id.tvTotalSelectedItem);
+        tvTotalSelectedItem2 = findViewById(R.id.tvTotalSelectedItem2);
         btnExitSelection = findViewById(R.id.btnExitSelection);
         btnDeleteSelected = findViewById(R.id.btnDeleteSelected);
         btnSelectAll = findViewById(R.id.btnSelectAll);
@@ -474,12 +478,16 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
         Runnable runnable = new Runnable() {
             public void run() {
                 int itemSelectedSize = giManagementAdapter.getSelected().size();
+                float itemSelectedVolume = giManagementAdapter.getSelectedVolume();
+
+                String itemSelectedVolumeAndBuyPriceVal = df.format(itemSelectedVolume).concat(" m3");
                 if (giManagementAdapter.getSelected().size()>0){
 
                     fabExpandMenu.animate().translationY(800).setDuration(100).start();
                     fabExpandMenu.collapse();
 
                     tvTotalSelectedItem.setText(itemSelectedSize+" item terpilih");
+                    tvTotalSelectedItem2.setText(itemSelectedVolumeAndBuyPriceVal);
 
                     llBottomSelectionOptions.animate()
                             .translationY(0).alpha(1.0f)

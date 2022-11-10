@@ -850,10 +850,57 @@ public class UpdateCashOutActivity extends AppCompatActivity {
 
                             coDateAndTimeApprovedVal = cashOutModel.getCoDateAndTimeApproved();
                             coDateAndTimeAccVal = cashOutModel.getCoDateAndTimeACC();
+
                             coDateDeliveryPeriodVal = cashOutModel.getCoDateDeliveryPeriod();
+
                             coPoUIDVal = cashOutModel.getRoDocumentID();
 
-                            tvDateDeliveryPeriod.setText(coDateDeliveryPeriodVal);
+
+
+
+                            /*Query query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated");
+                            query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated");
+                            query.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    goodIssueModelArrayList.clear();
+                                    if (snapshot.exists()){
+                                        for (DataSnapshot item : snapshot.getChildren()) {
+                                                if (Objects.equals(item.child("rcpGiCoUID").getValue(), coPoUIDVal)) {
+                                                    if (Objects.equals(item.child("giStatus").getValue(), true)){
+                                                        GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
+                                                        goodIssueModelArrayList.add(goodIssueModel);
+                                                    }
+                                            }
+                                        }
+                                    }
+                                    Collections.reverse(goodIssueModelArrayList);
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+
+                                }
+                            });*/
+
+
+                            // totalUnit = 0;
+
+                            /*List<String> datePeriod = new ArrayList<>();
+
+                            for (int i = 0; i < goodIssueModelArrayList.size(); i++) {
+                                //totalUnit += goodIssueModelArrayList.get(i).getGiVhlCubication();
+                                datePeriod.add(goodIssueModelArrayList.get(i).getGiDateCreated());
+                            }*/
+
+                            /*HashSet<String> filter = new HashSet(datePeriod);
+                            ArrayList<String> datePeriodFiltered = new ArrayList<>(filter);
+                            String coDateDeliveryPeriod = String.valueOf(datePeriodFiltered);
+
+                            //double totalIDR = matBuyPrice *Double.parseDouble(df.format(totalUnit));
+
+
+                            tvDateDeliveryPeriod.setText(coDateDeliveryPeriod);*/
 
                             supplierUID = cashOutModel.getCoSupplier();
 
@@ -926,11 +973,23 @@ public class UpdateCashOutActivity extends AppCompatActivity {
 
                                                 tvMatName.setText(matNameVal);
 
+                                                List<String> datePeriod = new ArrayList<>();
+
                                                 totalUnitFinal = 0;
                                                 for (int i = 0; i < goodIssueModelArrayList.size(); i++) {
                                                     totalUnitFinal += goodIssueModelArrayList.get(i).getGiVhlCubication();
+                                                    datePeriod.add(goodIssueModelArrayList.get(i).getGiDateCreated());
                                                 }
                                                 tvCubicationTotal.setText(totalUnitFinal+" m3");
+
+                                                HashSet<String> filter = new HashSet(datePeriod);
+                                                ArrayList<String> datePeriodFiltered = new ArrayList<>(filter);
+                                                coDateDeliveryPeriodVal = String.valueOf(datePeriodFiltered);
+
+                                                //double totalIDR = matBuyPrice *Double.parseDouble(df.format(totalUnit));
+
+
+                                                tvDateDeliveryPeriod.setText(coDateDeliveryPeriodVal);
 
                                                 // TOTAL AMOUNT CALCULATION
                                                 totalAmountForMaterials = matBuyPrice*totalUnitFinal;
