@@ -457,13 +457,6 @@ public class UpdateInvoiceActivity extends AppCompatActivity {
 
                             edtDateHandover.setText(invDateHandover);
 
-
-
-
-
-
-
-
                             if (!invHandOverBy.isEmpty()){
                                 statusSwitchHandover.setChecked(true);
                                 tvStatusHandover.setText("Sudah Diterima");
@@ -577,6 +570,7 @@ public class UpdateInvoiceActivity extends AppCompatActivity {
                                                 if (task.isSuccessful()){
                                                     edtDateHandover.setError(null);
                                                     edtHandoverBy.setError(null);
+                                                    btnDatePaidReset.setVisibility(View.GONE);
                                                     pd.dismiss();
                                                     loadInvoiceData();
                                                 }

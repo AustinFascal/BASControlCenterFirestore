@@ -204,8 +204,8 @@ public class CashOutManagementAdapter extends RecyclerView.Adapter<CashOutManage
                                     }
 
                                     //Toast.makeText(context, "buy "+matBuyPrice+" - unit"+totalUnit, Toast.LENGTH_LONG).show();
-                                    double totalIDR = matBuyPrice *totalUnit;
-                                    coTotal = "IDR " + currencyFormat(df.format(totalIDR));
+                                    double totalIDR = matBuyPrice * Double.parseDouble(df.format(totalUnit));
+                                    coTotal = "IDR " + currencyFormat(df.format(Float.valueOf(String.valueOf(totalIDR))));
                                     tvTotalDue.setText(coTotal);
                                 }
 

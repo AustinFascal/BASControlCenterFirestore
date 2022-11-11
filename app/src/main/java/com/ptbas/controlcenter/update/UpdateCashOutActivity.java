@@ -980,7 +980,7 @@ public class UpdateCashOutActivity extends AppCompatActivity {
                                                     totalUnitFinal += goodIssueModelArrayList.get(i).getGiVhlCubication();
                                                     datePeriod.add(goodIssueModelArrayList.get(i).getGiDateCreated());
                                                 }
-                                                tvCubicationTotal.setText(totalUnitFinal+" m3");
+                                                tvCubicationTotal.setText(df.format(totalUnitFinal)+" m3");
 
                                                 HashSet<String> filter = new HashSet(datePeriod);
                                                 ArrayList<String> datePeriodFiltered = new ArrayList<>(filter);

@@ -1148,10 +1148,6 @@ public class DialogInterface {
                                   String roDocumentID, Boolean coStatusApproval,
                                   Boolean coStatusPayment, Boolean rcpStatus, RecapGoodIssueManagementAdapter recapGiManagementAdapter) {
 
-
-        /*GIManagementAdapter giManagementAdapter;
-        giManagementAdapter = new GIManagementAdapter(context, goodIssueModelArrayList);*/
-
         MaterialDialog generatingCashOutProofDialog = new MaterialDialog.Builder((Activity) context)
                 .setTitle("Memproses Permintaan")
                 .setMessage("Pembuatan Cash Out sedang diproses. Harap tunggu ...")
@@ -1161,7 +1157,7 @@ public class DialogInterface {
 
         generatingCashOutProofDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
         generatingCashOutProofDialog.show();
-        //ArrayList<GoodIssueModel> goodIssueModelArrayList  = new ArrayList<>();
+
         new CountDownTimer(2000, 1000) {
             public void onTick(long millisUntilFinished) {
             }
@@ -1172,38 +1168,6 @@ public class DialogInterface {
                 DocumentReference refCO = db.collection("CashOutData").document();
                 String coDocumentID = refCO.getId();
 
-                //List<String> rcpGiUID = new ArrayList<>();
-                /*Query query = databaseReferenceGI.child("GoodIssueData");
-
-                query.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if (snapshot.exists()) {
-                            for (int k = 0; k < recapGiManagementAdapter.getSelected().size(); k++) {
-                                rcpGiUID.add(recapGiManagementAdapter.getSelected().get(k).getRcpGiDocumentID());
-                            }
-                            *//*for (int l = 0; l < rcpGiUID.size(); l++) {
-                                for (DataSnapshot item : snapshot.getChildren()) {
-                                    GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
-
-                                    if (goodIssueModel.getGiRecappedTo().equals(rcpGiUID.get(l))) {
-                                        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-                                        goodIssueModelArrayList.add(goodIssueModel);
-                                        databaseReference.child("GoodIssueData").child(goodIssueModel.getGiUID()).child("giCashedOutTo").setValue(coDocumentID);
-                                        databaseReference.child("GoodIssueData").child(goodIssueModel.getGiUID()).child("giCashedOut").setValue(true);
-                                    }
-                                }
-
-                            }*//*
-
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
-                    }
-                });*/
                 DecimalFormat df = new DecimalFormat("0.00");
 
 
@@ -1219,14 +1183,6 @@ public class DialogInterface {
                                 ReceivedOrderModel receivedOrderModel = documentSnapshot.toObject(ReceivedOrderModel.class);
                                 receivedOrderModel.setRoDocumentID(documentSnapshot.getId());
 
-                                /*matTypeVal = receivedOrderModel.getRoMatType();
-                                roPoCustNumber = receivedOrderModel.getRoPoCustNumber();
-                                currencyVal = receivedOrderModel.getRoCurrency();
-                                invCustName = receivedOrderModel.getCustDocumentID();
-                                invPoUID = receivedOrderModel.getRoUID();
-                                invPoDate = receivedOrderModel.getRoDateCreated();
-                                invPoType = receivedOrderModel.getRoType();*/
-
                                 HashMap<String, List<ProductItems>> map = receivedOrderModel.getRoOrderedItems();
                                 for (HashMap.Entry<String, List<ProductItems>> e : map.entrySet()) {
                                     productItemsList = e.getValue();
@@ -1238,15 +1194,8 @@ public class DialogInterface {
                                             matBuyPrice = productItemsList.get(i).getMatBuyPrice();
                                         }
                                     }
-
                                 }
-
-
                             }
-
-
-
-
 
 
                             refRecap.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -1260,10 +1209,11 @@ public class DialogInterface {
 
                                             String rcpGiUIDVal = recapGIModel.getRcpGiDocumentID();
                                             String roDocumentIdVal = recapGIModel.getRoDocumentID();
-
-                                            if (recapGIModel.getRoDocumentID().equals(roDocumentID)){
-                                                db.collection("RecapData").document(rcpGiUIDVal).update("rcpGiStatus", true);
-                                                db.collection("RecapData").document(rcpGiUIDVal).update("rcpGiCoUID", coDocumentID);
+                                            for (int i = 0; i < recapGiManagementAdapter.getSelected().size(); i++) {
+                                                if (recapGiManagementAdapter.getSelected().get(i).getRcpGiDocumentID().equals(rcpGiUIDVal)) {
+                                                    db.collection("RecapData").document(rcpGiUIDVal).update("rcpGiStatus", true);
+                                                    db.collection("RecapData").document(rcpGiUIDVal).update("rcpGiCoUID", coDocumentID);
+                                                }
                                             }
                                         }
                                     }
@@ -1271,12 +1221,12 @@ public class DialogInterface {
                             });
 
 
+
+
                             DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
 
                             ArrayList<GoodIssueModel> goodIssueModelArrayList = new ArrayList<>();
                             //giManagementAdapter = new GIManagementAdapter(context, goodIssueModelArrayList);
-
-
 
 
                             CashOutModel cashOutModel = new CashOutModel(
@@ -1290,16 +1240,7 @@ public class DialogInterface {
 
                         });
 
-
-
-
-                /*for (int i = 0; i < giManagementAdapter.getSelected().size(); i++) {
-                    databaseReferenceGI.child("GoodIssueData").child(giManagementAdapter.getSelected().get(i).getGiUID()).child("giCashedOut").setValue(true);
-                    databaseReferenceGI.child("GoodIssueData").child(giManagementAdapter.getSelected().get(i).getGiUID()).child("giCashedOutTo").setValue(coDocumentID);
-                }*/
                 cashOutProofGeneratedInformation(context);
-                /*AddCashOutActivity addCashOutActivity = (AddCashOutActivity) context;
-                addCashOutActivity.createCashOutProofPDF(Helper.getAppPathCashOut(context)+coUID+".pdf");*/
                 generatingCashOutProofDialog.dismiss();
             }
         }.start();
