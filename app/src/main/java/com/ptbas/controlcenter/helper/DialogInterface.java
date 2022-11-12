@@ -1220,7 +1220,12 @@ public class DialogInterface {
                                 }
                             });
 
+                            StringBuilder s0 = new StringBuilder(100);
+                            for (int i=0; i<recapGiManagementAdapter.getSelected().size();i++) {
+                                s0.append(recapGiManagementAdapter.getSelected().get(i).getRcpDateDeliveryPeriod()).append(",");
+                            }
 
+                            String coDateDeliveryPeriod = s0.toString().replace("[","").replace("]","").replace(" ","");
 
 
                             DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
@@ -1232,8 +1237,8 @@ public class DialogInterface {
                             CashOutModel cashOutModel = new CashOutModel(
                                     coDocumentID, coUID, coDateAndTimeCreated, coCreatedBy,
                                     coDateAndTimeApproved, coApprovedBy, coDateAndTimeACC, coAccBy, coSupplier,
-                                    roDocumentID, "[]", coStatusApproval, coStatusPayment, 0.0,
-                                    "", "", "", "", "", "");
+                                    roDocumentID, coDateDeliveryPeriod, coStatusApproval, coStatusPayment, 0.0,
+                                    "", "", "", "", "", "", "");
 
                             refCO.set(cashOutModel);
 
@@ -1304,7 +1309,7 @@ public class DialogInterface {
                             DocumentReference refRCPGI = db.collection("RecapData").document();
                             String rcpGiDocumentID = refRCPGI.getId();
 
-                            RecapGIModel recapGIModel = new RecapGIModel(rcpGiDocumentID, rcpGiUID, rcpGiDateAndTimeCreated, rcpGiCreatedBy, roUIDVal, totalUnit, "", false);
+                            RecapGIModel recapGIModel = new RecapGIModel(rcpGiDocumentID, rcpGiUID, rcpGiDateAndTimeCreated, rcpGiCreatedBy, roUIDVal, totalUnit, "", false, rcpDateDeliveryPeriod);
 
                             refRCPGI.set(recapGIModel);
 

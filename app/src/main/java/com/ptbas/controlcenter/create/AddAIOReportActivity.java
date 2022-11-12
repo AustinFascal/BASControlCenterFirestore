@@ -87,6 +87,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.text.pdf.draw.LineSeparator;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 import com.ptbas.controlcenter.R;
+import com.ptbas.controlcenter.adapter.CashOutManagementAdapter;
 import com.ptbas.controlcenter.adapter.GIManagementAdapter;
 import com.ptbas.controlcenter.adapter.InvoiceManagementAdapter;
 import com.ptbas.controlcenter.adapter.RecapGoodIssueManagementAdapter;
@@ -143,8 +144,10 @@ public class AddAIOReportActivity extends AppCompatActivity {
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
     ArrayList<GoodIssueModel> goodIssueModelArrayList = new ArrayList<>();
     ArrayList<InvoiceModel> invoiceModelArrayList = new ArrayList<>();
+    ArrayList<CashOutModel> cashOutModelArrayList = new ArrayList<>();
     GIManagementAdapter giManagementAdapter;
     InvoiceManagementAdapter invoiceManagementAdapter;
+    CashOutManagementAdapter cashOutManagementAdapter;
     RecyclerView rvGoodIssueList;
     Context context;
     Helper helper = new Helper();
@@ -194,7 +197,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
 
     double matBuyPrice, coTotal;
 
-    public String[] coDateAndTimeACC;
+    public String[] coDateAndTimeACC, invTotalDueVal;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -369,6 +372,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
         // CREATE GI MANAGEMENT ADAPTER
         giManagementAdapter = new GIManagementAdapter(this, goodIssueModelArrayList);
         invoiceManagementAdapter = new InvoiceManagementAdapter(this, invoiceModelArrayList);
+        cashOutManagementAdapter = new CashOutManagementAdapter(this, cashOutModelArrayList);
 
         // HIDE FAB CREATE COR ON CREATE
         //fabCreateDocument.animate().translationY(800).setDuration(100).start();
@@ -377,6 +381,9 @@ public class AddAIOReportActivity extends AppCompatActivity {
         final Handler handler = new Handler();
         Runnable runnable = new Runnable() {
             public void run() {
+
+
+
                 // CHECK IF DATE AND RO/PO NUMBER IS SELECTED
                 /*if (!spinnerRoUID.getText().toString().isEmpty()
                         && !Objects.requireNonNull(edtPoUID.getText()).toString().isEmpty()){
@@ -631,6 +638,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
 
 
         fabCreateDocument.setOnClickListener(view -> {
+
             if (ContextCompat.checkSelfPermission(context,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE)!=
                     PackageManager.PERMISSION_GRANTED){
@@ -640,8 +648,39 @@ public class AddAIOReportActivity extends AppCompatActivity {
 
                 String roUIDValNoSpace = rouidVal.replaceAll("\\s","");
                 invUID = getRandomString()+"-INV-"+roUIDValNoSpace;
+                StringBuilder s0 = new StringBuilder(100);
+                StringBuilder s1 = new StringBuilder(100);
+                StringBuilder s2 = new StringBuilder(100);
+                /*for (int i=0; i<invoiceManagementAdapter.getSelected().size();i++) {
+
+                    s0.append(invoiceManagementAdapter.getSelected().get(i).getInvDateDeliveryPeriod()).append(",");
+                    s1.append(invoiceManagementAdapter.getSelected().get(i).getInvDateVerified());
+                    s2.append(invoiceManagementAdapter.getSelected().get(i).getInvTotalDue()).append(";");
+
+                }
+                coDateDeliveryPeriodVal = s0.toString();
+                invDateVerified = s1.toString();
+                invTotalDue = s2.toString();
+
+                Toast.makeText(context, s0, Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, s2, Toast.LENGTH_SHORT).show();
+
+                String invCreatedBy = helper.getUserId();*/
 
 
+                for (int i=0; i<cashOutManagementAdapter.getSelected().size();i++) {
+
+                    s0.append(cashOutManagementAdapter.getSelected().get(i).getCoDateDeliveryPeriod()).append(",");
+                    s1.append(cashOutManagementAdapter.getSelected().get(i).getCoDateAndTimeACC());
+                    s2.append(cashOutManagementAdapter.getSelected().get(i).getCoTotal()).append(";");
+
+                }
+                coDateDeliveryPeriodVal = s0.toString();
+                invDateVerified = s1.toString();
+                invTotalDue = s2.toString();
+
+                Toast.makeText(context, s0, Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, s2, Toast.LENGTH_SHORT).show();
 
                 String invCreatedBy = helper.getUserId();
 
@@ -891,16 +930,85 @@ public class AddAIOReportActivity extends AppCompatActivity {
                     Element.ALIGN_LEFT));
 
 
-
-            coDateDeliveryPeriod = coDateDeliveryPeriodVal.replace("[","").replace("]","").replace(" ","");
-            deliveryPeriod = coDateDeliveryPeriod.split(",");
+            String ttlDue = invTotalDue.replace("IDR ", "");
+            //coDateDeliveryPeriod = coDateDeliveryPeriodVal.replace("[","").replace("]","").replace(" ","");
+            deliveryPeriod = coDateDeliveryPeriodVal.split(",");
+            invTotalDueVal = ttlDue.split(";");
 
             double totalAmountForMaterials;
             double totalAmountMatBuyPrice;
 
 
             // String s : deliveryPeriod
-            for (int i=0; i<deliveryPeriod.length;i++) {
+
+            /*for (int i = 0; i < deliveryPeriod.length; i++) {
+                //for (String s : invTotalDueVal) {
+                    for (int j = 0; j < goodIssueModelArrayList.size(); j++) {
+                        if (goodIssueModelArrayList.get(j).getGiDateCreated().equals(deliveryPeriod[i])) {
+                            totalUnitAmountForMaterials += goodIssueModelArrayList.get(j).getGiVhlCubication();
+                        }
+                    }
+
+                    totalAmountForMaterials = matSellPrice * totalUnitAmountForMaterials;
+                    totalAmountMatBuyPrice = matBuyPrice * totalUnitAmountForMaterials;
+
+                    double taxPPN = (0.11) * totalAmountForMaterials;
+                    //double taxPPH = (0.02)*totalAmountForTransportService;
+                    //double totalDue = totalAmountForMaterials+totalAmountForTransportService+taxPPN-taxPPH;
+                    //double totalDueForTransportService = totalAmountForTransportService-taxPPH;
+
+                    String rowNumberStrVal = String.valueOf(i + 1);
+                    tblInvSection2.addCell(cellTxtNrml(
+                            new Paragraph(rowNumberStrVal, fontNormalSmall), Element.ALIGN_LEFT));
+                    tblInvSection2.addCell(cellTxtNrml(
+                            new Paragraph(deliveryPeriod[i], fontNormalSmall), Element.ALIGN_LEFT));
+                    tblInvSection2.addCell(cellTxtNrml(
+                            new Paragraph(df.format(totalUnitAmountForMaterials), fontNormalSmall), Element.ALIGN_RIGHT));
+                    tblInvSection2.addCell(cellTxtNrml(
+                            new Paragraph(currencyFormat(df.format(matSellPrice)), fontNormalSmall), Element.ALIGN_RIGHT));
+
+
+                    tblInvSection2.addCell(cellTxtNrml(
+                            new Paragraph(currencyFormat(df.format(totalAmountForMaterials)), fontNormalSmall), Element.ALIGN_RIGHT));
+                    tblInvSection2.addCell(cellTxtNrml(
+                            new Paragraph(currencyFormat(df.format(taxPPN)), fontNormalSmall), Element.ALIGN_LEFT));
+                    tblInvSection2.addCell(cellTxtNrml(
+                            new Paragraph("", fontNormalSmall), Element.ALIGN_LEFT));
+                    tblInvSection2.addCell(cellTxtNrml(
+                            new Paragraph("", fontNormalSmall), Element.ALIGN_LEFT));
+                    tblInvSection2.addCell(cellTxtNrml(
+                            new Paragraph("", fontNormalSmall), Element.ALIGN_LEFT));
+                    tblInvSection2.addCell(cellTxtNrml(
+                            new Paragraph("", fontNormalSmall), Element.ALIGN_LEFT));
+                    tblInvSection2.addCell(cellTxtNrml(
+                            new Paragraph("", fontNormalSmall), Element.ALIGN_LEFT));
+                    tblInvSection2.addCell(cellTxtNrml(
+                            new Paragraph("", fontNormalSmall), Element.ALIGN_LEFT));
+                    //for (int k=0; k<invTotalDueVal.length;k++) {
+                    tblInvSection2.addCell(cellTxtNrml(
+                            new Paragraph("", fontNormalSmall), Element.ALIGN_LEFT));
+                    //Toast.makeText(context, invTotalDueVal[i], Toast.LENGTH_SHORT).show();
+                    //}
+                    tblInvSection2.addCell(cellTxtNrml(
+                            new Paragraph(invDateVerified, fontNormalSmall), Element.ALIGN_LEFT));
+                    tblInvSection2.addCell(cellTxtNrml(
+                            new Paragraph(currencyFormat(df.format(matBuyPrice)), fontNormalSmall), Element.ALIGN_LEFT));
+                    tblInvSection2.addCell(cellTxtNrml(
+                            new Paragraph(currencyFormat(df.format(totalAmountMatBuyPrice)), fontNormalSmall), Element.ALIGN_LEFT));
+                    tblInvSection2.addCell(cellTxtNrml(
+                            new Paragraph(currencyFormat(df.format(coTotal)), fontNormalSmall), Element.ALIGN_LEFT));
+                    tblInvSection2.addCell(cellTxtNrml(
+                            new Paragraph(coDateAndTimeACC[0], fontNormalSmall), Element.ALIGN_LEFT));
+                    tblInvSection2.addCell(cellTxtNrml(
+                            new Paragraph("", fontNormalSmall), Element.ALIGN_LEFT));
+                    //totalUnitFinal = 0;
+                    totalUnitAmountForMaterials = 0;
+                }
+            //}*/
+
+
+            for (int i = 0; i < deliveryPeriod.length; i++) {
+                //for (String s : invTotalDueVal) {
                 for (int j = 0; j < goodIssueModelArrayList.size(); j++) {
                     if (goodIssueModelArrayList.get(j).getGiDateCreated().equals(deliveryPeriod[i])) {
                         totalUnitAmountForMaterials += goodIssueModelArrayList.get(j).getGiVhlCubication();
@@ -910,12 +1018,9 @@ public class AddAIOReportActivity extends AppCompatActivity {
                 totalAmountForMaterials = matSellPrice * totalUnitAmountForMaterials;
                 totalAmountMatBuyPrice = matBuyPrice * totalUnitAmountForMaterials;
 
-                double taxPPN = (0.11)*totalAmountForMaterials;
-                //double taxPPH = (0.02)*totalAmountForTransportService;
-                //double totalDue = totalAmountForMaterials+totalAmountForTransportService+taxPPN-taxPPH;
-                //double totalDueForTransportService = totalAmountForTransportService-taxPPH;
+                double taxPPN = (0.11) * totalAmountForMaterials;
 
-                String rowNumberStrVal = String.valueOf(i+1);
+                String rowNumberStrVal = String.valueOf(i + 1);
                 tblInvSection2.addCell(cellTxtNrml(
                         new Paragraph(rowNumberStrVal, fontNormalSmall), Element.ALIGN_LEFT));
                 tblInvSection2.addCell(cellTxtNrml(
@@ -924,7 +1029,6 @@ public class AddAIOReportActivity extends AppCompatActivity {
                         new Paragraph(df.format(totalUnitAmountForMaterials), fontNormalSmall), Element.ALIGN_RIGHT));
                 tblInvSection2.addCell(cellTxtNrml(
                         new Paragraph(currencyFormat(df.format(matSellPrice)), fontNormalSmall), Element.ALIGN_RIGHT));
-
 
 
                 tblInvSection2.addCell(cellTxtNrml(
@@ -943,8 +1047,11 @@ public class AddAIOReportActivity extends AppCompatActivity {
                         new Paragraph("", fontNormalSmall), Element.ALIGN_LEFT));
                 tblInvSection2.addCell(cellTxtNrml(
                         new Paragraph("", fontNormalSmall), Element.ALIGN_LEFT));
+                //for (int k=0; k<invTotalDueVal.length;k++) {
                 tblInvSection2.addCell(cellTxtNrml(
-                        new Paragraph((invTotalDue.replace("IDR ", "")), fontNormalSmall), Element.ALIGN_LEFT));
+                        new Paragraph("", fontNormalSmall), Element.ALIGN_LEFT));
+                //Toast.makeText(context, invTotalDueVal[i], Toast.LENGTH_SHORT).show();
+                //}
                 tblInvSection2.addCell(cellTxtNrml(
                         new Paragraph(invDateVerified, fontNormalSmall), Element.ALIGN_LEFT));
                 tblInvSection2.addCell(cellTxtNrml(
@@ -958,8 +1065,9 @@ public class AddAIOReportActivity extends AppCompatActivity {
                 tblInvSection2.addCell(cellTxtNrml(
                         new Paragraph("", fontNormalSmall), Element.ALIGN_LEFT));
                 //totalUnitFinal = 0;
-                totalUnitAmountForMaterials=0;
+                totalUnitAmountForMaterials = 0;
             }
+            //}
 
 
             document.add(tblInvSection0);
@@ -1004,6 +1112,8 @@ public class AddAIOReportActivity extends AppCompatActivity {
 
         rouidVal = spinnerRoUID.getText().toString();
         pouidVal = Objects.requireNonNull(edtPoUID.getText()).toString();
+
+
 
         CollectionReference refRO = db.collection("ReceivedOrderData");
 
@@ -1050,6 +1160,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
                                 }
                             }
 
+
                             Query query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated");
                             query.addValueEventListener(new ValueEventListener() {
                                 @Override
@@ -1071,18 +1182,6 @@ public class AddAIOReportActivity extends AppCompatActivity {
                                 }
                             });
 
-                            CollectionReference refInv = db.collection("InvoiceData");
-                            refInv.whereEqualTo("roDocumentID", roDocumentID).get()
-                                    .addOnSuccessListener(queryDocumentSnapshotsInv -> {
-                                        for (QueryDocumentSnapshot documentSnapshotInv : queryDocumentSnapshotsInv){
-                                            InvoiceModel invoiceModel = documentSnapshotInv.toObject(InvoiceModel.class);
-
-                                            coDateDeliveryPeriodVal = invoiceModel.getInvDateDeliveryPeriod();
-                                            invDateVerified =  invoiceModel.getInvDateVerified();
-                                            invTotalDue = invoiceModel.getInvTotalDue();
-
-                                        }
-                                    });
 
                             CollectionReference refCO = db.collection("CashOutData");
                             refCO.whereEqualTo("roDocumentID", roDocumentID).get()
@@ -1104,7 +1203,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
 
 
 
-        db.collection("InvoiceData").orderBy("invDateNTimeCreated")
+        /*db.collection("InvoiceData").orderBy("invDateNTimeCreated")
                 .addSnapshotListener((value, error) -> {
                     invoiceModelArrayList.clear();
                     if (!value.isEmpty()){
@@ -1130,6 +1229,33 @@ public class AddAIOReportActivity extends AppCompatActivity {
                     Collections.reverse(invoiceModelArrayList);
                     invoiceManagementAdapter = new InvoiceManagementAdapter(context, invoiceModelArrayList);
                     rvGoodIssueList.setAdapter(invoiceManagementAdapter);
+                });*/
+
+        db.collection("CashOutData")
+                .addSnapshotListener((value, error) -> {
+                    cashOutModelArrayList.clear();
+                    if (!value.isEmpty()){
+                        for (DocumentSnapshot d : value.getDocuments()) {
+                            CashOutModel cashOutModel = d.toObject(CashOutModel.class);
+                            if (cashOutModel.getRoDocumentID().contains(roDocumentID)) {
+                                cashOutModelArrayList.add(cashOutModel);
+                            }
+
+                        }
+                        llNoData.setVisibility(View.GONE);
+                        nestedScrollView.setVisibility(View.VISIBLE);
+                        if (cashOutModelArrayList.size()==0) {
+                            fabCreateDocument.hide();
+                            nestedScrollView.setVisibility(View.GONE);
+                            llNoData.setVisibility(View.VISIBLE);
+                        }
+                    } else{
+                        llNoData.setVisibility(View.VISIBLE);
+                        nestedScrollView.setVisibility(View.GONE);
+                    }
+                    Collections.reverse(cashOutModelArrayList);
+                    cashOutManagementAdapter = new CashOutManagementAdapter(context, cashOutModelArrayList);
+                    rvGoodIssueList.setAdapter(cashOutManagementAdapter);
                 });
     }
 

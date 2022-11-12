@@ -702,6 +702,7 @@ public class AddRecapGoodIssueDataActivity extends AppCompatActivity {
                         new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 10);
             } else {
                 List<String> datePeriod = new ArrayList<>();
+
                 for (int i = 0; i < giManagementAdapter.getSelected().size(); i++) {
                     totalUnit += giManagementAdapter.getSelected().get(i).getGiVhlCubication();
                     datePeriod.add(giManagementAdapter.getSelected().get(i).getGiDateCreated());
@@ -716,6 +717,8 @@ public class AddRecapGoodIssueDataActivity extends AppCompatActivity {
                 String coTimeCreated =
                         new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
                 rcpGiUID = getRandomString2(5)+" - "+pouidVal;
+
+                Toast.makeText(context, rcpDateDeliveryPeriod, Toast.LENGTH_SHORT).show();
                 dialogInterface.confirmCreateRecap(context, rcpGiUID, coDateCreated + " | " + coTimeCreated + " WIB", helper.getUserId(), roDocumentID, roPoCustNumber, rcpDateDeliveryPeriod, totalUnit, goodIssueModelArrayList);
             }
         });

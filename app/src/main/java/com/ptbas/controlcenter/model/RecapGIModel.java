@@ -4,7 +4,7 @@ public class RecapGIModel {
 
     private boolean isChecked = false;
 
-    String rcpGiDocumentID, rcpGiUID, rcpGiDateAndTimeCreated, rcpGiCreatedBy, roDocumentID, rcpGiCoUID;
+    String rcpGiDocumentID, rcpGiUID, rcpGiDateAndTimeCreated, rcpGiCreatedBy, roDocumentID, rcpGiCoUID, rcpDateDeliveryPeriod;
     float roCubication;
     Boolean rcpGiStatus;
 
@@ -12,7 +12,7 @@ public class RecapGIModel {
     }
 
     public RecapGIModel(String rcpGiDocumentID, String rcpGiUID, String rcpGiDateAndTimeCreated,
-                        String rcpGiCreatedBy, String roDocumentID, float roCubication, String rcpGiCoUID, Boolean rcpGiStatus) {
+                        String rcpGiCreatedBy, String roDocumentID, float roCubication, String rcpGiCoUID, Boolean rcpGiStatus, String rcpDateDeliveryPeriod) {
         this.rcpGiDocumentID = rcpGiDocumentID;
         this.rcpGiUID = rcpGiUID;
         this.rcpGiDateAndTimeCreated = rcpGiDateAndTimeCreated;
@@ -21,6 +21,15 @@ public class RecapGIModel {
         this.roCubication = roCubication;
         this.rcpGiCoUID = rcpGiCoUID;
         this.rcpGiStatus = rcpGiStatus;
+        this.rcpDateDeliveryPeriod = rcpDateDeliveryPeriod;
+    }
+
+    public String getRcpDateDeliveryPeriod() {
+        return rcpDateDeliveryPeriod;
+    }
+
+    public void setRcpDateDeliveryPeriod(String rcpDateDeliveryPeriod) {
+        this.rcpDateDeliveryPeriod = rcpDateDeliveryPeriod;
     }
 
     public Boolean getRcpGiStatus() {

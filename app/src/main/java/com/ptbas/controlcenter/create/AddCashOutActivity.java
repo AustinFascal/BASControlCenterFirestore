@@ -1011,17 +1011,22 @@ public class AddCashOutActivity extends AppCompatActivity {
             tblInvSection5.addCell(cellColHeader(
                     new Paragraph("Jumlah", fontMedium), Element.ALIGN_RIGHT));
 
-            List<String> datePeriod = new ArrayList<>();
-            for (int i = 0; i < giManagementAdapter.getSelected().size(); i++) {
-                datePeriod.add(giManagementAdapter.getSelected().get(i).getGiDateCreated());
-            }
-            HashSet<String> filter = new HashSet(datePeriod);
-            ArrayList<String> datePeriodFiltered = new ArrayList<>(filter);
+            StringBuilder s0 = new StringBuilder(100);
 
-            coDateDeliveryPeriod = String.valueOf(datePeriodFiltered).replace("[","").replace("]","").replace(" ","");
+            for (int i=0; i<recapGiManagementAdapter.getSelected().size();i++) {
+                s0.append(recapGiManagementAdapter.getSelected().get(i).getRcpDateDeliveryPeriod()).append(",");
+            }
+            /*List<String> datePeriod = new ArrayList<>();
+            for (int i = 0; i < recapGiManagementAdapter.getSelected().size(); i++) {
+                datePeriod.add(recapGiManagementAdapter.getSelected().get(i).getRcpDateDeliveryPeriod());
+            }*/
+            //HashSet<String> filter = new HashSet(datePeriod);
+            //ArrayList<String> datePeriodFiltered = new ArrayList<>(filter);
+
+            coDateDeliveryPeriod = s0.toString().replace("[","").replace("]","").replace(" ","");
 
             tblInvSection7.addCell(cellTxtNoBrdrNrmlMainContent(
-                    new Paragraph("Pengiriman Tanggal: "+datePeriodFiltered, fontNormal), Element.ALIGN_LEFT));
+                    new Paragraph("Pengiriman Tanggal: "+coDateDeliveryPeriod, fontNormal), Element.ALIGN_LEFT));
             tblInvSection7.addCell(cellTxtNoBrdrNrmlMainContent(
                     new Paragraph("", fontNormal), Element.ALIGN_LEFT));
 
