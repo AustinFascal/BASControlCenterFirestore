@@ -670,7 +670,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
 
                 for (int i=0; i<cashOutManagementAdapter.getSelected().size();i++) {
 
-                    s0.append(cashOutManagementAdapter.getSelected().get(i).getCoDateDeliveryPeriod()).append(",");
+                    s0.append(cashOutManagementAdapter.getSelected().get(i).getCoDateDeliveryPeriod());
                     s1.append(cashOutManagementAdapter.getSelected().get(i).getCoDateAndTimeACC());
                     s2.append(cashOutManagementAdapter.getSelected().get(i).getCoTotal()).append(";");
 
