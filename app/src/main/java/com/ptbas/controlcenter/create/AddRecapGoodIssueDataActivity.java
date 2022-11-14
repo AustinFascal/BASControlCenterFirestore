@@ -710,6 +710,7 @@ public class AddRecapGoodIssueDataActivity extends AppCompatActivity {
 
                 HashSet<String> filter = new HashSet(datePeriod);
                 ArrayList<String> datePeriodFiltered = new ArrayList<>(filter);
+                Collections.sort(datePeriodFiltered);
                 rcpDateDeliveryPeriod = String.valueOf(datePeriodFiltered);
 
                 String coDateCreated = new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(new Date());

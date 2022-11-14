@@ -7,7 +7,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -34,7 +33,6 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -56,7 +54,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -76,21 +73,19 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.text.pdf.draw.LineSeparator;
+import com.ptbas.controlcenter.R;
+import com.ptbas.controlcenter.adapter.GIManagementAdapter;
 import com.ptbas.controlcenter.adapter.RecapGoodIssueManagementAdapter;
 import com.ptbas.controlcenter.helper.DialogInterface;
 import com.ptbas.controlcenter.helper.Helper;
 import com.ptbas.controlcenter.helper.ImageAndPositionRenderer;
 import com.ptbas.controlcenter.helper.NumberToWords;
-import com.ptbas.controlcenter.R;
-import com.ptbas.controlcenter.adapter.GIManagementAdapter;
-import com.ptbas.controlcenter.model.CashOutModel;
 import com.ptbas.controlcenter.model.CustomerModel;
 import com.ptbas.controlcenter.model.GoodIssueModel;
 import com.ptbas.controlcenter.model.ProductItems;
 import com.ptbas.controlcenter.model.RecapGIModel;
 import com.ptbas.controlcenter.model.ReceivedOrderModel;
 import com.ptbas.controlcenter.model.SupplierModel;
-import com.ptbas.controlcenter.update.UpdateCashOutActivity;
 import com.ptbas.controlcenter.utils.LangUtils;
 
 import java.io.ByteArrayOutputStream;
@@ -105,14 +100,10 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Random;
-
-import dev.shreyaspatil.MaterialDialog.MaterialDialog;
 
 public class AddCashOutActivity extends AppCompatActivity {
 
@@ -1023,7 +1014,7 @@ public class AddCashOutActivity extends AppCompatActivity {
             //HashSet<String> filter = new HashSet(datePeriod);
             //ArrayList<String> datePeriodFiltered = new ArrayList<>(filter);
 
-            coDateDeliveryPeriod = s0.toString().replace("[","").replace("]","").replace(" ","");
+            coDateDeliveryPeriod = s0.toString().replace("[","").replace("]","").replace(" ","").replaceAll("(\\b\\w+\\b),(?=.*\\b\\1\\b)", "");
 
             tblInvSection7.addCell(cellTxtNoBrdrNrmlMainContent(
                     new Paragraph("Pengiriman Tanggal: "+coDateDeliveryPeriod, fontNormal), Element.ALIGN_LEFT));

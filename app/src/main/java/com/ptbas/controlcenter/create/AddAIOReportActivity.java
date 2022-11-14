@@ -114,6 +114,7 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -182,8 +183,6 @@ public class AddAIOReportActivity extends AppCompatActivity {
 
     Vibrator vibrator;
 
-    float totalUnit;
-
     boolean isSelectedAll = false;
 
     private Menu menu;
@@ -198,6 +197,11 @@ public class AddAIOReportActivity extends AppCompatActivity {
     double matBuyPrice, coTotal;
 
     public String[] coDateAndTimeACC, invTotalDueVal;
+
+    public String coTransferDate;
+
+    public Double coTotalDue;
+    public int showOccurances;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -651,22 +655,6 @@ public class AddAIOReportActivity extends AppCompatActivity {
                 StringBuilder s0 = new StringBuilder(100);
                 StringBuilder s1 = new StringBuilder(100);
                 StringBuilder s2 = new StringBuilder(100);
-                /*for (int i=0; i<invoiceManagementAdapter.getSelected().size();i++) {
-
-                    s0.append(invoiceManagementAdapter.getSelected().get(i).getInvDateDeliveryPeriod()).append(",");
-                    s1.append(invoiceManagementAdapter.getSelected().get(i).getInvDateVerified());
-                    s2.append(invoiceManagementAdapter.getSelected().get(i).getInvTotalDue()).append(";");
-
-                }
-                coDateDeliveryPeriodVal = s0.toString();
-                invDateVerified = s1.toString();
-                invTotalDue = s2.toString();
-
-                Toast.makeText(context, s0, Toast.LENGTH_SHORT).show();
-                Toast.makeText(context, s2, Toast.LENGTH_SHORT).show();
-
-                String invCreatedBy = helper.getUserId();*/
-
 
                 for (int i=0; i<cashOutManagementAdapter.getSelected().size();i++) {
 
@@ -790,6 +778,17 @@ public class AddAIOReportActivity extends AppCompatActivity {
         return cell;
     }
 
+    public static PdfPCell cellTxtNrmlSpanRow(Paragraph paragraph, int alignment, int rowspan) {
+        paragraph.setAlignment(alignment);
+        paragraph.setLeading(0, 1);
+        PdfPCell cell = new PdfPCell();
+        cell.setRowspan(rowspan);
+        cell.addElement(paragraph);
+        cell.setHorizontalAlignment(alignment);
+        cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+        return cell;
+    }
+
     private void addAIOMainContent(Document document) throws DocumentException{
         try {
 
@@ -800,51 +799,6 @@ public class AddAIOReportActivity extends AppCompatActivity {
                             +invDateNTimeCreated+", oleh: "+invCreatedBy, fontNormalSmallItalic);
             paragraphInvDateCreated.setAlignment(Element.ALIGN_RIGHT);
             paragraphInvDateCreated.setSpacingAfter(5);
-
-            Image img = null;
-
-            try {
-
-                BitMatrix bitMatrix = multiFormatWriter.encode(invUID, BarcodeFormat.QR_CODE, 100, 95);
-
-                BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
-                Bitmap bitmap = barcodeEncoder.createBitmap(bitMatrix);
-
-                ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-
-                byte[] byteArray = stream.toByteArray();
-                try {
-                    img = Image.getInstance(byteArray);
-                    img.setAlignment(Image.TEXTWRAP);
-                    img.scaleAbsolute(100f, 110f);
-                } catch (BadElementException | IOException e) {
-                    e.printStackTrace();
-                }
-
-            } catch (WriterException e){
-
-            }
-
-
-            // TOTAL UNIT CALCULATION
-            /*float totalUnit = 0;
-            for (int i = 0; i < goodIssueModelArrayList.size(); i++){
-                totalUnit += goodIssueModelArrayList.get(i).getGiVhlCubication();
-            }*/
-
-           /* float totalUnitFinal = 0;
-            for (int i = 0; i < giManagementAdapter.getSelected().size(); i++) {
-                totalUnitFinal += giManagementAdapter.getSelected().get(i).getGiVhlCubication();
-            }
-
-            // TOTAL AMOUNT CALCULATION
-            double totalAmountForMaterials = matSellPrice*totalUnitFinal;
-            double totalAmountForTransportService = transportServiceSellPrice*totalUnitFinal;
-            double taxPPN = (0.11)*totalAmountForMaterials;
-            double taxPPH = (0.02)*totalAmountForTransportService;
-            double totalDue = totalAmountForMaterials+totalAmountForTransportService+taxPPN-taxPPH;
-            double totalDueForTransportService = totalAmountForTransportService-taxPPH;*/
 
             // INIT TABLE
             PdfPTable tblInvSection0 = new PdfPTable(3);
@@ -859,159 +813,95 @@ public class AddAIOReportActivity extends AppCompatActivity {
 
 
             // WIDTH FLOAT CONFIG
-            tblInvSection0.setWidths(new float[]{1,43,16});
-            tblInvSection1.setWidths(new float[]{1,3,3,3,4,4,3,4,4,4,4,4,3,3,4,4,3,2});
-            tblInvSection2.setWidths(new float[]{1,3,3,3,4,4,3,4,1,3,4,4,4,3,3,4,4,3,2});
+            tblInvSection0.setWidths(new float[]{1,42,16});
+            tblInvSection1.setWidths(new float[]{1,3,2,3,4,4,3,4,4,4,4,4,3,3,4,4,3,2});
+            tblInvSection2.setWidths(new float[]{1,3,2,3,4,4,3,4,1,3,4,4,4,3,3,4,4,3,2});
 
 
             tblInvSection0.addCell(cellTxtNrml(
                     new Paragraph("", fontMediumSmall),
-                    Element.ALIGN_LEFT));
+                    Element.ALIGN_CENTER));
 
             tblInvSection0.addCell(cellTxtNrml(
                     new Paragraph("PENJUALAN", fontMediumSmall),
-                    Element.ALIGN_LEFT));
+                    Element.ALIGN_CENTER));
             tblInvSection0.addCell(cellTxtNrml(
                     new Paragraph("PEMBELIAN", fontMediumSmall),
-                    Element.ALIGN_LEFT));
+                    Element.ALIGN_CENTER));
+
             tblInvSection1.addCell(cellTxtNrml(
                     new Paragraph("No", fontMediumSmall),
-                    Element.ALIGN_LEFT));
+                    Element.ALIGN_CENTER));
             tblInvSection1.addCell(cellTxtNrml(
                     new Paragraph("Tgl. Kirim", fontMediumSmall),
-                    Element.ALIGN_LEFT));
+                    Element.ALIGN_CENTER));
             tblInvSection1.addCell(cellTxtNrml(
-                    new Paragraph("Kubikasi", fontMediumSmall),
-                    Element.ALIGN_LEFT));
+                    new Paragraph("Unit", fontMediumSmall),
+                    Element.ALIGN_CENTER));
             tblInvSection1.addCell(cellTxtNrml(
                     new Paragraph("HJ", fontMediumSmall),
-                    Element.ALIGN_LEFT));
+                    Element.ALIGN_CENTER));
             tblInvSection1.addCell(cellTxtNrml(
                     new Paragraph("Total Material", fontMediumSmall),
-                    Element.ALIGN_LEFT));
+                    Element.ALIGN_CENTER));
             tblInvSection1.addCell(cellTxtNrml(
                     new Paragraph("PPN Material", fontMediumSmall),
-                    Element.ALIGN_LEFT));
+                    Element.ALIGN_CENTER));
             tblInvSection1.addCell(cellTxtNrml(
                     new Paragraph("Jasa", fontMediumSmall),
-                    Element.ALIGN_LEFT));
+                    Element.ALIGN_CENTER));
             tblInvSection1.addCell(cellTxtNrml(
                     new Paragraph("Total Jasa", fontMediumSmall),
-                    Element.ALIGN_LEFT));
+                    Element.ALIGN_CENTER));
             tblInvSection1.addCell(cellTxtNrml(
                     new Paragraph("PPH23", fontMediumSmall),
-                    Element.ALIGN_LEFT));
+                    Element.ALIGN_CENTER));
             tblInvSection1.addCell(cellTxtNrml(
                     new Paragraph("PPN Jasa", fontMediumSmall),
-                    Element.ALIGN_LEFT));
+                    Element.ALIGN_CENTER));
             tblInvSection1.addCell(cellTxtNrml(
                     new Paragraph("Total", fontMediumSmall),
-                    Element.ALIGN_LEFT));
+                    Element.ALIGN_CENTER));
             tblInvSection1.addCell(cellTxtNrml(
                     new Paragraph("Dibayar", fontMediumSmall),
-                    Element.ALIGN_LEFT));
+                    Element.ALIGN_CENTER));
             tblInvSection1.addCell(cellTxtNrml(
                     new Paragraph("Tgl. Bayar", fontMediumSmall),
-                    Element.ALIGN_LEFT));
+                    Element.ALIGN_CENTER));
             tblInvSection1.addCell(cellTxtNrml(
                     new Paragraph("HB", fontMediumSmall),
-                    Element.ALIGN_LEFT));
+                    Element.ALIGN_CENTER));
             tblInvSection1.addCell(cellTxtNrml(
                     new Paragraph("Total Pembelian", fontMediumSmall),
-                    Element.ALIGN_LEFT));
+                    Element.ALIGN_CENTER));
             tblInvSection1.addCell(cellTxtNrml(
                     new Paragraph("Transfer Supplier", fontMediumSmall),
-                    Element.ALIGN_LEFT));
+                    Element.ALIGN_CENTER));
             tblInvSection1.addCell(cellTxtNrml(
                     new Paragraph("Tgl. Tf.", fontMediumSmall),
-                    Element.ALIGN_LEFT));
+                    Element.ALIGN_CENTER));
             tblInvSection1.addCell(cellTxtNrml(
                     new Paragraph("", fontMediumSmall),
-                    Element.ALIGN_LEFT));
+                    Element.ALIGN_CENTER));
 
 
             String ttlDue = invTotalDue.replace("IDR ", "");
-            //coDateDeliveryPeriod = coDateDeliveryPeriodVal.replace("[","").replace("]","").replace(" ","");
+
             deliveryPeriod = coDateDeliveryPeriodVal.split(",");
             invTotalDueVal = ttlDue.split(";");
 
             double totalAmountForMaterials;
             double totalAmountMatBuyPrice;
 
-
-            // String s : deliveryPeriod
-
-            /*for (int i = 0; i < deliveryPeriod.length; i++) {
-                //for (String s : invTotalDueVal) {
-                    for (int j = 0; j < goodIssueModelArrayList.size(); j++) {
-                        if (goodIssueModelArrayList.get(j).getGiDateCreated().equals(deliveryPeriod[i])) {
-                            totalUnitAmountForMaterials += goodIssueModelArrayList.get(j).getGiVhlCubication();
-                        }
-                    }
-
-                    totalAmountForMaterials = matSellPrice * totalUnitAmountForMaterials;
-                    totalAmountMatBuyPrice = matBuyPrice * totalUnitAmountForMaterials;
-
-                    double taxPPN = (0.11) * totalAmountForMaterials;
-                    //double taxPPH = (0.02)*totalAmountForTransportService;
-                    //double totalDue = totalAmountForMaterials+totalAmountForTransportService+taxPPN-taxPPH;
-                    //double totalDueForTransportService = totalAmountForTransportService-taxPPH;
-
-                    String rowNumberStrVal = String.valueOf(i + 1);
-                    tblInvSection2.addCell(cellTxtNrml(
-                            new Paragraph(rowNumberStrVal, fontNormalSmall), Element.ALIGN_LEFT));
-                    tblInvSection2.addCell(cellTxtNrml(
-                            new Paragraph(deliveryPeriod[i], fontNormalSmall), Element.ALIGN_LEFT));
-                    tblInvSection2.addCell(cellTxtNrml(
-                            new Paragraph(df.format(totalUnitAmountForMaterials), fontNormalSmall), Element.ALIGN_RIGHT));
-                    tblInvSection2.addCell(cellTxtNrml(
-                            new Paragraph(currencyFormat(df.format(matSellPrice)), fontNormalSmall), Element.ALIGN_RIGHT));
-
-
-                    tblInvSection2.addCell(cellTxtNrml(
-                            new Paragraph(currencyFormat(df.format(totalAmountForMaterials)), fontNormalSmall), Element.ALIGN_RIGHT));
-                    tblInvSection2.addCell(cellTxtNrml(
-                            new Paragraph(currencyFormat(df.format(taxPPN)), fontNormalSmall), Element.ALIGN_LEFT));
-                    tblInvSection2.addCell(cellTxtNrml(
-                            new Paragraph("", fontNormalSmall), Element.ALIGN_LEFT));
-                    tblInvSection2.addCell(cellTxtNrml(
-                            new Paragraph("", fontNormalSmall), Element.ALIGN_LEFT));
-                    tblInvSection2.addCell(cellTxtNrml(
-                            new Paragraph("", fontNormalSmall), Element.ALIGN_LEFT));
-                    tblInvSection2.addCell(cellTxtNrml(
-                            new Paragraph("", fontNormalSmall), Element.ALIGN_LEFT));
-                    tblInvSection2.addCell(cellTxtNrml(
-                            new Paragraph("", fontNormalSmall), Element.ALIGN_LEFT));
-                    tblInvSection2.addCell(cellTxtNrml(
-                            new Paragraph("", fontNormalSmall), Element.ALIGN_LEFT));
-                    //for (int k=0; k<invTotalDueVal.length;k++) {
-                    tblInvSection2.addCell(cellTxtNrml(
-                            new Paragraph("", fontNormalSmall), Element.ALIGN_LEFT));
-                    //Toast.makeText(context, invTotalDueVal[i], Toast.LENGTH_SHORT).show();
-                    //}
-                    tblInvSection2.addCell(cellTxtNrml(
-                            new Paragraph(invDateVerified, fontNormalSmall), Element.ALIGN_LEFT));
-                    tblInvSection2.addCell(cellTxtNrml(
-                            new Paragraph(currencyFormat(df.format(matBuyPrice)), fontNormalSmall), Element.ALIGN_LEFT));
-                    tblInvSection2.addCell(cellTxtNrml(
-                            new Paragraph(currencyFormat(df.format(totalAmountMatBuyPrice)), fontNormalSmall), Element.ALIGN_LEFT));
-                    tblInvSection2.addCell(cellTxtNrml(
-                            new Paragraph(currencyFormat(df.format(coTotal)), fontNormalSmall), Element.ALIGN_LEFT));
-                    tblInvSection2.addCell(cellTxtNrml(
-                            new Paragraph(coDateAndTimeACC[0], fontNormalSmall), Element.ALIGN_LEFT));
-                    tblInvSection2.addCell(cellTxtNrml(
-                            new Paragraph("", fontNormalSmall), Element.ALIGN_LEFT));
-                    //totalUnitFinal = 0;
-                    totalUnitAmountForMaterials = 0;
-                }
-            //}*/
-
-
             for (int i = 0; i < deliveryPeriod.length; i++) {
-                //for (String s : invTotalDueVal) {
                 for (int j = 0; j < goodIssueModelArrayList.size(); j++) {
-                    if (goodIssueModelArrayList.get(j).getGiDateCreated().equals(deliveryPeriod[i])) {
-                        totalUnitAmountForMaterials += goodIssueModelArrayList.get(j).getGiVhlCubication();
+                    for (int k = 0; k < cashOutManagementAdapter.getSelected().size(); k++) {
+                        if (goodIssueModelArrayList.get(j).getGiDateCreated().equals(deliveryPeriod[i])
+                                && goodIssueModelArrayList.get(j).getGiCashedOutTo().equals(cashOutManagementAdapter.getSelected().get(k).getCoDocumentID())) {
+                            totalUnitAmountForMaterials += goodIssueModelArrayList.get(j).getGiVhlCubication();
+                            coTransferDate = cashOutManagementAdapter.getSelected().get(k).getCoDateAndTimeACC();
+                            coTotalDue = cashOutManagementAdapter.getSelected().get(k).getCoTotal();
+                        }
                     }
                 }
 
@@ -1022,50 +912,48 @@ public class AddAIOReportActivity extends AppCompatActivity {
 
                 String rowNumberStrVal = String.valueOf(i + 1);
                 tblInvSection2.addCell(cellTxtNrml(
-                        new Paragraph(rowNumberStrVal, fontNormalSmall), Element.ALIGN_LEFT));
+                        new Paragraph(rowNumberStrVal, fontNormalSmall), Element.ALIGN_CENTER));
                 tblInvSection2.addCell(cellTxtNrml(
-                        new Paragraph(deliveryPeriod[i], fontNormalSmall), Element.ALIGN_LEFT));
+                        new Paragraph(deliveryPeriod[i], fontNormalSmall), Element.ALIGN_CENTER));
                 tblInvSection2.addCell(cellTxtNrml(
-                        new Paragraph(df.format(totalUnitAmountForMaterials), fontNormalSmall), Element.ALIGN_RIGHT));
+                        new Paragraph(df.format(totalUnitAmountForMaterials), fontNormalSmall), Element.ALIGN_CENTER));
                 tblInvSection2.addCell(cellTxtNrml(
-                        new Paragraph(currencyFormat(df.format(matSellPrice)), fontNormalSmall), Element.ALIGN_RIGHT));
+                        new Paragraph(currencyFormat(df.format(matSellPrice)), fontNormalSmall), Element.ALIGN_CENTER));
+                tblInvSection2.addCell(cellTxtNrml(
+                        new Paragraph(currencyFormat(df.format(totalAmountForMaterials)), fontNormalSmall), Element.ALIGN_CENTER));
+                tblInvSection2.addCell(cellTxtNrml(
+                        new Paragraph(currencyFormat(df.format(taxPPN)), fontNormalSmall), Element.ALIGN_CENTER));
+                tblInvSection2.addCell(cellTxtNrml(
+                        new Paragraph("", fontNormalSmall), Element.ALIGN_CENTER));
+                tblInvSection2.addCell(cellTxtNrml(
+                        new Paragraph("", fontNormalSmall), Element.ALIGN_CENTER));
+                tblInvSection2.addCell(cellTxtNrml(
+                        new Paragraph("", fontNormalSmall), Element.ALIGN_CENTER));
+                tblInvSection2.addCell(cellTxtNrml(
+                        new Paragraph("", fontNormalSmall), Element.ALIGN_CENTER));
+                tblInvSection2.addCell(cellTxtNrml(
+                        new Paragraph("", fontNormalSmall), Element.ALIGN_CENTER));
+                tblInvSection2.addCell(cellTxtNrml(
+                        new Paragraph("", fontNormalSmall), Element.ALIGN_CENTER));
+                tblInvSection2.addCell(cellTxtNrml(
+                        new Paragraph("", fontNormalSmall), Element.ALIGN_CENTER));
+                tblInvSection2.addCell(cellTxtNrml(
+                        new Paragraph("", fontNormalSmall), Element.ALIGN_CENTER));
+                tblInvSection2.addCell(cellTxtNrml(
+                        new Paragraph(currencyFormat(df.format(matBuyPrice)), fontNormalSmall), Element.ALIGN_CENTER));
+                tblInvSection2.addCell(cellTxtNrml(
+                        new Paragraph(currencyFormat(df.format(totalAmountMatBuyPrice)), fontNormalSmall), Element.ALIGN_CENTER));
+                tblInvSection2.addCell(cellTxtNrml(
+                        new Paragraph(currencyFormat(df.format(coTotalDue)), fontNormalSmall), Element.ALIGN_CENTER));
+                tblInvSection2.addCell(cellTxtNrml(
+                        new Paragraph(coTransferDate, fontNormalSmall), Element.ALIGN_CENTER));
+                tblInvSection2.addCell(cellTxtNrml(
+                        new Paragraph("", fontNormalSmall), Element.ALIGN_CENTER));
 
-
-                tblInvSection2.addCell(cellTxtNrml(
-                        new Paragraph(currencyFormat(df.format(totalAmountForMaterials)), fontNormalSmall), Element.ALIGN_RIGHT));
-                tblInvSection2.addCell(cellTxtNrml(
-                        new Paragraph(currencyFormat(df.format(taxPPN)), fontNormalSmall), Element.ALIGN_LEFT));
-                tblInvSection2.addCell(cellTxtNrml(
-                        new Paragraph("", fontNormalSmall), Element.ALIGN_LEFT));
-                tblInvSection2.addCell(cellTxtNrml(
-                        new Paragraph("", fontNormalSmall), Element.ALIGN_LEFT));
-                tblInvSection2.addCell(cellTxtNrml(
-                        new Paragraph("", fontNormalSmall), Element.ALIGN_LEFT));
-                tblInvSection2.addCell(cellTxtNrml(
-                        new Paragraph("", fontNormalSmall), Element.ALIGN_LEFT));
-                tblInvSection2.addCell(cellTxtNrml(
-                        new Paragraph("", fontNormalSmall), Element.ALIGN_LEFT));
-                tblInvSection2.addCell(cellTxtNrml(
-                        new Paragraph("", fontNormalSmall), Element.ALIGN_LEFT));
-                //for (int k=0; k<invTotalDueVal.length;k++) {
-                tblInvSection2.addCell(cellTxtNrml(
-                        new Paragraph("", fontNormalSmall), Element.ALIGN_LEFT));
-                //Toast.makeText(context, invTotalDueVal[i], Toast.LENGTH_SHORT).show();
-                //}
-                tblInvSection2.addCell(cellTxtNrml(
-                        new Paragraph(invDateVerified, fontNormalSmall), Element.ALIGN_LEFT));
-                tblInvSection2.addCell(cellTxtNrml(
-                        new Paragraph(currencyFormat(df.format(matBuyPrice)), fontNormalSmall), Element.ALIGN_LEFT));
-                tblInvSection2.addCell(cellTxtNrml(
-                        new Paragraph(currencyFormat(df.format(totalAmountMatBuyPrice)), fontNormalSmall), Element.ALIGN_LEFT));
-                tblInvSection2.addCell(cellTxtNrml(
-                        new Paragraph(currencyFormat(df.format(coTotal)), fontNormalSmall), Element.ALIGN_LEFT));
-                tblInvSection2.addCell(cellTxtNrml(
-                        new Paragraph(coDateAndTimeACC[0], fontNormalSmall), Element.ALIGN_LEFT));
-                tblInvSection2.addCell(cellTxtNrml(
-                        new Paragraph("", fontNormalSmall), Element.ALIGN_LEFT));
-                //totalUnitFinal = 0;
                 totalUnitAmountForMaterials = 0;
+                showOccurances = 0;
+
+                //}
             }
             //}
 
@@ -1398,18 +1286,6 @@ public class AddAIOReportActivity extends AppCompatActivity {
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         int width = displayMetrics.widthPixels;
-        /*if (width<=1080){
-            RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 1);
-            rvGoodIssueList.setLayoutManager(mLayoutManager);
-        }
-        if (width>1080&&width<1366){
-            RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 2);
-            rvGoodIssueList.setLayoutManager(mLayoutManager);
-        }
-        if (width>=1366){
-            RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 3);
-            rvGoodIssueList.setLayoutManager(mLayoutManager);
-        }*/
 
         RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 1);
         rvGoodIssueList.setLayoutManager(mLayoutManager);

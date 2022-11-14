@@ -52,6 +52,7 @@ import java.io.File;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -1139,6 +1140,8 @@ public class DialogInterface {
 
         materialDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
         materialDialog.show();
+
+
     }
 
     public void generatingCashOut(Context context, FirebaseFirestore db,
@@ -1226,6 +1229,13 @@ public class DialogInterface {
                             }
 
                             String coDateDeliveryPeriod = s0.toString().replace("[","").replace("]","").replace(" ","");
+                            coDateDeliveryPeriod = removeDuplicates(coDateDeliveryPeriod, "\\,");
+
+                            String[] strings = coDateDeliveryPeriod.split(",");
+                            List<String> list = Arrays.asList(strings);
+                            Collections.sort(list);
+
+                            Toast.makeText(context, list.toString(), Toast.LENGTH_SHORT).show();
 
 
                             DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
@@ -1237,7 +1247,7 @@ public class DialogInterface {
                             CashOutModel cashOutModel = new CashOutModel(
                                     coDocumentID, coUID, coDateAndTimeCreated, coCreatedBy,
                                     coDateAndTimeApproved, coApprovedBy, coDateAndTimeACC, coAccBy, coSupplier,
-                                    roDocumentID, coDateDeliveryPeriod, coStatusApproval, coStatusPayment, 0.0,
+                                    roDocumentID, list.toString().replace("[","").replace("]","").replace(" ",""), coStatusApproval, coStatusPayment, 0.0,
                                     "", "", "", "", "", "", "");
 
                             refCO.set(cashOutModel);
@@ -1249,6 +1259,28 @@ public class DialogInterface {
                 generatingCashOutProofDialog.dismiss();
             }
         }.start();
+    }
+
+    public static String removeDuplicates(String txt, String splitterRegex)
+    {
+        List<String> values = new ArrayList<String>();
+        String[] splitted = txt.split(splitterRegex);
+        StringBuilder sb = new StringBuilder();
+
+        for (int i = 0; i < splitted.length; ++i)
+        {
+            if (!values.contains(splitted[i]))
+            {
+                values.add(splitted[i]);
+                sb.append(',');
+                sb.append(splitted[i]);
+
+            }
+
+        }
+        //Arrays.sort(sb.toCharArray());
+        return sb.substring(1);
+
     }
 
     public void cashOutProofGeneratedInformation(Context context) {
