@@ -734,6 +734,10 @@ public class UpdateCashOutActivity extends AppCompatActivity {
                                     //coBankNameAndAccountNumberVal = edtBankNameAndAccountNumber.getText().toString();
 
                                     if (statusSwitchBookedStep1.isChecked()) {
+
+                                        float totalDueFloat = Float.parseFloat(tvTotalDue.getText().toString().replace("IDR ", "").replaceAll(",", ""));
+
+                                        refCO.document(coID).update("coTotal", totalDueFloat);
                                         refCO.document(coID).update("coBookedStep1Date", finalBookedStep1Date);
                                         refCO.document(coID).update("bankDocumentID", bankAccountID);
                                         refCO.document(coID).update("coDateAndTimeACC", finalPaidDate);
@@ -984,6 +988,7 @@ public class UpdateCashOutActivity extends AppCompatActivity {
 
                                                 HashSet<String> filter = new HashSet(datePeriod);
                                                 ArrayList<String> datePeriodFiltered = new ArrayList<>(filter);
+                                                Collections.sort(datePeriodFiltered);
                                                 coDateDeliveryPeriodVal = String.valueOf(datePeriodFiltered);
 
                                                 //double totalIDR = matBuyPrice *Double.parseDouble(df.format(totalUnit));

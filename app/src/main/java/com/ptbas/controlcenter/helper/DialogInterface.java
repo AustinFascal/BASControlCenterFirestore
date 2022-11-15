@@ -1224,16 +1224,25 @@ public class DialogInterface {
                             });
 
                             StringBuilder s0 = new StringBuilder(100);
+                            //StringBuilder s1 = new StringBuilder(100);
                             for (int i=0; i<recapGiManagementAdapter.getSelected().size();i++) {
                                 s0.append(recapGiManagementAdapter.getSelected().get(i).getRcpDateDeliveryPeriod()).append(",");
+                                //s1.append(recapGiManagementAdapter.getSelected().get(i).getRoCubication()).append(",");
                             }
 
                             String coDateDeliveryPeriod = s0.toString().replace("[","").replace("]","").replace(" ","");
                             coDateDeliveryPeriod = removeDuplicates(coDateDeliveryPeriod, "\\,");
 
                             String[] strings = coDateDeliveryPeriod.split(",");
+                            //String[] strings1 = s1.toString().split(",");
                             List<String> list = Arrays.asList(strings);
+                            //List<String> list1 = Arrays.asList(strings1);
                             Collections.sort(list);
+
+                            /*float a=0;
+                            for (int i = 0; i < strings1.length;i++){
+                                a += Float.parseFloat(list1.get(i));
+                            }*/
 
                             Toast.makeText(context, list.toString(), Toast.LENGTH_SHORT).show();
 

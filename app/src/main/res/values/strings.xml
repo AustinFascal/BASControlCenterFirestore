@@ -14,8 +14,8 @@
     <string name="inputVhlDimension">Dimensi Kendaraan<font color="#cc0029">*</font></string>
     <string name="inputVhlStatus">Status Kendaraan<font color="#cc0029">*</font></string>
 
-    <string name="inputPoNumberPtBas">Nomor Received Order (RO)<font color="#cc0029">*</font></string>
-    <string name="inputPoNumberPtBas2">Nomor Received Order (RO) (auto)<font color="#cc0029">*</font></string>
+    <string name="inputPoNumberPtBas">Nomor RO<font color="#cc0029">*</font></string>
+    <string name="inputPoNumberPtBas2">Nomor RO (auto)<font color="#cc0029">*</font></string>
     <string name="inputPoNumberCustomer">Nomor PO Customer</string>
     <string name="inputPoNumberCustomer2">Nomor PO Customer (auto)<font color="#cc0029">*</font></string>
     <string name="inputPoProductName">Material<font color="#cc0029">*</font></string>

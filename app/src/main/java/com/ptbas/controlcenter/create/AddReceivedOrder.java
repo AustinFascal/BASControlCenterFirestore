@@ -22,6 +22,8 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -50,6 +52,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.ptbas.controlcenter.helper.DialogInterface;
 import com.ptbas.controlcenter.helper.Helper;
 import com.ptbas.controlcenter.R;
@@ -72,12 +75,12 @@ import java.util.Random;
 public class AddReceivedOrder extends AppCompatActivity {
 
     CoordinatorLayout coordinatorLayout;
-    LinearLayout llList,llAddItem, llInputAllData, llPoNumberAvailability;
+    LinearLayout llList,llAddItem, llInputAllData, llPoNumberAvailability, llShowSpinnerRoAndEdtPo;
     String monthStrVal, dayStrVal;
     Button btnAddRow, btnLockRow, btnUnlockRow, btnNoPoNumber;
     TextInputEditText edtPoDate, edtPoNumberCustomer, edtRoNumber;
     TextInputLayout wrapEdtPoNumberPtBas, txtInputEdtPoNumberCustomer;
-    AutoCompleteTextView spinnerPoTransportType, spinnerPoCustName, spinnerPoCurrency, spinnerRoType, spinnerPoTOP, spinnerTaxType;
+    AutoCompleteTextView spinnerPoTransportType, spinnerPoCustName, spinnerPoCurrency, spinnerRoType, spinnerPoTOP, spinnerTaxType, spinnerRoUID;
     List<String> productName, transportTypeName, customerName, currencyName, arrayListCustDocumentID;
     String transportData = "", customerData = "", customerID ="", randomString="NULL", currencyData="", custDocumentID = "";
     Integer poYear = 0, poMonth = 0, poDay = 0;
@@ -97,6 +100,7 @@ public class AddReceivedOrder extends AppCompatActivity {
     private static final String ALLOWED_CHARACTERS ="0123456789QWERTYUIOPASDFGHJKLZXCVBNM";
 
     ArrayList<ProductItems> productItemsArrayList = new ArrayList<>();
+
 
     private BottomSheetBehavior<ConstraintLayout> bottomSheetBehavior;
     private ConstraintLayout bottomSheet;
@@ -124,6 +128,17 @@ public class AddReceivedOrder extends AppCompatActivity {
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     DocumentReference refRO = db.collection("ReceivedOrderData").document();
 
+    ImageButton btnResetRouid, btnResetCustomer;
+
+    TextInputEditText edtPoUID;
+
+    String roPoCustNumber, roDocumentID, roUID;
+
+    List<String> receiveOrderNumberList;
+    List<ProductItems> productItemsList;
+
+    int matOnlyQuantity;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -143,6 +158,7 @@ public class AddReceivedOrder extends AppCompatActivity {
 
         spinnerTaxType = findViewById(R.id.spinnerTaxType);
         spinnerTaxTypeWrap = findViewById(R.id.spinnerTaxTypeWrap);
+        spinnerRoUID = findViewById(R.id.spinnerRoUID);
 
         spinnerTaxTypeWrap.setVisibility(View.GONE);
 
@@ -177,22 +193,26 @@ public class AddReceivedOrder extends AppCompatActivity {
                     addViewInit();
                     btnAddRow.setVisibility(View.VISIBLE);
                     fabProceed.setVisibility(View.GONE);
+                    llShowSpinnerRoAndEdtPo.setVisibility(View.GONE);
                     break;
                 case 1:
                     roType = roTypeVal[1];
                     addView();
                     btnAddRow.setVisibility(View.GONE);
                     fabProceed.setVisibility(View.VISIBLE);
+                    llShowSpinnerRoAndEdtPo.setVisibility(View.GONE);
                     break;
                 case 2:
                     roType = roTypeVal[2];
                     addViewInit();
                     btnAddRow.setVisibility(View.GONE);
                     fabProceed.setVisibility(View.VISIBLE);
+                    llShowSpinnerRoAndEdtPo.setVisibility(View.VISIBLE);
                     break;
                 default:
                     break;
             }
+
         });
 
         bottomSheet = findViewById(R.id.bottomSheetPODetails);
@@ -204,6 +224,7 @@ public class AddReceivedOrder extends AppCompatActivity {
         customerName  = new ArrayList<>();
         currencyName = new ArrayList<>();
         arrayListCustDocumentID = new ArrayList<>();
+        receiveOrderNumberList = new ArrayList<>();
 
         ActionBar actionBar = getSupportActionBar();
         assert actionBar != null;
@@ -229,8 +250,9 @@ public class AddReceivedOrder extends AppCompatActivity {
                 break;
         }
 
-
-
+        edtPoUID = findViewById(R.id.edtPoUID);
+        btnResetRouid = findViewById(R.id.btnResetRouid);
+        btnResetCustomer = findViewById(R.id.btnResetCustomer);
         coordinatorLayout = findViewById(R.id.coordinatorLayout);
         llInputAllData = findViewById(R.id.ll_input_all_data);
         llList = findViewById(R.id.layout_list);
@@ -252,6 +274,8 @@ public class AddReceivedOrder extends AppCompatActivity {
         fabActionUpdateData = findViewById(R.id.fab_action_update_data);
         /*fabActionGenerateQrCode = findViewById(R.id.fab_action_generate_qr_code);
         fabActionSaveToPdf = findViewById(R.id.fab_action_save_to_pdf);*/
+
+        llShowSpinnerRoAndEdtPo = findViewById(R.id.llShowSpinnerRoAndEdtPo);
 
         fabExpandMenu.setVisibility(View.GONE);
         llAddItem.setVisibility(View.GONE);
@@ -295,6 +319,7 @@ public class AddReceivedOrder extends AppCompatActivity {
                                 String spinnerCustName = Objects.requireNonNull(d.get("custName")).toString();
                                 customerName.add(spinnerCustUID+" - "+spinnerCustName);
                                 arrayListCustDocumentID.add(custDocumentID);
+
                             }
                             ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddReceivedOrder.this, R.layout.style_spinner, customerName);
                             arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
@@ -384,6 +409,34 @@ public class AddReceivedOrder extends AppCompatActivity {
             spinnerTaxTypeWrap.setVisibility(View.VISIBLE);
 
             custDocumentID = arrayListCustDocumentID.get(position);
+
+            spinnerRoUID.setText(null);
+            edtPoUID.setText(null);
+            btnResetRouid.setVisibility(View.GONE);
+
+            btnResetCustomer.setVisibility(View.VISIBLE);
+            spinnerRoUID.setAdapter(null);
+
+            receiveOrderNumberList.clear();
+
+
+            db.collection("ReceivedOrderData").whereEqualTo("custDocumentID", custDocumentID)
+                    .addSnapshotListener((value, error) -> {
+                        if (!Objects.requireNonNull(value).isEmpty()) {
+                            for (DocumentSnapshot e : value.getDocuments()) {
+
+                                String spinnerPurchaseOrders = Objects.requireNonNull(e.get("roPoCustNumber")).toString();
+                                String roType = Objects.requireNonNull(e.get("roType")).toString();
+                                if (roType.equals("1")){
+                                    receiveOrderNumberList.add(spinnerPurchaseOrders);
+                                }
+
+                            }
+                            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddReceivedOrder.this, R.layout.style_spinner, receiveOrderNumberList);
+                            arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
+                            spinnerRoUID.setAdapter(arrayAdapter);
+                        }
+                    });
             //String custDocumentIDValReplace = custDocumentIDVal.replace(" - ","-");
             //int indexCustDocumentIDVal = custDocumentIDValReplace.lastIndexOf('-');
 
@@ -392,7 +445,7 @@ public class AddReceivedOrder extends AppCompatActivity {
             //custDocumentID = custDocumentIDValReplace.substring(0, indexCustDocumentIDVal);
         });
 
-        spinnerPoCustName.setOnFocusChangeListener((view, b) -> spinnerPoCustName.setText(customerData));
+        //spinnerPoCustName.setOnFocusChangeListener((view, b) -> spinnerPoCustName.setText(customerData));
 
         spinnerPoCurrency.setOnItemClickListener((adapterView, view, i, l) -> {
             String selectedCurrency = (String) adapterView.getItemAtPosition(i);
@@ -639,7 +692,87 @@ public class AddReceivedOrder extends AppCompatActivity {
 
             }
         });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        spinnerRoUID.setOnItemClickListener((adapterView, view, i, l) -> {
+            spinnerRoUID.setError(null);
+            String selectedSpinnerPoPtBasNumber = (String) adapterView.getItemAtPosition(i);
+
+            btnResetRouid.setVisibility(View.VISIBLE);
+
+            db.collection("ReceivedOrderData").whereEqualTo("roPoCustNumber", selectedSpinnerPoPtBasNumber).get()
+                    .addOnSuccessListener(queryDocumentSnapshots -> {
+                        for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots){
+                            ReceivedOrderModel receivedOrderModel = documentSnapshot.toObject(ReceivedOrderModel.class);
+                            receivedOrderModel.setRoDocumentID(documentSnapshot.getId());
+                            //rouidVal = selectedSpinnerPoPtBasNumber;
+                            roPoCustNumber = receivedOrderModel.getRoPoCustNumber();
+                            roDocumentID = receivedOrderModel.getRoDocumentID();
+                            roUID = receivedOrderModel.getRoUID();
+
+
+                            HashMap<String, List<ProductItems>> map = receivedOrderModel.getRoOrderedItems();
+                            for (HashMap.Entry<String, List<ProductItems>> e : map.entrySet()) {
+                                productItemsList = e.getValue();
+                                for (int j = 0; j<productItemsList.size();j++){
+                                    if (!productItemsList.get(0).getMatName().equals("JASA ANGKUT")){
+                                        matOnlyQuantity = productItemsList.get(0).getMatQuantity();
+                                    }
+                                }
+
+                            }
+                        }
+                        edtPoUID.setText(roUID);
+                    });
+
+        });
+
+
+        btnResetRouid.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                btnResetRouid.setVisibility(View.GONE);
+                spinnerRoUID.setText(null);
+                edtPoUID.setText(null);
+            }
+        });
+
+        btnResetCustomer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                btnResetCustomer.setVisibility(View.GONE);
+                spinnerRoUID.setAdapter(null);
+                spinnerPoCustName.setText(null);
+                btnResetRouid.setVisibility(View.GONE);
+                spinnerRoUID.setText(null);
+                edtPoUID.setText(null);
+                receiveOrderNumberList.clear();
+            }
+        });
+
     }
+
+
+
+
+
+
+
 
 
     private void bottomSheetExpanded() {
@@ -966,6 +1099,26 @@ public class AddReceivedOrder extends AppCompatActivity {
 
         edtBuyPrice.setVisibility(View.GONE);
         edtPoTotalBuyPrice.setVisibility(View.GONE);
+
+
+
+        final Handler handler = new Handler();
+        Runnable runnable = new Runnable() {
+            public void run() {
+                if (spinnerRoType.getText().toString().equals("JASA ANGKUT SAJA")){
+                    edtPoQuantity.setText(String.valueOf(matOnlyQuantity));
+                }
+                handler.postDelayed(this, 500);
+            }
+        };
+
+        runnable.run();
+
+
+
+
+
+
 
         edtPoQuantity.addTextChangedListener(new NumberTextWatcher(edtPoQuantity));
         edtBuyPrice.addTextChangedListener(new NumberTextWatcher(edtBuyPrice));

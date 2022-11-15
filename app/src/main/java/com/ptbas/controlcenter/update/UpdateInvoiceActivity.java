@@ -1280,6 +1280,7 @@ public class UpdateInvoiceActivity extends AppCompatActivity {
             }
             HashSet<String> filter = new HashSet(datePeriod);
             ArrayList<String> datePeriodFiltered = new ArrayList<>(filter);
+            Collections.sort(datePeriodFiltered);
 
             //invDateDeliveryPeriod = String.valueOf(datePeriodFiltered);
 

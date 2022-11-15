@@ -203,6 +203,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
     public Double coTotalDue;
     public int showOccurances;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -658,7 +659,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
 
                 for (int i=0; i<cashOutManagementAdapter.getSelected().size();i++) {
 
-                    s0.append(cashOutManagementAdapter.getSelected().get(i).getCoDateDeliveryPeriod());
+                    s0.append(cashOutManagementAdapter.getSelected().get(i).getCoDateDeliveryPeriod()).append(",");
                     s1.append(cashOutManagementAdapter.getSelected().get(i).getCoDateAndTimeACC());
                     s2.append(cashOutManagementAdapter.getSelected().get(i).getCoTotal()).append(";");
 
@@ -804,18 +805,21 @@ public class AddAIOReportActivity extends AppCompatActivity {
             PdfPTable tblInvSection0 = new PdfPTable(3);
             PdfPTable tblInvSection1 = new PdfPTable(18);
             PdfPTable tblInvSection2 = new PdfPTable(19);
+            PdfPTable tblInvSection3 = new PdfPTable(19);
 
 
             // WIDTH PERCENTAGE CONFIG
             tblInvSection0.setWidthPercentage(100);
             tblInvSection1.setWidthPercentage(100);
             tblInvSection2.setWidthPercentage(100);
+            tblInvSection3.setWidthPercentage(100);
 
 
             // WIDTH FLOAT CONFIG
             tblInvSection0.setWidths(new float[]{1,42,16});
             tblInvSection1.setWidths(new float[]{1,3,2,3,4,4,3,4,4,4,4,4,3,3,4,4,3,2});
             tblInvSection2.setWidths(new float[]{1,3,2,3,4,4,3,4,1,3,4,4,4,3,3,4,4,3,2});
+            tblInvSection3.setWidths(new float[]{1,3,2,3,4,4,3,4,1,3,4,4,4,3,3,4,4,3,2});
 
 
             tblInvSection0.addCell(cellTxtNrml(
@@ -885,6 +889,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
                     Element.ALIGN_CENTER));
 
 
+
             String ttlDue = invTotalDue.replace("IDR ", "");
 
             deliveryPeriod = coDateDeliveryPeriodVal.split(",");
@@ -941,8 +946,12 @@ public class AddAIOReportActivity extends AppCompatActivity {
                         new Paragraph("", fontNormalSmall), Element.ALIGN_CENTER));
                 tblInvSection2.addCell(cellTxtNrml(
                         new Paragraph(currencyFormat(df.format(matBuyPrice)), fontNormalSmall), Element.ALIGN_CENTER));
+
+                //for (int p = 0; p<co;p++)
                 tblInvSection2.addCell(cellTxtNrml(
                         new Paragraph(currencyFormat(df.format(totalAmountMatBuyPrice)), fontNormalSmall), Element.ALIGN_CENTER));
+
+
                 tblInvSection2.addCell(cellTxtNrml(
                         new Paragraph(currencyFormat(df.format(coTotalDue)), fontNormalSmall), Element.ALIGN_CENTER));
                 tblInvSection2.addCell(cellTxtNrml(
@@ -953,14 +962,51 @@ public class AddAIOReportActivity extends AppCompatActivity {
                 totalUnitAmountForMaterials = 0;
                 showOccurances = 0;
 
-                //}
-            }
-            //}
+                tblInvSection2.addCell(cellTxtNrml(
+                        new Paragraph("-", fontMediumWhite), Element.ALIGN_CENTER));
+                tblInvSection2.addCell(cellTxtNrml(
+                        new Paragraph("", fontMediumWhite), Element.ALIGN_CENTER));
+                tblInvSection2.addCell(cellTxtNrml(
+                        new Paragraph("", fontMediumWhite), Element.ALIGN_CENTER));
+                tblInvSection2.addCell(cellTxtNrml(
+                        new Paragraph("", fontMediumWhite), Element.ALIGN_CENTER));
+                tblInvSection2.addCell(cellTxtNrml(
+                        new Paragraph("", fontMediumWhite), Element.ALIGN_CENTER));
+                tblInvSection2.addCell(cellTxtNrml(
+                        new Paragraph("", fontMediumWhite), Element.ALIGN_CENTER));
+                tblInvSection2.addCell(cellTxtNrml(
+                        new Paragraph("", fontMediumWhite), Element.ALIGN_CENTER));
+                tblInvSection2.addCell(cellTxtNrml(
+                        new Paragraph("", fontMediumWhite), Element.ALIGN_CENTER));
+                tblInvSection2.addCell(cellTxtNrml(
+                        new Paragraph("", fontMediumWhite), Element.ALIGN_CENTER));
+                tblInvSection2.addCell(cellTxtNrml(
+                        new Paragraph("", fontMediumWhite), Element.ALIGN_CENTER));
+                tblInvSection2.addCell(cellTxtNrml(
+                        new Paragraph("", fontMediumWhite), Element.ALIGN_CENTER));
+                tblInvSection2.addCell(cellTxtNrml(
+                        new Paragraph("", fontMediumWhite), Element.ALIGN_CENTER));
+                tblInvSection2.addCell(cellTxtNrml(
+                        new Paragraph("", fontMediumWhite), Element.ALIGN_CENTER));
+                tblInvSection2.addCell(cellTxtNrml(
+                        new Paragraph("", fontMediumWhite), Element.ALIGN_CENTER));
+                tblInvSection2.addCell(cellTxtNrml(
+                        new Paragraph("", fontMediumWhite), Element.ALIGN_CENTER));
+                tblInvSection2.addCell(cellTxtNrml(
+                        new Paragraph("", fontMediumWhite), Element.ALIGN_CENTER));
+                tblInvSection2.addCell(cellTxtNrml(
+                        new Paragraph("", fontMediumWhite), Element.ALIGN_CENTER));
+                tblInvSection2.addCell(cellTxtNrml(
+                        new Paragraph("", fontMediumWhite), Element.ALIGN_CENTER));
+                tblInvSection2.addCell(cellTxtNrml(
+                        new Paragraph("", fontMediumWhite), Element.ALIGN_CENTER));
 
+            }
 
             document.add(tblInvSection0);
             document.add(tblInvSection1);
             document.add(tblInvSection2);
+           // document.add(tblInvSection3);
 
             document.add(paragraphBlank); // SPACE SEPARATOR
             document.add(paragraphInvDateCreated);

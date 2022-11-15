@@ -126,11 +126,21 @@
                             android:inputType="textFilter|textCapCharacters" />
                     </com.google.android.material.textfield.TextInputLayout>
                 </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:divider="@drawable/divider_transparent"
+                android:gravity="top"
+                android:orientation="horizontal"
+                android:showDividers="middle"
+                android:visibility="visible">
+
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
                     app:boxBackgroundColor="@color/pure_grey"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     app:startIconDrawable="@drawable/ic_outline_person">
 
                     <AutoCompleteTextView
@@ -140,7 +150,18 @@
                         android:hint="@string/inputCustomerName"
                         android:inputType="textCapCharacters" />
                 </com.google.android.material.textfield.TextInputLayout>
-
+                <ImageButton
+                    android:id="@+id/btnResetCustomer"
+                    android:layout_width="55dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginBottom="1dp"
+                    android:background="@drawable/filled_box"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/ic_outline_restore"
+                    android:visibility="gone"
+                    app:tint="@color/white" />
+            </LinearLayout>
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
                     app:boxBackgroundColor="@color/pure_grey"
@@ -174,6 +195,7 @@
                         android:hint="@string/inputPoNumberCustomer"
                         android:inputType="textCapCharacters" />
                 </com.google.android.material.textfield.TextInputLayout>
+
                 <!--<LinearLayout
                     android:id="@+id/ll_po_number_availability"
                     android:layout_width="match_parent"
@@ -195,7 +217,6 @@
                     app:boxBackgroundColor="@color/pure_grey"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:prefixText="RO: "
                     app:startIconDrawable="@drawable/ic_outline_receipt">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -223,6 +244,80 @@
                         android:focusable="false"
                         android:inputType="none" />
                 </com.google.android.material.textfield.TextInputLayout>
+                <LinearLayout
+                    android:id="@+id/llShowSpinnerRoAndEdtPo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:divider="@drawable/divider_transparent"
+                    android:showDividers="middle"
+                    android:visibility="gone">
+                    <LinearLayout
+                        android:id="@+id/ll_wrap_filter_by_rouid"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:divider="@drawable/divider_transparent"
+                        android:gravity="top"
+                        android:orientation="horizontal"
+                        android:showDividers="middle"
+                        android:visibility="visible">
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+                            app:boxBackgroundColor="@color/pure_grey"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            app:startIconDrawable="@drawable/ic_outline_receipt">
+
+                            <AutoCompleteTextView
+                                android:id="@+id/spinnerRoUID"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="Hubungkan Nomor PO Material" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <ImageButton
+                            android:id="@+id/btnResetRouid"
+                            android:layout_width="55dp"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginBottom="1dp"
+                            android:background="@drawable/filled_box"
+                            android:scaleType="centerInside"
+                            android:src="@drawable/ic_outline_restore"
+                            android:visibility="gone"
+                            app:tint="@color/white" />
+                    </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/ll_wrap_filter_by_pouid"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:divider="@drawable/divider_transparent"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:showDividers="middle"
+                        android:visibility="visible">
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                            app:boxBackgroundColor="@color/pure_grey"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            app:startIconDrawable="@drawable/ic_outline_receipt">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/edtPoUID"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="Nomor RO (auto)"
+                                android:inputType="textCapCharacters"
+                                android:maxLines="1" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                    </LinearLayout>
+                </LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/ll_add_item"
