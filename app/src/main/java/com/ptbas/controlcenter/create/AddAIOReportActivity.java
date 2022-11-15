@@ -229,11 +229,11 @@ public class AddAIOReportActivity extends AppCompatActivity {
         }
 
         fontNormal = new Font(baseNormal, 10, Font.NORMAL, BaseColor.BLACK);
-        fontMediumSmall = new Font(baseMedium, 8, Font.NORMAL, BaseColor.BLACK);
-        fontNormalSmall = new Font(baseNormal, 8, Font.NORMAL, BaseColor.BLACK);
+        fontMediumSmall = new Font(baseMedium, 7, Font.NORMAL, BaseColor.BLACK);
+        fontNormalSmall = new Font(baseNormal, 7, Font.NORMAL, BaseColor.BLACK);
         fontNormalSmallItalic = new Font(baseNormal, 8, Font.ITALIC, BaseColor.BLACK);
         fontMedium = new Font(baseMedium, 10, Font.NORMAL, BaseColor.BLACK);
-        fontMediumWhite = new Font(baseMedium, 10, Font.NORMAL, BaseColor.WHITE);
+        fontMediumWhite = new Font(baseMedium, 7, Font.NORMAL, BaseColor.WHITE);
         fontBold = new Font(baseBold, 20, Font.NORMAL, BaseColor.BLACK);
         fontTransparent = new Font(baseNormal, 20, Font.NORMAL, null);
 
@@ -897,6 +897,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
 
             double totalAmountForMaterials;
             double totalAmountMatBuyPrice;
+            double totalAmountForTransportService;
 
             for (int i = 0; i < deliveryPeriod.length; i++) {
                 for (int j = 0; j < goodIssueModelArrayList.size(); j++) {
@@ -912,6 +913,12 @@ public class AddAIOReportActivity extends AppCompatActivity {
 
                 totalAmountForMaterials = matSellPrice * totalUnitAmountForMaterials;
                 totalAmountMatBuyPrice = matBuyPrice * totalUnitAmountForMaterials;
+
+                totalAmountForTransportService = transportServiceSellPrice*totalUnitAmountForMaterials;
+
+                double taxPPH = (0.02)*totalAmountForTransportService;
+
+
 
                 double taxPPN = (0.11) * totalAmountForMaterials;
 
@@ -929,13 +936,13 @@ public class AddAIOReportActivity extends AppCompatActivity {
                 tblInvSection2.addCell(cellTxtNrml(
                         new Paragraph(currencyFormat(df.format(taxPPN)), fontNormalSmall), Element.ALIGN_CENTER));
                 tblInvSection2.addCell(cellTxtNrml(
-                        new Paragraph("", fontNormalSmall), Element.ALIGN_CENTER));
+                        new Paragraph(currencyFormat(df.format(transportServiceSellPrice)), fontNormalSmall), Element.ALIGN_CENTER));
                 tblInvSection2.addCell(cellTxtNrml(
-                        new Paragraph("", fontNormalSmall), Element.ALIGN_CENTER));
+                        new Paragraph(currencyFormat(df.format(totalAmountForTransportService)), fontNormalSmall), Element.ALIGN_CENTER));
                 tblInvSection2.addCell(cellTxtNrml(
-                        new Paragraph("", fontNormalSmall), Element.ALIGN_CENTER));
+                        new Paragraph("2%", fontNormalSmall), Element.ALIGN_CENTER));
                 tblInvSection2.addCell(cellTxtNrml(
-                        new Paragraph("", fontNormalSmall), Element.ALIGN_CENTER));
+                        new Paragraph("("+currencyFormat(df.format(taxPPH))+")", fontNormalSmall), Element.ALIGN_CENTER));
                 tblInvSection2.addCell(cellTxtNrml(
                         new Paragraph("", fontNormalSmall), Element.ALIGN_CENTER));
                 tblInvSection2.addCell(cellTxtNrml(
