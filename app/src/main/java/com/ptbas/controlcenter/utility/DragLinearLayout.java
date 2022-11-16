@@ -1,4 +1,4 @@
-package com.ptbas.controlcenter.helper;
+package com.ptbas.controlcenter.utility;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;

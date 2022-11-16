@@ -9,14 +9,11 @@ import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
-import android.text.Html;
 import android.transition.AutoTransition;
 import android.transition.TransitionManager;
 import android.util.DisplayMetrics;
@@ -27,12 +24,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -48,9 +43,7 @@ import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.database.DataSnapshot;
@@ -64,49 +57,33 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
-import com.google.zxing.WriterException;
-import com.google.zxing.common.BitMatrix;
-import com.itextpdf.text.BadElementException;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
-import com.itextpdf.text.Image;
-import com.itextpdf.text.ListItem;
-import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
-import com.itextpdf.text.pdf.draw.LineSeparator;
-import com.journeyapps.barcodescanner.BarcodeEncoder;
 import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.adapter.CashOutManagementAdapter;
 import com.ptbas.controlcenter.adapter.GIManagementAdapter;
 import com.ptbas.controlcenter.adapter.InvoiceManagementAdapter;
-import com.ptbas.controlcenter.adapter.RecapGoodIssueManagementAdapter;
-import com.ptbas.controlcenter.helper.DialogInterface;
-import com.ptbas.controlcenter.helper.Helper;
-import com.ptbas.controlcenter.helper.ImageAndPositionRenderer;
-import com.ptbas.controlcenter.helper.NumberToWords;
-import com.ptbas.controlcenter.model.BankAccountModel;
+import com.ptbas.controlcenter.utility.DialogInterface;
+import com.ptbas.controlcenter.utility.Helper;
 import com.ptbas.controlcenter.model.CashOutModel;
 import com.ptbas.controlcenter.model.CustomerModel;
 import com.ptbas.controlcenter.model.GoodIssueModel;
 import com.ptbas.controlcenter.model.InvoiceModel;
 import com.ptbas.controlcenter.model.ProductItems;
-import com.ptbas.controlcenter.model.RecapGIModel;
 import com.ptbas.controlcenter.model.ReceivedOrderModel;
-import com.ptbas.controlcenter.update.UpdateCashOutActivity;
 import com.ptbas.controlcenter.utils.LangUtils;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -114,24 +91,20 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Random;
 
-import dev.shreyaspatil.MaterialDialog.MaterialDialog;
-
 public class AddAIOReportActivity extends AppCompatActivity {
 
     private static final String ALLOWED_CHARACTERS = "0123456789QWERTYUIOPASDFGHJKLZXCVBNM";
     String[] deliveryPeriod;
-    double matSellPrice, transportServiceSellPrice, invTax1 = 0, invTax2 =0;
+    double matQuantity, matSellPrice, transportServiceSellPrice, invTax1 = 0, invTax2 =0;
     String invDueDate, invDateNTimeCreated, invTimeCreated, custIDVal, dateStartVal = "", dateEndVal = "", rouidVal= "", currencyVal = "", pouidVal = "",
             monthStrVal, dayStrVal, roPoCustNumber, matTypeVal, matNameVal, transportServiceNameVal,
             invPoDate = "", invCustName = "", invPoUID = "", custNameVal = "", roDocumentID = "", coDocumentID, coUID, coAccBy,
@@ -180,6 +153,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
 
     DecimalFormat df = new DecimalFormat("0.00");
     DecimalFormat dfRound = new DecimalFormat("0");
+    DecimalFormat dfRound1 = new DecimalFormat("0");
 
     Vibrator vibrator;
 
@@ -202,6 +176,8 @@ public class AddAIOReportActivity extends AppCompatActivity {
 
     public Double coTotalDue;
     public int showOccurances;
+
+    String custNameFinal;
 
 
     @Override
@@ -234,7 +210,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
         fontNormalSmallItalic = new Font(baseNormal, 8, Font.ITALIC, BaseColor.BLACK);
         fontMedium = new Font(baseMedium, 10, Font.NORMAL, BaseColor.BLACK);
         fontMediumWhite = new Font(baseMedium, 7, Font.NORMAL, BaseColor.WHITE);
-        fontBold = new Font(baseBold, 20, Font.NORMAL, BaseColor.BLACK);
+        fontBold = new Font(baseBold, 9, Font.NORMAL, BaseColor.BLACK);
         fontTransparent = new Font(baseNormal, 20, Font.NORMAL, null);
 
         context = this;
@@ -747,6 +723,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
             document.addCreator("BAS Control Center");
             document.addCreationDate();
             addAIOTtl(document);
+            addSpace(document);
             addAIOMainContent(document);
             document.close();
             dialogInterface.aioDocumentGeneratedInformation(context, dest);
@@ -760,7 +737,17 @@ public class AddAIOReportActivity extends AppCompatActivity {
 
     private void addAIOTtl(Document document) throws DocumentException {
         Paragraph preface1 = new Paragraph();
-        Chunk title = new Chunk("All-In-One Report", fontBold);
+        Chunk title = new Chunk("LAPORAN PENGIRIMAN "+matNameVal+" "+matTypeVal+"\n"+custNameFinal+" | PO: "+pouidVal+" | "+currencyFormat(df.format(matQuantity)) +" m3", fontBold);
+        Paragraph paragraphTitle = new Paragraph(title);
+        paragraphTitle.setAlignment(Element.ALIGN_LEFT);
+        document.add(paragraphTitle);
+        preface1.setAlignment(Element.ALIGN_CENTER);
+        document.add(preface1);
+    }
+
+    private void addSpace(Document document) throws DocumentException {
+        Paragraph preface1 = new Paragraph();
+        Chunk title = new Chunk("-", fontMediumWhite);
         Paragraph paragraphTitle = new Paragraph(title);
         paragraphTitle.setAlignment(Element.ALIGN_LEFT);
         document.add(paragraphTitle);
@@ -793,6 +780,8 @@ public class AddAIOReportActivity extends AppCompatActivity {
     private void addAIOMainContent(Document document) throws DocumentException{
         try {
 
+            //dfRound.setRoundingMode(RoundingMode.UP);
+
             Paragraph paragraphBlank = new Paragraph(" ");
 
             Paragraph paragraphInvDateCreated =
@@ -801,11 +790,16 @@ public class AddAIOReportActivity extends AppCompatActivity {
             paragraphInvDateCreated.setAlignment(Element.ALIGN_RIGHT);
             paragraphInvDateCreated.setSpacingAfter(5);
 
+            Paragraph paragraphInvNote =
+                    new Paragraph("Mat.: Material; Sup.: Supplier; HJ: Harga Jual; HB: Harga Beli; PPN = 11%; PPH23 = 2%.", fontNormalSmall);
+            paragraphInvDateCreated.setAlignment(Element.ALIGN_RIGHT);
+            paragraphInvDateCreated.setSpacingAfter(5);
+
             // INIT TABLE
             PdfPTable tblInvSection0 = new PdfPTable(3);
             PdfPTable tblInvSection1 = new PdfPTable(18);
-            PdfPTable tblInvSection2 = new PdfPTable(19);
-            PdfPTable tblInvSection3 = new PdfPTable(19);
+            PdfPTable tblInvSection2 = new PdfPTable(18);
+            PdfPTable tblInvSection3 = new PdfPTable(18);
 
 
             // WIDTH PERCENTAGE CONFIG
@@ -818,8 +812,8 @@ public class AddAIOReportActivity extends AppCompatActivity {
             // WIDTH FLOAT CONFIG
             tblInvSection0.setWidths(new float[]{1,42,16});
             tblInvSection1.setWidths(new float[]{1,3,2,3,4,4,3,4,4,4,4,4,3,3,4,4,3,2});
-            tblInvSection2.setWidths(new float[]{1,3,2,3,4,4,3,4,1,3,4,4,4,3,3,4,4,3,2});
-            tblInvSection3.setWidths(new float[]{1,3,2,3,4,4,3,4,1,3,4,4,4,3,3,4,4,3,2});
+            tblInvSection2.setWidths(new float[]{1,3,2,3,4,4,3,4,4,4,4,4,3,3,4,4,3,2});
+            tblInvSection3.setWidths(new float[]{1,3,2,3,4,4,3,4,4,4,4,4,3,3,4,4,3,2});
 
 
             tblInvSection0.addCell(cellTxtNrml(
@@ -846,10 +840,10 @@ public class AddAIOReportActivity extends AppCompatActivity {
                     new Paragraph("HJ", fontMediumSmall),
                     Element.ALIGN_CENTER));
             tblInvSection1.addCell(cellTxtNrml(
-                    new Paragraph("Total Material", fontMediumSmall),
+                    new Paragraph("Total Mat.", fontMediumSmall),
                     Element.ALIGN_CENTER));
             tblInvSection1.addCell(cellTxtNrml(
-                    new Paragraph("PPN Material", fontMediumSmall),
+                    new Paragraph("PPN Mat.", fontMediumSmall),
                     Element.ALIGN_CENTER));
             tblInvSection1.addCell(cellTxtNrml(
                     new Paragraph("Jasa", fontMediumSmall),
@@ -858,31 +852,31 @@ public class AddAIOReportActivity extends AppCompatActivity {
                     new Paragraph("Total Jasa", fontMediumSmall),
                     Element.ALIGN_CENTER));
             tblInvSection1.addCell(cellTxtNrml(
-                    new Paragraph("PPH23", fontMediumSmall),
+                    new Paragraph("PPH23 Jasa", fontMediumSmall),
                     Element.ALIGN_CENTER));
             tblInvSection1.addCell(cellTxtNrml(
                     new Paragraph("PPN Jasa", fontMediumSmall),
                     Element.ALIGN_CENTER));
             tblInvSection1.addCell(cellTxtNrml(
-                    new Paragraph("Total", fontMediumSmall),
+                    new Paragraph("Total Jual", fontMediumSmall),
                     Element.ALIGN_CENTER));
             tblInvSection1.addCell(cellTxtNrml(
                     new Paragraph("Dibayar", fontMediumSmall),
                     Element.ALIGN_CENTER));
             tblInvSection1.addCell(cellTxtNrml(
-                    new Paragraph("Tgl. Bayar", fontMediumSmall),
+                    new Paragraph("Tgl. Masuk", fontMediumSmall),
                     Element.ALIGN_CENTER));
             tblInvSection1.addCell(cellTxtNrml(
                     new Paragraph("HB", fontMediumSmall),
                     Element.ALIGN_CENTER));
             tblInvSection1.addCell(cellTxtNrml(
-                    new Paragraph("Total Pembelian", fontMediumSmall),
+                    new Paragraph("Total Beli", fontMediumSmall),
                     Element.ALIGN_CENTER));
             tblInvSection1.addCell(cellTxtNrml(
-                    new Paragraph("Transfer Supplier", fontMediumSmall),
+                    new Paragraph("Tf. Sup.", fontMediumSmall),
                     Element.ALIGN_CENTER));
             tblInvSection1.addCell(cellTxtNrml(
-                    new Paragraph("Tgl. Tf.", fontMediumSmall),
+                    new Paragraph("Tgl. Keluar", fontMediumSmall),
                     Element.ALIGN_CENTER));
             tblInvSection1.addCell(cellTxtNrml(
                     new Paragraph("", fontMediumSmall),
@@ -899,6 +893,45 @@ public class AddAIOReportActivity extends AppCompatActivity {
             double totalAmountMatBuyPrice;
             double totalAmountForTransportService;
 
+            tblInvSection2.addCell(cellTxtNrml(
+                    new Paragraph("-", fontMediumWhite), Element.ALIGN_CENTER));
+            tblInvSection2.addCell(cellTxtNrml(
+                    new Paragraph("", fontMediumWhite), Element.ALIGN_CENTER));
+            tblInvSection2.addCell(cellTxtNrml(
+                    new Paragraph("", fontMediumWhite), Element.ALIGN_CENTER));
+            tblInvSection2.addCell(cellTxtNrml(
+                    new Paragraph("", fontMediumWhite), Element.ALIGN_CENTER));
+            tblInvSection2.addCell(cellTxtNrml(
+                    new Paragraph("", fontMediumWhite), Element.ALIGN_CENTER));
+            tblInvSection2.addCell(cellTxtNrml(
+                    new Paragraph("", fontMediumWhite), Element.ALIGN_CENTER));
+            tblInvSection2.addCell(cellTxtNrml(
+                    new Paragraph("", fontMediumWhite), Element.ALIGN_CENTER));
+            tblInvSection2.addCell(cellTxtNrml(
+                    new Paragraph("", fontMediumWhite), Element.ALIGN_CENTER));
+            tblInvSection2.addCell(cellTxtNrml(
+                    new Paragraph("", fontMediumWhite), Element.ALIGN_CENTER));
+            tblInvSection2.addCell(cellTxtNrml(
+                    new Paragraph("", fontMediumWhite), Element.ALIGN_CENTER));
+            tblInvSection2.addCell(cellTxtNrml(
+                    new Paragraph("", fontMediumWhite), Element.ALIGN_CENTER));
+            tblInvSection2.addCell(cellTxtNrml(
+                    new Paragraph("", fontMediumWhite), Element.ALIGN_CENTER));
+               /* tblInvSection2.addCell(cellTxtNrml(
+                        new Paragraph("", fontMediumWhite), Element.ALIGN_CENTER));*/
+            tblInvSection2.addCell(cellTxtNrml(
+                    new Paragraph("", fontMediumWhite), Element.ALIGN_CENTER));
+            tblInvSection2.addCell(cellTxtNrml(
+                    new Paragraph("", fontMediumWhite), Element.ALIGN_CENTER));
+            tblInvSection2.addCell(cellTxtNrml(
+                    new Paragraph("", fontMediumWhite), Element.ALIGN_CENTER));
+            tblInvSection2.addCell(cellTxtNrml(
+                    new Paragraph("", fontMediumWhite), Element.ALIGN_CENTER));
+            tblInvSection2.addCell(cellTxtNrml(
+                    new Paragraph("", fontMediumWhite), Element.ALIGN_CENTER));
+            tblInvSection2.addCell(cellTxtNrml(
+                    new Paragraph("", fontMediumWhite), Element.ALIGN_CENTER));
+
             for (int i = 0; i < deliveryPeriod.length; i++) {
                 for (int j = 0; j < goodIssueModelArrayList.size(); j++) {
                     for (int k = 0; k < cashOutManagementAdapter.getSelected().size(); k++) {
@@ -911,16 +944,17 @@ public class AddAIOReportActivity extends AppCompatActivity {
                     }
                 }
 
+
+
                 totalAmountForMaterials = matSellPrice * totalUnitAmountForMaterials;
                 totalAmountMatBuyPrice = matBuyPrice * totalUnitAmountForMaterials;
-
                 totalAmountForTransportService = transportServiceSellPrice*totalUnitAmountForMaterials;
 
                 double taxPPH = (0.02)*totalAmountForTransportService;
-
-
-
                 double taxPPN = (0.11) * totalAmountForMaterials;
+                double taxPPNService = (0.11) * totalAmountForTransportService;
+
+                double totalDue = totalAmountForMaterials+taxPPN+totalAmountForTransportService-taxPPH+taxPPNService;
 
                 String rowNumberStrVal = String.valueOf(i + 1);
                 tblInvSection2.addCell(cellTxtNrml(
@@ -932,21 +966,23 @@ public class AddAIOReportActivity extends AppCompatActivity {
                 tblInvSection2.addCell(cellTxtNrml(
                         new Paragraph(currencyFormat(df.format(matSellPrice)), fontNormalSmall), Element.ALIGN_CENTER));
                 tblInvSection2.addCell(cellTxtNrml(
-                        new Paragraph(currencyFormat(df.format(totalAmountForMaterials)), fontNormalSmall), Element.ALIGN_CENTER));
+                        new Paragraph(currencyFormat(dfRound.format(totalAmountForMaterials)), fontNormalSmall), Element.ALIGN_CENTER));
                 tblInvSection2.addCell(cellTxtNrml(
-                        new Paragraph(currencyFormat(df.format(taxPPN)), fontNormalSmall), Element.ALIGN_CENTER));
+                        new Paragraph(currencyFormat(dfRound.format(taxPPN)), fontNormalSmall), Element.ALIGN_CENTER));
                 tblInvSection2.addCell(cellTxtNrml(
-                        new Paragraph(currencyFormat(df.format(transportServiceSellPrice)), fontNormalSmall), Element.ALIGN_CENTER));
+                        new Paragraph(currencyFormat(dfRound1.format(transportServiceSellPrice)), fontNormalSmall), Element.ALIGN_CENTER));
                 tblInvSection2.addCell(cellTxtNrml(
-                        new Paragraph(currencyFormat(df.format(totalAmountForTransportService)), fontNormalSmall), Element.ALIGN_CENTER));
+                        new Paragraph(currencyFormat(dfRound1.format(totalAmountForTransportService)), fontNormalSmall), Element.ALIGN_CENTER));
+/*
                 tblInvSection2.addCell(cellTxtNrml(
                         new Paragraph("2%", fontNormalSmall), Element.ALIGN_CENTER));
+*/
                 tblInvSection2.addCell(cellTxtNrml(
-                        new Paragraph("("+currencyFormat(df.format(taxPPH))+")", fontNormalSmall), Element.ALIGN_CENTER));
+                        new Paragraph("("+currencyFormat(dfRound1.format(taxPPH))+")", fontNormalSmall), Element.ALIGN_CENTER));
                 tblInvSection2.addCell(cellTxtNrml(
-                        new Paragraph("", fontNormalSmall), Element.ALIGN_CENTER));
+                        new Paragraph(currencyFormat(dfRound.format(taxPPNService)), fontNormalSmall), Element.ALIGN_CENTER));
                 tblInvSection2.addCell(cellTxtNrml(
-                        new Paragraph("", fontNormalSmall), Element.ALIGN_CENTER));
+                        new Paragraph(currencyFormat(dfRound.format(totalDue)), fontNormalSmall), Element.ALIGN_CENTER));
                 tblInvSection2.addCell(cellTxtNrml(
                         new Paragraph("", fontNormalSmall), Element.ALIGN_CENTER));
                 tblInvSection2.addCell(cellTxtNrml(
@@ -956,7 +992,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
 
                 //for (int p = 0; p<co;p++)
                 tblInvSection2.addCell(cellTxtNrml(
-                        new Paragraph(currencyFormat(df.format(totalAmountMatBuyPrice)), fontNormalSmall), Element.ALIGN_CENTER));
+                        new Paragraph(currencyFormat(dfRound.format(totalAmountMatBuyPrice)), fontNormalSmall), Element.ALIGN_CENTER));
 
 
                 tblInvSection2.addCell(cellTxtNrml(
@@ -993,8 +1029,8 @@ public class AddAIOReportActivity extends AppCompatActivity {
                         new Paragraph("", fontMediumWhite), Element.ALIGN_CENTER));
                 tblInvSection2.addCell(cellTxtNrml(
                         new Paragraph("", fontMediumWhite), Element.ALIGN_CENTER));
-                tblInvSection2.addCell(cellTxtNrml(
-                        new Paragraph("", fontMediumWhite), Element.ALIGN_CENTER));
+               /* tblInvSection2.addCell(cellTxtNrml(
+                        new Paragraph("", fontMediumWhite), Element.ALIGN_CENTER));*/
                 tblInvSection2.addCell(cellTxtNrml(
                         new Paragraph("", fontMediumWhite), Element.ALIGN_CENTER));
                 tblInvSection2.addCell(cellTxtNrml(
@@ -1016,6 +1052,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
            // document.add(tblInvSection3);
 
             document.add(paragraphBlank); // SPACE SEPARATOR
+            document.add(paragraphInvNote);
             document.add(paragraphInvDateCreated);
 
         } catch (DocumentException e) {
@@ -1085,6 +1122,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
                             invPoType = receivedOrderModel.getRoType();
 
 
+
                             HashMap<String, List<ProductItems>> map = receivedOrderModel.getRoOrderedItems();
                             for (HashMap.Entry<String, List<ProductItems>> e : map.entrySet()) {
                                 productItemsList = e.getValue();
@@ -1094,6 +1132,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
                                         transportServiceSellPrice = productItemsList.get(0).getMatBuyPrice();
                                     } else {
                                         matNameVal = productItemsList.get(i).getMatName();
+                                        matQuantity = productItemsList.get(i).getMatQuantity();
                                         //matCubication = productItemsList.get(i).getMatQuantity();
                                         matBuyPrice = productItemsList.get(i).getMatBuyPrice();
                                         matSellPrice = productItemsList.get(i).getMatSellPrice();
@@ -1133,6 +1172,15 @@ public class AddAIOReportActivity extends AppCompatActivity {
                                             coTotal =  cashOutModel.getCoTotal();
                                             coDateAndTimeACC = cashOutModel.getCoDateAndTimeACC().split(" ");
 
+                                        }
+                                    });
+
+                            CollectionReference refCust = db.collection("CustomerData");
+                            refCust.whereEqualTo("custDocumentID", custNameVal).get()
+                                    .addOnSuccessListener(queryDocumentSnapshotsCust -> {
+                                        for (QueryDocumentSnapshot documentSnapshotCust : queryDocumentSnapshotsCust){
+                                            CustomerModel customerModel = documentSnapshotCust.toObject(CustomerModel.class);
+                                            custNameFinal = customerModel.getCustName();
                                         }
                                     });
 

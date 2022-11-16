@@ -26,7 +26,7 @@ import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.ptbas.controlcenter.helper.Helper;
+import com.ptbas.controlcenter.utility.Helper;
 import com.squareup.picasso.Picasso;
 import com.ptbas.controlcenter.MainActivityOld;
 import com.ptbas.controlcenter.R;

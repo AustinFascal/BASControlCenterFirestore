@@ -102,7 +102,7 @@
                     android:showDividers="middle"
                     android:visibility="visible">
 
-                    <com.ptbas.controlcenter.helper.DragLinearLayout
+                    <com.ptbas.controlcenter.utility.DragLinearLayout
                         android:id="@+id/drag_linear_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -347,7 +347,7 @@
                         -->
 
 
-                    </com.ptbas.controlcenter.helper.DragLinearLayout>
+                    </com.ptbas.controlcenter.utility.DragLinearLayout>
 
                 </LinearLayout>
                 <!--<Button

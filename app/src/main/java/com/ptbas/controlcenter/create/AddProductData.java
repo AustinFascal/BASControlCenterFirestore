@@ -17,8 +17,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.ptbas.controlcenter.helper.DialogInterface;
-import com.ptbas.controlcenter.helper.Helper;
+import com.ptbas.controlcenter.utility.DialogInterface;
+import com.ptbas.controlcenter.utility.Helper;
 import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.model.ProductModel;
 

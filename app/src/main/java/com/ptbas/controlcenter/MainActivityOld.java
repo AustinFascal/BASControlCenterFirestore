@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.ptbas.controlcenter.auth.LoginActivity;
 import com.ptbas.controlcenter.auth.RegisterActivity;
-import com.ptbas.controlcenter.helper.Helper;
+import com.ptbas.controlcenter.utility.Helper;
 
 import java.util.Objects;
 

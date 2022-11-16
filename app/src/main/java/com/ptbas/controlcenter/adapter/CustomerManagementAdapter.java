@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.ptbas.controlcenter.helper.DialogInterface;
+import com.ptbas.controlcenter.utility.DialogInterface;
 import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.model.CustomerModel;
 

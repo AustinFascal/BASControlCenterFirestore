@@ -21,6 +21,11 @@
         <item name="material_dialog_negative_button_text_color">@color/blue_700</item>
     </style>
 
+    <style name="circular">
+        <item name="cornerSize">50%</item>
+    </style>
+
+
     <style name="customFAB">
         <item name="android:background">@drawable/fab_label_background</item>
         <item name="android:textColor">@color/white</item>

@@ -25,7 +25,7 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.ptbas.controlcenter.helper.Helper;
+import com.ptbas.controlcenter.utility.Helper;
 import com.ptbas.controlcenter.MainActivityOld;
 import com.ptbas.controlcenter.R;
 

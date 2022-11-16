@@ -2,40 +2,28 @@ package com.ptbas.controlcenter.adapter;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.ptbas.controlcenter.R;
-import com.ptbas.controlcenter.helper.DialogInterface;
+import com.ptbas.controlcenter.utility.DialogInterface;
 import com.ptbas.controlcenter.model.SupplierModel;
-import com.ptbas.controlcenter.model.VehicleModel;
-import com.ptbas.controlcenter.update.UpdateVehicleData;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Objects;
 
 public class SupplierDataManagementAdapter extends RecyclerView.Adapter<SupplierDataManagementAdapter.ItemViewHolder> {
 

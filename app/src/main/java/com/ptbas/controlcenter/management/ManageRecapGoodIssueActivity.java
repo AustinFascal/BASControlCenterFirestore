@@ -3,7 +3,6 @@ package com.ptbas.controlcenter.management;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -22,7 +21,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -38,8 +36,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.database.DatabaseReference;
@@ -47,15 +43,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.ptbas.controlcenter.R;
-import com.ptbas.controlcenter.adapter.CashOutManagementAdapter;
 import com.ptbas.controlcenter.adapter.RecapGoodIssueManagementAdapter;
-import com.ptbas.controlcenter.create.AddCashOutActivity;
 import com.ptbas.controlcenter.create.AddRecapGoodIssueDataActivity;
-import com.ptbas.controlcenter.helper.DialogInterface;
-import com.ptbas.controlcenter.helper.DragLinearLayout;
-import com.ptbas.controlcenter.helper.Helper;
+import com.ptbas.controlcenter.utility.DialogInterface;
+import com.ptbas.controlcenter.utility.DragLinearLayout;
+import com.ptbas.controlcenter.utility.Helper;
 import com.ptbas.controlcenter.model.RecapGIModel;
 import com.ptbas.controlcenter.utils.LangUtils;
 
@@ -64,8 +57,6 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-
-import dev.shreyaspatil.MaterialDialog.MaterialDialog;
 
 public class ManageRecapGoodIssueActivity extends AppCompatActivity {
 

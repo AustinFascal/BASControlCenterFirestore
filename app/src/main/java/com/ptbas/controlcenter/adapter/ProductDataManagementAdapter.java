@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -18,7 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.ptbas.controlcenter.helper.DialogInterface;
+import com.ptbas.controlcenter.utility.DialogInterface;
 import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.model.ProductModel;
 import com.ptbas.controlcenter.update.UpdateProductData;

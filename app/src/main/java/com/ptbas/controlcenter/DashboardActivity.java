@@ -1,14 +1,18 @@
 package com.ptbas.controlcenter;
 
 import android.Manifest;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -36,6 +40,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
@@ -57,16 +62,28 @@ import com.ptbas.controlcenter.create.AddProductData;
 import com.ptbas.controlcenter.create.AddReceivedOrder;
 import com.ptbas.controlcenter.create.AddSupplierActivity;
 import com.ptbas.controlcenter.create.AddVehicleActivity;
-import com.ptbas.controlcenter.helper.Helper;
+import com.ptbas.controlcenter.utility.Helper;
 import com.ptbas.controlcenter.model.MainFeatureModel;
 import com.ptbas.controlcenter.model.StatisticsModel;
 import com.ptbas.controlcenter.model.UserModel;
 import com.ptbas.controlcenter.userprofile.UserProfileActivity;
+import com.ptbas.controlcenter.utility.NetworkChangeListener;
 import com.squareup.picasso.Picasso;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.InetAddress;
+import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public class DashboardActivity extends AppCompatActivity {
 
@@ -98,6 +115,8 @@ public class DashboardActivity extends AppCompatActivity {
     BottomSheetBehavior<ConstraintLayout> bottomSheetBehavior;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
+    NetworkChangeListener networkChangeListener = new NetworkChangeListener();
+
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,6 +147,26 @@ public class DashboardActivity extends AppCompatActivity {
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         getWindow().setStatusBarColor(Color.TRANSPARENT);
+
+
+        /*final Handler handler = new Handler();
+        Runnable runnable = new Runnable() {
+            public void run() {
+
+                handler.postDelayed(this, 1000);
+            }
+        };
+        runnable.run();*/
+
+
+
+        /*if (!isConnectingToInternet()){
+            Toast.makeText(DashboardActivity.this, "Not Connected", Toast.LENGTH_SHORT).show();
+        }*/
+
+
+
+
 
         // HANDLING SYSTEM UI MODE
         int nightModeFlags =
@@ -274,15 +313,8 @@ public class DashboardActivity extends AppCompatActivity {
         });
         llShowOthers.setOnClickListener(view -> bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED));
 
-        // HANDLER CHECK INTERNET CONNECTIVITY
-        /*final Handler handler = new Handler();
-        Runnable runnable = new Runnable() {
-            public void run() {
-                //haveNetworkConnection();
-                handler.postDelayed(this, 1000);
-            }
-        };
-        runnable.run();*/
+
+
 
         // ADAPTER FOR MAIN FEATURES
         DisplayMetrics displayMetrics = new DisplayMetrics();
@@ -380,6 +412,7 @@ public class DashboardActivity extends AppCompatActivity {
             }
         });
     }
+
 
 
     private void getActiveReceivedOrderDataCount(String countFinal) {
@@ -594,6 +627,8 @@ public class DashboardActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
+        /*IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(networkChangeListener, filter);*/
         super.onResume();
         //haveNetworkConnection();
     }
@@ -610,4 +645,19 @@ public class DashboardActivity extends AppCompatActivity {
 
         new Handler(Looper.getMainLooper()).postDelayed(() -> doubleBackToExitPressedOnce=false, 2000);
     }
+
+    @Override
+    protected void onStart() {
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(networkChangeListener, filter);
+        super.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+        unregisterReceiver(networkChangeListener);
+        super.onStop();
+    }
+
+
 }

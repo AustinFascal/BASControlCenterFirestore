@@ -16,22 +16,14 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.ptbas.controlcenter.R;
-import com.ptbas.controlcenter.adapter.InvoiceManagementAdapter;
 import com.ptbas.controlcenter.adapter.SupplierDataManagementAdapter;
 import com.ptbas.controlcenter.create.AddSupplierActivity;
-import com.ptbas.controlcenter.create.AddVehicleActivity;
-import com.ptbas.controlcenter.helper.Helper;
-import com.ptbas.controlcenter.model.InvoiceModel;
+import com.ptbas.controlcenter.utility.Helper;
 import com.ptbas.controlcenter.model.SupplierModel;
 import com.ptbas.controlcenter.utils.LangUtils;
 

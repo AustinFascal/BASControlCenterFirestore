@@ -10,14 +10,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.flexbox.AlignContent;
 import com.google.android.flexbox.AlignItems;
 import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexWrap;
 import com.google.android.flexbox.FlexboxLayoutManager;
 import com.google.android.flexbox.JustifyContent;
 import com.ptbas.controlcenter.adapter.MainFeaturesMenuAdapter;
-import com.ptbas.controlcenter.helper.Helper;
+import com.ptbas.controlcenter.utility.Helper;
 import com.ptbas.controlcenter.model.MainFeatureModel;
 
 import java.util.ArrayList;

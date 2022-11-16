@@ -1,5 +1,4 @@
-package com.ptbas.controlcenter.helper;
-import android.content.Context;
+package com.ptbas.controlcenter.utility;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.EditText;

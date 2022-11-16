@@ -3,7 +3,6 @@ package com.ptbas.controlcenter.create;
 import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.os.Handler;
 import android.text.InputFilter;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -28,14 +27,12 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.ptbas.controlcenter.R;
-import com.ptbas.controlcenter.helper.DialogInterface;
-import com.ptbas.controlcenter.model.CustomerModel;
+import com.ptbas.controlcenter.utility.DialogInterface;
 import com.ptbas.controlcenter.model.SupplierModel;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Random;
 
 public class AddSupplierActivity extends AppCompatActivity {
 

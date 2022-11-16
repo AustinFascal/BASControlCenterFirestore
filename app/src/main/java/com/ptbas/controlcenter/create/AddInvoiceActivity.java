@@ -7,7 +7,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -83,10 +82,10 @@ import com.itextpdf.text.pdf.draw.LineSeparator;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.adapter.GIManagementAdapter;
-import com.ptbas.controlcenter.helper.DialogInterface;
-import com.ptbas.controlcenter.helper.Helper;
-import com.ptbas.controlcenter.helper.ImageAndPositionRenderer;
-import com.ptbas.controlcenter.helper.NumberToWords;
+import com.ptbas.controlcenter.utility.DialogInterface;
+import com.ptbas.controlcenter.utility.Helper;
+import com.ptbas.controlcenter.utility.ImageAndPositionRenderer;
+import com.ptbas.controlcenter.utility.NumberToWords;
 import com.ptbas.controlcenter.model.BankAccountModel;
 import com.ptbas.controlcenter.model.CashOutModel;
 import com.ptbas.controlcenter.model.GoodIssueModel;
@@ -493,75 +492,6 @@ public class AddInvoiceActivity extends AppCompatActivity {
 
                 btnResetCustomer.setVisibility(View.VISIBLE);
                 //clearRoPoData();
-
-
-            /*custDocumentID = arrayListCustDocumentID.get(adapterView.getSelectedItemPosition());
-            String custDocumentIDValReplace = custDocumentID.replace(" - ","-");
-            int indexCustDocumentIDVal = custDocumentIDValReplace.lastIndexOf('-');
-
-
-            db.collection("ReceivedOrderData").whereEqualTo("roStatus", true)
-                    .addSnapshotListener((value, error) -> {
-                        arrayListRoUID.clear();
-                        if (value != null) {
-                            if (!value.isEmpty()) {
-                                for (DocumentSnapshot d : value.getDocuments()) {
-                                    String spinnerPurchaseOrders = Objects.requireNonNull(d.get("roPoCustNumber")).toString();
-                                    String custDocumentID = Objects.requireNonNull(d.get("custDocumentID")).toString();
-                                    if (custDocumentID.equals(custDocumentIDValReplace.substring(0, indexCustDocumentIDVal))){
-                                        arrayListRoUID.add(spinnerPurchaseOrders);
-                                    }
-
-                                }
-                                ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddInvoiceActivity.this, R.layout.style_spinner, arrayListRoUID);
-                                arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
-                                spinnerRoUID.setAdapter(arrayAdapter);
-                            } else {
-                                if(!this.isFinishing()) {
-                                    dialogInterface.roNotExistsDialogForInvoice(AddInvoiceActivity.this);
-                                }
-                            }
-                        }
-                    });*/
-
-
-                /*db.collection("ReceivedOrderData").whereEqualTo("roStatus", true)
-                        .addSnapshotListener((value, error) -> {
-                            if (!Objects.requireNonNull(value).isEmpty()) {
-                                for (DocumentSnapshot d : value.getDocuments()) {
-                                    //custDocumentID = d.get("custDocumentID").toString();
-                                    custDocumentID = Objects.requireNonNull(d.get("custDocumentID")).toString();
-                                    db.collection("CustomerData").whereEqualTo("custDocumentID", custDocumentID)
-                                            .addSnapshotListener((value2, error2) -> {
-                                                arrayListRoUID.clear();
-                                                if (!Objects.requireNonNull(value2).isEmpty()) {
-                                                    for (DocumentSnapshot e : value2.getDocuments()) {
-                                                        custNameVal = Objects.requireNonNull(e.get("custName")).toString();
-                                                        custAddressVal = Objects.requireNonNull(e.get("custAddress")).toString();
-                                                        //custIDVal = Objects.requireNonNull(e.get("custName")).toString();
-                                                        db.collection("ReceivedOrderData").whereEqualTo("roStatus", true)
-                                                                .addSnapshotListener((value3, error3) -> {
-                                                                    if (!Objects.requireNonNull(value3).isEmpty()) {
-                                                                        String spinnerPurchaseOrders = Objects.requireNonNull(d.get("roPoCustNumber")).toString();
-                                                                        if (selectedSpinnerCustomerName.contains(custNameVal)) {
-                                                                            arrayListRoUID.add(spinnerPurchaseOrders);
-                                                                        }
-                                                                        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddInvoiceActivity.this, R.layout.style_spinner, arrayListRoUID);
-                                                                        arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
-                                                                        spinnerRoUID.setAdapter(arrayAdapter);
-                                                                    }
-                                                                });
-                                                    }
-                                                } else {
-                                                    if (!isFinishing()) {
-                                                        dialogInterface.roNotExistsDialog(AddInvoiceActivity.this);
-                                                    }
-                                                }
-                                            });
-                                }
-                            }
-                        });*/
-
 
                 db.collection("CustomerData").whereEqualTo("custName", custNameSplit1)
                         .addSnapshotListener((value2, error2) -> {

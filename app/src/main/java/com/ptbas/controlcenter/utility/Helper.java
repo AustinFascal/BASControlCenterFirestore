@@ -1,4 +1,4 @@
-package com.ptbas.controlcenter.helper;
+package com.ptbas.controlcenter.utility;
 
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
@@ -9,8 +9,6 @@ import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
-import android.os.Environment;
-import android.util.Log;
 import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
@@ -23,8 +21,6 @@ import com.ptbas.controlcenter.DashboardActivity;
 import com.ptbas.controlcenter.R;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
 import java.util.List;
 
 public class Helper {
