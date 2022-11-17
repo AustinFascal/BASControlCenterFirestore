@@ -1,17 +1,12 @@
 package com.ptbas.controlcenter;
 
 import android.Manifest;
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.graphics.Color;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -40,7 +35,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.bumptech.glide.Glide;
+import com.droidnet.DroidListener;
+import com.droidnet.DroidNet;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
@@ -67,32 +63,22 @@ import com.ptbas.controlcenter.model.MainFeatureModel;
 import com.ptbas.controlcenter.model.StatisticsModel;
 import com.ptbas.controlcenter.model.UserModel;
 import com.ptbas.controlcenter.userprofile.UserProfileActivity;
-import com.ptbas.controlcenter.utility.NetworkChangeListener;
+
 import com.squareup.picasso.Picasso;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.InetAddress;
-import java.net.URL;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
-public class DashboardActivity extends AppCompatActivity {
+import dev.shreyaspatil.MaterialDialog.MaterialDialog;
+
+public class DashboardActivity extends AppCompatActivity implements DroidListener {
 
     public SwipeRefreshLayout swipeContainer;
 
     private static final int LAUNCH_SECOND_ACTIVITY = 0;
 
     boolean doubleBackToExitPressedOnce = false;
-
 
     CoordinatorLayout coordinatorLayout;
     ConstraintLayout bottomSheet;
@@ -115,13 +101,14 @@ public class DashboardActivity extends AppCompatActivity {
     BottomSheetBehavior<ConstraintLayout> bottomSheetBehavior;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-    NetworkChangeListener networkChangeListener = new NetworkChangeListener();
-
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
+
+        DroidNet mDroidNet = DroidNet.getInstance();
+        mDroidNet.addInternetConnectivityListener(this);
 
         llWrapProfilePic = findViewById(R.id.wrap_profile_pic);
         bottomSheet = findViewById(R.id.bottomSheetPODetails);
@@ -163,8 +150,6 @@ public class DashboardActivity extends AppCompatActivity {
         /*if (!isConnectingToInternet()){
             Toast.makeText(DashboardActivity.this, "Not Connected", Toast.LENGTH_SHORT).show();
         }*/
-
-
 
 
 
@@ -339,7 +324,7 @@ public class DashboardActivity extends AppCompatActivity {
         swipeContainer.setOnRefreshListener(() -> helper.refreshDashboard(DashboardActivity.this));
 
         // SUM VEHICLE
-        databaseReference.child("ProductData").addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference.child("ProductData").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 int countFinal = Integer.parseInt(String.valueOf(dataSnapshot.getChildrenCount()));
@@ -353,7 +338,7 @@ public class DashboardActivity extends AppCompatActivity {
         });
 
         // SUM REGISTERED USER
-        databaseReference.child("RegisteredUser").addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference.child("RegisteredUser").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 int countFinal = Integer.parseInt(String.valueOf(dataSnapshot.getChildrenCount()));
@@ -366,7 +351,7 @@ public class DashboardActivity extends AppCompatActivity {
             }
         });
         // SUM GOOD ISSUE - NEED APPROVAL
-        databaseReference.child("GoodIssueData").orderByChild("giStatus").equalTo(false).addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference.child("GoodIssueData").orderByChild("giStatus").equalTo(false).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 int countFinal = Integer.parseInt(String.valueOf(dataSnapshot.getChildrenCount()));
@@ -379,7 +364,7 @@ public class DashboardActivity extends AppCompatActivity {
             }
         });
         // SUM GOOD ISSUE - NEED INVOICED
-        databaseReference.child("GoodIssueData").orderByChild("giInvoiced").equalTo(false).addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference.child("GoodIssueData").orderByChild("giInvoiced").equalTo(false).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 int countFinal = Integer.parseInt(String.valueOf(dataSnapshot.getChildrenCount()));
@@ -399,7 +384,7 @@ public class DashboardActivity extends AppCompatActivity {
                     getActiveReceivedOrderDataCount(String.valueOf(countFinal));
                 });
         // SUM CUSTOMER
-        databaseReference.child("CustomerData").orderByKey().addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference.child("CustomerData").orderByKey().addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 int countFinal = Integer.parseInt(String.valueOf(dataSnapshot.getChildrenCount()));
@@ -647,17 +632,32 @@ public class DashboardActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onStart() {
-        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-        registerReceiver(networkChangeListener, filter);
-        super.onStart();
-    }
+    public void onInternetConnectivityChanged(boolean isConnected) {
+        MaterialDialog invoiceGeneratedInformationDialog = new MaterialDialog.Builder((Activity) this)
+                .setTitle("Oops!")
+                .setAnimation(R.raw.lottie_no_internet)
+                .setMessage("Anda tidak terhubung ke internet, mohon periksa kembali koneksi internet Anda untuk melanjutkan.")
+                .setCancelable(false)
+                .setPositiveButton("COBA LAGI", R.drawable.ic_outline_refresh, (dialogInterface, which) -> {
+                   DroidNet.getInstance().addInternetConnectivityListener(new DroidListener() {
+                       @Override
+                       public void onInternetConnectivityChanged(boolean isConnected) {
 
-    @Override
-    protected void onStop() {
-        unregisterReceiver(networkChangeListener);
-        super.onStop();
-    }
+                               dialogInterface.dismiss();
+                           //}
+                       }
+                   });
+                })
+                .build();
+        invoiceGeneratedInformationDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
 
+        if (isConnected){
+            invoiceGeneratedInformationDialog.dismiss();
+            Toast.makeText(DashboardActivity.this, "Anda terhubung dengan internet", Toast.LENGTH_SHORT).show();
+        } else{
+            invoiceGeneratedInformationDialog.show();
+        }
+
+    }
 
 }

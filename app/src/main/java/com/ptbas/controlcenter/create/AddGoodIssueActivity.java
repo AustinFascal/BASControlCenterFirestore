@@ -3,6 +3,7 @@ package com.ptbas.controlcenter.create;
 import static android.content.ContentValues.TAG;
 
 import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
 import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
@@ -102,6 +103,7 @@ public class AddGoodIssueActivity extends AppCompatActivity {
     int revisedHeight;
 
     DecimalFormat df;
+    ProgressDialog pd;
 
     ImageButton btnEditDefaultValOfVol, btnEditDefaultValOfVolToUp, btnEditDefaultValOfVolToDown;
     double finalVolumeDefault;
@@ -109,6 +111,11 @@ public class AddGoodIssueActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_good_issue);
+
+        pd = new ProgressDialog(AddGoodIssueActivity.this);
+        pd.setMessage("Memproses");
+        pd.setCancelable(false);
+
 
         LangUtils.setLocale(this, "en");
 
@@ -958,6 +965,8 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                             int vhlHeightCorrection, int vhlHeightAfterCorrection,
                             Double giVhlCubication, Boolean giStatus, Boolean giRecapped, Boolean giInvoiced) {
 
+        pd.show();
+
         GoodIssueModel goodIssueModel = new GoodIssueModel(giUID, giCreatedBy, giVerifiedBy, roDocumentID,
                 giMatName, giMatType, giNoteNumber, vhlUID, giDateCreated, giTimeCreted, vhlLength,
                 vhlWidth, vhlHeight, vhlHeightCorrection, vhlHeightAfterCorrection, giVhlCubication, giStatus, giRecapped, giInvoiced, "", false, "", "");
@@ -985,6 +994,7 @@ public class AddGoodIssueActivity extends AppCompatActivity {
         refGIExists.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
+                pd.dismiss();
                 if (snapshot.exists()) {
                     Toast.makeText(AddGoodIssueActivity.this, "Terjadi kesalahan pembuatan UID, coba tutup dan buka kembali aplikasi", Toast.LENGTH_SHORT).show();
                 } else {

@@ -84,6 +84,19 @@ public class DialogInterface {
         md.show();
     }
 
+    public void cannotFillHere(Activity activity, SearchView searchView) {
+        md = new MaterialDialog.Builder(activity)
+                .setMessage("Mohon masukkan pada bagian yang tersedia", TextAlignment.START)
+                .setPositiveButton("OKE", R.drawable.ic_outline_check,
+                        (dialogInterface, which) -> {
+                            searchView.setQuery(null,false);
+                            dialogInterface.dismiss();
+                        })
+                .setCancelable(false)
+                .build();
+        md.show();
+    }
+
     public void discardDialogConfirmation(Activity activity) {
         MaterialDialog mBottomSheetDialog = new MaterialDialog.Builder(activity)
                 .setTitle("Batalkan?")

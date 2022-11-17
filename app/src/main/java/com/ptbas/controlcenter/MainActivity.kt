@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.viewpager.widget.ViewPager
+import com.droidnet.DroidNet
 import com.google.android.material.tabs.TabLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -15,6 +16,7 @@ import com.ptbas.controlcenter.adapter.OnBoardViewPagerAdapter
 import com.ptbas.controlcenter.auth.LoginActivity
 import com.ptbas.controlcenter.auth.RegisterActivity
 import com.ptbas.controlcenter.model.OnBoardingData
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -27,7 +29,11 @@ class MainActivity : AppCompatActivity() {
     var position = 0
     var sharedPreferences: SharedPreferences? = null
 
-    override fun onCreate(savedInstanceState: Bundle?){
+    var mDroidNet: DroidNet? = null
+
+
+
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Thread.sleep(2000)
         val splashScreen =  installSplashScreen()
@@ -39,6 +45,7 @@ class MainActivity : AppCompatActivity() {
             startActivity(i)
             finish()
         }*/
+        DroidNet.init(this)
 
         tabLayout = findViewById(R.id.tabIndicator)
         next = findViewById(R.id.next)
@@ -129,6 +136,11 @@ class MainActivity : AppCompatActivity() {
         i.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(i)
         finish()
+    }
+
+    override fun onLowMemory() {
+        super.onLowMemory()
+        DroidNet.getInstance().removeAllInternetConnectivityChangeListeners()
     }
 
 }
