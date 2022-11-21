@@ -470,7 +470,13 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                                             if (!Objects.requireNonNull(value).isEmpty()) {
                                                 for (DocumentSnapshot e : value.getDocuments()) {
                                                     String spinnerPurchaseOrders = Objects.requireNonNull(e.get("roPoCustNumber")).toString();
-                                                    receiveOrderNumberList.add(spinnerPurchaseOrders);
+                                                    if  (Objects.requireNonNull(e.get("roStatus")).toString().equals("true")){
+                                                        if  (Objects.requireNonNull(e.get("roType")).toString().equals("0")||
+                                                                Objects.requireNonNull(e.get("roType")).toString().equals("1")) {
+                                                            receiveOrderNumberList.add(spinnerPurchaseOrders);
+                                                        }
+                                                    }
+
                                                 }
                                                 ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddGoodIssueActivity.this, R.layout.style_spinner, receiveOrderNumberList);
                                                 arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
@@ -513,12 +519,6 @@ public class AddGoodIssueActivity extends AppCompatActivity {
 
                                 String roDateCreated = receivedOrderModel.getRoDateCreated();
 
-                                /*HashMap<String, List<ProductItems>> map = receivedOrderModel.getRoOrderedItems();
-                                for (HashMap.Entry<String, List<ProductItems>> e : map.entrySet()) {
-                                    for (ProductItems productItems : e.getValue()) {
-                                        matNameStr = productItems.getMatName();
-                                    }
-                                }*/
 
                                 matNameList.addAll(receivedOrderModel.getRoOrderedItems().keySet());
 
@@ -676,6 +676,7 @@ public class AddGoodIssueActivity extends AppCompatActivity {
 
 
         fabSaveGIData.setOnClickListener(view -> {
+
             btnEditDefaultValOfVol.setVisibility(View.VISIBLE);
             edtVhlVol.setFocusable(false);
 
@@ -766,7 +767,7 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                         &&!TextUtils.isEmpty(giVhlLength)&&!TextUtils.isEmpty(giVhlHeight)
                         &&!TextUtils.isEmpty(giHeightCorrection)){
 
-
+                    pd.show();
 
                     for(int i = 0; i<receiveOrderNumberList.size(); i++) {
                         if (!receiveOrderNumberList.contains(spinnerRoNumber.getText().toString())){
@@ -797,7 +798,6 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                                     })
                                     .setNegativeButton("Lanjutkan", R.drawable.ic_outline_check, (dialogInterface, which) -> {
                                         dialogInterface.dismiss();
-
 
                                         insertData(giUID, giCreatedBy, giVerifiedBy, roDocumentID, giMatName, giMatType,
                                                 giNoteNumber, giVhlUID, giDate, new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date()),
@@ -892,6 +892,7 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                         &&!TextUtils.isEmpty(giVhlLength)&&!TextUtils.isEmpty(giVhlHeight)
                         &&!TextUtils.isEmpty(giHeightCorrection)){
 
+                    pd.show();
                     for(int i = 0; i<receiveOrderNumberList.size(); i++) {
                         if (!receiveOrderNumberList.contains(spinnerRoNumber.getText().toString())){
                             spinnerRoNumber.setError("Nomor PO tidak ditemukan");
@@ -965,7 +966,7 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                             int vhlHeightCorrection, int vhlHeightAfterCorrection,
                             Double giVhlCubication, Boolean giStatus, Boolean giRecapped, Boolean giInvoiced) {
 
-        pd.show();
+
 
         GoodIssueModel goodIssueModel = new GoodIssueModel(giUID, giCreatedBy, giVerifiedBy, roDocumentID,
                 giMatName, giMatType, giNoteNumber, vhlUID, giDateCreated, giTimeCreted, vhlLength,
@@ -994,14 +995,15 @@ public class AddGoodIssueActivity extends AppCompatActivity {
         refGIExists.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
-                pd.dismiss();
+
                 if (snapshot.exists()) {
+                    pd.dismiss();
                     Toast.makeText(AddGoodIssueActivity.this, "Terjadi kesalahan pembuatan UID, coba tutup dan buka kembali aplikasi", Toast.LENGTH_SHORT).show();
                 } else {
                     DatabaseReference refGI = FirebaseDatabase.getInstance("https://bas-delivery-report-default-rtdb.asia-southeast1.firebasedatabase.app").getReference("GoodIssueData");
                     refGI.child(giUID).setValue(goodIssueModel).addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
-                            dialogInterface.savedGIInformationFromManagement(AddGoodIssueActivity.this, vhlUIDList);
+                            dialogInterface.savedGIInformationFromManagement(AddGoodIssueActivity.this, vhlUIDList, pd);
                         } else {
                             try{
                                 throw task.getException();

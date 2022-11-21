@@ -342,28 +342,6 @@ public class AddRecapGoodIssueDataActivity extends AppCompatActivity {
         arrayListRoUID = new ArrayList<>();
         customerList = new ArrayList<>();
         receiveOrderNumberList = new ArrayList<>();
-        //arrayListPoUID = new ArrayList<>();
-
-        /*db.collection("ReceivedOrderData").whereEqualTo("roStatus", true)
-                .addSnapshotListener((value, error) -> {
-                    arrayListRoUID.clear();
-                    if (value != null) {
-                        if (!value.isEmpty()) {
-                            for (DocumentSnapshot d : value.getDocuments()) {
-                                String spinnerPurchaseOrders = Objects.requireNonNull(d.get("roUID")).toString();
-                                arrayListRoUID.add(spinnerPurchaseOrders);
-                            }
-                            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(RecapGoodIssueDataActivity.this, R.layout.style_spinner, arrayListRoUID);
-                            arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
-                            spinnerRoUID.setAdapter(arrayAdapter);
-                        } else {
-                            if(!this.isFinishing()) {
-                                dialogInterface.roNotExistsDialog(RecapGoodIssueDataActivity.this);
-                            }
-                        }
-                    }
-                });*/
-
         // INIT DATA SPINNER CUSTOMER DATA
         db.collection("CustomerData").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
@@ -382,55 +360,6 @@ public class AddRecapGoodIssueDataActivity extends AppCompatActivity {
                 }
             }
         });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        /*spinnerCustUID.setOnItemClickListener((adapterView, view, i, l) -> {
-            String selectedCustomer = (String) adapterView.getItemAtPosition(i);
-            selectedCustName = selectedCustomer;
-            spinnerCustUID.setError(null);
-            spinnerRoUID.setText(null);
-            edtPoUID.setText(null);
-
-            btnResetCustomer.setVisibility(View.VISIBLE);
-            clearRoPoData();
-
-            db.collection("ReceivedOrderData").whereEqualTo("roStatus", true)
-                    .addSnapshotListener((value, error) -> {
-                        arrayListRoUID.clear();
-                        if (value != null) {
-                            if (!value.isEmpty()) {
-                                for (DocumentSnapshot d : value.getDocuments()) {
-                                    String spinnerPurchaseOrders = Objects.requireNonNull(d.get("roPoCustNumber")).toString();
-                                    if (Objects.requireNonNull(d.get("roCustName")).toString().equals(spinnerCustUID.getText().toString())) {
-                                        arrayListRoUID.add(spinnerPurchaseOrders);
-                                    }
-                                }
-                                ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(RecapGoodIssueDataActivity.this, R.layout.style_spinner, arrayListRoUID);
-                                arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
-                                spinnerRoUID.setAdapter(arrayAdapter);
-                            } else {
-                                if(!isFinishing()) {
-                                    dialogInterface.roNotExistsDialog(RecapGoodIssueDataActivity.this);
-                                }
-                            }
-                        }
-
-                    });
-            llShowSpinnerRoAndEdtPo.setVisibility(View.VISIBLE);
-        });*/
-
 
 
 
@@ -480,38 +409,6 @@ public class AddRecapGoodIssueDataActivity extends AppCompatActivity {
                             }
                         });
 
-                /*db.collection("ReceivedOrderData").whereEqualTo("roStatus", true)
-                        .addSnapshotListener((value, error) -> {
-                            if (!Objects.requireNonNull(value).isEmpty()) {
-                                for (DocumentSnapshot d : value.getDocuments()) {
-                                    db.collection("CustomerData").whereEqualTo("custDocumentID", Objects.requireNonNull(d.get("custDocumentID")).toString())
-                                            .addSnapshotListener((value2, error2) -> {
-                                                arrayListRoUID.clear();
-                                                if (!Objects.requireNonNull(value2).isEmpty()) {
-                                                    for (DocumentSnapshot e : value2.getDocuments()) {
-                                                        custIDVal = Objects.requireNonNull(e.get("custName")).toString();
-                                                        db.collection("ReceivedOrderData").whereEqualTo("roStatus", true)
-                                                                .addSnapshotListener((value3, error3) -> {
-                                                                    if (!Objects.requireNonNull(value3).isEmpty()) {
-                                                                        String spinnerPurchaseOrders = Objects.requireNonNull(d.get("roPoCustNumber")).toString();
-                                                                        if (selectedCustomer.contains(custIDVal)) {
-                                                                            arrayListRoUID.add(spinnerPurchaseOrders);
-                                                                        }
-                                                                        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddRecapGoodIssueDataActivity.this, R.layout.style_spinner, arrayListRoUID);
-                                                                        arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
-                                                                        spinnerRoUID.setAdapter(arrayAdapter);
-                                                                    }
-                                                                });
-                                                    }
-                                                } else {
-                                                    if (!isFinishing()) {
-                                                        dialogInterface.roNotExistsDialog(AddRecapGoodIssueDataActivity.this);
-                                                    }
-                                                }
-                                            });
-                                }
-                            }
-                        });*/
 
             }
         });
@@ -746,7 +643,7 @@ public class AddRecapGoodIssueDataActivity extends AppCompatActivity {
     }
 
     public void createPDF(String dest){
-
+        searchQuery();
         if (new File(dest).exists()){
             new File(dest).deleteOnExit();
         }

@@ -899,7 +899,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
                             invDateNTimeCreated,  "-", "", "",
                             "", invDateDeliveryPeriod,
                             custDocumentID,  bankAccountID,  roDocumentID, "", "",
-                            totalUnitFinalFinal, invSubTotalFinal, invDiscountFinal, invTaxPPNFinal, invTaxPPHFinal, invTotalDueFinal);
+                            totalUnitFinalFinal, invSubTotalFinal, invDiscountFinal, invTaxPPNFinal, invTaxPPHFinal, invTotalDueFinal, coUID);
 
                 } else if (invPoType == 1){
                     String totalUnitFinalFinal = totalUnit+" m3";
@@ -914,7 +914,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
                             invDateNTimeCreated,  "-", "", "",
                             "", invDateDeliveryPeriod,
                             custDocumentID,  bankAccountID,  roDocumentID, "", "",
-                            totalUnitFinalFinal, invSubTotalFinal, invDiscountFinal, invTaxPPNFinal, invTaxPPHFinal, invTotalDueFinal);
+                            totalUnitFinalFinal, invSubTotalFinal, invDiscountFinal, invTaxPPNFinal, invTaxPPHFinal, invTotalDueFinal, coUID);
 
                 } else if (invPoType == 0){
                     String totalUnitFinalFinal = totalUnit+" m3";
@@ -930,7 +930,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
                             invDateNTimeCreated,  "-", "", "",
                             "", invDateDeliveryPeriod,
                             custDocumentID,  bankAccountID,  roDocumentID, "", "",
-                            totalUnitFinalFinal, invSubTotalFinal, invDiscountFinal, invTaxPPNFinal, invTaxPPHFinal, invTotalDueFinal);
+                            totalUnitFinalFinal, invSubTotalFinal, invDiscountFinal, invTaxPPNFinal, invTaxPPHFinal, invTotalDueFinal, coUID);
                 }
 
 

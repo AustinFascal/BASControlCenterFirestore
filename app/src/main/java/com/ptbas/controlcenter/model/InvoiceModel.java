@@ -4,7 +4,7 @@ public class InvoiceModel {
 
     String invDateHandover, invHandoverBy, invDocumentUID, invUID, invCreatedBy, invDateNTimeCreated, invVerifiedBy,
             invDueDateNTime, invDateVerified, invTransferReference, invDateDeliveryPeriod, custDocumentID, bankDocumentID, roDocumentID,
-            invTotalVol, invSubTotal, invDiscount, invTaxPPN, invTaxPPH, invTotalDue;
+            invTotalVol, invSubTotal, invDiscount, invTaxPPN, invTaxPPH, invTotalDue, coDocumentUID;
 
     private boolean isChecked = false;
 
@@ -14,7 +14,7 @@ public class InvoiceModel {
     }
 
     public InvoiceModel(String invDocumentUID, String invUID, String invCreatedBy, String invDateNTimeCreated, String invDueDateNTime, String invVerifiedBy, String invDateVerified, String invTransferReference, String invDateDeliveryPeriod, String custDocumentID, String bankDocumentID, String roDocumentID, String invDateHandover, String invHandoverBy, Boolean invRecalculate,
-                        String invTotalVol, String invSubTotal,String invDiscount,String invTaxPPN,String invTaxPPH,String invTotalDue) {
+                        String invTotalVol, String invSubTotal,String invDiscount,String invTaxPPN,String invTaxPPH,String invTotalDue, String coDocumentUID) {
         this.invDocumentUID = invDocumentUID;
         this.invUID = invUID;
         this.invCreatedBy = invCreatedBy;
@@ -36,9 +36,17 @@ public class InvoiceModel {
         this.invTaxPPN = invTaxPPN;
         this.invTaxPPH = invTaxPPH;
         this.invTotalDue = invTotalDue;
+        this.coDocumentUID = coDocumentUID;
     }
 
 
+    public String getCoDocumentUID() {
+        return coDocumentUID;
+    }
+
+    public void setCoDocumentUID(String coDocumentUID) {
+        this.coDocumentUID = coDocumentUID;
+    }
 
     public Boolean getInvRecalculate() {
         return invRecalculate;

@@ -6,6 +6,7 @@ import android.animation.LayoutTransition;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -125,12 +126,19 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
 
     SearchView searchView;
 
+    ProgressDialog pd;
+
     public String roUID;
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manage_good_issue);
+
+        pd = new ProgressDialog(ManageGoodIssueActivity.this);
+        pd.setMessage("Memproses");
+        pd.setCancelable(false);
+
 
         context = this;
 
@@ -445,10 +453,15 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
 
         btnGiSearchByTypeReset.setOnClickListener(view -> resetSearchByType());
 
+        pd.show();
         chip_filter_all.isChecked();
         chipGroup.setOnCheckedStateChangeListener((group, checkedIds) -> {
+
+
             if (checkedIds.contains(group.getCheckedChipId())){
+
                 if (group.getCheckedChipId() == chip_filter_all.getId()){
+
                     showDataDefaultQuery();
                 }
                 if (group.getCheckedChipId() == chip_filter_status_valid.getId()){
@@ -489,17 +502,6 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
         });
 
         giManagementAdapter = new GIManagementAdapter(this, goodIssueModelArrayList);
-
-        /*if (giManagementAdapter.getSelected().size() > 0) {
-         */
-
-
-                /*} else {
-
-                }*/
-
-
-
 
         btnDeleteSelected.setOnClickListener(view -> {
             int size = giManagementAdapter.getSelected().size();
@@ -633,6 +635,7 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
     }
 
     private void checkSelectedChipFilter() {
+
         if (chip_filter_all.isChecked()){
             showDataDefaultQuery();
         }
@@ -743,6 +746,7 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
     }
 
     private void showDataDefaultQuery() {
+
         Query query = null;
         if (dateStart.isEmpty()&&dateEnd.isEmpty()){
             query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated");
@@ -762,6 +766,7 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 goodIssueModelArrayList.clear();
                 if (snapshot.exists()){
+
                     for (DataSnapshot item : snapshot.getChildren()){
                         GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
                         goodIssueModelArrayList.add(goodIssueModel);
@@ -775,6 +780,7 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
                 Collections.reverse(goodIssueModelArrayList);
                 giManagementAdapter = new GIManagementAdapter(context, goodIssueModelArrayList);
                 rvGoodIssueList.setAdapter(giManagementAdapter);
+                pd.dismiss();
             }
 
             @Override
@@ -786,8 +792,11 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
         if (goodIssueModelArrayList.size()<1){
             nestedScrollView.setVisibility(View.GONE);
             llNoData.setVisibility(View.VISIBLE);
+            pd.dismiss();
         }
+
     }
+
 
     private void showDataSearchByApprovalStatus(boolean b) {
         Query query = null;
@@ -815,7 +824,6 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
         });
 
     }
-
 
     private void showDataSearchByRecappedStatus(boolean b) {
         Query query = null;
@@ -896,9 +904,12 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
             nestedScrollView.setVisibility(View.GONE);
             llNoData.setVisibility(View.VISIBLE);
         }
+        pd.dismiss();
+
     }
 
     private void recappedStatusOnDataChange(DataSnapshot snapshot, boolean b) {
+
         goodIssueModelArrayList.clear();
         if (snapshot.exists()){
             for (DataSnapshot item : snapshot.getChildren()) {
@@ -923,7 +934,10 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
             nestedScrollView.setVisibility(View.GONE);
             llNoData.setVisibility(View.VISIBLE);
         }
+
+        pd.dismiss();
     }
+
     private void cashOutStatusOnDataChange(DataSnapshot snapshot, boolean b) {
         goodIssueModelArrayList.clear();
         if (snapshot.exists()){
@@ -949,7 +963,10 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
             nestedScrollView.setVisibility(View.GONE);
             llNoData.setVisibility(View.VISIBLE);
         }
+        pd.dismiss();
+
     }
+
 
     private void showDataSearchByInvoicedStatus(boolean b) {
         Query query = null;
@@ -1001,9 +1018,13 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
             nestedScrollView.setVisibility(View.GONE);
             llNoData.setVisibility(View.VISIBLE);
         }
+        pd.dismiss();
+
     }
 
+
     private void showDataSearchByMaterialType(String data) {
+
         Query query = null;
         if (dateStart.isEmpty()&&dateEnd.isEmpty()){
             query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated");
@@ -1056,6 +1077,9 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
             nestedScrollView.setVisibility(View.GONE);
             llNoData.setVisibility(View.VISIBLE);
         }
+
+        pd.dismiss();
+
     }
 
     @Override

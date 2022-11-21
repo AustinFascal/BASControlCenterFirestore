@@ -1,6 +1,7 @@
 package com.ptbas.controlcenter.utility;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -32,6 +33,7 @@ import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.adapter.GIManagementAdapter;
 import com.ptbas.controlcenter.adapter.RecapGoodIssueManagementAdapter;
 import com.ptbas.controlcenter.create.AddAIOReportActivity;
+import com.ptbas.controlcenter.create.AddCashOutActivity;
 import com.ptbas.controlcenter.create.AddInvoiceActivity;
 import com.ptbas.controlcenter.create.AddReceivedOrder;
 import com.ptbas.controlcenter.management.ManageReceivedOrderActivity;
@@ -192,8 +194,9 @@ public class DialogInterface {
         md.show();
     }
 
-    public void savedGIInformationFromManagement(Activity activity, List<String> vhlUIDList) {
+    public void savedGIInformationFromManagement(Activity activity, List<String> vhlUIDList, ProgressDialog progressDialog) {
 
+        progressDialog.dismiss();
         Vibrator vibrator = (Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             vibrator.vibrate(VibrationEffect.createOneShot(100,
@@ -926,7 +929,7 @@ public class DialogInterface {
                                      String invDateNTimeCreated, String invDueDateNTime, String invVerifiedBy, String invTransferReference,
                                      String invDateNTimeVerified, String invDateDeliveryPeriod,
                                      String custDocumentID, String bankDocumentID, String roDocumentID, String invDateHandover, String invHandOverBy,
-                                     String invTotalVol,String invSubTotal,String invDiscount,String invTaxPPN,String invTaxPPH,String invTotalDue) {
+                                     String invTotalVol,String invSubTotal,String invDiscount,String invTaxPPN,String invTaxPPH,String invTotalDue, String coUID) {
         MaterialDialog materialDialog = new MaterialDialog.Builder((Activity) context)
                 .setTitle("Buat Invoice")
                 .setAnimation(R.raw.lottie_generate_bill)
@@ -938,7 +941,7 @@ public class DialogInterface {
                             goodIssueModelArrayList,
                             invUID, invCreatedBy, invDateNTimeCreated, invDueDateNTime, invVerifiedBy, invTransferReference,
                             invDateNTimeVerified, invDateDeliveryPeriod, custDocumentID, bankDocumentID, roDocumentID, invDateHandover, invHandOverBy,
-                            invTotalVol, invSubTotal, invDiscount, invTaxPPN, invTaxPPH, invTotalDue);
+                            invTotalVol, invSubTotal, invDiscount, invTaxPPN, invTaxPPH, invTotalDue, coUID);
                     dialogInterface.dismiss();
                 })
                 .setNegativeButton("TIDAK", R.drawable.ic_outline_close, (dialogInterface, which) -> dialogInterface.dismiss())
@@ -955,9 +958,9 @@ public class DialogInterface {
                                  String invDateNTimeVerified, String invDateDeliveryPeriod,
                                  String custDocumentID, String bankDocumentID, String roDocumentID, String invDateHandover, String invHandOverBy) {
         MaterialDialog materialDialog = new MaterialDialog.Builder((Activity) context)
-                .setTitle("Buat Invoice")
+                .setTitle("Buat Laporan AIO")
                 .setAnimation(R.raw.lottie_generate_bill)
-                .setMessage("Apakah Anda yakin ingin membuat Invoice dari Good Issue yang terpilih?")
+                .setMessage("Apakah Anda yakin ingin membuat laporan AIO dari Cash Out yang terpilih?")
                 .setCancelable(true)
                 .setPositiveButton("YA", R.drawable.ic_outline_check, (dialogInterface, which) -> {
 
@@ -982,7 +985,7 @@ public class DialogInterface {
                                   String invDateNTimeCreated, String invDueDateNTime, String invVerifiedBy, String invTransferReference,
                                   String invDateNTimeVerified, String invDateDeliveryPeriod,
                                   String custDocumentID, String bankDocumentID, String roDocumentID, String invDateHandover,  String invHandOverBy,
-                                  String invTotalVol,String invSubTotal,String invDiscount,String invTaxPPN,String invTaxPPH,String invTotalDue) {
+                                  String invTotalVol,String invSubTotal,String invDiscount,String invTaxPPN,String invTaxPPH,String invTotalDue, String coUID) {
 
         GIManagementAdapter giManagementAdapter;
 
@@ -1013,20 +1016,23 @@ public class DialogInterface {
                 InvoiceModel invoiceModel = new InvoiceModel(
                         invDocumentID, invUID, invCreatedBy, invDateNTimeCreated, invDueDateNTime, invVerifiedBy, invTransferReference,
                         invDateNTimeVerified, invDateDeliveryPeriod, custDocumentID, bankDocumentID, roDocumentID, invDateHandover, invHandOverBy, false,
-                        invTotalVol, invSubTotal, invDiscount, invTaxPPN, invTaxPPH, invTotalDue);
+                        invTotalVol, invSubTotal, invDiscount, invTaxPPN, invTaxPPH, invTotalDue, coUID);
 
                 ref.set(invoiceModel);
 
-                /*
-                DocumentReference refGI = db.collection("InvoiceData").document(invDocumentID);
-                for (int i = 0; i < goodIssueModelArrayList.size(); i++) {
-                    GoodIssueModel goodIssueModel = goodIssueModelArrayList.get(i);
-                    refGI.collection("GoodIssueData").document(goodIssueModelArrayList.get(i).getGiUID()).set(goodIssueModel);
-                    databaseReferenceGI.child("GoodIssueData").child(goodIssueModelArrayList.get(i).getGiUID()).child("giInvoiced").setValue(true);
-                }
-                AddInvoiceActivity addInvoiceActivity = (AddInvoiceActivity) context;
-                addInvoiceActivity.createInvPDF(Helper.getAppPath(context)+invUID+".pdf");
-                generatingInvoiceDialog.dismiss();*/
+                refCO.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()){
+                            for(DocumentSnapshot documentSnapshot : task.getResult()){
+                                String getDocumentID = documentSnapshot.getId();
+                                if (getDocumentID.equals(coUID)){
+                                    db.collection("CashOutData").document(coUID).update("invDocumentUID", invDocumentID);
+                                }
+                            }
+                        }
+                    }
+                });
 
                 for (int i = 0; i < giManagementAdapter.getSelected().size(); i++) {
                     databaseReferenceGI.child("GoodIssueData").child(giManagementAdapter.getSelected().get(i).getGiUID()).child("giInvoiced").setValue(true);
@@ -1056,7 +1062,7 @@ public class DialogInterface {
 
         MaterialDialog generatingInvoiceDialog = new MaterialDialog.Builder((Activity) context)
                 .setTitle("Memproses Permintaan")
-                .setMessage("Invoice sedang diproses. Harap tunggu ...")
+                .setMessage("Laporan AIO sedang diproses. Harap tunggu ...")
                 .setAnimation(R.raw.lottie_generate_bill)
                 .setCancelable(false)
                 .build();
@@ -1069,33 +1075,6 @@ public class DialogInterface {
             }
 
             public void onFinish() {
-
-               /* DatabaseReference databaseReferenceGI = FirebaseDatabase.getInstance().getReference();
-                DocumentReference ref = db.collection("InvoiceData").document();
-                String invDocumentID = ref.getId();
-
-                InvoiceModel invoiceModel = new InvoiceModel(
-                        invDocumentID, invUID, invCreatedBy, invDateNTimeCreated, invDueDateNTime, invVerifiedBy, invTransferReference,
-                        invDateNTimeVerified, invDateDeliveryPeriod, custDocumentID, bankDocumentID, roDocumentID, invDateHandover, invHandOverBy, false,
-                        invTotalVol, invSubTotal, invDiscount, invTaxPPN, invTaxPPH, invTotalDue);
-
-                ref.set(invoiceModel);
-
-                *//*
-                DocumentReference refGI = db.collection("InvoiceData").document(invDocumentID);
-                for (int i = 0; i < goodIssueModelArrayList.size(); i++) {
-                    GoodIssueModel goodIssueModel = goodIssueModelArrayList.get(i);
-                    refGI.collection("GoodIssueData").document(goodIssueModelArrayList.get(i).getGiUID()).set(goodIssueModel);
-                    databaseReferenceGI.child("GoodIssueData").child(goodIssueModelArrayList.get(i).getGiUID()).child("giInvoiced").setValue(true);
-                }
-                AddInvoiceActivity addInvoiceActivity = (AddInvoiceActivity) context;
-                addInvoiceActivity.createInvPDF(Helper.getAppPath(context)+invUID+".pdf");
-                generatingInvoiceDialog.dismiss();*//*
-
-                for (int i = 0; i < giManagementAdapter.getSelected().size(); i++) {
-                    databaseReferenceGI.child("GoodIssueData").child(giManagementAdapter.getSelected().get(i).getGiUID()).child("giInvoiced").setValue(true);
-                    databaseReferenceGI.child("GoodIssueData").child(giManagementAdapter.getSelected().get(i).getGiUID()).child("giInvoicedTo").setValue(invDocumentID);
-                }*/
 
                 AddAIOReportActivity addAIOReportActivity = (AddAIOReportActivity) context;
                 addAIOReportActivity.createAIOPDF(Helper.getAppPathAIOReport(context)+"test"+".pdf");
@@ -1241,15 +1220,8 @@ public class DialogInterface {
                             coDateDeliveryPeriod = removeDuplicates(coDateDeliveryPeriod, "\\,");
 
                             String[] strings = coDateDeliveryPeriod.split(",");
-                            //String[] strings1 = s1.toString().split(",");
                             List<String> list = Arrays.asList(strings);
-                            //List<String> list1 = Arrays.asList(strings1);
                             Collections.sort(list);
-
-                            /*float a=0;
-                            for (int i = 0; i < strings1.length;i++){
-                                a += Float.parseFloat(list1.get(i));
-                            }*/
 
                             Toast.makeText(context, list.toString(), Toast.LENGTH_SHORT).show();
 
@@ -1264,7 +1236,7 @@ public class DialogInterface {
                                     coDocumentID, coUID, coDateAndTimeCreated, coCreatedBy,
                                     coDateAndTimeApproved, coApprovedBy, coDateAndTimeACC, coAccBy, coSupplier,
                                     roDocumentID, list.toString().replace("[","").replace("]","").replace(" ",""), coStatusApproval, coStatusPayment, 0.0,
-                                    "", "", "", "", "", "", "");
+                                    "", "", "", "", "", "", "", "");
 
                             refCO.set(cashOutModel);
 
@@ -1308,6 +1280,8 @@ public class DialogInterface {
                 .setPositiveButton("OKE", R.drawable.ic_outline_check, (dialogInterface, which) -> {
                     //Helper.openFilePDF(context, new File(filepath));
                     dialogInterface.dismiss();
+                    AddCashOutActivity addCashOutActivity = (AddCashOutActivity) context;
+                    addCashOutActivity.searchQueryAll();
                 })
                 .build();
 
@@ -1401,7 +1375,7 @@ public class DialogInterface {
         MaterialDialog invoiceGeneratedInformationDialog = new MaterialDialog.Builder((Activity) context)
                 .setTitle("Berhasil!")
                 .setAnimation(R.raw.lottie_bill_generated)
-                .setMessage("Data rekap telah berhasil diekspor menjadi berkas PDF di " + filepath + ". Buka berkas sekarang?")
+                .setMessage("Laporan AIO telah berhasil diekspor menjadi berkas PDF di " + filepath + ". Buka berkas sekarang?")
                 .setCancelable(true)
                 .setPositiveButton("YA", R.drawable.ic_outline_check, (dialogInterface, which) -> {
                     Helper.openFilePDF(context, new File(filepath));

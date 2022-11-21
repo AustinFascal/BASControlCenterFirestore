@@ -6,7 +6,7 @@ public class CashOutModel {
     String coDocumentID, coUID, coDateAndTimeCreated, coCreatedBy,
             coDateAndTimeApproved, coApprovedBy, coDateAndTimeACC, coAccBy, coSupplier, roDocumentID,
             coDateDeliveryPeriod;
-    String coBookedStep1By, coBookedStep1Date, coBookedStep2By, coBookedStep2Date, bankDocumentID, coTransferReference, rcpGiCoUID;
+    String coBookedStep1By, coBookedStep1Date, coBookedStep2By, coBookedStep2Date, bankDocumentID, coTransferReference, rcpGiCoUID, invDocumentUID;
     Boolean coStatusApproval, coStatusPayment;
     Double coTotal;
 
@@ -19,7 +19,7 @@ public class CashOutModel {
                         String roDocumentID, String coDateDeliveryPeriod, Boolean coStatusApproval,
                         Boolean coStatusPayment, Double coTotal,
                         String coBookedStep1By, String coBookedStep1Date, String coBookedStep2By,
-                        String coBookedStep2Date, String bankDocumentID, String coTransferReference, String rcpGiCoUID) {
+                        String coBookedStep2Date, String bankDocumentID, String coTransferReference, String rcpGiCoUID, String invDocumentUID) {
         this.coDocumentID = coDocumentID;
         this.coUID = coUID;
         this.coDateAndTimeCreated = coDateAndTimeCreated;
@@ -41,6 +41,15 @@ public class CashOutModel {
         this.bankDocumentID = bankDocumentID;
         this.coTransferReference = coTransferReference;
         this.rcpGiCoUID = rcpGiCoUID;
+        this.invDocumentUID = invDocumentUID;
+    }
+
+    public String getInvDocumentUID() {
+        return invDocumentUID;
+    }
+
+    public void setInvDocumentUID(String invDocumentUID) {
+        this.invDocumentUID = invDocumentUID;
     }
 
     public String getRcpGiCoUID() {
