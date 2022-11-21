@@ -599,6 +599,12 @@ public class AddAIOReportActivity extends AppCompatActivity {
         });
 
         btnSearchData.setOnClickListener(view -> {
+            mArrayList.clear();
+            mArrayListTotalDue.clear();
+            mArrayListDatePaid.clear();
+
+            coInvDocumentUID = "";
+            totalUnitAmountForMaterials = 0;
 
             View viewLayout = AddAIOReportActivity.this.getCurrentFocus();
             if (viewLayout != null) {
@@ -635,6 +641,8 @@ public class AddAIOReportActivity extends AppCompatActivity {
 
 
         fabCreateDocument.setOnClickListener(view -> {
+
+
 
             if (ContextCompat.checkSelfPermission(context,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE)!=
@@ -935,10 +943,22 @@ public class AddAIOReportActivity extends AppCompatActivity {
                                             new Paragraph(currencyFormat(dfRound.format(taxPPNService)), fontNormalSmall), Element.ALIGN_CENTER));
                                     tblInvSection2.addCell(cellTxtNrml(
                                             new Paragraph(currencyFormat(dfRound.format(totalDue)), fontNormalSmall), Element.ALIGN_CENTER));
-                                    tblInvSection2.addCell(cellTxtNrml(
-                                            new Paragraph(mArrayListTotalDue.get(i), fontNormalSmall), Element.ALIGN_CENTER));
-                                    tblInvSection2.addCell(cellTxtNrml(
-                                            new Paragraph(mArrayListDatePaid.get(i), fontNormalSmall), Element.ALIGN_CENTER));
+
+                                    if (!mArrayListTotalDue.isEmpty()){
+                                        tblInvSection2.addCell(cellTxtNrml(
+                                                new Paragraph(mArrayListTotalDue.get(i), fontNormalSmall), Element.ALIGN_CENTER));
+                                    } else {
+                                        tblInvSection2.addCell(cellTxtNrml(
+                                                new Paragraph("", fontNormalSmall), Element.ALIGN_CENTER));
+                                    }
+                                    if (!mArrayListDatePaid.isEmpty()) {
+                                        tblInvSection2.addCell(cellTxtNrml(
+                                                new Paragraph(mArrayListDatePaid.get(i), fontNormalSmall), Element.ALIGN_CENTER));
+                                    } else{
+                                        tblInvSection2.addCell(cellTxtNrml(
+                                                new Paragraph("", fontNormalSmall), Element.ALIGN_CENTER));
+                                    }
+
                                     tblInvSection2.addCell(cellTxtNrml(
                                             new Paragraph(currencyFormat(df.format(matBuyPrice)), fontNormalSmall), Element.ALIGN_CENTER));
                                     tblInvSection2.addCell(cellTxtNrml(
