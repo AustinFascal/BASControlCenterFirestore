@@ -929,7 +929,7 @@ public class DialogInterface {
                                      String invDateNTimeCreated, String invDueDateNTime, String invVerifiedBy, String invTransferReference,
                                      String invDateNTimeVerified, String invDateDeliveryPeriod,
                                      String custDocumentID, String bankDocumentID, String roDocumentID, String invDateHandover, String invHandOverBy,
-                                     String invTotalVol,String invSubTotal,String invDiscount,String invTaxPPN,String invTaxPPH,String invTotalDue, String coUID) {
+                                     String invTotalVol,String invSubTotal,String invDiscount,String invTaxPPN,String invTaxPPH,String invTotalDue, String coDocumentID) {
         MaterialDialog materialDialog = new MaterialDialog.Builder((Activity) context)
                 .setTitle("Buat Invoice")
                 .setAnimation(R.raw.lottie_generate_bill)
@@ -941,7 +941,7 @@ public class DialogInterface {
                             goodIssueModelArrayList,
                             invUID, invCreatedBy, invDateNTimeCreated, invDueDateNTime, invVerifiedBy, invTransferReference,
                             invDateNTimeVerified, invDateDeliveryPeriod, custDocumentID, bankDocumentID, roDocumentID, invDateHandover, invHandOverBy,
-                            invTotalVol, invSubTotal, invDiscount, invTaxPPN, invTaxPPH, invTotalDue, coUID);
+                            invTotalVol, invSubTotal, invDiscount, invTaxPPN, invTaxPPH, invTotalDue, coDocumentID);
                     dialogInterface.dismiss();
                 })
                 .setNegativeButton("TIDAK", R.drawable.ic_outline_close, (dialogInterface, which) -> dialogInterface.dismiss())
@@ -985,7 +985,7 @@ public class DialogInterface {
                                   String invDateNTimeCreated, String invDueDateNTime, String invVerifiedBy, String invTransferReference,
                                   String invDateNTimeVerified, String invDateDeliveryPeriod,
                                   String custDocumentID, String bankDocumentID, String roDocumentID, String invDateHandover,  String invHandOverBy,
-                                  String invTotalVol,String invSubTotal,String invDiscount,String invTaxPPN,String invTaxPPH,String invTotalDue, String coUID) {
+                                  String invTotalVol,String invSubTotal,String invDiscount,String invTaxPPN,String invTaxPPH,String invTotalDue, String coDocumentID) {
 
         GIManagementAdapter giManagementAdapter;
 
@@ -1016,7 +1016,7 @@ public class DialogInterface {
                 InvoiceModel invoiceModel = new InvoiceModel(
                         invDocumentID, invUID, invCreatedBy, invDateNTimeCreated, invDueDateNTime, invVerifiedBy, invTransferReference,
                         invDateNTimeVerified, invDateDeliveryPeriod, custDocumentID, bankDocumentID, roDocumentID, invDateHandover, invHandOverBy, false,
-                        invTotalVol, invSubTotal, invDiscount, invTaxPPN, invTaxPPH, invTotalDue, coUID);
+                        invTotalVol, invSubTotal, invDiscount, invTaxPPN, invTaxPPH, invTotalDue, coDocumentID);
 
                 ref.set(invoiceModel);
 
@@ -1026,8 +1026,8 @@ public class DialogInterface {
                         if (task.isSuccessful()){
                             for(DocumentSnapshot documentSnapshot : task.getResult()){
                                 String getDocumentID = documentSnapshot.getId();
-                                if (getDocumentID.equals(coUID)){
-                                    db.collection("CashOutData").document(coUID).update("invDocumentUID", invDocumentID);
+                                if (getDocumentID.equals(coDocumentID)){
+                                    db.collection("CashOutData").document(coDocumentID).update("invDocumentUID", invDocumentID);
                                 }
                             }
                         }

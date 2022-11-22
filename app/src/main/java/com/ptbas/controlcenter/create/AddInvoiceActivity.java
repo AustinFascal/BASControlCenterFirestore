@@ -98,6 +98,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -162,6 +163,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
 
     DecimalFormat df = new DecimalFormat("0.00");
     DecimalFormat dfRound = new DecimalFormat("0");
+    DecimalFormat dfRound1 = new DecimalFormat("0");
 
     Vibrator vibrator;
 
@@ -185,6 +187,8 @@ public class AddInvoiceActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_invoice);
+
+        dfRound1.setRoundingMode(RoundingMode.UP);
 
         vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         LangUtils.setLocale(this, "en");
@@ -851,7 +855,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
                     totalUnit += giManagementAdapter.getSelected().get(i).getGiVhlCubication();
                 }
 
-                double totalIDR = matSellPrice *Double.parseDouble(df.format(totalUnit));
+                //double totalIDR = matSellPrice *Double.parseDouble(df.format(totalUnit));
 
                 List<String> datePeriod = new ArrayList<>();
                 for (int i = 0; i < giManagementAdapter.getSelected().size(); i++) {
@@ -878,7 +882,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
                 // TOTAL AMOUNT CALCULATION
                 totalAmountForMaterials = matSellPrice*totalUnit;
                 totalAmountForTransportService = transportServiceSellPrice*totalUnit;
-                taxPPN = (0.11)*totalAmountForMaterials;
+                taxPPN = (0.11)*totalAmountForMaterials + ((0.11)*totalAmountForTransportService);
                 taxPPH = (0.02)*totalAmountForTransportService;
                 totalDue = totalAmountForMaterials+totalAmountForTransportService+taxPPN-taxPPH;
                 totalDueForTransportService = totalAmountForTransportService-taxPPH;
@@ -887,42 +891,42 @@ public class AddInvoiceActivity extends AppCompatActivity {
 
                 if (invPoType == 2){
                     taxPPN = 0;
-                    String totalUnitFinalFinal = totalUnit+" m3";
-                    String invSubTotalFinal = currencyVal+" "+currencyFormat(df.format(totalAmountForTransportService));
+                    String totalUnitFinalFinal = df.format(totalUnit)+" m3";
+                    String invSubTotalFinal = currencyVal+" "+currencyFormat(dfRound1.format(totalAmountForTransportService));
                     String invDiscountFinal = currencyVal+" "+"0";
-                    String invTaxPPNFinal = currencyVal+" " +currencyFormat(df.format(taxPPN));
-                    String  invTaxPPHFinal = "("+currencyVal+" " +currencyFormat(df.format(taxPPH))+")";
-                    String invTotalDueFinal = currencyVal+" " +currencyFormat(df.format(totalDueForTransportService));
+                    String invTaxPPNFinal = currencyVal+" " +currencyFormat(dfRound1.format(taxPPN));
+                    String  invTaxPPHFinal = "("+currencyVal+" " +currencyFormat(dfRound1.format(taxPPH))+")";
+                    String invTotalDueFinal = currencyVal+" " +currencyFormat(dfRound1.format(totalDueForTransportService));
                     dialogInterface.confirmCreateInvoice(context, db,
                             goodIssueModelArrayList,
                             invUID,  invCreatedBy,
                             invDateNTimeCreated,  "-", "", "",
                             "", invDateDeliveryPeriod,
                             custDocumentID,  bankAccountID,  roDocumentID, "", "",
-                            totalUnitFinalFinal, invSubTotalFinal, invDiscountFinal, invTaxPPNFinal, invTaxPPHFinal, invTotalDueFinal, coUID);
+                            totalUnitFinalFinal, invSubTotalFinal, invDiscountFinal, invTaxPPNFinal, invTaxPPHFinal, invTotalDueFinal, coDocumentID);
 
                 } else if (invPoType == 1){
-                    String totalUnitFinalFinal = totalUnit+" m3";
-                    String invSubTotalFinal = currencyVal+" "+currencyFormat(df.format(totalAmountForMaterials));
+                    String totalUnitFinalFinal = df.format(totalUnit)+" m3";
+                    String invSubTotalFinal = currencyVal+" "+currencyFormat(dfRound1.format(totalAmountForMaterials));
                     String invDiscountFinal = currencyVal+" "+"0";
-                    String invTaxPPNFinal = currencyVal+" " +currencyFormat(df.format(taxPPN));
-                    String invTaxPPHFinal = "("+currencyVal+" " +currencyFormat(df.format(taxPPH))+")";
-                    String invTotalDueFinal = currencyVal+" " +currencyFormat(df.format(totalDue));
+                    String invTaxPPNFinal = currencyVal+" " +currencyFormat(dfRound1.format(taxPPN));
+                    String invTaxPPHFinal = "("+currencyVal+" " +currencyFormat(dfRound1.format(taxPPH))+")";
+                    String invTotalDueFinal = currencyVal+" " +currencyFormat(dfRound1.format(totalDue));
                     dialogInterface.confirmCreateInvoice(context, db,
                             goodIssueModelArrayList,
                             invUID,  invCreatedBy,
                             invDateNTimeCreated,  "-", "", "",
                             "", invDateDeliveryPeriod,
                             custDocumentID,  bankAccountID,  roDocumentID, "", "",
-                            totalUnitFinalFinal, invSubTotalFinal, invDiscountFinal, invTaxPPNFinal, invTaxPPHFinal, invTotalDueFinal, coUID);
+                            totalUnitFinalFinal, invSubTotalFinal, invDiscountFinal, invTaxPPNFinal, invTaxPPHFinal, invTotalDueFinal, coDocumentID);
 
                 } else if (invPoType == 0){
-                    String totalUnitFinalFinal = totalUnit+" m3";
-                    String invSubTotalFinal = currencyVal+" "+currencyFormat(df.format(totalAmountForMaterials+totalAmountForTransportService));
+                    String totalUnitFinalFinal = df.format(totalUnit)+" m3";
+                    String invSubTotalFinal = currencyVal+" "+currencyFormat(dfRound1.format(totalAmountForMaterials+totalAmountForTransportService));
                     String invDiscountFinal = currencyVal+" "+"0";
-                    String invTaxPPNFinal = currencyVal+" " +currencyFormat(df.format(taxPPN));
-                    String invTaxPPHFinal = "("+currencyVal+" " +currencyFormat(df.format(taxPPH))+")";
-                    String invTotalDueFinal = currencyVal+" " +currencyFormat(df.format(totalDue));
+                    String invTaxPPNFinal = currencyVal+" " +currencyFormat(dfRound1.format(taxPPN));
+                    String invTaxPPHFinal = "("+currencyVal+" " +currencyFormat(dfRound1.format(taxPPH))+")";
+                    String invTotalDueFinal = currencyVal+" " +currencyFormat(dfRound1.format(totalDue));
 
                     dialogInterface.confirmCreateInvoice(context, db,
                             goodIssueModelArrayList,
@@ -930,7 +934,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
                             invDateNTimeCreated,  "-", "", "",
                             "", invDateDeliveryPeriod,
                             custDocumentID,  bankAccountID,  roDocumentID, "", "",
-                            totalUnitFinalFinal, invSubTotalFinal, invDiscountFinal, invTaxPPNFinal, invTaxPPHFinal, invTotalDueFinal, coUID);
+                            totalUnitFinalFinal, invSubTotalFinal, invDiscountFinal, invTaxPPNFinal, invTaxPPHFinal, invTotalDueFinal, coDocumentID);
                 }
 
 

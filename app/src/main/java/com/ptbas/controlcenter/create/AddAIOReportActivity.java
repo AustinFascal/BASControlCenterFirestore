@@ -831,7 +831,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
                                         new Paragraph("Unit", fontMediumSmall),
                                         Element.ALIGN_CENTER));
                                 tblInvSection1.addCell(cellTxtNrml(
-                                        new Paragraph("HJ", fontMediumSmall),
+                                        new Paragraph("HJ Mat.", fontMediumSmall),
                                         Element.ALIGN_CENTER));
                                 tblInvSection1.addCell(cellTxtNrml(
                                         new Paragraph("Total Mat.", fontMediumSmall),
@@ -840,7 +840,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
                                         new Paragraph("PPN Mat.", fontMediumSmall),
                                         Element.ALIGN_CENTER));
                                 tblInvSection1.addCell(cellTxtNrml(
-                                        new Paragraph("Jasa", fontMediumSmall),
+                                        new Paragraph("HJ Jasa", fontMediumSmall),
                                         Element.ALIGN_CENTER));
                                 tblInvSection1.addCell(cellTxtNrml(
                                         new Paragraph("Total Jasa", fontMediumSmall),
