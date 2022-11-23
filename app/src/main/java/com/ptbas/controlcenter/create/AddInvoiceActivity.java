@@ -459,25 +459,6 @@ public class AddInvoiceActivity extends AppCompatActivity {
                     }
                 });
 
-        /*db.collection("ReceivedOrderData").whereEqualTo("roStatus", true)
-                .addSnapshotListener((value, error) -> {
-                    arrayListRoUID.clear();
-                    if (value != null) {
-                        if (!value.isEmpty()) {
-                            for (DocumentSnapshot d : value.getDocuments()) {
-                                String spinnerPurchaseOrders = Objects.requireNonNull(d.get("roUID")).toString();
-                                arrayListRoUID.add(spinnerPurchaseOrders);
-                            }
-                            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddInvoiceActivity.this, R.layout.style_spinner, arrayListRoUID);
-                            arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
-                            spinnerRoUID.setAdapter(arrayAdapter);
-                        } else {
-                            if(!this.isFinishing()) {
-                                dialogInterface.roNotExistsDialogForInvoice(AddInvoiceActivity.this);
-                            }
-                        }
-                    }
-                });*/
 
         spinnerCustName.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -534,25 +515,6 @@ public class AddInvoiceActivity extends AppCompatActivity {
                 return false;
             }
         });
-        //spinnerCustName.setOnFocusChangeListener((view, b) -> spinnerCustName.setText(customerData));
-
-
-        /*spinnerRoUID.setOnItemClickListener((adapterView, view, i, l) -> {
-            spinnerRoUID.setError(null);
-            btnGiSearchByRoUIDReset.setVisibility(View.VISIBLE);
-            String selectedSpinnerPoPtBasNumber = (String) adapterView.getItemAtPosition(i);
-
-            db.collection("ReceivedOrderData").whereEqualTo("roPoCustNumber", selectedSpinnerPoPtBasNumber).get()
-                    .addOnSuccessListener(queryDocumentSnapshots -> {
-                        for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots){
-                            ReceivedOrderModel receivedOrderModel = documentSnapshot.toObject(ReceivedOrderModel.class);
-                            receivedOrderModel.setRoDocumentID(documentSnapshot.getId());
-                            rouidVal = selectedSpinnerPoPtBasNumber;
-                            roPoCustNumber = receivedOrderModel.getRoPoCustNumber();
-                        }
-                        edtPoUID.setText(roPoCustNumber);
-                    });
-        });*/
 
 
 

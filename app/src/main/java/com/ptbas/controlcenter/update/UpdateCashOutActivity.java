@@ -172,6 +172,7 @@ public class UpdateCashOutActivity extends AppCompatActivity {
     public static BaseColor baseColorBluePale, baseColorLightGrey;
 
     DecimalFormat df = new DecimalFormat("0.00");
+    DecimalFormat dfRound = new DecimalFormat("0");
 
 
     TextView tvMatName,tvCubicationTotal, tvTotalDue, tvStatusBookedStep1, tvStatusBookedStep2, tvStatus;
@@ -181,8 +182,10 @@ public class UpdateCashOutActivity extends AppCompatActivity {
     TextInputEditText edtAccountOwnerName, edtVerifiedBy, edtTransferProofReference, edtDatePaid;
 
 
-    float totalUnitFinal;
-    double totalAmountForMaterials, totalAmountForTransportService, totalDue, totalDueForTransportService, totalAmountForMaterialsFinal;
+    double totalUnitFinal;
+    double totalAmountForMaterials, totalAmountForTransportService, totalDue, totalDueForTransportService;
+
+    double totalAmountForMaterialsFinal;
 
     String finalPaidDate, finalBookedStep1Date, finalBookedStep2Date, transferProofReference;
 
@@ -994,14 +997,14 @@ public class UpdateCashOutActivity extends AppCompatActivity {
                                                 tvDateDeliveryPeriod.setText(coDateDeliveryPeriodVal);
 
                                                 // TOTAL AMOUNT CALCULATION
-                                                totalAmountForMaterials = matBuyPrice*totalUnitFinal;
+                                                totalAmountForMaterials = matBuyPrice* totalUnitFinal;
                                                 totalAmountForTransportService = transportServiceSellPrice*totalUnitFinal;
                                                 totalDue = totalAmountForMaterials+totalAmountForTransportService;
                                                 totalDueForTransportService = totalAmountForTransportService;
 
                                                 // TOTAL AMOUNT CALCULATION
-                                                totalAmountForMaterialsFinal = matBuyPrice *totalUnitFinal;
-                                                String totalInCurrency = currencyVal+" "+currencyFormat(df.format(Float.valueOf(String.valueOf(totalAmountForMaterialsFinal))));
+                                                totalAmountForMaterialsFinal = matBuyPrice * Double.parseDouble(df.format(totalUnitFinal));
+                                                String totalInCurrency = currencyVal+" "+currencyFormat(dfRound.format(totalAmountForMaterialsFinal));
                                                 tvTotalDue.setText(totalInCurrency);
                                             }
                                         }
@@ -1485,7 +1488,7 @@ public class UpdateCashOutActivity extends AppCompatActivity {
             tblInvSection9.addCell(cellColHeader(
                     new Paragraph("JUMLAH PEMBAYARAN (PEMBULATAN)", fontMedium), Element.ALIGN_LEFT));
             tblInvSection9.addCell(cellColHeader(
-                    new Paragraph(currencyVal+" "+currencyFormat(df.format(math(totalAmountForMaterialsFinal))), fontMedium), Element.ALIGN_RIGHT));
+                    new Paragraph(currencyVal+" "+currencyFormat(dfRound.format(totalAmountForMaterialsFinal)), fontMedium), Element.ALIGN_RIGHT));
             tblInvSection9.addCell(cellColHeader(
                     new Paragraph(currencyVal+"", fontMedium), Element.ALIGN_RIGHT));
 

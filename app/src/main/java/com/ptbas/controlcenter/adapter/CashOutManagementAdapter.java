@@ -88,6 +88,7 @@ public class CashOutManagementAdapter extends RecyclerView.Adapter<CashOutManage
         CheckBox cbSelectItem;
 
         DecimalFormat df = new DecimalFormat("0.00");
+        DecimalFormat dfRound = new DecimalFormat("0");
 
 
 
@@ -203,8 +204,8 @@ public class CashOutManagementAdapter extends RecyclerView.Adapter<CashOutManage
                                     }
 
                                     //Toast.makeText(context, "buy "+matBuyPrice+" - unit"+totalUnit, Toast.LENGTH_LONG).show();
-                                    double totalIDR = matBuyPrice * Float.parseFloat(df.format(totalUnit));
-                                    coTotal = "IDR " + currencyFormat(df.format(Float.valueOf(String.valueOf(totalIDR))));
+                                    double totalIDR = matBuyPrice * Double.parseDouble(df.format(totalUnit));
+                                    coTotal = "IDR " + currencyFormat(dfRound.format(totalIDR));
                                     tvTotalDue.setText(coTotal);
                                 }
 
@@ -253,20 +254,10 @@ public class CashOutManagementAdapter extends RecyclerView.Adapter<CashOutManage
             if (!coAccBy.isEmpty()){
                 llWrapItemStatus.setVisibility(View.VISIBLE);
                 llStatusApproved.setVisibility(View.VISIBLE);
-                //rlBtnItemPaid.setVisibility(View.VISIBLE);
-                //rlBtnApproveItem.setVisibility(View.GONE);
-                /*if (coStatusPayment){
-                    llStatusPaid.setVisibility(View.VISIBLE);
-                    rlBtnItemPaid.setVisibility(View.GONE);
-                } else {
-                    llStatusPaid.setVisibility(View.GONE);
-                    rlBtnItemPaid.setVisibility(View.VISIBLE);
-                }*/
+
             } else {
                 llWrapItemStatus.setVisibility(View.GONE);
                 llStatusApproved.setVisibility(View.GONE);
-                //rlBtnItemPaid.setVisibility(View.GONE);
-                //rlBtnApproveItem.setVisibility(View.VISIBLE);
             }
 
             btnDeleteItem.setOnClickListener(new View.OnClickListener() {
@@ -282,7 +273,6 @@ public class CashOutManagementAdapter extends RecyclerView.Adapter<CashOutManage
                     Intent i = new Intent(context, UpdateCashOutActivity.class);
                     i.putExtra("key", coDocumentID);
                     context.startActivity(i);
-                    //Toast.makeText(context, coDocumentID, Toast.LENGTH_SHORT).show();
                 }
             });
 
@@ -302,7 +292,6 @@ public class CashOutManagementAdapter extends RecyclerView.Adapter<CashOutManage
                         @Override
                         public void onClick(android.content.DialogInterface dialogInterface, int i, boolean b) {
                             checkedItemArrayInit[i] = b;
-                            //String currentItem = selectedItems.get(i);
                         }
                     });
 
