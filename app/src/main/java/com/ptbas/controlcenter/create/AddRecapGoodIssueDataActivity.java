@@ -1003,14 +1003,11 @@ public class AddRecapGoodIssueDataActivity extends AppCompatActivity {
                 goodIssueModelArrayList.clear();
                 if (snapshot.exists()){
                     for (DataSnapshot item : snapshot.getChildren()) {
-                        //if (!rouidVal.isEmpty()){
-
-                        //Toast.makeText(context, roDocumentID, Toast.LENGTH_SHORT).show();
                         if (Objects.requireNonNull(item.child("roDocumentID").getValue()).toString().equals(roDocumentID)) {
                             if (Objects.equals(item.child("giStatus").getValue(), true) &&
-                                    Objects.equals(item.child("giCashedOut").getValue(), false) &&
-                                    Objects.equals(item.child("giInvoiced").getValue(), false) &&
-                                    Objects.equals(item.child("giRecapped").getValue(), false)) {
+                                    Objects.equals(item.child("giCashedOutTo").getValue(), "") &&
+                                    Objects.equals(item.child("giInvoicedTo").getValue(), "") &&
+                                    Objects.equals(item.child("giRecappedTo").getValue(), "")) {
 
                                 menu.findItem(R.id.select_all_data_recap).setVisible(true);
                                 GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);

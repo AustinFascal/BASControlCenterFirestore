@@ -1010,11 +1010,11 @@ public class DialogInterface {
             public void onFinish() {
 
                 DatabaseReference databaseReferenceGI = FirebaseDatabase.getInstance().getReference();
-                DocumentReference ref = db.collection("InvoiceData").document();
-                String invDocumentID = ref.getId();
+                DocumentReference ref = db.collection("InvoiceData").document(invUID);
+                //String invDocumentID = ref.getId();
 
                 InvoiceModel invoiceModel = new InvoiceModel(
-                        invDocumentID, invUID, invCreatedBy, invDateNTimeCreated, invDueDateNTime, invVerifiedBy, invTransferReference,
+                        invUID, invUID, invCreatedBy, invDateNTimeCreated, invDueDateNTime, invVerifiedBy, invTransferReference,
                         invDateNTimeVerified, invDateDeliveryPeriod, custDocumentID, bankDocumentID, roDocumentID, invDateHandover, invHandOverBy, false,
                         invTotalVol, invSubTotal, invDiscount, invTaxPPN, invTaxPPH, invTotalDue, coDocumentID);
 
@@ -1027,7 +1027,7 @@ public class DialogInterface {
                             for(DocumentSnapshot documentSnapshot : task.getResult()){
                                 String getDocumentID = documentSnapshot.getId();
                                 if (getDocumentID.equals(coDocumentID)){
-                                    db.collection("CashOutData").document(coDocumentID).update("invDocumentUID", invDocumentID);
+                                    db.collection("CashOutData").document(coDocumentID).update("invDocumentUID", invUID);
                                 }
                             }
                         }
@@ -1035,8 +1035,10 @@ public class DialogInterface {
                 });
 
                 for (int i = 0; i < giManagementAdapter.getSelected().size(); i++) {
+/*
                     databaseReferenceGI.child("GoodIssueData").child(giManagementAdapter.getSelected().get(i).getGiUID()).child("giInvoiced").setValue(true);
-                    databaseReferenceGI.child("GoodIssueData").child(giManagementAdapter.getSelected().get(i).getGiUID()).child("giInvoicedTo").setValue(invDocumentID);
+*/
+                    databaseReferenceGI.child("GoodIssueData").child(giManagementAdapter.getSelected().get(i).getGiUID()).child("giInvoicedTo").setValue(invUID);
                 }
                 AddInvoiceActivity addInvoiceActivity = (AddInvoiceActivity) context;
                 addInvoiceActivity.createInvPDF(Helper.getAppPathInvoice(context)+invUID+".pdf");
@@ -1154,8 +1156,8 @@ public class DialogInterface {
             public void onFinish() {
 
                 DatabaseReference databaseReferenceGI = FirebaseDatabase.getInstance().getReference();
-                DocumentReference refCO = db.collection("CashOutData").document();
-                String coDocumentID = refCO.getId();
+                DocumentReference refCO = db.collection("CashOutData").document(coUID);
+                //String coDocumentID = refCO.getId();
 
                 DecimalFormat df = new DecimalFormat("0.00");
 
@@ -1201,7 +1203,7 @@ public class DialogInterface {
                                             for (int i = 0; i < recapGiManagementAdapter.getSelected().size(); i++) {
                                                 if (recapGiManagementAdapter.getSelected().get(i).getRcpGiDocumentID().equals(rcpGiUIDVal)) {
                                                     db.collection("RecapData").document(rcpGiUIDVal).update("rcpGiStatus", true);
-                                                    db.collection("RecapData").document(rcpGiUIDVal).update("rcpGiCoUID", coDocumentID);
+                                                    db.collection("RecapData").document(rcpGiUIDVal).update("rcpGiCoUID", coUID);
                                                 }
                                             }
                                         }
@@ -1233,7 +1235,7 @@ public class DialogInterface {
 
 
                             CashOutModel cashOutModel = new CashOutModel(
-                                    coDocumentID, coUID, coDateAndTimeCreated, coCreatedBy,
+                                    coUID, coUID, coDateAndTimeCreated, coCreatedBy,
                                     coDateAndTimeApproved, coApprovedBy, coDateAndTimeACC, coAccBy, coSupplier,
                                     roDocumentID, list.toString().replace("[","").replace("]","").replace(" ",""), coStatusApproval, coStatusPayment, 0.0,
                                     "", "", "", "", "", "", "", "");
@@ -1325,22 +1327,19 @@ public class DialogInterface {
 
                         public void onFinish() {
 
-
-
                             DatabaseReference databaseReferenceGI = FirebaseDatabase.getInstance().getReference();
-                            DocumentReference refRCPGI = db.collection("RecapData").document();
-                            String rcpGiDocumentID = refRCPGI.getId();
+                            DocumentReference refRCPGI = db.collection("RecapData").document(rcpGiUID);
+                            //String rcpGiDocumentID = refRCPGI.getId();
 
-                            RecapGIModel recapGIModel = new RecapGIModel(rcpGiDocumentID, rcpGiUID, rcpGiDateAndTimeCreated, rcpGiCreatedBy, roUIDVal, totalUnit, "", false, rcpDateDeliveryPeriod);
+                            RecapGIModel recapGIModel = new RecapGIModel(rcpGiUID, rcpGiUID, rcpGiDateAndTimeCreated, rcpGiCreatedBy, roUIDVal, totalUnit, "", false, rcpDateDeliveryPeriod);
 
                             refRCPGI.set(recapGIModel);
 
                             for (int i = 0; i < giManagementAdapter.getSelected().size(); i++) {
-                                databaseReferenceGI.child("GoodIssueData").child(giManagementAdapter.getSelected().get(i).getGiUID()).child("giRecapped").setValue(true);
-                                databaseReferenceGI.child("GoodIssueData").child(giManagementAdapter.getSelected().get(i).getGiUID()).child("giRecappedTo").setValue(rcpGiDocumentID);
+                                databaseReferenceGI.child("GoodIssueData").child(giManagementAdapter.getSelected().get(i).getGiUID()).child("giRecappedTo").setValue(rcpGiUID);
                             }
                             AddRecapGoodIssueDataActivity addRecapGoodIssueDataActivity = (AddRecapGoodIssueDataActivity) context;
-                            addRecapGoodIssueDataActivity.createPDF(Helper.getAppPath(context)+"RKP-PO-"+poUID+" Periode Pengiriman "+rcpDateDeliveryPeriod+".pdf");
+                            addRecapGoodIssueDataActivity.createPDF(Helper.getAppPath(context)+rcpGiUID+" Periode Pengiriman "+rcpDateDeliveryPeriod+".pdf");
                             generatingInvoiceDialog.dismiss();
                         }
                     }.start();

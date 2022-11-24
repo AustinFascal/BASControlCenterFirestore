@@ -73,9 +73,9 @@ import java.util.Random;
 public class AddReceivedOrder extends AppCompatActivity {
 
     CoordinatorLayout coordinatorLayout;
-    LinearLayout llList,llAddItem, llInputAllData, llPoNumberAvailability, llShowSpinnerRoAndEdtPo;
+    LinearLayout llList,llAddItem, llInputAllData, llShowSpinnerRoAndEdtPo;
     String monthStrVal, dayStrVal;
-    Button btnAddRow, btnLockRow, btnUnlockRow, btnNoPoNumber;
+    Button btnAddRow, btnLockRow, btnUnlockRow;
     TextInputEditText edtPoDate, edtPoNumberCustomer, edtRoNumber;
     TextInputLayout wrapEdtPoNumberPtBas, txtInputEdtPoNumberCustomer;
     AutoCompleteTextView spinnerPoTransportType, spinnerPoCustName, spinnerPoCurrency, spinnerRoType, spinnerPoTOP, spinnerTaxType, spinnerRoUID;
@@ -92,9 +92,7 @@ public class AddReceivedOrder extends AppCompatActivity {
 
     FloatingActionButton fabProceed;
     FloatingActionsMenu fabExpandMenu;
-    com.getbase.floatingactionbutton.FloatingActionButton fabActionSaveCloud, fabActionUpdateData,
-            fabActionGenerateQrCode, fabActionSaveToPdf;
-
+    com.getbase.floatingactionbutton.FloatingActionButton fabActionSaveCloud, fabActionUpdateData;
     private static final String ALLOWED_CHARACTERS ="0123456789QWERTYUIOPASDFGHJKLZXCVBNM";
 
     ArrayList<ProductItems> productItemsArrayList = new ArrayList<>();
@@ -105,10 +103,7 @@ public class AddReceivedOrder extends AppCompatActivity {
 
     TextInputLayout spinnerTaxTypeWrap;
 
-    DialogInterface dialogInterface = new DialogInterface();
     Helper helper = new Helper();
-
-    Button btnChooseRoType;
 
     PreviewProductItemAdapter previewProductItemAdapter;
 
@@ -163,24 +158,20 @@ public class AddReceivedOrder extends AppCompatActivity {
 
         spinnerTaxType.setAdapter(arrayAdapterTaxType);
 
-        spinnerTaxType.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                switch (i) {
-                    case 0:
-                        taxTypeVal = true;
-                        break;
-                    case 1:
-                        taxTypeVal = false;
-                        break;
-                    default:
-                        break;
-                }
+        spinnerTaxType.setOnItemClickListener((adapterView, view, i, l) -> {
+            switch (i) {
+                case 0:
+                    taxTypeVal = true;
+                    break;
+                case 1:
+                    taxTypeVal = false;
+                    break;
+                default:
+                    break;
             }
         });
 
         spinnerRoType.setOnItemClickListener((adapterView, view, i, l) -> {
-            //spinnerRoType.setText(adapterView.indexOfChild(i));
             llList.removeAllViews();
             btnLockRow.setVisibility(View.GONE);
             llAddItem.setVisibility(View.VISIBLE);
@@ -270,8 +261,6 @@ public class AddReceivedOrder extends AppCompatActivity {
         fabExpandMenu = findViewById(R.id.fab_expand_menu);
         fabActionSaveCloud = findViewById(R.id.fab_action_save_cloud);
         fabActionUpdateData = findViewById(R.id.fab_action_update_data);
-        /*fabActionGenerateQrCode = findViewById(R.id.fab_action_generate_qr_code);
-        fabActionSaveToPdf = findViewById(R.id.fab_action_save_to_pdf);*/
 
         llShowSpinnerRoAndEdtPo = findViewById(R.id.llShowSpinnerRoAndEdtPo);
 
@@ -435,15 +424,7 @@ public class AddReceivedOrder extends AppCompatActivity {
                             spinnerRoUID.setAdapter(arrayAdapter);
                         }
                     });
-            //String custDocumentIDValReplace = custDocumentIDVal.replace(" - ","-");
-            //int indexCustDocumentIDVal = custDocumentIDValReplace.lastIndexOf('-');
-
-            //Toast.makeText(this, custDocumentID, Toast.LENGTH_SHORT).show();
-
-            //custDocumentID = custDocumentIDValReplace.substring(0, indexCustDocumentIDVal);
         });
-
-        //spinnerPoCustName.setOnFocusChangeListener((view, b) -> spinnerPoCustName.setText(customerData));
 
         spinnerPoCurrency.setOnItemClickListener((adapterView, view, i, l) -> {
             String selectedCurrency = (String) adapterView.getItemAtPosition(i);
@@ -474,14 +455,12 @@ public class AddReceivedOrder extends AppCompatActivity {
         };
 
         runnable.run();
-        //addViewInit();
 
         btnLockRow.setOnClickListener(view -> {
             fabProceed.setVisibility(View.VISIBLE);
             btnUnlockRow.setVisibility(View.VISIBLE);
             btnLockRow.setVisibility(View.GONE);
             llAddItem.setVisibility(View.GONE);
-            //llList.setVisibility(false);
         });
 
         btnUnlockRow.setOnClickListener(view -> {
@@ -489,7 +468,6 @@ public class AddReceivedOrder extends AppCompatActivity {
             btnUnlockRow.setVisibility(View.GONE);
             btnLockRow.setVisibility(View.VISIBLE);
             llAddItem.setVisibility(View.VISIBLE);
-            //llList.setEnabled(true);
         });
 
         fabProceed.setVisibility(View.GONE);
@@ -544,8 +522,6 @@ public class AddReceivedOrder extends AppCompatActivity {
 
             if (!TextUtils.isEmpty(roDateCreated)&&roTOP!=0&&!TextUtils.isEmpty(roMatTransport)&&!TextUtils.isEmpty(roCurrency)&&
                     !TextUtils.isEmpty(roCustName)&&!TextUtils.isEmpty(roUID)){
-                /*insertData(roUID, roCreatedBy, roDateCreated, roTOP, roMatTransport, roCurrency, roPoCustNumber,
-                        roCustName, roType,false);*/
 
                 RelativeLayout wrapTitle = bottomSheet.findViewById(R.id.wrapTitle);
                 TextView tvPoCurrency = bottomSheet.findViewById(R.id.tvPoCurrency);
@@ -595,7 +571,6 @@ public class AddReceivedOrder extends AppCompatActivity {
 
                             poSubTotalBuy = sumSubTotalBuy;
                             poSubTotalSell = sumSubTotalSell;
-                            poVAT = sumTotalVAT;
                             poTotalSellFinal = sumTotalSellFinal;
                             poEstProfit = sumEstProfit;
                         }
@@ -692,21 +667,6 @@ public class AddReceivedOrder extends AppCompatActivity {
         });
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         spinnerRoUID.setOnItemClickListener((adapterView, view, i, l) -> {
             spinnerRoUID.setError(null);
             String selectedSpinnerPoPtBasNumber = (String) adapterView.getItemAtPosition(i);
@@ -718,7 +678,6 @@ public class AddReceivedOrder extends AppCompatActivity {
                         for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots){
                             ReceivedOrderModel receivedOrderModel = documentSnapshot.toObject(ReceivedOrderModel.class);
                             receivedOrderModel.setRoDocumentID(documentSnapshot.getId());
-                            //rouidVal = selectedSpinnerPoPtBasNumber;
                             roPoCustNumber = receivedOrderModel.getRoPoCustNumber();
                             roDocumentID = receivedOrderModel.getRoDocumentID();
                             roUID = receivedOrderModel.getRoUID();
@@ -741,37 +700,23 @@ public class AddReceivedOrder extends AppCompatActivity {
         });
 
 
-        btnResetRouid.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                btnResetRouid.setVisibility(View.GONE);
-                spinnerRoUID.setText(null);
-                edtPoUID.setText(null);
-            }
+        btnResetRouid.setOnClickListener(view -> {
+            btnResetRouid.setVisibility(View.GONE);
+            spinnerRoUID.setText(null);
+            edtPoUID.setText(null);
         });
 
-        btnResetCustomer.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                btnResetCustomer.setVisibility(View.GONE);
-                spinnerRoUID.setAdapter(null);
-                spinnerPoCustName.setText(null);
-                btnResetRouid.setVisibility(View.GONE);
-                spinnerRoUID.setText(null);
-                edtPoUID.setText(null);
-                receiveOrderNumberList.clear();
-            }
+        btnResetCustomer.setOnClickListener(view -> {
+            btnResetCustomer.setVisibility(View.GONE);
+            spinnerRoUID.setAdapter(null);
+            spinnerPoCustName.setText(null);
+            btnResetRouid.setVisibility(View.GONE);
+            spinnerRoUID.setText(null);
+            edtPoUID.setText(null);
+            receiveOrderNumberList.clear();
         });
 
     }
-
-
-
-
-
-
-
-
 
     private void bottomSheetExpanded() {
         llInputAllData.setVisibility(View.INVISIBLE);
@@ -791,16 +736,6 @@ public class AddReceivedOrder extends AppCompatActivity {
         fabExpandMenu.collapse();
     }
 
-    // Get passed data and save to cloud
-   /* private void insertData(String roUID, String roCreatedBy, String roDateCreated,
-                            String roTOP, String roMatTransport, String roCurrency,
-                            String roPoCustNumber, String roCustName, Integer roType, Boolean roSatus) {
-
-
-
-
-    }*/
-
     public static String currencyFormat(String amount) {
         DecimalFormat formatter = new DecimalFormat("###,###,##0.00");
         return formatter.format(Double.parseDouble(amount));
@@ -811,8 +746,6 @@ public class AddReceivedOrder extends AppCompatActivity {
     }
 
     private boolean checkIfValidAndProceed() {
-
-        DecimalFormat df = new DecimalFormat("0.00");
 
         productItemsArrayList.clear();
         boolean result = true;
@@ -826,8 +759,6 @@ public class AddReceivedOrder extends AppCompatActivity {
             TextInputEditText edtPoQuantity = productItemView.findViewById(R.id.edt_po_quantity);
             TextInputEditText edtPoTotalSellPrice = productItemView.findViewById(R.id.edt_po_total_sell_price);
             TextInputEditText edtPoTotalBuyPrice = productItemView.findViewById(R.id.edt_po_total_buy_price);
-
-
 
             ProductItems productItems = new ProductItems();
 
@@ -884,7 +815,6 @@ public class AddReceivedOrder extends AppCompatActivity {
         }
 
         if (productItemsArrayList.size()==0){
-            //btnAddRow.setVisibility(View.VISIBLE);
             result = false;
             Toast.makeText(this, "Tambahkan item terlebih dahulu.", Toast.LENGTH_SHORT).show();
         } else if (!result){
@@ -897,16 +827,6 @@ public class AddReceivedOrder extends AppCompatActivity {
             } else if (roType == 2){
                 fabProceed.setVisibility(View.VISIBLE);
             }
-            /*if (llList.getChildCount()==1){
-                btnAddRow.setVisibility(View.GONE);
-                btnLockRow.setVisibility(View.VISIBLE);
-                //fabProceed.setVisibility(View.VISIBLE);
-            } else if (llList.getChildCount()<1){
-                btnAddRow.setVisibility(View.VISIBLE);
-                btnLockRow.setVisibility(View.GONE);
-                btnUnlockRow.setVisibility(View.GONE);
-                fabProceed.setVisibility(View.GONE);
-            }*/
         }
 
         return result;
@@ -1112,12 +1032,6 @@ public class AddReceivedOrder extends AppCompatActivity {
 
         runnable.run();
 
-
-
-
-
-
-
         edtPoQuantity.addTextChangedListener(new NumberTextWatcher(edtPoQuantity));
         edtBuyPrice.addTextChangedListener(new NumberTextWatcher(edtBuyPrice));
         edtSalePrice.addTextChangedListener(new NumberTextWatcher(edtSalePrice));
@@ -1161,20 +1075,6 @@ public class AddReceivedOrder extends AppCompatActivity {
                                 totalSellPrice = 0;
                                 totalBuyPrice = 0;
                             }
-
-                            /*edtBuyPrice.setOnKeyListener((view, i, keyEvent) -> {
-                                if (edtBuyPrice.getText().toString().equals("")){
-                                    edtBuyPrice.setText("");
-                                }
-                                return false;
-                            });
-
-                            edtSalePrice.setOnKeyListener((view, i, keyEvent) -> {
-                                if (edtSalePrice.getText().toString().equals("")){
-                                    edtSalePrice.setText("");
-                                }
-                                return false;
-                            });*/
 
                             edtPoTotalBuyPrice.setText(currencyFormat(String.format("%.2f", totalBuyPrice)));
                             edtPoTotalSellPrice.setText(currencyFormat(String.format("%.2f", totalSellPrice)));

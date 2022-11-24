@@ -22,6 +22,7 @@ import android.transition.TransitionManager;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -48,6 +49,8 @@ import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.database.DataSnapshot;
@@ -118,15 +121,15 @@ public class AddInvoiceActivity extends AppCompatActivity {
 
     private static final String ALLOWED_CHARACTERS = "0123456789QWERTYUIOPASDFGHJKLZXCVBNM";
 
-    double matSellPrice, transportServiceSellPrice, invTax1 = 0, invTax2 =0;
-    String invDueDate, invDateNTimeCreated, invTimeCreated, custIDVal, dateStartVal = "", dateEndVal = "", rouidVal= "", currencyVal = "", pouidVal = "",
+    double matSellPrice, transportServiceSellPrice;
+    String  invDateNTimeCreated, invTimeCreated, dateStartVal = "", dateEndVal = "", rouidVal= "", currencyVal = "", pouidVal = "",
             monthStrVal, dayStrVal, roPoCustNumber, matTypeVal, matNameVal, transportServiceNameVal,
-            invPoDate = "", invCustName = "", invPoUID = "", custNameVal = "", roDocumentID = "", coDocumentID, coUID, coAccBy,
+            invPoDate = "", invCustName = "", invPoUID = "", custNameVal = "", roDocumentID = "", coDocumentID, coUID, rcpGiUID, coAccBy,
             custAddressVal = "", invUID="", invPotypeVal = "", customerData = "", customerID ="", bankAccountID = "", bankNameVal, bankAccountNumberVal, bankAccountOwnerNameVal;
     int invPoType, invPoTOP;
 
     Button btnSearchData, imgbtnExpandCollapseFilterLayout;
-    AutoCompleteTextView spinnerRoUID, spinnerCustName, spinnerBankAccount, spinnerCoUID;
+    AutoCompleteTextView spinnerRoUID, spinnerCustName, spinnerBankAccount;
     TextInputEditText edtPoUID, edtDateStart, edtDateEnd, edtAccountOwnerName;
     DatePickerDialog datePicker;
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
@@ -146,10 +149,12 @@ public class AddInvoiceActivity extends AppCompatActivity {
     List<ProductItems> productItemsList;
     List<String> customerName, arrayListCustDocumentID;
 
-    LinearLayout llStatusCo, ll_wrap_filter_by_couid, llShowSpinnerRoAndEdtPo, llWrapFilterByDateRange, llWrapFilterByRouid, llNoData, llWrapFilter, llBottomSelectionOptions;
+    LinearLayout llWrapFilterByDateRange, llWrapFilterByRouid, llNoData, llWrapFilter, llBottomSelectionOptions;
 
-    ImageButton btnResetBankAccount, btnResetCustomer, btnGiSearchByDateReset, btnGiSearchByRoUIDReset, btnExitSelection, btnResetCoUID;
+    //ll_wrap_filter_by_couid llShowSpinnerRoAndEdtPo llStatusCo
+    ImageButton btnResetBankAccount, btnResetCustomer, btnGiSearchByDateReset, btnGiSearchByRoUIDReset, btnExitSelection;
 
+    //btnResetCoUID
     ExtendedFloatingActionButton fabCreateDocument;
 
     DialogInterface dialogInterface = new DialogInterface();
@@ -162,7 +167,6 @@ public class AddInvoiceActivity extends AppCompatActivity {
     public static BaseColor baseColorBluePale, baseColorLightGrey;
 
     DecimalFormat df = new DecimalFormat("0.00");
-    DecimalFormat dfRound = new DecimalFormat("0");
     DecimalFormat dfRound1 = new DecimalFormat("0");
 
     Vibrator vibrator;
@@ -178,10 +182,14 @@ public class AddInvoiceActivity extends AppCompatActivity {
     private MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
 
     double totalAmountForMaterials, totalAmountForTransportService, taxPPN, taxPPH, totalDue, totalDueForTransportService;
-    String totalUnitFinalFinal, invSubTotalFinal, invDiscountFinal, invTaxPPNFinal, invTaxPPHFinal, invTotalDueFinal;
-
 
     List<String> receiveOrderNumberList;
+
+    ChipGroup chipGroup;
+
+    String result;
+
+    TextView tvChooseRcpGi;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -222,7 +230,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
         cdvFilter = findViewById(R.id.cdv_filter);
         btnSearchData = findViewById(R.id.caridata);
 
-        spinnerCoUID = findViewById(R.id.spinnerCoUID);
+        //spinnerCoUID = findViewById(R.id.spinnerCoUID);
         spinnerBankAccount = findViewById(R.id.spinnerBankAccount);
         spinnerCustName = findViewById(R.id.spinnerCustName);
         spinnerRoUID = findViewById(R.id.rouid);
@@ -232,12 +240,12 @@ public class AddInvoiceActivity extends AppCompatActivity {
         edtDateEnd = findViewById(R.id.edt_gi_date_filter_end);
         rvGoodIssueList = findViewById(R.id.rvItemList);
         imgbtnExpandCollapseFilterLayout = findViewById(R.id.imgbtnExpandCollapseFilterLayout);
-        llStatusCo = findViewById(R.id.llStatusCo);
-        ll_wrap_filter_by_couid = findViewById(R.id.ll_wrap_filter_by_couid);
+        //llStatusCo = findViewById(R.id.llStatusCo);
+        //ll_wrap_filter_by_couid = findViewById(R.id.ll_wrap_filter_by_couid);
         llWrapFilterByDateRange = findViewById(R.id.ll_wrap_filter_by_date_range);
         llWrapFilterByRouid = findViewById(R.id.ll_wrap_filter_by_rouid);
         llWrapFilter = findViewById(R.id.llWrapFilter);
-        llShowSpinnerRoAndEdtPo = findViewById(R.id.llShowSpinnerRoAndEdtPo);
+        //llShowSpinnerRoAndEdtPo = findViewById(R.id.llShowSpinnerRoAndEdtPo);
 
         llNoData = findViewById(R.id.ll_no_data);
         nestedScrollView = findViewById(R.id.nestedScrollView);
@@ -247,12 +255,17 @@ public class AddInvoiceActivity extends AppCompatActivity {
         btnExitSelection = findViewById(R.id.btnExitSelection);
         llBottomSelectionOptions = findViewById(R.id.llBottomSelectionOptions);
 
-        btnResetCoUID = findViewById(R.id.btnResetCoUID);
+        //btnResetCoUID = findViewById(R.id.btnResetCoUID);
         btnResetBankAccount = findViewById(R.id.btnResetBankAccount);
         btnResetCustomer = findViewById(R.id.btnResetCustomer);
         btnGiSearchByDateReset = findViewById(R.id.btn_gi_search_date_reset);
         btnGiSearchByRoUIDReset = findViewById(R.id.btnResetRouid);
         fabCreateDocument = findViewById(R.id.fabCreateCOR);
+
+        chipGroup = findViewById(R.id.chipGroup);
+
+        tvChooseRcpGi = findViewById(R.id.tvChooseRcpGi);
+        tvChooseRcpGi.setVisibility(View.GONE);
 
         TypedValue typedValue = new TypedValue();
         Resources.Theme theme = context.getTheme();
@@ -303,7 +316,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
                             dayStrVal = String.valueOf(dayOfMonth);
                         }
 
-                        String finalDate = dayStrVal + "-" +monthStrVal + "-" +  year;
+                        String finalDate = year + "-" +monthStrVal + "-" +  dayStrVal;
 
                         edtDateStart.setText(finalDate);
                         dateStartVal = finalDate;
@@ -335,7 +348,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
                             dayStrVal = String.valueOf(dayOfMonth);
                         }
 
-                        String finalDate = dayStrVal + "-" +monthStrVal + "-" + year;
+                        String finalDate = year + "-" +monthStrVal + "-" +  dayStrVal;
 
                         edtDateEnd.setText(finalDate);
                         dateEndVal = finalDate;
@@ -424,7 +437,22 @@ public class AddInvoiceActivity extends AppCompatActivity {
                 firstViewData = view.findViewById(R.id.ll_wrap_filter_by_date_range);
                 firstViewDataFirstTimeStatus = false;
             }
-            expandFilterViewValidation();
+            //expandFilterViewValidation();
+
+
+            if (llWrapFilter.getVisibility()==View.GONE){
+                llWrapFilter.setVisibility(View.VISIBLE);
+                imgbtnExpandCollapseFilterLayout.setText(R.string.showLess);
+                imgbtnExpandCollapseFilterLayout.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_outline_keyboard_arrow_up, 0);
+
+            } else{
+                llWrapFilter.setVisibility(View.GONE);
+                imgbtnExpandCollapseFilterLayout.setText(R.string.showMore);
+                imgbtnExpandCollapseFilterLayout.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_outline_keyboard_arrow_down, 0);
+
+
+            }
+
             TransitionManager.beginDelayedTransition(cdvFilter, new AutoTransition());
         });
 
@@ -444,11 +472,9 @@ public class AddInvoiceActivity extends AppCompatActivity {
                     if (value != null) {
                         if (!value.isEmpty()) {
                             for (DocumentSnapshot d : value.getDocuments()) {
-                                //String custDocumentID = Objects.requireNonNull(d.get("custDocumentID")).toString();
                                 String spinnerCustUID = Objects.requireNonNull(d.get("custUID")).toString();
                                 String spinnerCustName = Objects.requireNonNull(d.get("custName")).toString();
                                 customerName.add(spinnerCustUID+" - "+spinnerCustName);
-                                //arrayListCustDocumentID.add(custDocumentID);
                             }
                             ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddInvoiceActivity.this, R.layout.style_spinner, customerName);
                             arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
@@ -468,15 +494,12 @@ public class AddInvoiceActivity extends AppCompatActivity {
                 String[] custNameSplit = selectedCustomer.split(" - ");
                 String custNameSplit1 = custNameSplit[1];
 
-                //String selectedSpinnerCustomerName = (String) adapterView.getItemAtPosition(position);
                 customerData = selectedCustomer;
                 spinnerCustName.setError(null);
 
-                //String[] custID = selectedCustomer.split("-");
                 customerID = custNameSplit[0];
 
                 btnResetCustomer.setVisibility(View.VISIBLE);
-                //clearRoPoData();
 
                 db.collection("CustomerData").whereEqualTo("custName", custNameSplit1)
                         .addSnapshotListener((value2, error2) -> {
@@ -503,10 +526,10 @@ public class AddInvoiceActivity extends AppCompatActivity {
                         });
 
 
-                llShowSpinnerRoAndEdtPo.setVisibility(View.VISIBLE);
+                //llShowSpinnerRoAndEdtPo.setVisibility(View.VISIBLE);
             }
         });
-        spinnerCustName.setOnKeyListener(new View.OnKeyListener() {
+       /* spinnerCustName.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View view, int i, KeyEvent keyEvent) {
                 if (spinnerCustName.getText().toString().equals("")){
@@ -514,7 +537,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
                 }
                 return false;
             }
-        });
+        });*/
 
 
 
@@ -523,8 +546,9 @@ public class AddInvoiceActivity extends AppCompatActivity {
             String selectedSpinnerPoPtBasNumber = (String) adapterView.getItemAtPosition(i);
 
             btnGiSearchByRoUIDReset.setVisibility(View.VISIBLE);
-            ll_wrap_filter_by_couid.setVisibility(View.VISIBLE);
+            //ll_wrap_filter_by_couid.setVisibility(View.VISIBLE);
 
+            LayoutInflater inflater = LayoutInflater.from(AddInvoiceActivity.this);
             db.collection("ReceivedOrderData").whereEqualTo("roPoCustNumber", selectedSpinnerPoPtBasNumber).get()
                     .addOnSuccessListener(queryDocumentSnapshots -> {
                         for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots){
@@ -534,15 +558,40 @@ public class AddInvoiceActivity extends AppCompatActivity {
                             roPoCustNumber = receivedOrderModel.getRoPoCustNumber();
                             roDocumentID = receivedOrderModel.getRoDocumentID();
 
-                            db.collection("CashOutData").whereEqualTo("roDocumentID", roDocumentID)
+                            db.collection("RecapData").whereEqualTo("roDocumentID", roDocumentID)
                                     .addSnapshotListener((value, error) -> {
-                                        arrayListCoUID.clear();
+                                        //arrayListCoUID.clear();
+                                        chipGroup.removeAllViews();
+                                        tvChooseRcpGi.setVisibility(View.GONE);
                                         if (value != null) {
                                             if (!value.isEmpty()) {
                                                 for (DocumentSnapshot d : value.getDocuments()) {
-                                                    //coDocumentID = Objects.requireNonNull(d.get("coDocumentID")).toString();
+                                                    rcpGiUID = Objects.requireNonNull(d.get("rcpGiUID")).toString();
+                                                    Chip chip = (Chip)inflater.inflate(R.layout.chip_item, null, false);
+                                                    chip.setText(rcpGiUID);
+                                                    chipGroup.addView(chip);
+
+                                                    tvChooseRcpGi.setVisibility(View.VISIBLE);
+                                                }
+                                            } else {
+                                                Toast.makeText(AddInvoiceActivity.this, "Not exists", Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
+                                    });
+
+                           /* db.collection("CashOutData").whereEqualTo("roDocumentID", roDocumentID)
+                                    .addSnapshotListener((value, error) -> {
+                                        arrayListCoUID.clear();
+                                        chipGroup.removeAllViews();
+                                        if (value != null) {
+                                            if (!value.isEmpty()) {
+                                                for (DocumentSnapshot d : value.getDocuments()) {
                                                     coUID = Objects.requireNonNull(d.get("coUID")).toString();
                                                     arrayListCoUID.add(coUID);
+
+                                                    Chip chip = (Chip)inflater.inflate(R.layout.chip_item, null, false);
+                                                    chip.setText(coUID);
+                                                    chipGroup.addView(chip);
                                                 }
                                                 ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddInvoiceActivity.this, R.layout.style_spinner, arrayListCoUID);
                                                 arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
@@ -551,14 +600,14 @@ public class AddInvoiceActivity extends AppCompatActivity {
                                                 Toast.makeText(AddInvoiceActivity.this, "Not exists", Toast.LENGTH_SHORT).show();
                                             }
                                         }
-                                    });
+                                    });*/
                         }
                         edtPoUID.setText(roPoCustNumber);
                     });
 
         });
 
-        spinnerCoUID.setOnItemClickListener((adapterView, view, i, l) -> {
+       /* spinnerCoUID.setOnItemClickListener((adapterView, view, i, l) -> {
             spinnerCoUID.setError(null);
             String selectedCoUID = (String) adapterView.getItemAtPosition(i);
 
@@ -598,9 +647,8 @@ public class AddInvoiceActivity extends AppCompatActivity {
                                 llStatusCo.setVisibility(View.GONE);
                             }
                         }
-                        //spinnerCoUID.setText(coUID);
                     });
-        });
+        });*/
 
 
         db.collection("BankAccountData").whereEqualTo("bankType", "PERUSAHAAN")
@@ -610,17 +658,13 @@ public class AddInvoiceActivity extends AppCompatActivity {
                     if (value != null) {
                         if (!value.isEmpty()) {
                             for (DocumentSnapshot d : value.getDocuments()) {
-                                //String bankAccountID = Objects.requireNonNull(d.get("bankAccountID")).toString();
                                 String bankName = Objects.requireNonNull(d.get("bankName")).toString();
                                 String bankAccountNumber = Objects.requireNonNull(d.get("bankAccountNumber")).toString();
-                                //String bankAccountOwnerName = Objects.requireNonNull(d.get("bankAccountOwnerName")).toString();
 
                                 String a = bankName.replace(" - ","-");
                                 int b = a.lastIndexOf('-');
 
                                 bankAccount.add(a.substring(0,b)+" - "+bankAccountNumber);
-                                //bankAccountDocumentID.add(bankAccountID);
-                                //edtAccountOwnerName.setText(bankAccountOwnerName);
                             }
                             ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddInvoiceActivity.this, R.layout.style_spinner, bankAccount);
                             arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
@@ -675,22 +719,25 @@ public class AddInvoiceActivity extends AppCompatActivity {
         });
 
         btnGiSearchByRoUIDReset.setOnClickListener(view -> {
-            llStatusCo.setVisibility(View.GONE);
+            //llStatusCo.setVisibility(View.GONE);
             spinnerRoUID.setText(null);
             spinnerRoUID.requestFocus();
             edtPoUID.setText(null);
             edtPoUID.clearFocus();
-            spinnerCoUID.setText(null);
-            spinnerCoUID.clearFocus();
+            chipGroup.removeAllViews();
+            tvChooseRcpGi.setVisibility(View.GONE);
+
+            //spinnerCoUID.setText(null);
+            //spinnerCoUID.clearFocus();
             coUID = "";
             coDocumentID = "";
             roDocumentID = "";
             rouidVal = "";
             pouidVal = "";
 
-            ll_wrap_filter_by_couid.setVisibility(View.GONE);
+            //ll_wrap_filter_by_couid.setVisibility(View.GONE);
             btnGiSearchByRoUIDReset.setVisibility(View.GONE);
-            btnResetCoUID.setVisibility(View.GONE);
+            //btnResetCoUID.setVisibility(View.GONE);
         });
 
         btnResetBankAccount.setOnClickListener(new View.OnClickListener() {
@@ -704,7 +751,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
             }
         });
 
-        btnResetCoUID.setOnClickListener(new View.OnClickListener() {
+        /*btnResetCoUID.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 menu.findItem(R.id.select_all_data_recap).setVisible(false);
@@ -714,7 +761,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
                 btnResetCoUID.setVisibility(View.GONE);
                 llStatusCo.setVisibility(View.GONE);
             }
-        });
+        });*/
 
         //fabCreateGiRecap.hide();
 
@@ -723,40 +770,30 @@ public class AddInvoiceActivity extends AppCompatActivity {
             public void onClick(View view) {
                 menu.findItem(R.id.select_all_data_recap).setVisible(false);
                 clearSelection();
-                llStatusCo.setVisibility(View.GONE);
+                //llStatusCo.setVisibility(View.GONE);
                 coUID = "";
                 coDocumentID = "";
                 rouidVal = "";
                 pouidVal = "";
                 custNameVal = "";
                 spinnerCustName.setText(null);
-                llShowSpinnerRoAndEdtPo.setVisibility(View.GONE);
+                //llShowSpinnerRoAndEdtPo.setVisibility(View.GONE);
                 spinnerCustName.requestFocus();
                 edtPoUID.setText(null);
                 spinnerRoUID.setText(null);
                 edtPoUID.clearFocus();
                 spinnerRoUID.clearFocus();
 
-                spinnerCoUID.setText(null);
-                spinnerCoUID.clearFocus();
-                ll_wrap_filter_by_couid.setVisibility(View.GONE);
+                chipGroup.removeAllViews();
+                tvChooseRcpGi.setVisibility(View.GONE);
+                //spinnerCoUID.setText(null);
+                //spinnerCoUID.clearFocus();
+                //ll_wrap_filter_by_couid.setVisibility(View.GONE);
                 btnResetCustomer.setVisibility(View.GONE);
             }
         });
 
         btnSearchData.setOnClickListener(view -> {
-            /*View viewLayout = AddInvoiceActivity.this.getCurrentFocus();
-            if (viewLayout != null) {
-                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(viewLayout.getWindowToken(), 0);
-            }
-            if (!Objects.requireNonNull(edtDateStart.getText()).toString().isEmpty()&&
-                    !Objects.requireNonNull(edtDateEnd.getText()).toString().isEmpty()){
-                searchQuery();
-            } else {
-                nestedScrollView.setVisibility(View.GONE);
-                dialogInterface.mustAddDateRangeInformation(this);
-            }*/
 
             View viewLayout = AddInvoiceActivity.this.getCurrentFocus();
             if (viewLayout != null) {
@@ -782,11 +819,11 @@ public class AddInvoiceActivity extends AppCompatActivity {
                 edtPoUID.setError(null);
             }
 
-            if (Objects.requireNonNull(spinnerCoUID.getText()).toString().isEmpty()){
+            /*if (Objects.requireNonNull(spinnerCoUID.getText()).toString().isEmpty()){
                 spinnerCoUID.setError("Mohon pilih nomor ID Cash Out");
             } else{
                 spinnerCoUID.setError(null);
-            }
+            }*/
 
             if (Objects.requireNonNull(spinnerBankAccount.getText()).toString().isEmpty()){
                 spinnerBankAccount.setError("Mohon pilih rekening pembayaran");
@@ -796,7 +833,6 @@ public class AddInvoiceActivity extends AppCompatActivity {
 
             if (!spinnerCustName.getText().toString().isEmpty()&&
                     !spinnerRoUID.getText().toString().isEmpty()&&
-                    !spinnerCoUID.getText().toString().isEmpty()&&
                     !edtPoUID.getText().toString().isEmpty()&&
                     !spinnerBankAccount.getText().toString().isEmpty()&&
                     !edtAccountOwnerName.getText().toString().isEmpty()){
@@ -1109,13 +1145,6 @@ public class AddInvoiceActivity extends AppCompatActivity {
     }
     private void addInvMainContent(Document document) throws DocumentException{
         try {
-            /*String invDateCreated =
-                    new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(new Date());
-            String invTimeCreated =
-                    new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());*/
-
-
-
             Paragraph paragraphBlank = new Paragraph(" ");
 
             Paragraph paragraphInvDateCreated =
@@ -1153,12 +1182,6 @@ public class AddInvoiceActivity extends AppCompatActivity {
             // INIT IMAGE BCA QR CODE
             //Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.bca_qr_bas);
 
-
-            // TOTAL UNIT CALCULATION
-            /*float totalUnit = 0;
-            for (int i = 0; i < goodIssueModelArrayList.size(); i++){
-                totalUnit += goodIssueModelArrayList.get(i).getGiVhlCubication();
-            }*/
 
             float totalUnitFinal = 0;
             for (int i = 0; i < giManagementAdapter.getSelected().size(); i++) {
@@ -1678,7 +1701,14 @@ public class AddInvoiceActivity extends AppCompatActivity {
     }
 
     private void searchQuery(){
-        showHideFilterComponents(false);
+
+
+
+        showHideFilterComponents(true);
+        imgbtnExpandCollapseFilterLayout.setText(R.string.showMore);
+        imgbtnExpandCollapseFilterLayout.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_outline_keyboard_arrow_down, 0);
+
+
         // Vibrate for 500 milliseconds
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             vibrator.vibrate(VibrationEffect.createOneShot(100,
@@ -1688,7 +1718,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
             vibrator.vibrate(100);
         }
 
-        expandFilterViewValidation();
+        //expandFilterViewValidation();
         TransitionManager.beginDelayedTransition(cdvFilter, new AutoTransition());
 
         rouidVal = spinnerRoUID.getText().toString();
@@ -1709,7 +1739,6 @@ public class AddInvoiceActivity extends AppCompatActivity {
                         roDocumentID = receivedOrderModel.getRoDocumentID();
                         matTypeVal = receivedOrderModel.getRoMatType();
                         roPoCustNumber = receivedOrderModel.getRoPoCustNumber();
-                        //custNameVal = receivedOrderModel.getRoCustName();
                         currencyVal = receivedOrderModel.getRoCurrency();
                         invCustName = receivedOrderModel.getCustDocumentID();
                         invPoUID = receivedOrderModel.getRoPoCustNumber();
@@ -1757,6 +1786,9 @@ public class AddInvoiceActivity extends AppCompatActivity {
         if (dateStartVal.isEmpty()&&dateEndVal.isEmpty()){
             query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated");
         }
+
+
+        // Chip chip = (Chip) chipGroup.getChildAt(i);
         query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -1764,7 +1796,60 @@ public class AddInvoiceActivity extends AppCompatActivity {
                 if (snapshot.exists()){
                     for (DataSnapshot item : snapshot.getChildren()) {
                         if (!rouidVal.isEmpty()){
-                            if (Objects.equals(item.child("giCashedOutTo").getValue(), coDocumentID)) {
+                            for (int i = 0; i < chipGroup.getChildCount(); i++){
+                                Chip chip = (Chip) chipGroup.getChildAt(i);
+                                if (chip.isChecked()){
+                                    if (Objects.equals(item.child("giRecappedTo").getValue(), chip.getText())){
+                                        if (Objects.equals(item.child("giStatus").getValue(), true)) {
+                                            menu.findItem(R.id.select_all_data_recap).setVisible(true);
+                                            GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
+                                            goodIssueModelArrayList.add(goodIssueModel);
+                                            nestedScrollView.setVisibility(View.VISIBLE);
+                                            llNoData.setVisibility(View.GONE);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                    }
+                    if (goodIssueModelArrayList.size()==0) {
+                        fabCreateDocument.hide();
+                        nestedScrollView.setVisibility(View.GONE);
+                        llNoData.setVisibility(View.VISIBLE);
+                    }
+
+                } else  {
+                    fabCreateDocument.hide();
+                    nestedScrollView.setVisibility(View.GONE);
+                    llNoData.setVisibility(View.VISIBLE);
+                }
+
+                Collections.reverse(goodIssueModelArrayList);
+                giManagementAdapter = new GIManagementAdapter(context, goodIssueModelArrayList);
+                rvGoodIssueList.setAdapter(giManagementAdapter);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+            /*if (chip.isChecked()){
+                result = ((Chip) chipGroup.getChildAt(i)).getText().toString();
+            }
+            Toast.makeText(context, result, Toast.LENGTH_SHORT).show();*/
+
+
+        /*query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                goodIssueModelArrayList.clear();
+                if (snapshot.exists()){
+                    for (DataSnapshot item : snapshot.getChildren()) {
+                        if (!rouidVal.isEmpty()){
+                            if (Objects.equals(item.child("giRecappedTo").getValue(), rcpGiUID)) {
                                 if (Objects.equals(item.child("giStatus").getValue(), true)
                                         && Objects.equals(item.child("giCashedOut").getValue(), true)
                                         && Objects.equals(item.child("giInvoiced").getValue(), false)
@@ -1772,7 +1857,6 @@ public class AddInvoiceActivity extends AppCompatActivity {
                                     menu.findItem(R.id.select_all_data_recap).setVisible(true);
                                     GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
                                     goodIssueModelArrayList.add(goodIssueModel);
-                                    //fabCreateGiRecap.show();
                                     nestedScrollView.setVisibility(View.VISIBLE);
                                     llNoData.setVisibility(View.GONE);
                                 }
@@ -1802,108 +1886,10 @@ public class AddInvoiceActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError error) {
 
             }
-        });
-
-        /*Query query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated").startAt(dateStartVal).endAt(dateEndVal);
-        query.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                goodIssueModelArrayList.clear();
-                if (snapshot.exists()){
-                    for (DataSnapshot item : snapshot.getChildren()) {
-                        if (!rouidVal.isEmpty()){
-                            if (Objects.requireNonNull(item.child("giRoUID").getValue()).toString().equals(rouidVal) &&
-                                    !pouidVal.equals("-")) {
-                                if (Objects.equals(item.child("giStatus").getValue(), true)
-                                        && Objects.equals(item.child("giCashedOut").getValue(), true)
-                                        && Objects.equals(item.child("giInvoiced").getValue(), false)
-                                        && Objects.equals(item.child("giRecapped").getValue(), true)) {
-
-                                    GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
-                                    goodIssueModelArrayList.add(goodIssueModel);
-                                    fabCreateGiRecap.show();
-                                    nestedScrollView.setVisibility(View.VISIBLE);
-                                    llNoData.setVisibility(View.GONE);
-
-                                }
-                            }
-
-                        }
-
-                    }
-                    if (goodIssueModelArrayList.size()==0) {
-                        fabCreateGiRecap.hide();
-                        nestedScrollView.setVisibility(View.GONE);
-                        llNoData.setVisibility(View.VISIBLE);
-                    }
-
-                } else  {
-                    fabCreateGiRecap.hide();
-                    nestedScrollView.setVisibility(View.GONE);
-                    llNoData.setVisibility(View.VISIBLE);
-                }
-
-                giManagementAdapter = new GIManagementAdapter(context, goodIssueModelArrayList);
-                rvGoodIssueList.setAdapter(giManagementAdapter);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
         });*/
     }
 
     private void searchQueryAll(){
-/*
-        db.collection("ReceivedOrderData").orderBy("invDateCreated").get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    if (productItemsList != null){
-                        productItemsList.clear();
-                    }
-                    transportServiceSellPrice = 0;
-                    matSellPrice = 0;
-
-                    for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots){
-                        ReceivedOrderModel receivedOrderModel = documentSnapshot.toObject(ReceivedOrderModel.class);
-                        receivedOrderModel.setRoDocumentID(documentSnapshot.getId());
-
-                        matTypeVal = receivedOrderModel.getRoMatType();
-                        roPoCustNumber = receivedOrderModel.getRoPoCustNumber();
-                        custNameVal = receivedOrderModel.getRoCustName();
-                        currencyVal = receivedOrderModel.getRoCurrency();
-                        invCustName = receivedOrderModel.getRoCustName();
-                        invPoUID = receivedOrderModel.getRoPoCustNumber();
-                        invPoDate = receivedOrderModel.getRoDateCreated();
-                        invPoType = receivedOrderModel.getRoType();
-
-                        if (invPoType == 0){
-                            invPotypeVal = "MATERIAL + JASA ANGKUT";
-                        }
-                        if (invPoType == 1){
-                            invPotypeVal = "MATERIAL SAJA";
-                        }
-                        if (invPoType == 2){
-                            invPotypeVal = "JASA ANGKUT SAJA";
-                        }
-
-                        HashMap<String, List<ProductItems>> map = receivedOrderModel.getRoOrderedItems();
-                        for (HashMap.Entry<String, List<ProductItems>> e : map.entrySet()) {
-                            productItemsList = e.getValue();
-                            for (int i = 0; i<productItemsList.size();i++){
-                                if (productItemsList.get(0).getMatName().equals("JASA ANGKUT")){
-                                    transportServiceNameVal = productItemsList.get(0).getMatName();
-                                    transportServiceSellPrice = productItemsList.get(0).getMatSellPrice();
-                                } else {
-                                    matNameVal = productItemsList.get(i).getMatName();
-                                    matSellPrice = productItemsList.get(i).getMatSellPrice();
-                                }
-                            }
-
-                        }
-                    }
-                });
-*/
 
         Query query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated");
         query.addValueEventListener(new ValueEventListener() {
@@ -2039,22 +2025,6 @@ public class AddInvoiceActivity extends AppCompatActivity {
         super.onResume();
 
         // HANDLE RESPONSIVE CONTENT
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        int width = displayMetrics.widthPixels;
-        /*if (width<=1080){
-            RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 1);
-            rvGoodIssueList.setLayoutManager(mLayoutManager);
-        }
-        if (width>1080&&width<1366){
-            RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 2);
-            rvGoodIssueList.setLayoutManager(mLayoutManager);
-        }
-        if (width>=1366){
-            RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 3);
-            rvGoodIssueList.setLayoutManager(mLayoutManager);
-        }*/
-
         RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 1);
         rvGoodIssueList.setLayoutManager(mLayoutManager);
     }

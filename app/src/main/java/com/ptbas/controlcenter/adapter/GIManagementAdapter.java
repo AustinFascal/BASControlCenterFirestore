@@ -228,7 +228,7 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
             String vhlDetail = "(P) "+goodIssueModel.getVhlLength().toString()+" (L) "+goodIssueModel.getVhlWidth().toString()+" (T) "+goodIssueModel.getVhlHeight().toString()+" | "+"(K) "+goodIssueModel.getVhlHeightCorrection().toString()+" (TK) "+goodIssueModel.getVhlHeightAfterCorrection().toString();
             String vhlUID = goodIssueModel.getVhlUID();
             boolean giStatus = goodIssueModel.getGiStatus();
-            boolean giRecapped = goodIssueModel.getGiRecapped();
+            String giRecappedTo = goodIssueModel.getGiRecappedTo();
             boolean giInvoiced = goodIssueModel.getGiInvoiced();
             String giInvoicedTo = goodIssueModel.getGiInvoicedTo();
             boolean giCashedOut = goodIssueModel.getGiCashedOut();
@@ -261,7 +261,7 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
                 btnApproveGi.setVisibility(View.VISIBLE);
             }
 
-            if (giRecapped){
+            if (!giRecappedTo.isEmpty()){
                 llStatusRecapped.setVisibility(View.VISIBLE);
             } else {
                 llStatusRecapped.setVisibility(View.GONE);
@@ -304,7 +304,7 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
                 } else{
                     GoodIssueModel goodIssueModelClone = new GoodIssueModel("CL-"+goodIssueModel.getGiUID(), goodIssueModel.getGiCreatedBy(), goodIssueModel.getGiVerifiedBy(),goodIssueModel.getRoDocumentID(),
                             goodIssueModel.getGiMatName(), goodIssueModel.getGiMatType(), goodIssueModel.getGiNoteNumber(), vhlUID, goodIssueModel.getGiDateCreated(), goodIssueModel.getGiTimeCreted(), goodIssueModel.getVhlLength(),
-                            goodIssueModel.getVhlWidth(), goodIssueModel.getVhlHeight(), goodIssueModel.getVhlHeightCorrection(), goodIssueModel.getVhlHeightAfterCorrection(), goodIssueModel.getGiVhlCubication(), giStatus, giRecapped, giInvoiced, goodIssueModel.getGiInvoicedTo(), goodIssueModel.getGiCashedOut(), goodIssueModel.getGiCashedOutTo(), goodIssueModel.getGiRecappedTo());
+                            goodIssueModel.getVhlWidth(), goodIssueModel.getVhlHeight(), goodIssueModel.getVhlHeightCorrection(), goodIssueModel.getVhlHeightAfterCorrection(), goodIssueModel.getGiVhlCubication(), giStatus, false, giInvoiced, goodIssueModel.getGiInvoicedTo(), goodIssueModel.getGiCashedOut(), goodIssueModel.getGiCashedOutTo(), goodIssueModel.getGiRecappedTo());
                     DatabaseReference refGI = FirebaseDatabase.getInstance("https://bas-delivery-report-default-rtdb.asia-southeast1.firebasedatabase.app").getReference("GoodIssueData");
                     refGI.child("CL-"+goodIssueModel.getGiUID()).setValue(goodIssueModelClone).addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
@@ -321,7 +321,7 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
 
                     GoodIssueModel goodIssueModelUpdate = new GoodIssueModel(goodIssueModel.getGiUID(), goodIssueModel.getGiCreatedBy(), goodIssueModel.getGiVerifiedBy(),goodIssueModel.getRoDocumentID(),
                             goodIssueModel.getGiMatName(), goodIssueModel.getGiMatType(), goodIssueModel.getGiNoteNumber(), vhlUID, goodIssueModel.getGiDateCreated(), goodIssueModel.getGiTimeCreted(), goodIssueModel.getVhlLength(),
-                            goodIssueModel.getVhlWidth(), goodIssueModel.getVhlHeight(), goodIssueModel.getVhlHeightCorrection(), goodIssueModel.getVhlHeightAfterCorrection(), goodIssueModel.getGiVhlCubication(), giStatus, giRecapped, giInvoiced, "ARC-"+goodIssueModel.getGiInvoicedTo(), goodIssueModel.getGiCashedOut(), goodIssueModel.getGiCashedOutTo(), goodIssueModel.getGiRecappedTo());
+                            goodIssueModel.getVhlWidth(), goodIssueModel.getVhlHeight(), goodIssueModel.getVhlHeightCorrection(), goodIssueModel.getVhlHeightAfterCorrection(), goodIssueModel.getGiVhlCubication(), giStatus, false, giInvoiced, "ARC-"+goodIssueModel.getGiInvoicedTo(), goodIssueModel.getGiCashedOut(), goodIssueModel.getGiCashedOutTo(), goodIssueModel.getGiRecappedTo());
                     refGI.child(goodIssueModel.getGiUID()).setValue(goodIssueModelUpdate).addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
                             Toast.makeText(context, "Berhasil diduplikat", Toast.LENGTH_SHORT).show();

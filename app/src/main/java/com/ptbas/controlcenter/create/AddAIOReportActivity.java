@@ -104,13 +104,11 @@ import java.util.Random;
 public class AddAIOReportActivity extends AppCompatActivity {
 
     private static final String ALLOWED_CHARACTERS = "0123456789QWERTYUIOPASDFGHJKLZXCVBNM";
-    String[] deliveryPeriod;
-    double matQuantity, matSellPrice, transportServiceSellPrice, invTax1 = 0, invTax2 =0;
-    String invDueDate, invDateNTimeCreated, invTimeCreated, custIDVal, dateStartVal = "", dateEndVal = "", rouidVal= "", currencyVal = "", pouidVal = "",
+    double matQuantity, matSellPrice, transportServiceSellPrice;
+    String invDateNTimeCreated, invTimeCreated, dateStartVal = "", dateEndVal = "", rouidVal= "", currencyVal = "", pouidVal = "",
             monthStrVal, dayStrVal, roPoCustNumber, matTypeVal, matNameVal, transportServiceNameVal,
-            invPoDate = "", invCustName = "", invPoUID = "", custNameVal = "", roDocumentID = "", coDocumentID, coUID, coAccBy,
-            custAddressVal = "", invUID="", invPotypeVal = "", customerData = "", customerID ="", bankAccountID = "", bankNameVal, bankAccountNumberVal, bankAccountOwnerNameVal;
-    int invPoType, invPoTOP;
+            invPoDate = "", invCustName = "", invPoUID = "", custNameVal = "", roDocumentID = "", coDocumentID, coUID, invUID="", bankAccountID = "";
+    int invPoType;
 
     Button btnSearchData, imgbtnExpandCollapseFilterLayout;
     AutoCompleteTextView spinnerRoUID, spinnerCustName;
@@ -120,7 +118,6 @@ public class AddAIOReportActivity extends AppCompatActivity {
     ArrayList<GoodIssueModel> goodIssueModelArrayList = new ArrayList<>();
     ArrayList<CashOutModel> cashOutModelArrayList = new ArrayList<>();
     GIManagementAdapter giManagementAdapter;
-    InvoiceManagementAdapter invoiceManagementAdapter;
     CashOutManagementAdapter cashOutManagementAdapter;
     RecyclerView rvGoodIssueList;
     Context context;
@@ -153,7 +150,6 @@ public class AddAIOReportActivity extends AppCompatActivity {
 
     DecimalFormat df = new DecimalFormat("0.00");
     DecimalFormat dfRound = new DecimalFormat("0");
-    DecimalFormat dfRound1 = new DecimalFormat("0");
 
     Vibrator vibrator;
 
@@ -161,32 +157,23 @@ public class AddAIOReportActivity extends AppCompatActivity {
 
     private Menu menu;
 
-    public String coDateDeliveryPeriodVal, invDateVerified, invTotalDue, invDocUID;
-    String invDateDeliveryPeriod, invCreatedBy="", custDocumentID ="", selectedCustName, coDateDeliveryPeriod;
-
-    private MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
+    public String coDateDeliveryPeriodVal;
+    String invDateDeliveryPeriod, invCreatedBy="", custDocumentID ="", selectedCustName;
 
     float totalUnitAmountForMaterials;
 
     double matBuyPrice, coTotal;
 
-    public String[] coDateAndTimeACC, invTotalDueVal, invTotalAmount;
+    public String[] coDateAndTimeACC, deliveryPeriod;
 
-    public String coTransferDate, coInvDocumentUID, priceTest, priceTest2, finalPriceTest;
+    public String coTransferDate, coInvDocumentUID;
 
     public Double coTotalDue;
     public int showOccurances;
 
     String custNameFinal;
 
-    String invDocumentID;
-
-    String invTotalDueValTest, invTotalDueValTestVal;
-
-    String[] testAmount;
-
     StringBuilder s4;
-
 
     Document document;
 
@@ -205,9 +192,6 @@ public class AddAIOReportActivity extends AppCompatActivity {
         LangUtils.setLocale(this, "en");
 
         helper.ACTIVITY_NAME = "UPDATE";
-
-        Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-
 
         baseColorBluePale = new BaseColor(22,169,242);
         baseColorLightGrey = new BaseColor(237, 237, 237);
@@ -259,10 +243,10 @@ public class AddAIOReportActivity extends AppCompatActivity {
         btnGiSearchByRoUIDReset = findViewById(R.id.btnResetRouid);
         fabCreateDocument = findViewById(R.id.fabCreateCOR);
 
-        TypedValue typedValue = new TypedValue();
+        /*TypedValue typedValue = new TypedValue();
         Resources.Theme theme = context.getTheme();
         theme.resolveAttribute(androidx.appcompat.R.attr.colorPrimary, typedValue, true);
-        @ColorInt int color = typedValue.data;
+        @ColorInt int color = typedValue.data;*/
 
         /*btnGiSearchByDateReset.setColorFilter(color);
         btnGiSearchByRoUIDReset.setColorFilter(color);
@@ -379,8 +363,6 @@ public class AddAIOReportActivity extends AppCompatActivity {
         Runnable runnable = new Runnable() {
             public void run() {
 
-
-
                 // CHECK IF DATE AND RO/PO NUMBER IS SELECTED
                 /*if (!spinnerRoUID.getText().toString().isEmpty()
                         && !Objects.requireNonNull(edtPoUID.getText()).toString().isEmpty()){
@@ -446,18 +428,15 @@ public class AddAIOReportActivity extends AppCompatActivity {
         arrayListPoUID = new ArrayList<>();
         arrayListCoUID = new ArrayList<>();
 
-
         db.collection("CustomerData").whereEqualTo("custStatus", true)
                 .addSnapshotListener((value, error) -> {
                     customerName.clear();
                     if (value != null) {
                         if (!value.isEmpty()) {
                             for (DocumentSnapshot d : value.getDocuments()) {
-                                //String custDocumentID = Objects.requireNonNull(d.get("custDocumentID")).toString();
                                 String spinnerCustUID = Objects.requireNonNull(d.get("custUID")).toString();
                                 String spinnerCustName = Objects.requireNonNull(d.get("custName")).toString();
                                 customerName.add(spinnerCustUID+" - "+spinnerCustName);
-                                //arrayListCustDocumentID.add(custDocumentID);
                             }
                             ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddAIOReportActivity.this, R.layout.style_spinner, customerName);
                             arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
@@ -472,8 +451,6 @@ public class AddAIOReportActivity extends AppCompatActivity {
             String selectedCustomer = (String) adapterView.getItemAtPosition(position);
             String[] custNameSplit = selectedCustomer.split(" - ");
             String custNameSplit1 = custNameSplit[1];
-
-            //spinnerCustUID.setText(selectedCustName);
 
             selectedCustName = selectedCustomer;
             spinnerCustName.setError(null);
@@ -513,17 +490,12 @@ public class AddAIOReportActivity extends AppCompatActivity {
                     });
 
         });
-        spinnerCustName.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View view, int i, KeyEvent keyEvent) {
-                if (spinnerCustName.getText().toString().equals("")){
-                    llShowSpinnerRoAndEdtPo.setVisibility(View.GONE);
-                }
-                return false;
+        spinnerCustName.setOnKeyListener((view, i, keyEvent) -> {
+            if (spinnerCustName.getText().toString().equals("")){
+                llShowSpinnerRoAndEdtPo.setVisibility(View.GONE);
             }
+            return false;
         });
-
-
         spinnerRoUID.setOnItemClickListener((adapterView, view, i, l) -> {
             spinnerRoUID.setError(null);
             String selectedSpinnerPoPtBasNumber = (String) adapterView.getItemAtPosition(i);
@@ -570,32 +542,27 @@ public class AddAIOReportActivity extends AppCompatActivity {
             btnGiSearchByRoUIDReset.setVisibility(View.GONE);
         });
 
-        //fabCreateGiRecap.hide();
+        btnResetCustomer.setOnClickListener(view -> {
+            menu.findItem(R.id.select_all_data_recap).setVisible(false);
+            clearSelection();
+            coUID = "";
+            coDocumentID = "";
+            rouidVal = "";
+            pouidVal = "";
+            custNameVal = "";
+            spinnerCustName.setText(null);
+            llShowSpinnerRoAndEdtPo.setVisibility(View.GONE);
+            spinnerCustName.requestFocus();
+            edtPoUID.setText(null);
+            spinnerRoUID.setText(null);
+            edtPoUID.clearFocus();
+            spinnerRoUID.clearFocus();
 
-        btnResetCustomer.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                menu.findItem(R.id.select_all_data_recap).setVisible(false);
-                clearSelection();
-                coUID = "";
-                coDocumentID = "";
-                rouidVal = "";
-                pouidVal = "";
-                custNameVal = "";
-                spinnerCustName.setText(null);
-                llShowSpinnerRoAndEdtPo.setVisibility(View.GONE);
-                spinnerCustName.requestFocus();
-                edtPoUID.setText(null);
-                spinnerRoUID.setText(null);
-                edtPoUID.clearFocus();
-                spinnerRoUID.clearFocus();
+            arrayListRoUID.clear();
+            spinnerRoUID.setAdapter(null);
 
-                arrayListRoUID.clear();
-                spinnerRoUID.setAdapter(null);
-
-                btnResetCustomer.setVisibility(View.GONE);
-                btnGiSearchByRoUIDReset.setVisibility(View.GONE);
-            }
+            btnResetCustomer.setVisibility(View.GONE);
+            btnGiSearchByRoUIDReset.setVisibility(View.GONE);
         });
 
         btnSearchData.setOnClickListener(view -> {
@@ -638,11 +605,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
             }
         });
 
-
-
         fabCreateDocument.setOnClickListener(view -> {
-
-
 
             if (ContextCompat.checkSelfPermission(context,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE)!=
@@ -654,10 +617,6 @@ public class AddAIOReportActivity extends AppCompatActivity {
                 String roUIDValNoSpace = rouidVal.replaceAll("\\s","");
                 invUID = getRandomString()+"-INV-"+roUIDValNoSpace;
                 StringBuilder s0 = new StringBuilder(100);
-                StringBuilder s1 = new StringBuilder(100);
-                StringBuilder s2 = new StringBuilder(100);
-                StringBuilder s3 = new StringBuilder(100);
-
 
                 for (int i=0; i<cashOutManagementAdapter.getSelected().size();i++) {
                     s0.append(cashOutManagementAdapter.getSelected().get(i).getCoDateDeliveryPeriod()).append(",");
@@ -671,7 +630,6 @@ public class AddAIOReportActivity extends AppCompatActivity {
                 Collections.sort(list);
 
                 coDateDeliveryPeriodVal = list.toString().replace("[","").replace("]","").replace(" ","");
-
 
                 String invCreatedBy = helper.getUserId();
 
@@ -690,14 +648,9 @@ public class AddAIOReportActivity extends AppCompatActivity {
             }
         });
 
-        searchQueryAll();
+        btnExitSelection.setOnClickListener(view -> clearSelection());
 
-        btnExitSelection.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                clearSelection();
-            }
-        });
+        searchQueryAll();
     }
 
     public static String removeDuplicates(String txt, String splitterRegex)
@@ -718,7 +671,6 @@ public class AddAIOReportActivity extends AppCompatActivity {
 
         }
         return sb.substring(1);
-
     }
 
     private void clearRoPoData() {
@@ -759,245 +711,240 @@ public class AddAIOReportActivity extends AppCompatActivity {
             new File(dest).deleteOnExit();
         }
         db.collection("InvoiceData").get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        if (!queryDocumentSnapshots.isEmpty()) {
-                            List<InvoiceModel> invoiceModels = queryDocumentSnapshots.toObjects(InvoiceModel.class);
-                            mArrayList.addAll(invoiceModels);
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        List<InvoiceModel> invoiceModels = queryDocumentSnapshots.toObjects(InvoiceModel.class);
+                        mArrayList.addAll(invoiceModels);
 
-                            try {
+                        try {
 
-                                Rectangle f4Landscape = new Rectangle(936, 596);
-                                document = new Document(f4Landscape, 10, 10, 10, 10);
-                                PdfWriter.getInstance(document, new FileOutputStream(dest));
-                                document.open();
-                                document.addAuthor("PT BAS");
-                                document.addCreator("BAS Control Center");
-                                document.addCreationDate();
-                                addAIOTtl(document);
-                                addSpace(document);
+                            Rectangle f4Landscape = new Rectangle(936, 596);
+                            document = new Document(f4Landscape, 10, 10, 10, 10);
+                            PdfWriter.getInstance(document, new FileOutputStream(dest));
+                            document.open();
+                            document.addAuthor("PT BAS");
+                            document.addCreator("BAS Control Center");
+                            document.addCreationDate();
+                            addAIOTtl(document);
+                            addSpace(document);
 
-                                Paragraph paragraphBlank = new Paragraph(" ");
+                            Paragraph paragraphBlank = new Paragraph(" ");
 
-                                Paragraph paragraphInvDateCreated =
-                                        new Paragraph("Terakhir diperbarui: "
-                                                +invDateNTimeCreated+", oleh: "+invCreatedBy, fontNormalSmallItalic);
-                                paragraphInvDateCreated.setAlignment(Element.ALIGN_RIGHT);
-                                paragraphInvDateCreated.setSpacingAfter(5);
+                            Paragraph paragraphInvDateCreated =
+                                    new Paragraph("Terakhir diperbarui: "
+                                            +invDateNTimeCreated+", oleh: "+invCreatedBy, fontNormalSmallItalic);
+                            paragraphInvDateCreated.setAlignment(Element.ALIGN_RIGHT);
+                            paragraphInvDateCreated.setSpacingAfter(5);
 
-                                Paragraph paragraphInvNote =
-                                        new Paragraph("Mat.: Material; Sup.: Supplier; HJ: Harga Jual; HB: Harga Beli; PPN = 11%; PPH23 = 2%.", fontNormalSmall);
-                                paragraphInvDateCreated.setAlignment(Element.ALIGN_RIGHT);
-                                paragraphInvDateCreated.setSpacingAfter(5);
+                            Paragraph paragraphInvNote =
+                                    new Paragraph("Mat.: Material; Sup.: Supplier; HJ: Harga Jual; HB: Harga Beli; PPN = 11%; PPH23 = 2%.", fontNormalSmall);
+                            paragraphInvDateCreated.setAlignment(Element.ALIGN_RIGHT);
+                            paragraphInvDateCreated.setSpacingAfter(5);
 
-                                // INIT TABLE
-                                PdfPTable tblInvSection0 = new PdfPTable(3);
-                                PdfPTable tblInvSection1 = new PdfPTable(18);
-                                PdfPTable tblInvSection2 = new PdfPTable(18);
-                                PdfPTable tblInvSection3 = new PdfPTable(18);
+                            // INIT TABLE
+                            PdfPTable tblInvSection0 = new PdfPTable(3);
+                            PdfPTable tblInvSection1 = new PdfPTable(18);
+                            PdfPTable tblInvSection2 = new PdfPTable(18);
+                            PdfPTable tblInvSection3 = new PdfPTable(18);
 
-                                // WIDTH PERCENTAGE CONFIG
-                                tblInvSection0.setWidthPercentage(100);
-                                tblInvSection1.setWidthPercentage(100);
-                                tblInvSection2.setWidthPercentage(100);
-                                tblInvSection3.setWidthPercentage(100);
+                            // WIDTH PERCENTAGE CONFIG
+                            tblInvSection0.setWidthPercentage(100);
+                            tblInvSection1.setWidthPercentage(100);
+                            tblInvSection2.setWidthPercentage(100);
+                            tblInvSection3.setWidthPercentage(100);
 
-                                // WIDTH FLOAT CONFIG
-                                tblInvSection0.setWidths(new float[]{1,42,16});
-                                tblInvSection1.setWidths(new float[]{1,3,2,3,4,4,3,4,4,4,4,4,3,3,4,4,3,2});
-                                tblInvSection2.setWidths(new float[]{1,3,2,3,4,4,3,4,4,4,4,4,3,3,4,4,3,2});
-                                tblInvSection3.setWidths(new float[]{1,3,2,3,4,4,3,4,4,4,4,4,3,3,4,4,3,2});
+                            // WIDTH FLOAT CONFIG
+                            tblInvSection0.setWidths(new float[]{1,42,16});
+                            tblInvSection1.setWidths(new float[]{1,3,2,3,4,4,3,4,4,4,4,4,3,3,4,4,3,2});
+                            tblInvSection2.setWidths(new float[]{1,3,2,3,4,4,3,4,4,4,4,4,3,3,4,4,3,2});
+                            tblInvSection3.setWidths(new float[]{1,3,2,3,4,4,3,4,4,4,4,4,3,3,4,4,3,2});
 
 
-                                tblInvSection0.addCell(cellTxtNrml(
-                                        new Paragraph("", fontMediumSmall),
-                                        Element.ALIGN_CENTER));
+                            tblInvSection0.addCell(cellTxtNrml(
+                                    new Paragraph("", fontMediumSmall),
+                                    Element.ALIGN_CENTER));
 
-                                tblInvSection0.addCell(cellTxtNrml(
-                                        new Paragraph("PENJUALAN", fontMediumSmall),
-                                        Element.ALIGN_CENTER));
-                                tblInvSection0.addCell(cellTxtNrml(
-                                        new Paragraph("PEMBELIAN", fontMediumSmall),
-                                        Element.ALIGN_CENTER));
+                            tblInvSection0.addCell(cellTxtNrml(
+                                    new Paragraph("PENJUALAN", fontMediumSmall),
+                                    Element.ALIGN_CENTER));
+                            tblInvSection0.addCell(cellTxtNrml(
+                                    new Paragraph("PEMBELIAN", fontMediumSmall),
+                                    Element.ALIGN_CENTER));
 
-                                tblInvSection1.addCell(cellTxtNrml(
-                                        new Paragraph("No", fontMediumSmall),
-                                        Element.ALIGN_CENTER));
-                                tblInvSection1.addCell(cellTxtNrml(
-                                        new Paragraph("Tgl. Kirim", fontMediumSmall),
-                                        Element.ALIGN_CENTER));
-                                tblInvSection1.addCell(cellTxtNrml(
-                                        new Paragraph("Unit", fontMediumSmall),
-                                        Element.ALIGN_CENTER));
-                                tblInvSection1.addCell(cellTxtNrml(
-                                        new Paragraph("HJ Mat.", fontMediumSmall),
-                                        Element.ALIGN_CENTER));
-                                tblInvSection1.addCell(cellTxtNrml(
-                                        new Paragraph("Total Mat.", fontMediumSmall),
-                                        Element.ALIGN_CENTER));
-                                tblInvSection1.addCell(cellTxtNrml(
-                                        new Paragraph("PPN Mat.", fontMediumSmall),
-                                        Element.ALIGN_CENTER));
-                                tblInvSection1.addCell(cellTxtNrml(
-                                        new Paragraph("HJ Jasa", fontMediumSmall),
-                                        Element.ALIGN_CENTER));
-                                tblInvSection1.addCell(cellTxtNrml(
-                                        new Paragraph("Total Jasa", fontMediumSmall),
-                                        Element.ALIGN_CENTER));
-                                tblInvSection1.addCell(cellTxtNrml(
-                                        new Paragraph("PPH23 Jasa", fontMediumSmall),
-                                        Element.ALIGN_CENTER));
-                                tblInvSection1.addCell(cellTxtNrml(
-                                        new Paragraph("PPN Jasa", fontMediumSmall),
-                                        Element.ALIGN_CENTER));
-                                tblInvSection1.addCell(cellTxtNrml(
-                                        new Paragraph("Total Jual", fontMediumSmall),
-                                        Element.ALIGN_CENTER));
-                                tblInvSection1.addCell(cellTxtNrml(
-                                        new Paragraph("Dibayar", fontMediumSmall),
-                                        Element.ALIGN_CENTER));
-                                tblInvSection1.addCell(cellTxtNrml(
-                                        new Paragraph("Tgl. Masuk", fontMediumSmall),
-                                        Element.ALIGN_CENTER));
-                                tblInvSection1.addCell(cellTxtNrml(
-                                        new Paragraph("HB", fontMediumSmall),
-                                        Element.ALIGN_CENTER));
-                                tblInvSection1.addCell(cellTxtNrml(
-                                        new Paragraph("Total Beli", fontMediumSmall),
-                                        Element.ALIGN_CENTER));
-                                tblInvSection1.addCell(cellTxtNrml(
-                                        new Paragraph("Tf. Sup.", fontMediumSmall),
-                                        Element.ALIGN_CENTER));
-                                tblInvSection1.addCell(cellTxtNrml(
-                                        new Paragraph("Tgl. Keluar", fontMediumSmall),
-                                        Element.ALIGN_CENTER));
-                                tblInvSection1.addCell(cellTxtNrml(
-                                        new Paragraph("", fontMediumSmall),
-                                        Element.ALIGN_CENTER));
+                            tblInvSection1.addCell(cellTxtNrml(
+                                    new Paragraph("No", fontMediumSmall),
+                                    Element.ALIGN_CENTER));
+                            tblInvSection1.addCell(cellTxtNrml(
+                                    new Paragraph("Tgl. Kirim", fontMediumSmall),
+                                    Element.ALIGN_CENTER));
+                            tblInvSection1.addCell(cellTxtNrml(
+                                    new Paragraph("Unit", fontMediumSmall),
+                                    Element.ALIGN_CENTER));
+                            tblInvSection1.addCell(cellTxtNrml(
+                                    new Paragraph("HJ Mat.", fontMediumSmall),
+                                    Element.ALIGN_CENTER));
+                            tblInvSection1.addCell(cellTxtNrml(
+                                    new Paragraph("Total Mat.", fontMediumSmall),
+                                    Element.ALIGN_CENTER));
+                            tblInvSection1.addCell(cellTxtNrml(
+                                    new Paragraph("PPN Mat.", fontMediumSmall),
+                                    Element.ALIGN_CENTER));
+                            tblInvSection1.addCell(cellTxtNrml(
+                                    new Paragraph("HJ Jasa", fontMediumSmall),
+                                    Element.ALIGN_CENTER));
+                            tblInvSection1.addCell(cellTxtNrml(
+                                    new Paragraph("Total Jasa", fontMediumSmall),
+                                    Element.ALIGN_CENTER));
+                            tblInvSection1.addCell(cellTxtNrml(
+                                    new Paragraph("PPH23 Jasa", fontMediumSmall),
+                                    Element.ALIGN_CENTER));
+                            tblInvSection1.addCell(cellTxtNrml(
+                                    new Paragraph("PPN Jasa", fontMediumSmall),
+                                    Element.ALIGN_CENTER));
+                            tblInvSection1.addCell(cellTxtNrml(
+                                    new Paragraph("Total Jual", fontMediumSmall),
+                                    Element.ALIGN_CENTER));
+                            tblInvSection1.addCell(cellTxtNrml(
+                                    new Paragraph("Dibayar", fontMediumSmall),
+                                    Element.ALIGN_CENTER));
+                            tblInvSection1.addCell(cellTxtNrml(
+                                    new Paragraph("Tgl. Masuk", fontMediumSmall),
+                                    Element.ALIGN_CENTER));
+                            tblInvSection1.addCell(cellTxtNrml(
+                                    new Paragraph("HB", fontMediumSmall),
+                                    Element.ALIGN_CENTER));
+                            tblInvSection1.addCell(cellTxtNrml(
+                                    new Paragraph("Total Beli", fontMediumSmall),
+                                    Element.ALIGN_CENTER));
+                            tblInvSection1.addCell(cellTxtNrml(
+                                    new Paragraph("Tf. Sup.", fontMediumSmall),
+                                    Element.ALIGN_CENTER));
+                            tblInvSection1.addCell(cellTxtNrml(
+                                    new Paragraph("Tgl. Keluar", fontMediumSmall),
+                                    Element.ALIGN_CENTER));
+                            tblInvSection1.addCell(cellTxtNrml(
+                                    new Paragraph("", fontMediumSmall),
+                                    Element.ALIGN_CENTER));
 
+
+                            for (int t = 0; t<18; t++){
+                                tblInvSection2.addCell(cellTxtNrml(
+                                        new Paragraph("-", fontMediumWhite), Element.ALIGN_CENTER));
+                            }
+
+                            deliveryPeriod = coDateDeliveryPeriodVal.split(",");
+
+                            for (int i = 0; i < deliveryPeriod.length; i++) {
+                                for (int j = 0; j < goodIssueModelArrayList.size(); j++) {
+                                    for (int k = 0; k < cashOutManagementAdapter.getSelected().size(); k++) {
+                                        if (goodIssueModelArrayList.get(j).getGiDateCreated().equals(deliveryPeriod[i])
+                                                && goodIssueModelArrayList.get(j).getGiCashedOutTo().equals(cashOutManagementAdapter.getSelected().get(k).getCoDocumentID())) {
+                                            totalUnitAmountForMaterials += goodIssueModelArrayList.get(j).getGiVhlCubication();
+                                            coTransferDate = cashOutManagementAdapter.getSelected().get(k).getCoDateAndTimeACC();
+                                            coTotalDue = cashOutManagementAdapter.getSelected().get(k).getCoTotal();
+                                            coInvDocumentUID = cashOutManagementAdapter.getSelected().get(k).getInvDocumentUID();
+                                        }
+                                    }
+                                }
+
+                                for (int z = 0; z < mArrayList.size(); z++){
+                                    if (mArrayList.get(z).getInvDocumentUID().equals(coInvDocumentUID)){
+                                        String priceListTest = mArrayList.get(z).getInvTotalDue();
+                                        String datePaid = mArrayList.get(z).getInvDateVerified();
+                                        mArrayListTotalDue.add(priceListTest);
+                                        mArrayListDatePaid.add(datePaid);
+                                    }
+                                }
+
+                                double totalAmountForMaterials;
+                                double totalAmountMatBuyPrice;
+                                double totalAmountForTransportService;
+
+                                totalAmountForMaterials = matSellPrice * totalUnitAmountForMaterials;
+                                totalAmountMatBuyPrice = matBuyPrice * totalUnitAmountForMaterials;
+                                totalAmountForTransportService = transportServiceSellPrice * totalUnitAmountForMaterials;
+
+                                double taxPPH = (0.02) * totalAmountForTransportService;
+                                double taxPPN = (0.11) * totalAmountForMaterials;
+                                double taxPPNService = (0.11) * totalAmountForTransportService;
+
+                                double totalDue = totalAmountForMaterials + taxPPN + totalAmountForTransportService - taxPPH + taxPPNService;
+
+                                String rowNumberStrVal = String.valueOf(i + 1);
+                                tblInvSection2.addCell(cellTxtNrml(
+                                        new Paragraph(rowNumberStrVal, fontNormalSmall), Element.ALIGN_CENTER));
+                                tblInvSection2.addCell(cellTxtNrml(
+                                        new Paragraph(deliveryPeriod[i], fontNormalSmall), Element.ALIGN_CENTER));
+                                tblInvSection2.addCell(cellTxtNrml(
+                                        new Paragraph(df.format(totalUnitAmountForMaterials), fontNormalSmall), Element.ALIGN_CENTER));
+                                tblInvSection2.addCell(cellTxtNrml(
+                                        new Paragraph(currencyFormat(df.format(matSellPrice)), fontNormalSmall), Element.ALIGN_CENTER));
+                                tblInvSection2.addCell(cellTxtNrml(
+                                        new Paragraph(currencyFormat(dfRound.format(totalAmountForMaterials)), fontNormalSmall), Element.ALIGN_CENTER));
+                                tblInvSection2.addCell(cellTxtNrml(
+                                        new Paragraph(currencyFormat(dfRound.format(taxPPN)), fontNormalSmall), Element.ALIGN_CENTER));
+                                tblInvSection2.addCell(cellTxtNrml(
+                                        new Paragraph(currencyFormat(dfRound.format(transportServiceSellPrice)), fontNormalSmall), Element.ALIGN_CENTER));
+                                tblInvSection2.addCell(cellTxtNrml(
+                                        new Paragraph(currencyFormat(dfRound.format(totalAmountForTransportService)), fontNormalSmall), Element.ALIGN_CENTER));
+                                tblInvSection2.addCell(cellTxtNrml(
+                                        new Paragraph("(" + currencyFormat(dfRound.format(taxPPH)) + ")", fontNormalSmall), Element.ALIGN_CENTER));
+                                tblInvSection2.addCell(cellTxtNrml(
+                                        new Paragraph(currencyFormat(dfRound.format(taxPPNService)), fontNormalSmall), Element.ALIGN_CENTER));
+                                tblInvSection2.addCell(cellTxtNrml(
+                                        new Paragraph(currencyFormat(dfRound.format(totalDue)), fontNormalSmall), Element.ALIGN_CENTER));
+
+                                if (!mArrayListTotalDue.isEmpty()){
+                                    tblInvSection2.addCell(cellTxtNrml(
+                                            new Paragraph(mArrayListTotalDue.get(i), fontNormalSmall), Element.ALIGN_CENTER));
+                                } else {
+                                    tblInvSection2.addCell(cellTxtNrml(
+                                            new Paragraph("", fontNormalSmall), Element.ALIGN_CENTER));
+                                }
+                                if (!mArrayListDatePaid.isEmpty()) {
+                                    tblInvSection2.addCell(cellTxtNrml(
+                                            new Paragraph(mArrayListDatePaid.get(i), fontNormalSmall), Element.ALIGN_CENTER));
+                                } else{
+                                    tblInvSection2.addCell(cellTxtNrml(
+                                            new Paragraph("", fontNormalSmall), Element.ALIGN_CENTER));
+                                }
+
+                                tblInvSection2.addCell(cellTxtNrml(
+                                        new Paragraph(currencyFormat(df.format(matBuyPrice)), fontNormalSmall), Element.ALIGN_CENTER));
+                                tblInvSection2.addCell(cellTxtNrml(
+                                        new Paragraph(currencyFormat(dfRound.format(totalAmountMatBuyPrice)), fontNormalSmall), Element.ALIGN_CENTER));
+                                tblInvSection2.addCell(cellTxtNrml(
+                                        new Paragraph(currencyFormat(df.format(coTotalDue)), fontNormalSmall), Element.ALIGN_CENTER));
+                                tblInvSection2.addCell(cellTxtNrml(
+                                        new Paragraph(coTransferDate, fontNormalSmall), Element.ALIGN_CENTER));
+                                tblInvSection2.addCell(cellTxtNrml(
+                                        new Paragraph("", fontNormalSmall), Element.ALIGN_CENTER));
+
+                                totalUnitAmountForMaterials = 0;
+                                showOccurances = 0;
+
+                                coInvDocumentUID = "";
 
                                 for (int t = 0; t<18; t++){
                                     tblInvSection2.addCell(cellTxtNrml(
                                             new Paragraph("-", fontMediumWhite), Element.ALIGN_CENTER));
                                 }
-
-                                deliveryPeriod = coDateDeliveryPeriodVal.split(",");
-
-                                for (int i = 0; i < deliveryPeriod.length; i++) {
-                                    for (int j = 0; j < goodIssueModelArrayList.size(); j++) {
-                                        for (int k = 0; k < cashOutManagementAdapter.getSelected().size(); k++) {
-                                            if (goodIssueModelArrayList.get(j).getGiDateCreated().equals(deliveryPeriod[i])
-                                                    && goodIssueModelArrayList.get(j).getGiCashedOutTo().equals(cashOutManagementAdapter.getSelected().get(k).getCoDocumentID())) {
-                                                totalUnitAmountForMaterials += goodIssueModelArrayList.get(j).getGiVhlCubication();
-                                                coTransferDate = cashOutManagementAdapter.getSelected().get(k).getCoDateAndTimeACC();
-                                                coTotalDue = cashOutManagementAdapter.getSelected().get(k).getCoTotal();
-                                                coInvDocumentUID = cashOutManagementAdapter.getSelected().get(k).getInvDocumentUID();
-                                            }
-                                        }
-                                    }
-
-                                    for (int z = 0; z < mArrayList.size(); z++){
-                                        if (mArrayList.get(z).getInvDocumentUID().equals(coInvDocumentUID)){
-                                            String priceListTest = mArrayList.get(z).getInvTotalDue();
-                                            String datePaid = mArrayList.get(z).getInvDateVerified();
-                                            mArrayListTotalDue.add(priceListTest);
-                                            mArrayListDatePaid.add(datePaid);
-                                        }
-                                    }
-
-                                    double totalAmountForMaterials;
-                                    double totalAmountMatBuyPrice;
-                                    double totalAmountForTransportService;
-
-                                    totalAmountForMaterials = matSellPrice * totalUnitAmountForMaterials;
-                                    totalAmountMatBuyPrice = matBuyPrice * totalUnitAmountForMaterials;
-                                    totalAmountForTransportService = transportServiceSellPrice * totalUnitAmountForMaterials;
-
-                                    double taxPPH = (0.02) * totalAmountForTransportService;
-                                    double taxPPN = (0.11) * totalAmountForMaterials;
-                                    double taxPPNService = (0.11) * totalAmountForTransportService;
-
-                                    double totalDue = totalAmountForMaterials + taxPPN + totalAmountForTransportService - taxPPH + taxPPNService;
-
-                                    String rowNumberStrVal = String.valueOf(i + 1);
-                                    tblInvSection2.addCell(cellTxtNrml(
-                                            new Paragraph(rowNumberStrVal, fontNormalSmall), Element.ALIGN_CENTER));
-                                    tblInvSection2.addCell(cellTxtNrml(
-                                            new Paragraph(deliveryPeriod[i], fontNormalSmall), Element.ALIGN_CENTER));
-                                    tblInvSection2.addCell(cellTxtNrml(
-                                            new Paragraph(df.format(totalUnitAmountForMaterials), fontNormalSmall), Element.ALIGN_CENTER));
-                                    tblInvSection2.addCell(cellTxtNrml(
-                                            new Paragraph(currencyFormat(df.format(matSellPrice)), fontNormalSmall), Element.ALIGN_CENTER));
-                                    tblInvSection2.addCell(cellTxtNrml(
-                                            new Paragraph(currencyFormat(dfRound.format(totalAmountForMaterials)), fontNormalSmall), Element.ALIGN_CENTER));
-                                    tblInvSection2.addCell(cellTxtNrml(
-                                            new Paragraph(currencyFormat(dfRound.format(taxPPN)), fontNormalSmall), Element.ALIGN_CENTER));
-                                    tblInvSection2.addCell(cellTxtNrml(
-                                            new Paragraph(currencyFormat(dfRound1.format(transportServiceSellPrice)), fontNormalSmall), Element.ALIGN_CENTER));
-                                    tblInvSection2.addCell(cellTxtNrml(
-                                            new Paragraph(currencyFormat(dfRound1.format(totalAmountForTransportService)), fontNormalSmall), Element.ALIGN_CENTER));
-                                    tblInvSection2.addCell(cellTxtNrml(
-                                            new Paragraph("(" + currencyFormat(dfRound1.format(taxPPH)) + ")", fontNormalSmall), Element.ALIGN_CENTER));
-                                    tblInvSection2.addCell(cellTxtNrml(
-                                            new Paragraph(currencyFormat(dfRound.format(taxPPNService)), fontNormalSmall), Element.ALIGN_CENTER));
-                                    tblInvSection2.addCell(cellTxtNrml(
-                                            new Paragraph(currencyFormat(dfRound.format(totalDue)), fontNormalSmall), Element.ALIGN_CENTER));
-
-                                    if (!mArrayListTotalDue.isEmpty()){
-                                        tblInvSection2.addCell(cellTxtNrml(
-                                                new Paragraph(mArrayListTotalDue.get(i), fontNormalSmall), Element.ALIGN_CENTER));
-                                    } else {
-                                        tblInvSection2.addCell(cellTxtNrml(
-                                                new Paragraph("", fontNormalSmall), Element.ALIGN_CENTER));
-                                    }
-                                    if (!mArrayListDatePaid.isEmpty()) {
-                                        tblInvSection2.addCell(cellTxtNrml(
-                                                new Paragraph(mArrayListDatePaid.get(i), fontNormalSmall), Element.ALIGN_CENTER));
-                                    } else{
-                                        tblInvSection2.addCell(cellTxtNrml(
-                                                new Paragraph("", fontNormalSmall), Element.ALIGN_CENTER));
-                                    }
-
-                                    tblInvSection2.addCell(cellTxtNrml(
-                                            new Paragraph(currencyFormat(df.format(matBuyPrice)), fontNormalSmall), Element.ALIGN_CENTER));
-                                    tblInvSection2.addCell(cellTxtNrml(
-                                            new Paragraph(currencyFormat(dfRound.format(totalAmountMatBuyPrice)), fontNormalSmall), Element.ALIGN_CENTER));
-                                    tblInvSection2.addCell(cellTxtNrml(
-                                            new Paragraph(currencyFormat(df.format(coTotalDue)), fontNormalSmall), Element.ALIGN_CENTER));
-                                    tblInvSection2.addCell(cellTxtNrml(
-                                            new Paragraph(coTransferDate, fontNormalSmall), Element.ALIGN_CENTER));
-                                    tblInvSection2.addCell(cellTxtNrml(
-                                            new Paragraph("", fontNormalSmall), Element.ALIGN_CENTER));
-
-                                    totalUnitAmountForMaterials = 0;
-                                    showOccurances = 0;
-
-                                    coInvDocumentUID = "";
-
-                                    for (int t = 0; t<18; t++){
-                                        tblInvSection2.addCell(cellTxtNrml(
-                                                new Paragraph("-", fontMediumWhite), Element.ALIGN_CENTER));
-                                    }
-
-
-                                }
-
-                                document.add(tblInvSection0);
-                                document.add(tblInvSection1);
-                                document.add(tblInvSection2);
-                                document.add(paragraphBlank); // SPACE SEPARATOR
-                                document.add(paragraphInvNote);
-                                document.add(paragraphInvDateCreated);
-
-                                document.close();
-                                dialogInterface.aioDocumentGeneratedInformation(context, dest);
-
-
-                            } catch (DocumentException | FileNotFoundException e) {
-                                e.printStackTrace();
-                                Toast.makeText(context, e.toString(), Toast.LENGTH_LONG).show();
                             }
+
+                            document.add(tblInvSection0);
+                            document.add(tblInvSection1);
+                            document.add(tblInvSection2);
+                            document.add(paragraphBlank); // SPACE SEPARATOR
+                            document.add(paragraphInvNote);
+                            document.add(paragraphInvDateCreated);
+
+                            document.close();
+                            dialogInterface.aioDocumentGeneratedInformation(context, dest);
+
+
+                        } catch (DocumentException | FileNotFoundException e) {
+                            e.printStackTrace();
+                            Toast.makeText(context, e.toString(), Toast.LENGTH_LONG).show();
                         }
                     }
                 });
@@ -1034,11 +981,14 @@ public class AddAIOReportActivity extends AppCompatActivity {
         return cell;
     }
 
+/*
+
     public static int math(double d) {
         int c = (int) ((d) + 0.5d);
         double n = d + 0.5d;
         return (n - c) % 2 == 0 ? (int) d : c;
     }
+*/
 
     public static String currencyFormat(String amount) {
         DecimalFormat formatter = new DecimalFormat("###,###,##0.00");
@@ -1047,12 +997,10 @@ public class AddAIOReportActivity extends AppCompatActivity {
 
     private void searchQuery(){
         showHideFilterComponents(false);
-        // Vibrate for 500 milliseconds
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             vibrator.vibrate(VibrationEffect.createOneShot(100,
                     VibrationEffect.DEFAULT_AMPLITUDE));
         } else {
-            //deprecated in API 26
             vibrator.vibrate(100);
         }
 
@@ -1062,104 +1010,90 @@ public class AddAIOReportActivity extends AppCompatActivity {
         rouidVal = spinnerRoUID.getText().toString();
         pouidVal = Objects.requireNonNull(edtPoUID.getText()).toString();
 
-
-
         CollectionReference refRO = db.collection("ReceivedOrderData");
 
         refRO.whereEqualTo("roDocumentID", roDocumentID).get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        if (productItemsList != null){
-                            productItemsList.clear();
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (productItemsList != null){
+                        productItemsList.clear();
+                    }
+
+                    transportServiceSellPrice = 0;
+                    matBuyPrice = 0;
+
+                    for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots){
+                        ReceivedOrderModel receivedOrderModel = documentSnapshot.toObject(ReceivedOrderModel.class);
+                        receivedOrderModel.setRoDocumentID(documentSnapshot.getId());
+
+                        custDocumentID = receivedOrderModel.getRoDocumentID();
+
+                        matTypeVal = receivedOrderModel.getRoMatType();
+                        roPoCustNumber = receivedOrderModel.getRoPoCustNumber();
+                        custNameVal = receivedOrderModel.getCustDocumentID();
+                        currencyVal = receivedOrderModel.getRoCurrency();
+                        invCustName = receivedOrderModel.getCustDocumentID();
+                        invPoUID = receivedOrderModel.getRoUID();
+                        invPoDate = receivedOrderModel.getRoDateCreated();
+                        invPoType = receivedOrderModel.getRoType();
+
+                        HashMap<String, List<ProductItems>> map = receivedOrderModel.getRoOrderedItems();
+                        for (HashMap.Entry<String, List<ProductItems>> e : map.entrySet()) {
+                            productItemsList = e.getValue();
+                            for (int i = 0; i<productItemsList.size();i++){
+                                if (productItemsList.get(0).getMatName().equals("JASA ANGKUT")){
+                                    transportServiceNameVal = productItemsList.get(0).getMatName();
+                                    transportServiceSellPrice = productItemsList.get(0).getMatBuyPrice();
+                                } else {
+                                    matNameVal = productItemsList.get(i).getMatName();
+                                    matQuantity = productItemsList.get(i).getMatQuantity();
+                                    matBuyPrice = productItemsList.get(i).getMatBuyPrice();
+                                    matSellPrice = productItemsList.get(i).getMatSellPrice();
+                                }
+                            }
                         }
 
-                        transportServiceSellPrice = 0;
-                        matBuyPrice = 0;
-
-                        for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots){
-                            ReceivedOrderModel receivedOrderModel = documentSnapshot.toObject(ReceivedOrderModel.class);
-                            receivedOrderModel.setRoDocumentID(documentSnapshot.getId());
-
-                            custDocumentID = receivedOrderModel.getRoDocumentID();
-
-                            matTypeVal = receivedOrderModel.getRoMatType();
-                            roPoCustNumber = receivedOrderModel.getRoPoCustNumber();
-                            custNameVal = receivedOrderModel.getCustDocumentID();
-                            currencyVal = receivedOrderModel.getRoCurrency();
-                            invCustName = receivedOrderModel.getCustDocumentID();
-                            invPoUID = receivedOrderModel.getRoUID();
-                            invPoDate = receivedOrderModel.getRoDateCreated();
-                            invPoType = receivedOrderModel.getRoType();
-
-
-
-                            HashMap<String, List<ProductItems>> map = receivedOrderModel.getRoOrderedItems();
-                            for (HashMap.Entry<String, List<ProductItems>> e : map.entrySet()) {
-                                productItemsList = e.getValue();
-                                for (int i = 0; i<productItemsList.size();i++){
-                                    if (productItemsList.get(0).getMatName().equals("JASA ANGKUT")){
-                                        transportServiceNameVal = productItemsList.get(0).getMatName();
-                                        transportServiceSellPrice = productItemsList.get(0).getMatBuyPrice();
-                                    } else {
-                                        matNameVal = productItemsList.get(i).getMatName();
-                                        matQuantity = productItemsList.get(i).getMatQuantity();
-                                        //matCubication = productItemsList.get(i).getMatQuantity();
-                                        matBuyPrice = productItemsList.get(i).getMatBuyPrice();
-                                        matSellPrice = productItemsList.get(i).getMatSellPrice();
+                        Query query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated");
+                        query.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                goodIssueModelArrayList.clear();
+                                if (snapshot.exists()){
+                                    for (DataSnapshot item : snapshot.getChildren()) {
+                                        if (Objects.equals(item.child("roDocumentID").getValue(), roDocumentID)) {
+                                            GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
+                                            goodIssueModelArrayList.add(goodIssueModel);
+                                        }
                                     }
                                 }
                             }
 
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
 
-                            Query query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated");
-                            query.addValueEventListener(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                    goodIssueModelArrayList.clear();
-                                    if (snapshot.exists()){
-                                        for (DataSnapshot item : snapshot.getChildren()) {
-                                            if (Objects.equals(item.child("roDocumentID").getValue(), roDocumentID)) {
-                                                GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
-                                                goodIssueModelArrayList.add(goodIssueModel);
-                                            }
-                                        }
+                            }
+                        });
+
+                        CollectionReference refCO = db.collection("CashOutData");
+                        refCO.whereEqualTo("roDocumentID", roDocumentID).get()
+                                .addOnSuccessListener(queryDocumentSnapshotsCO -> {
+                                    for (QueryDocumentSnapshot documentSnapshotCO : queryDocumentSnapshotsCO){
+                                        CashOutModel cashOutModel = documentSnapshotCO.toObject(CashOutModel.class);
+                                        coTotal =  cashOutModel.getCoTotal();
+                                        coDateAndTimeACC = cashOutModel.getCoDateAndTimeACC().split(" ");
                                     }
-                                }
+                                });
 
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError error) {
+                        CollectionReference refCust = db.collection("CustomerData");
+                        refCust.whereEqualTo("custDocumentID", custNameVal).get()
+                                .addOnSuccessListener(queryDocumentSnapshotsCust -> {
+                                    for (QueryDocumentSnapshot documentSnapshotCust : queryDocumentSnapshotsCust){
+                                        CustomerModel customerModel = documentSnapshotCust.toObject(CustomerModel.class);
+                                        custNameFinal = customerModel.getCustName();
+                                    }
+                                });
 
-                                }
-                            });
-
-
-                            CollectionReference refCO = db.collection("CashOutData");
-                            refCO.whereEqualTo("roDocumentID", roDocumentID).get()
-                                    .addOnSuccessListener(queryDocumentSnapshotsCO -> {
-                                        for (QueryDocumentSnapshot documentSnapshotCO : queryDocumentSnapshotsCO){
-                                            CashOutModel cashOutModel = documentSnapshotCO.toObject(CashOutModel.class);
-
-                                            coTotal =  cashOutModel.getCoTotal();
-                                            coDateAndTimeACC = cashOutModel.getCoDateAndTimeACC().split(" ");
-
-                                        }
-                                    });
-
-                            CollectionReference refCust = db.collection("CustomerData");
-                            refCust.whereEqualTo("custDocumentID", custNameVal).get()
-                                    .addOnSuccessListener(queryDocumentSnapshotsCust -> {
-                                        for (QueryDocumentSnapshot documentSnapshotCust : queryDocumentSnapshotsCust){
-                                            CustomerModel customerModel = documentSnapshotCust.toObject(CustomerModel.class);
-                                            custNameFinal = customerModel.getCustName();
-                                        }
-                                    });
-
-                            //double totalIDR = matBuyPrice *Double.parseDouble(df.format(totalUnit));
-                        }
                     }
                 });
-
 
         db.collection("CashOutData")
                 .addSnapshotListener((value, error) -> {
@@ -1190,7 +1124,6 @@ public class AddAIOReportActivity extends AppCompatActivity {
     }
 
     private void searchQueryAll(){
-
         Query query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated");
         query.addValueEventListener(new ValueEventListener() {
             @Override
@@ -1208,18 +1141,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
                             nestedScrollView.setVisibility(View.VISIBLE);
                             llNoData.setVisibility(View.GONE);
                         }
-
                     }
-                   /* if (goodIssueModelArrayList.size()==0) {
-                        fabCreateDocument.hide();
-                        nestedScrollView.setVisibility(View.GONE);
-                        llNoData.setVisibility(View.VISIBLE);
-                    }*/
-
-                } else  {
-                    /*fabCreateDocument.hide();
-                    nestedScrollView.setVisibility(View.GONE);
-                    llNoData.setVisibility(View.VISIBLE);*/
                 }
 
                 Collections.reverse(goodIssueModelArrayList);
@@ -1322,12 +1244,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
         // HANDLE RESPONSIVE CONTENT
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        int width = displayMetrics.widthPixels;
-
         RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 1);
         rvGoodIssueList.setLayoutManager(mLayoutManager);
     }
