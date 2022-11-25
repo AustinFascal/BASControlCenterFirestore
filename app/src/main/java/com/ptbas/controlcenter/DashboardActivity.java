@@ -72,7 +72,7 @@ import java.util.Objects;
 
 import dev.shreyaspatil.MaterialDialog.MaterialDialog;
 
-public class DashboardActivity extends AppCompatActivity implements DroidListener {
+public class DashboardActivity extends AppCompatActivity {
 
     public SwipeRefreshLayout swipeContainer;
 
@@ -107,8 +107,8 @@ public class DashboardActivity extends AppCompatActivity implements DroidListene
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
 
-        DroidNet mDroidNet = DroidNet.getInstance();
-        mDroidNet.addInternetConnectivityListener(this);
+       /* DroidNet mDroidNet = DroidNet.getInstance();
+        mDroidNet.addInternetConnectivityListener(this);*/
 
         llWrapProfilePic = findViewById(R.id.wrap_profile_pic);
         bottomSheet = findViewById(R.id.bottomSheetPODetails);
@@ -631,7 +631,7 @@ public class DashboardActivity extends AppCompatActivity implements DroidListene
         new Handler(Looper.getMainLooper()).postDelayed(() -> doubleBackToExitPressedOnce=false, 2000);
     }
 
-    @Override
+    /*@Override
     public void onInternetConnectivityChanged(boolean isConnected) {
         MaterialDialog invoiceGeneratedInformationDialog = new MaterialDialog.Builder((Activity) this)
                 .setTitle("Oops!")
@@ -658,6 +658,6 @@ public class DashboardActivity extends AppCompatActivity implements DroidListene
             invoiceGeneratedInformationDialog.show();
         }
 
-    }
+    }*/
 
 }

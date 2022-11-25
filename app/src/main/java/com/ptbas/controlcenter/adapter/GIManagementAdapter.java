@@ -267,7 +267,7 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
                 llStatusRecapped.setVisibility(View.GONE);
             }
 
-            if (giInvoiced){
+            if (!giInvoicedTo.isEmpty()){
                 llStatusInvoiced.setVisibility(View.VISIBLE);
             } else {
                 llStatusInvoiced.setVisibility(View.GONE);

@@ -929,7 +929,7 @@ public class DialogInterface {
                                      String invDateNTimeCreated, String invDueDateNTime, String invVerifiedBy, String invTransferReference,
                                      String invDateNTimeVerified, String invDateDeliveryPeriod,
                                      String custDocumentID, String bankDocumentID, String roDocumentID, String invDateHandover, String invHandOverBy,
-                                     String invTotalVol,String invSubTotal,String invDiscount,String invTaxPPN,String invTaxPPH,String invTotalDue, String coDocumentID) {
+                                     String invTotalVol,String invSubTotal,String invDiscount,String invTaxPPN,String invTaxPPH,String invTotalDue, String coDocumentID, List<String> arrayLisyRecapUID) {
         MaterialDialog materialDialog = new MaterialDialog.Builder((Activity) context)
                 .setTitle("Buat Invoice")
                 .setAnimation(R.raw.lottie_generate_bill)
@@ -941,7 +941,7 @@ public class DialogInterface {
                             goodIssueModelArrayList,
                             invUID, invCreatedBy, invDateNTimeCreated, invDueDateNTime, invVerifiedBy, invTransferReference,
                             invDateNTimeVerified, invDateDeliveryPeriod, custDocumentID, bankDocumentID, roDocumentID, invDateHandover, invHandOverBy,
-                            invTotalVol, invSubTotal, invDiscount, invTaxPPN, invTaxPPH, invTotalDue, coDocumentID);
+                            invTotalVol, invSubTotal, invDiscount, invTaxPPN, invTaxPPH, invTotalDue, coDocumentID, arrayLisyRecapUID);
                     dialogInterface.dismiss();
                 })
                 .setNegativeButton("TIDAK", R.drawable.ic_outline_close, (dialogInterface, which) -> dialogInterface.dismiss())
@@ -985,7 +985,8 @@ public class DialogInterface {
                                   String invDateNTimeCreated, String invDueDateNTime, String invVerifiedBy, String invTransferReference,
                                   String invDateNTimeVerified, String invDateDeliveryPeriod,
                                   String custDocumentID, String bankDocumentID, String roDocumentID, String invDateHandover,  String invHandOverBy,
-                                  String invTotalVol,String invSubTotal,String invDiscount,String invTaxPPN,String invTaxPPH,String invTotalDue, String coDocumentID) {
+                                  String invTotalVol,String invSubTotal,String invDiscount,String invTaxPPN,String invTaxPPH,String invTotalDue, String coDocumentID,
+                                  List<String> arrayLisyRecapUID) {
 
         GIManagementAdapter giManagementAdapter;
 
@@ -1020,24 +1021,28 @@ public class DialogInterface {
 
                 ref.set(invoiceModel);
 
-                refCO.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                refRecap.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()){
                             for(DocumentSnapshot documentSnapshot : task.getResult()){
                                 String getDocumentID = documentSnapshot.getId();
-                                if (getDocumentID.equals(coDocumentID)){
-                                    db.collection("CashOutData").document(coDocumentID).update("invDocumentUID", invUID);
+                                for (int j = 0; j<arrayLisyRecapUID.size(); j++) {
+                                    if (getDocumentID.equals(arrayLisyRecapUID.get(j))) {
+                                        db.collection("RecapData").document(arrayLisyRecapUID.get(j)).update("rcpGiInvoicedTo", invUID);
+                                    }
                                 }
                             }
                         }
                     }
                 });
 
+
                 for (int i = 0; i < giManagementAdapter.getSelected().size(); i++) {
 /*
                     databaseReferenceGI.child("GoodIssueData").child(giManagementAdapter.getSelected().get(i).getGiUID()).child("giInvoiced").setValue(true);
 */
+
                     databaseReferenceGI.child("GoodIssueData").child(giManagementAdapter.getSelected().get(i).getGiUID()).child("giInvoicedTo").setValue(invUID);
                 }
                 AddInvoiceActivity addInvoiceActivity = (AddInvoiceActivity) context;
@@ -1202,7 +1207,7 @@ public class DialogInterface {
                                             String roDocumentIdVal = recapGIModel.getRoDocumentID();
                                             for (int i = 0; i < recapGiManagementAdapter.getSelected().size(); i++) {
                                                 if (recapGiManagementAdapter.getSelected().get(i).getRcpGiDocumentID().equals(rcpGiUIDVal)) {
-                                                    db.collection("RecapData").document(rcpGiUIDVal).update("rcpGiStatus", true);
+                                                    //db.collection("RecapData").document(rcpGiUIDVal).update("rcpGiStatus", true);
                                                     db.collection("RecapData").document(rcpGiUIDVal).update("rcpGiCoUID", coUID);
                                                 }
                                             }
@@ -1331,7 +1336,7 @@ public class DialogInterface {
                             DocumentReference refRCPGI = db.collection("RecapData").document(rcpGiUID);
                             //String rcpGiDocumentID = refRCPGI.getId();
 
-                            RecapGIModel recapGIModel = new RecapGIModel(rcpGiUID, rcpGiUID, rcpGiDateAndTimeCreated, rcpGiCreatedBy, roUIDVal, totalUnit, "", false, rcpDateDeliveryPeriod);
+                            RecapGIModel recapGIModel = new RecapGIModel(rcpGiUID, rcpGiUID, rcpGiDateAndTimeCreated, rcpGiCreatedBy, roUIDVal, totalUnit, "", false, rcpDateDeliveryPeriod, "");
 
                             refRCPGI.set(recapGIModel);
 

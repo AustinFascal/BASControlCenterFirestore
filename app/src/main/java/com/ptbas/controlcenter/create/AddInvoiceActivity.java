@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -19,9 +20,7 @@ import android.os.Vibrator;
 import android.text.Html;
 import android.transition.AutoTransition;
 import android.transition.TransitionManager;
-import android.util.DisplayMetrics;
 import android.util.TypedValue;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -33,7 +32,6 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -42,6 +40,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -90,7 +89,6 @@ import com.ptbas.controlcenter.utility.Helper;
 import com.ptbas.controlcenter.utility.ImageAndPositionRenderer;
 import com.ptbas.controlcenter.utility.NumberToWords;
 import com.ptbas.controlcenter.model.BankAccountModel;
-import com.ptbas.controlcenter.model.CashOutModel;
 import com.ptbas.controlcenter.model.GoodIssueModel;
 import com.ptbas.controlcenter.model.ProductItems;
 import com.ptbas.controlcenter.model.ReceivedOrderModel;
@@ -115,8 +113,6 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.Random;
 
-import dev.shreyaspatil.MaterialDialog.MaterialDialog;
-
 public class AddInvoiceActivity extends AppCompatActivity {
 
     private static final String ALLOWED_CHARACTERS = "0123456789QWERTYUIOPASDFGHJKLZXCVBNM";
@@ -127,6 +123,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
             invPoDate = "", invCustName = "", invPoUID = "", custNameVal = "", roDocumentID = "", coDocumentID, coUID, rcpGiUID, coAccBy,
             custAddressVal = "", invUID="", invPotypeVal = "", customerData = "", customerID ="", bankAccountID = "", bankNameVal, bankAccountNumberVal, bankAccountOwnerNameVal;
     int invPoType, invPoTOP;
+    String  rcpGiInvoicedTo;
 
     Button btnSearchData, imgbtnExpandCollapseFilterLayout;
     AutoCompleteTextView spinnerRoUID, spinnerCustName, spinnerBankAccount;
@@ -184,6 +181,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
     double totalAmountForMaterials, totalAmountForTransportService, taxPPN, taxPPH, totalDue, totalDueForTransportService;
 
     List<String> receiveOrderNumberList;
+    List<String> arrayLisyRecapUID;
 
     ChipGroup chipGroup;
 
@@ -378,7 +376,9 @@ public class AddInvoiceActivity extends AppCompatActivity {
         giManagementAdapter = new GIManagementAdapter(this, goodIssueModelArrayList);
 
         // HIDE FAB CREATE COR ON CREATE
-        fabCreateDocument.animate().translationY(800).setDuration(100).start();
+        //fabCreateDocument.animate().translationY(800).setDuration(100).start();
+
+        //
 
         // NOTIFY REAL-TIME CHANGES AS USER CHOOSE THE ITEM
         final Handler handler = new Handler();
@@ -392,9 +392,10 @@ public class AddInvoiceActivity extends AppCompatActivity {
                     float itemSelectedVolume = giManagementAdapter.getSelectedVolume();
                     String itemSelectedSizeVal = String.valueOf(itemSelectedSize).concat(" item terpilih");
                     String itemSelectedVolumeAndBuyPriceVal = df.format(itemSelectedVolume).concat(" m3");
+
                     if (giManagementAdapter.getSelected().size()>0){
 
-                        fabCreateDocument.animate().translationY(0).setDuration(100).start();
+                        ///fabCreateDocument.animate().translationY(0).setDuration(100).start();
 
                         tvTotalSelectedItem.setText(itemSelectedSizeVal);
                         tvTotalSelectedItem2.setText(itemSelectedVolumeAndBuyPriceVal);
@@ -409,10 +410,10 @@ public class AddInvoiceActivity extends AppCompatActivity {
                                     }
                                 });
 
-
+                        fabCreateDocument.show();
                     } else {
                         totalUnit = 0;
-                        fabCreateDocument.animate().translationY(800).setDuration(100).start();
+                        //fabCreateDocument.animate().translationY(800).setDuration(100).start();
                         llBottomSelectionOptions.animate()
                                 .translationY(llBottomSelectionOptions.getHeight()).alpha(0.0f)
                                 .setListener(new AnimatorListenerAdapter() {
@@ -422,7 +423,11 @@ public class AddInvoiceActivity extends AppCompatActivity {
                                         llBottomSelectionOptions.setVisibility(View.GONE);
                                     }
                                 });
+
+                        fabCreateDocument.hide();
                     }
+                } else{
+                    fabCreateDocument.hide();
                 }
 
                 handler.postDelayed(this, 100);
@@ -464,6 +469,9 @@ public class AddInvoiceActivity extends AppCompatActivity {
         arrayListPoUID = new ArrayList<>();
         arrayListCoUID = new ArrayList<>();
         receiveOrderNumberList = new ArrayList<>();
+        arrayLisyRecapUID = new ArrayList<>();
+
+        arrayLisyRecapUID.clear();
 
 
         db.collection("CustomerData").whereEqualTo("custStatus", true)
@@ -567,9 +575,18 @@ public class AddInvoiceActivity extends AppCompatActivity {
                                             if (!value.isEmpty()) {
                                                 for (DocumentSnapshot d : value.getDocuments()) {
                                                     rcpGiUID = Objects.requireNonNull(d.get("rcpGiUID")).toString();
+                                                    rcpGiInvoicedTo = Objects.requireNonNull(d.get("rcpGiInvoicedTo")).toString();
                                                     Chip chip = (Chip)inflater.inflate(R.layout.chip_item, null, false);
                                                     chip.setText(rcpGiUID);
+                                                    if (!rcpGiInvoicedTo.isEmpty()){
+                                                        chip.setEnabled(false);
+                                                        //chip.setChecked(true);
+                                                        chip.setChipIcon(AppCompatResources.getDrawable(context, R.drawable.ic_outline_receipt_long));
+                                                        chip.setChipBackgroundColor(ColorStateList.valueOf(ContextCompat.getColor(context, R.color.pure_green)));
+                                                    }
                                                     chipGroup.addView(chip);
+
+
 
                                                     tvChooseRcpGi.setVisibility(View.VISIBLE);
                                                 }
@@ -887,6 +904,22 @@ public class AddInvoiceActivity extends AppCompatActivity {
 
                 //Toast.makeText(context, String.valueOf(totalAmountForMaterials), Toast.LENGTH_SHORT).show();
 
+
+                /*for (int k = 0; k< chipGroup.getChildCount(); k++){
+                    Chip chip = (Chip) chipGroup.getChildAt(k);
+                    if (chipGroup.getChildAt(k).isSelected()){
+                        arrayLisyRecapUID.add(chip.getText().toString());
+                    }
+
+                }*/
+
+
+
+
+                Toast.makeText(context, arrayLisyRecapUID.toString(), Toast.LENGTH_SHORT).show();
+
+
+
                 if (invPoType == 2){
                     taxPPN = 0;
                     String totalUnitFinalFinal = df.format(totalUnit)+" m3";
@@ -901,7 +934,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
                             invDateNTimeCreated,  "-", "", "",
                             "", invDateDeliveryPeriod,
                             custDocumentID,  bankAccountID,  roDocumentID, "", "",
-                            totalUnitFinalFinal, invSubTotalFinal, invDiscountFinal, invTaxPPNFinal, invTaxPPHFinal, invTotalDueFinal, coDocumentID);
+                            totalUnitFinalFinal, invSubTotalFinal, invDiscountFinal, invTaxPPNFinal, invTaxPPHFinal, invTotalDueFinal, coDocumentID, arrayLisyRecapUID);
 
                 } else if (invPoType == 1){
                     String totalUnitFinalFinal = df.format(totalUnit)+" m3";
@@ -916,7 +949,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
                             invDateNTimeCreated,  "-", "", "",
                             "", invDateDeliveryPeriod,
                             custDocumentID,  bankAccountID,  roDocumentID, "", "",
-                            totalUnitFinalFinal, invSubTotalFinal, invDiscountFinal, invTaxPPNFinal, invTaxPPHFinal, invTotalDueFinal, coDocumentID);
+                            totalUnitFinalFinal, invSubTotalFinal, invDiscountFinal, invTaxPPNFinal, invTaxPPHFinal, invTotalDueFinal, coDocumentID, arrayLisyRecapUID);
 
                 } else if (invPoType == 0){
                     String totalUnitFinalFinal = df.format(totalUnit)+" m3";
@@ -932,7 +965,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
                             invDateNTimeCreated,  "-", "", "",
                             "", invDateDeliveryPeriod,
                             custDocumentID,  bankAccountID,  roDocumentID, "", "",
-                            totalUnitFinalFinal, invSubTotalFinal, invDiscountFinal, invTaxPPNFinal, invTaxPPHFinal, invTotalDueFinal, coDocumentID);
+                            totalUnitFinalFinal, invSubTotalFinal, invDiscountFinal, invTaxPPNFinal, invTaxPPHFinal, invTotalDueFinal, coDocumentID, arrayLisyRecapUID);
                 }
 
 
@@ -1701,7 +1734,13 @@ public class AddInvoiceActivity extends AppCompatActivity {
     }
 
     private void searchQuery(){
-
+        arrayLisyRecapUID.clear();
+        for (int i = 0; i < chipGroup.getChildCount(); i++) {
+            Chip chip = (Chip) chipGroup.getChildAt(i);
+            if (chip.isChecked()) {
+                arrayLisyRecapUID.add(chip.getText().toString());
+            }
+        }
 
 
         showHideFilterComponents(true);
@@ -1808,6 +1847,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
                                             llNoData.setVisibility(View.GONE);
                                         }
                                     }
+                                   // arrayLisyRecapUID.add(chip.getText().toString());
                                 }
                             }
                         }
