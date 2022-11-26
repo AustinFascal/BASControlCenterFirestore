@@ -93,6 +93,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -200,6 +201,8 @@ public class UpdateCashOutActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_update_cash_out);
+
+        dfRound.setRoundingMode(RoundingMode.HALF_UP);
 
         bankAccountDocumentID = new ArrayList<>();
         bankAccount = new ArrayList<>();
@@ -1003,7 +1006,7 @@ public class UpdateCashOutActivity extends AppCompatActivity {
                                                 totalDueForTransportService = totalAmountForTransportService;
 
                                                 // TOTAL AMOUNT CALCULATION
-                                                totalAmountForMaterialsFinal = matBuyPrice * Double.parseDouble(df.format(totalUnitFinal));
+                                                totalAmountForMaterialsFinal = matBuyPrice * totalUnitFinal;
                                                 String totalInCurrency = currencyVal+" "+currencyFormat(dfRound.format(totalAmountForMaterialsFinal));
                                                 tvTotalDue.setText(totalInCurrency);
                                             }

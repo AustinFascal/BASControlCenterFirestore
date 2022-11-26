@@ -168,7 +168,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
 
     Vibrator vibrator;
 
-    float totalUnit;
+    double totalUnit;
 
     boolean isSelectedAll = false;
 
@@ -194,7 +194,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_invoice);
 
-        dfRound1.setRoundingMode(RoundingMode.UP);
+        dfRound1.setRoundingMode(RoundingMode.HALF_UP);
 
         vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         LangUtils.setLocale(this, "en");
@@ -895,10 +895,10 @@ public class AddInvoiceActivity extends AppCompatActivity {
 
 
                 // TOTAL AMOUNT CALCULATION
-                totalAmountForMaterials = matSellPrice*totalUnit;
-                totalAmountForTransportService = transportServiceSellPrice*totalUnit;
-                taxPPN = (0.11)*totalAmountForMaterials + ((0.11)*totalAmountForTransportService);
-                taxPPH = (0.02)*totalAmountForTransportService;
+                totalAmountForMaterials = matSellPrice*Double.parseDouble(df.format(totalUnit));
+                totalAmountForTransportService = transportServiceSellPrice*Double.parseDouble(df.format(totalUnit));
+                taxPPN = Double.parseDouble(df.format(((0.11)*totalAmountForMaterials))) + Double.parseDouble(df.format(((0.11)*totalAmountForTransportService)));
+                taxPPH = Double.parseDouble(df.format(0.02*totalAmountForTransportService));
                 totalDue = totalAmountForMaterials+totalAmountForTransportService+taxPPN-taxPPH;
                 totalDueForTransportService = totalAmountForTransportService-taxPPH;
 
@@ -923,10 +923,10 @@ public class AddInvoiceActivity extends AppCompatActivity {
                 if (invPoType == 2){
                     taxPPN = 0;
                     String totalUnitFinalFinal = df.format(totalUnit)+" m3";
-                    String invSubTotalFinal = currencyVal+" "+currencyFormat(dfRound1.format(totalAmountForTransportService));
+                    String invSubTotalFinal = currencyVal+" "+currencyFormat(df.format(totalAmountForTransportService));
                     String invDiscountFinal = currencyVal+" "+"0";
-                    String invTaxPPNFinal = currencyVal+" " +currencyFormat(dfRound1.format(taxPPN));
-                    String  invTaxPPHFinal = "("+currencyVal+" " +currencyFormat(dfRound1.format(taxPPH))+")";
+                    String invTaxPPNFinal = currencyVal+" " +currencyFormat(df.format(taxPPN));
+                    String  invTaxPPHFinal = "("+currencyVal+" " +currencyFormat(df.format(taxPPH))+")";
                     String invTotalDueFinal = currencyVal+" " +currencyFormat(dfRound1.format(totalDueForTransportService));
                     dialogInterface.confirmCreateInvoice(context, db,
                             goodIssueModelArrayList,
@@ -938,10 +938,10 @@ public class AddInvoiceActivity extends AppCompatActivity {
 
                 } else if (invPoType == 1){
                     String totalUnitFinalFinal = df.format(totalUnit)+" m3";
-                    String invSubTotalFinal = currencyVal+" "+currencyFormat(dfRound1.format(totalAmountForMaterials));
+                    String invSubTotalFinal = currencyVal+" "+currencyFormat(df.format(totalAmountForMaterials));
                     String invDiscountFinal = currencyVal+" "+"0";
-                    String invTaxPPNFinal = currencyVal+" " +currencyFormat(dfRound1.format(taxPPN));
-                    String invTaxPPHFinal = "("+currencyVal+" " +currencyFormat(dfRound1.format(taxPPH))+")";
+                    String invTaxPPNFinal = currencyVal+" " +currencyFormat(df.format(taxPPN));
+                    String invTaxPPHFinal = "("+currencyVal+" " +currencyFormat(df.format(taxPPH))+")";
                     String invTotalDueFinal = currencyVal+" " +currencyFormat(dfRound1.format(totalDue));
                     dialogInterface.confirmCreateInvoice(context, db,
                             goodIssueModelArrayList,
@@ -953,10 +953,10 @@ public class AddInvoiceActivity extends AppCompatActivity {
 
                 } else if (invPoType == 0){
                     String totalUnitFinalFinal = df.format(totalUnit)+" m3";
-                    String invSubTotalFinal = currencyVal+" "+currencyFormat(dfRound1.format(totalAmountForMaterials+totalAmountForTransportService));
+                    String invSubTotalFinal = currencyVal+" "+currencyFormat(df.format(totalAmountForMaterials+totalAmountForTransportService));
                     String invDiscountFinal = currencyVal+" "+"0";
-                    String invTaxPPNFinal = currencyVal+" " +currencyFormat(dfRound1.format(taxPPN));
-                    String invTaxPPHFinal = "("+currencyVal+" " +currencyFormat(dfRound1.format(taxPPH))+")";
+                    String invTaxPPNFinal = currencyVal+" " +currencyFormat(df.format(taxPPN));
+                    String invTaxPPHFinal = "("+currencyVal+" " +currencyFormat(df.format(taxPPH))+")";
                     String invTotalDueFinal = currencyVal+" " +currencyFormat(dfRound1.format(totalDue));
 
                     dialogInterface.confirmCreateInvoice(context, db,
@@ -1216,16 +1216,16 @@ public class AddInvoiceActivity extends AppCompatActivity {
             //Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.bca_qr_bas);
 
 
-            float totalUnitFinal = 0;
+            double totalUnitFinal = 0;
             for (int i = 0; i < giManagementAdapter.getSelected().size(); i++) {
                 totalUnitFinal += giManagementAdapter.getSelected().get(i).getGiVhlCubication();
             }
 
             // TOTAL AMOUNT CALCULATION
-            double totalAmountForMaterials = matSellPrice*totalUnitFinal;
-            double totalAmountForTransportService = transportServiceSellPrice*totalUnitFinal;
-            double taxPPN = (0.11)*totalAmountForMaterials;
-            double taxPPH = (0.02)*totalAmountForTransportService;
+            double totalAmountForMaterials = matSellPrice*Double.parseDouble(df.format(totalUnitFinal));
+            double totalAmountForTransportService = transportServiceSellPrice*Double.parseDouble(df.format(totalUnitFinal));
+            double taxPPN = Double.parseDouble(df.format((0.11)*totalAmountForMaterials));
+            double taxPPH = Double.parseDouble(df.format((0.02)*totalAmountForTransportService));
             double totalDue = totalAmountForMaterials+totalAmountForTransportService+taxPPN-taxPPH;
             double totalDueForTransportService = totalAmountForTransportService-taxPPH;
 
@@ -1423,7 +1423,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
             tblInvSection9.addCell(cellColHeader(
                     new Paragraph("TOTAL TAGIHAN (PEMBULATAN)", fontMedium), Element.ALIGN_RIGHT));
             tblInvSection9.addCell(cellColHeader(
-                    new Paragraph(currencyVal+" "+currencyFormat(df.format(math(totalDue))), fontMedium), Element.ALIGN_RIGHT));
+                    new Paragraph(currencyVal+" "+currencyFormat(dfRound1.format(math(totalDue))), fontMedium), Element.ALIGN_RIGHT));
 
             tblInvSection10.addCell(cellColHeaderNoBrdr(
                     new Paragraph("TERBILANG", fontMediumWhite),
@@ -1433,7 +1433,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
                     Element.ALIGN_LEFT));
 
             tblInvSection11.addCell(cellTxtNoBrdrNrml(
-                    new Paragraph(NumberToWords.convert(math(totalDue))+" Rupiah", fontMedium),
+                    new Paragraph(NumberToWords.convert(math(Double.parseDouble(dfRound1.format(totalDue))))+" Rupiah", fontMedium),
                     Element.ALIGN_LEFT));
             tblInvSection11.addCell(cellTxtNoBrdrNrml(
                     new Paragraph("", fontMediumWhite),

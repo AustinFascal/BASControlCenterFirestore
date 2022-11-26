@@ -40,6 +40,7 @@ import com.ptbas.controlcenter.model.ReceivedOrderModel;
 import com.ptbas.controlcenter.model.SupplierModel;
 import com.ptbas.controlcenter.update.UpdateCashOutActivity;
 
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -98,8 +99,10 @@ public class CashOutManagementAdapter extends RecyclerView.Adapter<CashOutManage
 
         double matBuyPrice;
         List<ProductItems> productItemsList;
-        float totalUnit = 0;
+        double totalUnit = 0;
         ArrayList<GoodIssueModel> goodIssueModelArrayList = new ArrayList<>();
+
+
 
         public ItemViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -136,6 +139,8 @@ public class CashOutManagementAdapter extends RecyclerView.Adapter<CashOutManage
             rlBtnApproveItem.setVisibility(View.GONE);
             cbSelectItem.setChecked(false);
             dialogInterface = new DialogInterface();
+
+            dfRound.setRoundingMode(RoundingMode.HALF_UP);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -204,7 +209,7 @@ public class CashOutManagementAdapter extends RecyclerView.Adapter<CashOutManage
                                     }
 
                                     //Toast.makeText(context, "buy "+matBuyPrice+" - unit"+totalUnit, Toast.LENGTH_LONG).show();
-                                    double totalIDR = matBuyPrice * Double.parseDouble(df.format(totalUnit));
+                                    double totalIDR = matBuyPrice * totalUnit;
                                     coTotal = "IDR " + currencyFormat(dfRound.format(totalIDR));
                                     tvTotalDue.setText(coTotal);
                                 }

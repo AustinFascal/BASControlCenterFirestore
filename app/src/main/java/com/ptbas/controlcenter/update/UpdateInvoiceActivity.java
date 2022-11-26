@@ -183,7 +183,7 @@ public class UpdateInvoiceActivity extends AppCompatActivity {
     SwitchCompat statusSwitchRecalculate, statusSwitchDefault;
     TextView tvCubicationTotalRev, tvSubTotalRev, tvDiscRev, tvPPNRev, tvPPH23Rev, tvTotalDueRev, tvTotalDueMinus, tvStatusRecalculate, tvStatusDefault;
 
-    float totalUnitFinal;
+    double totalUnitFinal;
     double totalAmountForMaterials, totalAmountForTransportService, taxPPN, taxPPH, totalDue, totalDueForTransportService;
 
     private MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
@@ -198,7 +198,7 @@ public class UpdateInvoiceActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_update_invoice);
 
-        dfRound1.setRoundingMode(RoundingMode.UP);
+        dfRound1.setRoundingMode(RoundingMode.HALF_UP);
 
         LangUtils.setLocale(this, "en");
 
@@ -785,10 +785,10 @@ public class UpdateInvoiceActivity extends AppCompatActivity {
                                                     totalUnitFinal += goodIssueModelArrayList.get(i).getGiVhlCubication();
                                                 }
                                                 // TOTAL AMOUNT CALCULATION
-                                                totalAmountForMaterials = matSellPrice*totalUnitFinal;
-                                                totalAmountForTransportService = transportServiceSellPrice*totalUnitFinal;
-                                                taxPPN = (0.11)*totalAmountForMaterials + ((0.11)*totalAmountForTransportService);
-                                                taxPPH = (0.02)*totalAmountForTransportService;
+                                                totalAmountForMaterials = matSellPrice*Double.parseDouble(df.format(totalUnitFinal));
+                                                totalAmountForTransportService = transportServiceSellPrice*Double.parseDouble(df.format(totalUnitFinal));
+                                                taxPPN = Double.parseDouble(df.format(((0.11)*totalAmountForMaterials))) + Double.parseDouble(df.format(((0.11)*totalAmountForTransportService)));
+                                                taxPPH = Double.parseDouble(df.format(0.02*totalAmountForTransportService));
                                                 totalDue = totalAmountForMaterials+totalAmountForTransportService+taxPPN-taxPPH;
                                                 totalDueForTransportService = totalAmountForTransportService-taxPPH;
 
@@ -806,28 +806,28 @@ public class UpdateInvoiceActivity extends AppCompatActivity {
                                                 tvCubicationTotalRev.setText(df.format(totalUnitFinal)+" m3");
                                                 if (invPoType == 2){
                                                     taxPPN = 0;
-                                                    tvSubTotalRev.setText(currencyVal+" "+currencyFormat(dfRound1.format(totalAmountForTransportService)));
+                                                    tvSubTotalRev.setText(currencyVal+" "+currencyFormat(df.format(totalAmountForTransportService)));
                                                     tvDiscRev.setText(currencyVal+" "+"0");
-                                                    tvPPNRev.setText(currencyVal+" " +currencyFormat(dfRound1.format(taxPPN)));
-                                                    tvPPH23Rev.setText("("+currencyVal+" " +currencyFormat(dfRound1.format(taxPPH))+")");
+                                                    tvPPNRev.setText(currencyVal+" " +currencyFormat(df.format(taxPPN)));
+                                                    tvPPH23Rev.setText("("+currencyVal+" " +currencyFormat(df.format(taxPPH))+")");
                                                     tvTotalDueRev.setText(currencyVal+" " +currencyFormat(dfRound1.format(totalDueForTransportService)));
                                                 } else if (invPoType == 1){
-                                                    tvSubTotalRev.setText( currencyVal+" "+currencyFormat(dfRound1.format(totalAmountForMaterials)));
+                                                    tvSubTotalRev.setText( currencyVal+" "+currencyFormat(df.format(totalAmountForMaterials)));
                                                     tvDiscRev.setText(currencyVal+" "+"0");
-                                                    tvPPNRev.setText(currencyVal+" "+currencyFormat(dfRound1.format(taxPPN)));
-                                                    tvPPH23Rev.setText("("+currencyVal+" "+currencyFormat(dfRound1.format(taxPPH))+")");
+                                                    tvPPNRev.setText(currencyVal+" "+currencyFormat(df.format(taxPPN)));
+                                                    tvPPH23Rev.setText("("+currencyVal+" "+currencyFormat(df.format(taxPPH))+")");
                                                     tvTotalDueRev.setText(currencyVal+" "+currencyFormat(dfRound1.format(totalDue)));
                                                 } else if (invPoType == 0){
-                                                    tvSubTotalRev.setText(currencyVal+" "+currencyFormat(dfRound1.format(totalAmountForMaterials+totalAmountForTransportService)));
+                                                    tvSubTotalRev.setText(currencyVal+" "+currencyFormat(df.format(totalAmountForMaterials+totalAmountForTransportService)));
                                                     tvDiscRev.setText(currencyVal+" "+"0");
-                                                    tvPPNRev.setText(currencyVal+" "+currencyFormat(dfRound1.format(taxPPN)));
-                                                    tvPPH23Rev.setText("("+currencyVal+" "+currencyFormat(dfRound1.format(taxPPH))+")");
+                                                    tvPPNRev.setText(currencyVal+" "+currencyFormat(df.format(taxPPN)));
+                                                    tvPPH23Rev.setText("("+currencyVal+" "+currencyFormat(df.format(taxPPH))+")");
                                                     tvTotalDueRev.setText(currencyVal+" "+currencyFormat(dfRound1.format(totalDue)));
                                                 }
 
-                                                float trimTotalDueDefault = Float.valueOf(tvTotalDue.getText().toString().replaceAll(",","").replaceAll("IDR", "").trim());
-                                                float trimTotalDueRev = Float.valueOf(tvTotalDueRev.getText().toString().replaceAll(",","").replaceAll("IDR", "").trim());
-                                                float minusTotalDueVal = trimTotalDueDefault-trimTotalDueRev;
+                                                double trimTotalDueDefault = Double.valueOf(tvTotalDue.getText().toString().replaceAll(",","").replaceAll("IDR", "").trim());
+                                                double trimTotalDueRev = Double.valueOf(tvTotalDueRev.getText().toString().replaceAll(",","").replaceAll("IDR", "").trim());
+                                                double minusTotalDueVal = trimTotalDueDefault-trimTotalDueRev;
 
                                                 tvTotalDueMinus.setText(currencyVal+" "+currencyFormat(String.valueOf(minusTotalDueVal).replaceAll("-", "")));
 
