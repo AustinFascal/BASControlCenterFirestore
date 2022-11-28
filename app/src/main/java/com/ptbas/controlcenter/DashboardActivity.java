@@ -54,7 +54,9 @@ import com.ptbas.controlcenter.adapter.StatisticsAdapter;
 import com.ptbas.controlcenter.create.AddCustomerActivity;
 import com.ptbas.controlcenter.create.AddGoodIssueActivity;
 import com.ptbas.controlcenter.create.AddCashOutActivity;
+import com.ptbas.controlcenter.create.AddInvoiceActivity;
 import com.ptbas.controlcenter.create.AddProductData;
+import com.ptbas.controlcenter.create.AddRecapGoodIssueDataActivity;
 import com.ptbas.controlcenter.create.AddReceivedOrder;
 import com.ptbas.controlcenter.create.AddSupplierActivity;
 import com.ptbas.controlcenter.create.AddVehicleActivity;
@@ -82,7 +84,7 @@ public class DashboardActivity extends AppCompatActivity {
 
     CoordinatorLayout coordinatorLayout;
     ConstraintLayout bottomSheet;
-    LinearLayout linearLayout, llAddGi, llShowOthers, llAddRo, llAddBKK, llTopView, llWrapShortcuts, llWrapProfilePic;
+    LinearLayout linearLayout, llAddGi, llShowOthers, llAddRo, llAddBKK, llAddRecap, llAddInv, llTopView, llWrapShortcuts, llWrapProfilePic;
     TextView title, tvShowAllMenu;
     RecyclerView rvMainFeatures, rvStatistics;
     NestedScrollView nestedscrollview;
@@ -129,6 +131,8 @@ public class DashboardActivity extends AppCompatActivity {
         llShowOthers = findViewById(R.id.ll_show_other);
         llAddRo = findViewById(R.id.ll_add_po);
         llAddBKK = findViewById(R.id.ll_add_bkk);
+        llAddRecap = findViewById(R.id.ll_add_recap);
+        llAddInv = findViewById(R.id.ll_add_invoice);
 
         // HANDLING SDK VERSION
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
@@ -214,7 +218,7 @@ public class DashboardActivity extends AppCompatActivity {
                 switch (newState) {
                     case BottomSheetBehavior.STATE_EXPANDED:
                         ivExpandCollapseFromBottomSheet.setImageResource(R.drawable.ic_outline_keyboard_arrow_down);
-                        ivExpandCollapseFromBottomSheet.setOnClickListener(view -> bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED));
+                        ivExpandCollapseFromBottomSheet.setOnClickListener(view -> bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN));
                         break;
                     case BottomSheetBehavior.STATE_COLLAPSED:
                     case BottomSheetBehavior.STATE_DRAGGING:
@@ -292,8 +296,17 @@ public class DashboardActivity extends AppCompatActivity {
             Intent intent = new Intent(DashboardActivity.this, AddGoodIssueActivity.class);
             startActivity(intent);
         });
+
+        llAddRecap.setOnClickListener(view -> {
+            Intent intent = new Intent(DashboardActivity.this, AddRecapGoodIssueDataActivity.class);
+            startActivity(intent);
+        });
         llAddBKK.setOnClickListener(view -> {
             Intent intent = new Intent(DashboardActivity.this, AddCashOutActivity.class);
+            startActivity(intent);
+        });
+        llAddInv.setOnClickListener(view -> {
+            Intent intent = new Intent(DashboardActivity.this, AddInvoiceActivity.class);
             startActivity(intent);
         });
         llShowOthers.setOnClickListener(view -> bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED));

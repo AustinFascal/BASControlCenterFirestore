@@ -35,45 +35,44 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.ptbas.controlcenter.R;
-import com.ptbas.controlcenter.utility.DialogInterface;
-import com.ptbas.controlcenter.utility.Helper;
 import com.ptbas.controlcenter.model.CashOutModel;
 import com.ptbas.controlcenter.model.CustomerModel;
 import com.ptbas.controlcenter.model.GoodIssueModel;
 import com.ptbas.controlcenter.model.ReceivedOrderModel;
 import com.ptbas.controlcenter.update.UpdateGoodIssueActivity;
+import com.ptbas.controlcenter.utility.DialogInterface;
+import com.ptbas.controlcenter.utility.Helper;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 import dev.shreyaspatil.MaterialDialog.MaterialDialog;
 import dev.shreyaspatil.MaterialDialog.model.TextAlignment;
 
-public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapter.ItemViewHolder> {
+public class GIAdapter extends RecyclerView.Adapter<GIAdapter.ItemViewHolder> {
 
     Context context;
-    ArrayList<GoodIssueModel> goodIssueModelArrayList;
+    ArrayList<GoodIssueModel> list = new ArrayList<>();
+    //ArrayList<GoodIssueModel> goodIssueModelArrayList;
     DialogInterface dialogInterface;
     Helper helper = new Helper();
     ItemViewHolder itemViewHolder;
     public boolean isSelectedAll = false;
 
 
-    public GIManagementAdapter(Context context, ArrayList<GoodIssueModel> goodIssueModelArrayList) {
+    public GIAdapter(Context context) {
         this.context = context;
-        this.goodIssueModelArrayList = goodIssueModelArrayList;
     }
 
     public void setItems(ArrayList<GoodIssueModel> emp)
     {
-        goodIssueModelArrayList.addAll(emp);
+        list.addAll(emp);
     }
 
     @NonNull
     @Override
-    public GIManagementAdapter.ItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public GIAdapter.ItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView;
         WindowManager wm = (WindowManager)context.getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
         wm.getDefaultDisplay().getMetrics(context.getApplicationContext().getResources().getDisplayMetrics());
@@ -91,7 +90,7 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
 
     @Override
     public void onBindViewHolder(@NonNull ItemViewHolder holder, int position) {
-        holder.viewBind(goodIssueModelArrayList.get(position));
+        holder.viewBind(list.get(position));
         if (!isSelectedAll) {
             holder.cbSelectItem.setChecked(false);
         } else {
@@ -101,7 +100,7 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
 
     @Override
     public int getItemCount() {
-        return goodIssueModelArrayList.size();
+        return list.size();
     }
 
 
@@ -429,8 +428,8 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
 
     public void selectAll(){
         isSelectedAll=true;
-        for (int i = 0; i < goodIssueModelArrayList.size(); i++) {
-            goodIssueModelArrayList.get(i).setChecked(true);
+        for (int i = 0; i < list.size(); i++) {
+            list.get(i).setChecked(true);
 
         }
         notifyDataSetChanged();
@@ -440,8 +439,8 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
 
     public void clearSelection() {
         isSelectedAll=false;
-        for (int i = 0; i < goodIssueModelArrayList.size(); i++) {
-            goodIssueModelArrayList.get(i).setChecked(false);
+        for (int i = 0; i < list.size(); i++) {
+            list.get(i).setChecked(false);
         }
         notifyDataSetChanged();
     }
@@ -449,9 +448,9 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
 
     public ArrayList<GoodIssueModel> getSelected() {
         ArrayList<GoodIssueModel> selected = new ArrayList<>();
-        for (int i = 0; i < goodIssueModelArrayList.size(); i++) {
-            if (goodIssueModelArrayList.get(i).isChecked()) {
-                selected.add(goodIssueModelArrayList.get(i));
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i).isChecked()) {
+                selected.add(list.get(i));
             }
         }
         return selected;
@@ -459,11 +458,11 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
     public float getSelectedVolume() {
         float selected = 0;
         //ArrayList<GoodIssueModel> selected = new ArrayList<>();
-        for (int i = 0; i < goodIssueModelArrayList.size(); i++) {
-            if (goodIssueModelArrayList.get(i).isChecked()) {
-                selected += goodIssueModelArrayList.get(i).getGiVhlCubication();
-                if (!goodIssueModelArrayList.get(i).isChecked()){
-                    selected -= goodIssueModelArrayList.get(i).getGiVhlCubication();
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i).isChecked()) {
+                selected += list.get(i).getGiVhlCubication();
+                if (!list.get(i).isChecked()){
+                    selected -= list.get(i).getGiVhlCubication();
                 }
             }
         }

@@ -347,24 +347,20 @@
                 android:text="Data tidak ditemukan"/>
         </LinearLayout>
 
-        <androidx.core.widget.NestedScrollView
+        <!--<androidx.core.widget.NestedScrollView
             android:id="@+id/nestedScrollView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@+id/cdv_filter"
-            android:fillViewport="true"
-            android:scrollbars="vertical">
+            >
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvItemList"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="10dp"
-                android:paddingBottom="80dp"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:listitem="@layout/item_layout_good_issue"/>
+            &lt;!&ndash;android:fillViewport="true"
+            android:scrollbars="vertical"
+            android:scrollbarThumbVertical="?attr/colorAccent"
+            android:scrollbarStyle="outsideInset"
+            android:fastScrollEnabled="true"&ndash;&gt;
 
-            <!--<LinearLayout
+            &lt;!&ndash;<LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
@@ -373,83 +369,98 @@
 
 
 
-        </LinearLayout>-->
+        </LinearLayout>&ndash;&gt;
 
-        </androidx.core.widget.NestedScrollView>
-
-<!--
-        <LinearLayout
-            android:visibility="gone"
-            android:translationY="0.0dp"
-            android:id="@+id/llBottomSelectionOptions"
+        </androidx.core.widget.NestedScrollView>-->
+        <FrameLayout
+            android:layout_below="@+id/cdv_filter"
             android:layout_width="match_parent"
-            android:layout_height="?actionBarSize"
-            android:background="?material_dialog_background"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true"
-            android:orientation="vertical" >
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="4dp"
-                android:background="@drawable/top_shadow_gradient" />
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:paddingHorizontal="12dp"
-                android:gravity="center_vertical">
+            android:layout_height="match_parent">
+        <com.l4digital.fastscroll.FastScrollRecyclerView
+            android:id="@+id/rvItemList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="10dp"
+            app:bubbleColor="#F56200"
+            app:bubbleTextColor="#ffffff"
+            app:handleColor="#999999"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@layout/item_layout_good_issue"/>
+        </FrameLayout>
 
-                <ImageButton
-                    android:id="@+id/btnExitSelection"
-                    style="@style/MaterialDialog.NegativeButton"
-                    android:layout_width="32dp"
-                    android:layout_height="match_parent"
+        <!--
+                <LinearLayout
+                    android:visibility="gone"
+                    android:translationY="0.0dp"
+                    android:id="@+id/llBottomSelectionOptions"
+                    android:layout_width="match_parent"
+                    android:layout_height="?actionBarSize"
+                    android:background="?material_dialog_background"
                     android:layout_alignParentStart="true"
-                    android:src="@drawable/ic_outline_close"
-                    app:tint="?colorPrimary" />
-
-                <TextView
-                    android:id="@+id/tvTotalSelectedItem"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_toStartOf="@+id/btnSelectAll"
-                    android:layout_toEndOf="@+id/btnExitSelection"
-                    android:gravity="center_vertical"
-                    android:textSize="17sp" />
-
-                <ImageButton
-                    android:id="@+id/btnSelectAll"
-                    style="@style/MaterialDialog.NegativeButton"
-                    android:layout_width="32dp"
-                    android:layout_height="match_parent"
-                    android:layout_toStartOf="@+id/btnDeleteSelected"
-                    android:src="@drawable/ic_outline_check_all"
-                    app:tint="?colorPrimary" />
-
-                <ImageButton
-                    android:id="@+id/btnDeleteSelected"
-                    style="@style/MaterialDialog.NegativeButton"
-                    android:layout_width="32dp"
-                    android:layout_height="match_parent"
-                    android:layout_toStartOf="@+id/btnVerifySelected"
-                    android:src="@drawable/ic_outline_delete_forever"
-                    app:tint="?colorPrimary" />
-
-                <ImageButton
-                    android:id="@+id/btnVerifySelected"
-                    style="@style/MaterialDialog.NegativeButton"
-                    android:layout_width="32dp"
-                    android:layout_height="match_parent"
                     android:layout_alignParentEnd="true"
-                    android:src="@drawable/ic_outline_verified"
-                    app:tint="?colorPrimary" />
-            </RelativeLayout>
+                    android:layout_alignParentBottom="true"
+                    android:orientation="vertical" >
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="4dp"
+                        android:background="@drawable/top_shadow_gradient" />
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:paddingHorizontal="12dp"
+                        android:gravity="center_vertical">
+
+                        <ImageButton
+                            android:id="@+id/btnExitSelection"
+                            style="@style/MaterialDialog.NegativeButton"
+                            android:layout_width="32dp"
+                            android:layout_height="match_parent"
+                            android:layout_alignParentStart="true"
+                            android:src="@drawable/ic_outline_close"
+                            app:tint="?colorPrimary" />
+
+                        <TextView
+                            android:id="@+id/tvTotalSelectedItem"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginEnd="8dp"
+                            android:layout_toStartOf="@+id/btnSelectAll"
+                            android:layout_toEndOf="@+id/btnExitSelection"
+                            android:gravity="center_vertical"
+                            android:textSize="17sp" />
+
+                        <ImageButton
+                            android:id="@+id/btnSelectAll"
+                            style="@style/MaterialDialog.NegativeButton"
+                            android:layout_width="32dp"
+                            android:layout_height="match_parent"
+                            android:layout_toStartOf="@+id/btnDeleteSelected"
+                            android:src="@drawable/ic_outline_check_all"
+                            app:tint="?colorPrimary" />
+
+                        <ImageButton
+                            android:id="@+id/btnDeleteSelected"
+                            style="@style/MaterialDialog.NegativeButton"
+                            android:layout_width="32dp"
+                            android:layout_height="match_parent"
+                            android:layout_toStartOf="@+id/btnVerifySelected"
+                            android:src="@drawable/ic_outline_delete_forever"
+                            app:tint="?colorPrimary" />
+
+                        <ImageButton
+                            android:id="@+id/btnVerifySelected"
+                            style="@style/MaterialDialog.NegativeButton"
+                            android:layout_width="32dp"
+                            android:layout_height="match_parent"
+                            android:layout_alignParentEnd="true"
+                            android:src="@drawable/ic_outline_verified"
+                            app:tint="?colorPrimary" />
+                    </RelativeLayout>
 
 
-        </LinearLayout>
--->
+                </LinearLayout>
+        -->
 
         <LinearLayout
             android:visibility="gone"

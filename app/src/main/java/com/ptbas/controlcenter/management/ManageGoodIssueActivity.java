@@ -17,13 +17,11 @@ import android.transition.AutoTransition;
 import android.transition.TransitionManager;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageButton;
@@ -38,7 +36,6 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.cardview.widget.CardView;
-import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -56,7 +53,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.ptbas.controlcenter.create.AddCashOutActivity;
+import com.l4digital.fastscroll.FastScrollRecyclerView;
 import com.ptbas.controlcenter.model.ReceivedOrderModel;
 import com.ptbas.controlcenter.utility.DialogInterface;
 import com.ptbas.controlcenter.utility.DragLinearLayout;
@@ -97,12 +94,12 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
     CardView cdvFilter;
     FloatingActionsMenu fabExpandMenu;
     FloatingActionButton fabActionCreateGi, fabActionRecapData;
-    NestedScrollView nestedScrollView;
+    //NestedScrollView nestedScrollView;
     TextInputEditText edtGiDateFilterStart, edtGiDateFilterEnd;
     AutoCompleteTextView spinnerSearchType;
     ImageButton btnGiSearchByDateReset, btnGiSearchByTypeReset, btnExitSelection, btnDeleteSelected, btnSelectAll, btnVerifySelected;
     DatePickerDialog datePicker;
-    RecyclerView rvGoodIssueList;
+    FastScrollRecyclerView rvGoodIssueList;
     TextView tvTotalSelectedItem, tvTotalSelectedItem2;
 
     Boolean expandStatus = true;
@@ -129,6 +126,13 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
     ProgressDialog pd;
 
     public String roUID;
+
+
+    int countFinalAllGI, countFinalAllGIValid, countFinalAllGIInvalid, countFinalAllGICashOut,
+            countFinalAllGINotYetCashOut, countFinalAllGIRecapped, countFinalAllGINotRecapped,
+            countFinalAllGIInvoiced, countFinalAllGINotYetInvoiced, countFinalAllGITypeCurah, countFinalAllGITypeBorong;
+
+
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -138,6 +142,8 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
         pd = new ProgressDialog(ManageGoodIssueActivity.this);
         pd.setMessage("Memproses");
         pd.setCancelable(false);
+
+        pd.show();
 
 
         context = this;
@@ -157,7 +163,7 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
         btnVerifySelected = findViewById(R.id.btnVerifySelected);
 
         cdvFilter = findViewById(R.id.cdv_filter);
-        nestedScrollView = findViewById(R.id.nestedScrollView);
+        //nestedScrollView = findViewById(R.id.nestedScrollView);
         spinnerSearchType = findViewById(R.id.spinner_search_type);
         wrapSearchBySpinner = findViewById(R.id.wrap_search_by_spinner);
         wrapFilter = findViewById(R.id.llWrapFilter);
@@ -205,6 +211,7 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
         helper.handleActionBarConfigForStandardActivity(
                 this, actionBar, "Data Good Issue");
 
+
         // SYSTEM UI MODE FOR STANDARD ACTIVITY
         helper.handleUIModeForStandardActivity(this, actionBar);
 
@@ -240,6 +247,7 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+
         // SHOW DATA FROM DEFAULT QUERY
         showDataDefaultQuery();
 
@@ -259,6 +267,8 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
             }
             return false;
         });
+
+
 
         // HANDLE FILTER COMPONENTS WHEN ON CLICK
         edtGiDateFilterStart.setOnClickListener(view -> {
@@ -378,10 +388,10 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
 
                                         }
                                         llNoData.setVisibility(View.GONE);
-                                        nestedScrollView.setVisibility(View.VISIBLE);
+                                       // nestedScrollView.setVisibility(View.VISIBLE);
                                     } else {
                                         llNoData.setVisibility(View.VISIBLE);
-                                        nestedScrollView.setVisibility(View.GONE);
+                                        //nestedScrollView.setVisibility(View.GONE);
                                     }
                                     Collections.reverse(goodIssueModelArrayList);
                                     giManagementAdapter = new GIManagementAdapter(context, goodIssueModelArrayList);
@@ -462,7 +472,29 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
 
                 if (group.getCheckedChipId() == chip_filter_all.getId()){
 
+
+
+
+
+
+
+
+
+
+
                     showDataDefaultQuery();
+
+
+
+
+
+
+
+
+
+
+
+
                 }
                 if (group.getCheckedChipId() == chip_filter_status_valid.getId()){
                     showDataSearchByApprovalStatus(true);
@@ -497,7 +529,27 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
                     showDataSearchByMaterialType("BORONG");
                 }
             } else {
+
+
+
+
+
+
+
+
+
+
+
                 showDataDefaultQuery();
+
+
+
+
+
+
+
+
+
             }
         });
 
@@ -588,9 +640,24 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
             }
         });
 
+
         final Handler handler = new Handler();
         Runnable runnable = new Runnable() {
             public void run() {
+
+                chip_filter_all.setText("SEMUA ("+getCountAllGoodIssue()+")");
+                chip_filter_status_valid.setText("VALID ("+getCountAllGoodIssueValid()+")");
+                chip_filter_status_invalid.setText("BELUM VALID ("+getCountAllGoodIssueInvalid()+")");
+                chip_filter_status_cash_out.setText("SUDAH DIAJUKAN ("+getCountAllGoodIssueCashOut()+")");
+                chip_filter_status_not_yet_cash_out.setText("BELUM DIAJUKAN ("+getCountAllGoodIssueNotYetCashOut()+")");
+                chip_filter_status_recapped.setText("SUDAH DIREKAP ("+getCountAllGoodIssueRecapped()+")");
+                chip_filter_status_not_recapped.setText("BELUM DIREKAP ("+getCountAllGoodIssueNotRecapped()+")");
+                chip_filter_status_invoiced.setText("SUDAH DITAGIHKAN ("+getCountAllGoodIssueInvoiced()+")");
+                chip_filter_status_not_yet_invoiced.setText("BELUM DITAGIHKAN ("+getCountAllGoodIssueNotYetInvoiced()+")");
+                chip_filter_status_transport_type_curah.setText("CURAH ("+getCountAllGoodIssueTypeCurah()+")");
+                chip_filter_status_transport_type_borong.setText("BORONG ("+getCountAllGoodIssueTypeBorong()+")");
+
+
                 int itemSelectedSize = giManagementAdapter.getSelected().size();
                 float itemSelectedVolume = giManagementAdapter.getSelectedVolume();
 
@@ -634,10 +701,135 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
 
     }
 
+    private int getCountAllGoodIssueTypeBorong() {
+
+        return countFinalAllGITypeBorong;
+    }
+
+    private int getCountAllGoodIssueTypeCurah() {
+        return countFinalAllGITypeCurah;
+    }
+
+    private int getCountAllGoodIssueNotYetInvoiced() {
+        return countFinalAllGINotYetInvoiced;
+    }
+
+    private int getCountAllGoodIssueInvoiced() {
+        return countFinalAllGIInvoiced;
+    }
+
+    private int getCountAllGoodIssueNotRecapped() {
+        return countFinalAllGINotRecapped;
+    }
+
+    private int getCountAllGoodIssueRecapped() {
+        return countFinalAllGINotRecapped;
+    }
+
+    private int getCountAllGoodIssueNotYetCashOut() {
+        databaseReference.child("GoodIssueData").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (Objects.equals(dataSnapshot.child("giCashedOutTo").getValue(), "")){
+                    countFinalAllGINotYetCashOut = Integer.parseInt(String.valueOf(dataSnapshot.getChildrenCount()));
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+        return countFinalAllGINotYetCashOut;
+    }
+
+    private int getCountAllGoodIssueCashOut() {
+        databaseReference.child("GoodIssueData").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (!Objects.equals(dataSnapshot.child("giCashedOutTo").getValue(), "")){
+                    countFinalAllGICashOut = Integer.parseInt(String.valueOf(dataSnapshot.getChildrenCount()));
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+        return countFinalAllGICashOut;
+    }
+
+    private int getCountAllGoodIssueInvalid() {
+        databaseReference.child("GoodIssueData").orderByChild("giStatus").equalTo(false).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                countFinalAllGIInvalid = Integer.parseInt(String.valueOf(dataSnapshot.getChildrenCount()));
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+        return countFinalAllGIInvalid;
+    }
+
+    private int getCountAllGoodIssue() {
+
+        databaseReference.child("GoodIssueData").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                countFinalAllGI = Integer.parseInt(String.valueOf(dataSnapshot.getChildrenCount()));
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+        return countFinalAllGI;
+    }
+
+    private int getCountAllGoodIssueValid() {
+
+        databaseReference.child("GoodIssueData").orderByChild("giStatus").equalTo(true).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                countFinalAllGIValid = Integer.parseInt(String.valueOf(dataSnapshot.getChildrenCount()));
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+        return countFinalAllGIValid;
+    }
+
+
+
     private void checkSelectedChipFilter() {
 
         if (chip_filter_all.isChecked()){
+
+
+
+
+
             showDataDefaultQuery();
+
+
+
+
+
+
+
+
         }
         if (chip_filter_status_valid.isChecked()){
             showDataSearchByApprovalStatus(true);
@@ -702,7 +894,7 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
                     /*searchByTypeOnDataChange(snapshot, newText, searchTypeData);*/
                     goodIssueModelArrayList.clear();
                     if (snapshot.exists()){
-                        nestedScrollView.setVisibility(View.VISIBLE);
+                        //nestedScrollView.setVisibility(View.VISIBLE);
                         llNoData.setVisibility(View.GONE);
                         for (DataSnapshot item : snapshot.getChildren()) {
                             GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
@@ -730,7 +922,7 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
                         }
                         Collections.reverse(goodIssueModelArrayList);
                     } else  {
-                        nestedScrollView.setVisibility(View.GONE);
+                        //nestedScrollView.setVisibility(View.GONE);
                         llNoData.setVisibility(View.VISIBLE);
                     }
                     giManagementAdapter = new GIManagementAdapter(context, goodIssueModelArrayList);
@@ -761,9 +953,10 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
             query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated").startAt(dateStart).endAt(dateEnd);
         }
         //query = databaseReference.child("GoodIssueData").orderByChild("giStatus");
-        query.addValueEventListener(new ValueEventListener() {
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                //pd.show();
                 goodIssueModelArrayList.clear();
                 if (snapshot.exists()){
 
@@ -771,16 +964,19 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
                         GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
                         goodIssueModelArrayList.add(goodIssueModel);
                     }
+                    pd.dismiss();
                     llNoData.setVisibility(View.GONE);
-                    nestedScrollView.setVisibility(View.VISIBLE);
+                    //nestedScrollView.setVisibility(View.VISIBLE);
+
+                    Collections.reverse(goodIssueModelArrayList);
+                    giManagementAdapter = new GIManagementAdapter(context, goodIssueModelArrayList);
+                    rvGoodIssueList.setAdapter(giManagementAdapter);
                 } else {
+                    pd.dismiss();
                     llNoData.setVisibility(View.VISIBLE);
-                    nestedScrollView.setVisibility(View.GONE);
+                    //nestedScrollView.setVisibility(View.GONE);
                 }
-                Collections.reverse(goodIssueModelArrayList);
-                giManagementAdapter = new GIManagementAdapter(context, goodIssueModelArrayList);
-                rvGoodIssueList.setAdapter(giManagementAdapter);
-                pd.dismiss();
+
             }
 
             @Override
@@ -790,7 +986,7 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
         });
 
         if (goodIssueModelArrayList.size()<1){
-            nestedScrollView.setVisibility(View.GONE);
+            //nestedScrollView.setVisibility(View.GONE);
             llNoData.setVisibility(View.VISIBLE);
             pd.dismiss();
         }
@@ -888,12 +1084,12 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
                 if (Objects.equals(item.child("giStatus").getValue(), b)) {
                     goodIssueModelArrayList.add(goodIssueModel);
                     llNoData.setVisibility(View.GONE);
-                    nestedScrollView.setVisibility(View.VISIBLE);
+                    //nestedScrollView.setVisibility(View.VISIBLE);
                 }
                 //}
             }
         } else  {
-            nestedScrollView.setVisibility(View.GONE);
+            //nestedScrollView.setVisibility(View.GONE);
             llNoData.setVisibility(View.VISIBLE);
         }
         Collections.reverse(goodIssueModelArrayList);
@@ -901,7 +1097,7 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
         rvGoodIssueList.setAdapter(giManagementAdapter);
 
         if (goodIssueModelArrayList.size()<1){
-            nestedScrollView.setVisibility(View.GONE);
+            //nestedScrollView.setVisibility(View.GONE);
             llNoData.setVisibility(View.VISIBLE);
         }
         pd.dismiss();
@@ -918,12 +1114,12 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
                 if (Objects.equals(item.child("giRecapped").getValue(), b)) {
                     goodIssueModelArrayList.add(goodIssueModel);
                     llNoData.setVisibility(View.GONE);
-                    nestedScrollView.setVisibility(View.VISIBLE);
+                   // nestedScrollView.setVisibility(View.VISIBLE);
                 }
                 //}
             }
         } else  {
-            nestedScrollView.setVisibility(View.GONE);
+            //nestedScrollView.setVisibility(View.GONE);
             llNoData.setVisibility(View.VISIBLE);
         }
         Collections.reverse(goodIssueModelArrayList);
@@ -931,7 +1127,7 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
         rvGoodIssueList.setAdapter(giManagementAdapter);
 
         if (goodIssueModelArrayList.size()<1){
-            nestedScrollView.setVisibility(View.GONE);
+            //nestedScrollView.setVisibility(View.GONE);
             llNoData.setVisibility(View.VISIBLE);
         }
 
@@ -947,12 +1143,12 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
                 if (Objects.equals(item.child("giCashedOut").getValue(), b)) {
                     goodIssueModelArrayList.add(goodIssueModel);
                     llNoData.setVisibility(View.GONE);
-                    nestedScrollView.setVisibility(View.VISIBLE);
+                    //nestedScrollView.setVisibility(View.VISIBLE);
                 }
                 //}
             }
         } else  {
-            nestedScrollView.setVisibility(View.GONE);
+            //nestedScrollView.setVisibility(View.GONE);
             llNoData.setVisibility(View.VISIBLE);
         }
         Collections.reverse(goodIssueModelArrayList);
@@ -960,13 +1156,12 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
         rvGoodIssueList.setAdapter(giManagementAdapter);
 
         if (goodIssueModelArrayList.size()<1){
-            nestedScrollView.setVisibility(View.GONE);
+           // nestedScrollView.setVisibility(View.GONE);
             llNoData.setVisibility(View.VISIBLE);
         }
         pd.dismiss();
 
     }
-
 
     private void showDataSearchByInvoicedStatus(boolean b) {
         Query query = null;
@@ -1002,12 +1197,12 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
                 GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
                 if (Objects.equals(item.child("giInvoiced").getValue(), b)) {
                     goodIssueModelArrayList.add(goodIssueModel);
-                    nestedScrollView.setVisibility(View.VISIBLE);
+                    //nestedScrollView.setVisibility(View.VISIBLE);
                     llNoData.setVisibility(View.GONE);
                 }
             }
         } else  {
-            nestedScrollView.setVisibility(View.GONE);
+            //nestedScrollView.setVisibility(View.GONE);
             llNoData.setVisibility(View.VISIBLE);
         }
         Collections.reverse(goodIssueModelArrayList);
@@ -1015,13 +1210,12 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
         rvGoodIssueList.setAdapter(giManagementAdapter);
 
         if (goodIssueModelArrayList.size()<1){
-            nestedScrollView.setVisibility(View.GONE);
+            //nestedScrollView.setVisibility(View.GONE);
             llNoData.setVisibility(View.VISIBLE);
         }
         pd.dismiss();
 
     }
-
 
     private void showDataSearchByMaterialType(String data) {
 
@@ -1061,12 +1255,12 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
                     if (Objects.equals(item.child("giMatType").getValue(), data)) {
                         goodIssueModelArrayList.add(goodIssueModel);
                         llNoData.setVisibility(View.GONE);
-                        nestedScrollView.setVisibility(View.VISIBLE);
+                        //nestedScrollView.setVisibility(View.VISIBLE);
                     }
                 }
             }
         } else  {
-            nestedScrollView.setVisibility(View.GONE);
+            //nestedScrollView.setVisibility(View.GONE);
             llNoData.setVisibility(View.VISIBLE);
         }
         Collections.reverse(goodIssueModelArrayList);
@@ -1074,7 +1268,7 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
         rvGoodIssueList.setAdapter(giManagementAdapter);
 
         if (goodIssueModelArrayList.size()<1){
-            nestedScrollView.setVisibility(View.GONE);
+            //nestedScrollView.setVisibility(View.GONE);
             llNoData.setVisibility(View.VISIBLE);
         }
 
@@ -1122,7 +1316,24 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
             btnResetSpinnerRoUID.setVisibility(View.GONE);
             spinnerRoUID.setText(null);
             wrapSpinnerRoUID.setVisibility(View.GONE);
+
+
+
+
+
+
+
+
+
+
             showDataDefaultQuery();
+
+
+
+
+
+
+
             //cdvFilter.setVisibility(View.GONE);
             TransitionManager.beginDelayedTransition(cdvFilter, new AutoTransition());
             return false;
