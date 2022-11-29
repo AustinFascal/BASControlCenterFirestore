@@ -388,7 +388,7 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
 
                                         }
                                         llNoData.setVisibility(View.GONE);
-                                       // nestedScrollView.setVisibility(View.VISIBLE);
+                                        // nestedScrollView.setVisibility(View.VISIBLE);
                                     } else {
                                         llNoData.setVisibility(View.VISIBLE);
                                         //nestedScrollView.setVisibility(View.GONE);
@@ -471,30 +471,7 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
             if (checkedIds.contains(group.getCheckedChipId())){
 
                 if (group.getCheckedChipId() == chip_filter_all.getId()){
-
-
-
-
-
-
-
-
-
-
-
                     showDataDefaultQuery();
-
-
-
-
-
-
-
-
-
-
-
-
                 }
                 if (group.getCheckedChipId() == chip_filter_status_valid.getId()){
                     showDataSearchByApprovalStatus(true);
@@ -509,10 +486,10 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
                     showDataSearchByRecappedStatus(false);
                 }
                 if (group.getCheckedChipId() == chip_filter_status_invoiced.getId()){
-                    showDataSearchByInvoicedStatus(true);
+                    showDataSearchByInvoiced();
                 }
                 if (group.getCheckedChipId() == chip_filter_status_not_yet_invoiced.getId()){
-                    showDataSearchByInvoicedStatus(false);
+                    showDataSearchByNotYetInvoiced();
                 }
 
                 if (group.getCheckedChipId() == chip_filter_status_cash_out.getId()){
@@ -702,38 +679,143 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
     }
 
     private int getCountAllGoodIssueTypeBorong() {
+        databaseReference.child("GoodIssueData").orderByChild("giMatName").equalTo("BORONG").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                countFinalAllGITypeBorong = Integer.parseInt(String.valueOf(dataSnapshot.getChildrenCount()));
+            }
 
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
         return countFinalAllGITypeBorong;
     }
 
     private int getCountAllGoodIssueTypeCurah() {
+        databaseReference.child("GoodIssueData").orderByChild("giMatName").equalTo("CURAH").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                countFinalAllGITypeCurah = Integer.parseInt(String.valueOf(dataSnapshot.getChildrenCount()));
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
         return countFinalAllGITypeCurah;
     }
 
     private int getCountAllGoodIssueNotYetInvoiced() {
+
+
+        ArrayList<GoodIssueModel> arrayList = new ArrayList<>();
+        databaseReference.child("GoodIssueData").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot item : dataSnapshot.getChildren()) {
+                    GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
+                    if (Objects.requireNonNull(goodIssueModel).getGiInvoicedTo().equals("")) {
+                        arrayList.add(goodIssueModel);
+                    }
+                }
+                countFinalAllGINotYetInvoiced = arrayList.size();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
         return countFinalAllGINotYetInvoiced;
     }
 
     private int getCountAllGoodIssueInvoiced() {
+
+
+        ArrayList<GoodIssueModel> arrayList = new ArrayList<>();
+        databaseReference.child("GoodIssueData").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot item : dataSnapshot.getChildren()) {
+                    GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
+                    if (!Objects.requireNonNull(goodIssueModel).getGiInvoicedTo().equals("")) {
+                        arrayList.add(goodIssueModel);
+                    }
+                }
+                countFinalAllGIInvoiced = arrayList.size();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
         return countFinalAllGIInvoiced;
     }
 
     private int getCountAllGoodIssueNotRecapped() {
+
+        ArrayList<GoodIssueModel> arrayList = new ArrayList<>();
+        databaseReference.child("GoodIssueData").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot item : dataSnapshot.getChildren()) {
+                    GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
+                    if (Objects.requireNonNull(goodIssueModel).getGiRecappedTo().equals("")) {
+                        arrayList.add(goodIssueModel);
+                    }
+                }
+                countFinalAllGINotRecapped = arrayList.size();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
         return countFinalAllGINotRecapped;
     }
 
     private int getCountAllGoodIssueRecapped() {
-        return countFinalAllGINotRecapped;
-    }
 
-    private int getCountAllGoodIssueNotYetCashOut() {
+        ArrayList<GoodIssueModel> arrayList = new ArrayList<>();
         databaseReference.child("GoodIssueData").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (Objects.equals(dataSnapshot.child("giCashedOutTo").getValue(), "")){
-                    countFinalAllGINotYetCashOut = Integer.parseInt(String.valueOf(dataSnapshot.getChildrenCount()));
+                for (DataSnapshot item : dataSnapshot.getChildren()) {
+                    GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
+                    if (!Objects.requireNonNull(goodIssueModel).getGiRecappedTo().equals("")) {
+                        arrayList.add(goodIssueModel);
+                    }
                 }
+                countFinalAllGIRecapped = arrayList.size();
+            }
 
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+        return countFinalAllGIRecapped;
+    }
+
+    private int getCountAllGoodIssueNotYetCashOut() {
+        ArrayList<GoodIssueModel> arrayList = new ArrayList<>();
+        databaseReference.child("GoodIssueData").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot item : dataSnapshot.getChildren()) {
+                    GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
+                    if (Objects.requireNonNull(goodIssueModel).getGiCashedOutTo().equals("")) {
+                        arrayList.add(goodIssueModel);
+                    }
+                }
+                countFinalAllGINotYetCashOut = arrayList.size();
             }
 
             @Override
@@ -742,16 +824,21 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
             }
         });
         return countFinalAllGINotYetCashOut;
+
     }
 
     private int getCountAllGoodIssueCashOut() {
+        ArrayList<GoodIssueModel> arrayGICashedOut = new ArrayList<>();
         databaseReference.child("GoodIssueData").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (!Objects.equals(dataSnapshot.child("giCashedOutTo").getValue(), "")){
-                    countFinalAllGICashOut = Integer.parseInt(String.valueOf(dataSnapshot.getChildrenCount()));
+                for (DataSnapshot item : dataSnapshot.getChildren()) {
+                    GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
+                    if (!Objects.requireNonNull(goodIssueModel).getGiCashedOutTo().equals("")) {
+                        arrayGICashedOut.add(goodIssueModel);
+                    }
                 }
-
+                countFinalAllGICashOut = arrayGICashedOut.size();
             }
 
             @Override
@@ -816,20 +903,7 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
     private void checkSelectedChipFilter() {
 
         if (chip_filter_all.isChecked()){
-
-
-
-
-
             showDataDefaultQuery();
-
-
-
-
-
-
-
-
         }
         if (chip_filter_status_valid.isChecked()){
             showDataSearchByApprovalStatus(true);
@@ -838,10 +912,10 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
             showDataSearchByApprovalStatus(false);
         }
         if (chip_filter_status_invoiced.isChecked()){
-            showDataSearchByInvoicedStatus(true);
+            showDataSearchByInvoiced();
         }
         if (chip_filter_status_not_yet_invoiced.isChecked()){
-            showDataSearchByInvoicedStatus(false);
+            showDataSearchByNotYetInvoiced();
         }
         if (chip_filter_status_transport_type_curah.isChecked()){
             showDataSearchByMaterialType("CURAH");
@@ -1114,7 +1188,7 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
                 if (Objects.equals(item.child("giRecapped").getValue(), b)) {
                     goodIssueModelArrayList.add(goodIssueModel);
                     llNoData.setVisibility(View.GONE);
-                   // nestedScrollView.setVisibility(View.VISIBLE);
+                    // nestedScrollView.setVisibility(View.VISIBLE);
                 }
                 //}
             }
@@ -1156,14 +1230,14 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
         rvGoodIssueList.setAdapter(giManagementAdapter);
 
         if (goodIssueModelArrayList.size()<1){
-           // nestedScrollView.setVisibility(View.GONE);
+            // nestedScrollView.setVisibility(View.GONE);
             llNoData.setVisibility(View.VISIBLE);
         }
         pd.dismiss();
 
     }
 
-    private void showDataSearchByInvoicedStatus(boolean b) {
+    private void showDataSearchByInvoiced() {
         Query query = null;
         if (dateStart.isEmpty()&&dateEnd.isEmpty()){
             query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated");
@@ -1181,7 +1255,26 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
         query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                invoicedStatusOnDataChange(snapshot, b);
+                goodIssueModelArrayList.clear();
+                if (snapshot.exists()){
+                    for (DataSnapshot item : snapshot.getChildren()) {
+                        GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
+                        if (!Objects.equals(item.child("giInvoicedTo").getValue(), "")) {
+                            goodIssueModelArrayList.add(goodIssueModel);
+                            llNoData.setVisibility(View.GONE);
+                        }
+                    }
+                } else  {
+                    llNoData.setVisibility(View.VISIBLE);
+                }
+                Collections.reverse(goodIssueModelArrayList);
+                giManagementAdapter = new GIManagementAdapter(context, goodIssueModelArrayList);
+                rvGoodIssueList.setAdapter(giManagementAdapter);
+
+                if (goodIssueModelArrayList.size()<1){
+                    llNoData.setVisibility(View.VISIBLE);
+                }
+                pd.dismiss();
             }
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
@@ -1190,32 +1283,53 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
         });
     }
 
-    private void invoicedStatusOnDataChange(DataSnapshot snapshot, boolean b) {
-        goodIssueModelArrayList.clear();
-        if (snapshot.exists()){
-            for (DataSnapshot item : snapshot.getChildren()) {
-                GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
-                if (Objects.equals(item.child("giInvoiced").getValue(), b)) {
-                    goodIssueModelArrayList.add(goodIssueModel);
-                    //nestedScrollView.setVisibility(View.VISIBLE);
-                    llNoData.setVisibility(View.GONE);
+    private void showDataSearchByNotYetInvoiced() {
+        Query query = null;
+        if (dateStart.isEmpty()&&dateEnd.isEmpty()){
+            query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated");
+        }
+        if (!dateStart.isEmpty()&&dateEnd.isEmpty()){
+            query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated").startAt(dateStart);
+        }
+        if (dateStart.isEmpty()&&!dateEnd.isEmpty()){
+            query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated").endAt(dateEnd);
+        }
+        if (!dateStart.isEmpty() && !dateEnd.isEmpty()){
+            query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated").startAt(dateStart).endAt(dateEnd);
+        }
+
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                goodIssueModelArrayList.clear();
+                if (snapshot.exists()){
+                    for (DataSnapshot item : snapshot.getChildren()) {
+                        GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
+                        if (Objects.equals(item.child("giInvoicedTo").getValue(), "")) {
+                            goodIssueModelArrayList.add(goodIssueModel);
+                            llNoData.setVisibility(View.GONE);
+                        }
+                    }
+                } else  {
+                    llNoData.setVisibility(View.VISIBLE);
                 }
+                Collections.reverse(goodIssueModelArrayList);
+                giManagementAdapter = new GIManagementAdapter(context, goodIssueModelArrayList);
+                rvGoodIssueList.setAdapter(giManagementAdapter);
+
+                if (goodIssueModelArrayList.size()<1){
+                    llNoData.setVisibility(View.VISIBLE);
+                }
+                pd.dismiss();
             }
-        } else  {
-            //nestedScrollView.setVisibility(View.GONE);
-            llNoData.setVisibility(View.VISIBLE);
-        }
-        Collections.reverse(goodIssueModelArrayList);
-        giManagementAdapter = new GIManagementAdapter(context, goodIssueModelArrayList);
-        rvGoodIssueList.setAdapter(giManagementAdapter);
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
 
-        if (goodIssueModelArrayList.size()<1){
-            //nestedScrollView.setVisibility(View.GONE);
-            llNoData.setVisibility(View.VISIBLE);
-        }
-        pd.dismiss();
-
+            }
+        });
     }
+
+
 
     private void showDataSearchByMaterialType(String data) {
 
@@ -1411,6 +1525,8 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         //helper.refreshDashboard(this.getApplicationContext());
+        android.os.Process.killProcess(android.os.Process.myPid());
+        this.finish();
         super.onBackPressed();
     }
 }
