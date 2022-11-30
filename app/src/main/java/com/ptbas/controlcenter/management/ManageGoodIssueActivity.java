@@ -12,6 +12,8 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.text.InputType;
 import android.transition.AutoTransition;
 import android.transition.TransitionManager;
@@ -127,7 +129,7 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
 
     public String roUID;
 
-
+    private static boolean active = false;
     int countFinalAllGI, countFinalAllGIValid, countFinalAllGIInvalid, countFinalAllGICashOut,
             countFinalAllGINotYetCashOut, countFinalAllGIRecapped, countFinalAllGINotRecapped,
             countFinalAllGIInvoiced, countFinalAllGINotYetInvoiced, countFinalAllGITypeCurah, countFinalAllGITypeBorong;
@@ -142,13 +144,13 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
         pd = new ProgressDialog(ManageGoodIssueActivity.this);
         pd.setMessage("Memproses");
         pd.setCancelable(false);
-
         pd.show();
-
 
         context = this;
 
         helper.ACTIVITY_NAME = "GIM";
+
+        giManagementAdapter = new GIManagementAdapter(this, goodIssueModelArrayList);
 
         fabExpandMenu = findViewById(R.id.fab_expand_menu);
         fabActionCreateGi = findViewById(R.id.fab_action_create_ro);
@@ -163,7 +165,6 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
         btnVerifySelected = findViewById(R.id.btnVerifySelected);
 
         cdvFilter = findViewById(R.id.cdv_filter);
-        //nestedScrollView = findViewById(R.id.nestedScrollView);
         spinnerSearchType = findViewById(R.id.spinner_search_type);
         wrapSearchBySpinner = findViewById(R.id.wrap_search_by_spinner);
         wrapFilter = findViewById(R.id.llWrapFilter);
@@ -190,7 +191,6 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
 
         cdvFilter.getLayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
 
-
         chipGroup = findViewById(R.id.chip_group_filter_query);
         chip_filter_all  = findViewById(R.id.chip_filter_all);
         chip_filter_status_valid = findViewById(R.id.chip_filter_status_valid);
@@ -203,6 +203,7 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
         chip_filter_status_not_yet_cash_out = findViewById(R.id.chip_filter_status_not_yet_cash_out);
         chip_filter_status_transport_type_curah = findViewById(R.id.chip_filter_status_transport_type_curah);
         chip_filter_status_transport_type_borong = findViewById(R.id.chip_filter_status_transport_type_borong);
+        chip_filter_all.isChecked();
 
         ActionBar actionBar = getSupportActionBar();
 
@@ -210,6 +211,9 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
         assert actionBar != null;
         helper.handleActionBarConfigForStandardActivity(
                 this, actionBar, "Data Good Issue");
+
+
+
 
 
         // SYSTEM UI MODE FOR STANDARD ACTIVITY
@@ -251,6 +255,7 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
         // SHOW DATA FROM DEFAULT QUERY
         showDataDefaultQuery();
 
+
         // HANDLE RECYCLERVIEW GI WHEN SCROLLING
         rvGoodIssueList.setOnTouchListener((v, event) -> {
             switch ( event.getAction( ) ) {
@@ -267,8 +272,6 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
             }
             return false;
         });
-
-
 
         // HANDLE FILTER COMPONENTS WHEN ON CLICK
         edtGiDateFilterStart.setOnClickListener(view -> {
@@ -416,8 +419,6 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
             }
         });
 
-
-
         spinnerSearchType.setOnItemClickListener((adapterView, view, i, l) -> {
             btnGiSearchByTypeReset.setVisibility(View.VISIBLE);
             switch (i){
@@ -463,8 +464,6 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
 
         btnGiSearchByTypeReset.setOnClickListener(view -> resetSearchByType());
 
-        pd.show();
-        chip_filter_all.isChecked();
         chipGroup.setOnCheckedStateChangeListener((group, checkedIds) -> {
 
 
@@ -472,6 +471,7 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
 
                 if (group.getCheckedChipId() == chip_filter_all.getId()){
                     showDataDefaultQuery();
+
                 }
                 if (group.getCheckedChipId() == chip_filter_status_valid.getId()){
                     showDataSearchByApprovalStatus(true);
@@ -507,30 +507,10 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
                 }
             } else {
 
-
-
-
-
-
-
-
-
-
-
                 showDataDefaultQuery();
-
-
-
-
-
-
-
-
 
             }
         });
-
-        giManagementAdapter = new GIManagementAdapter(this, goodIssueModelArrayList);
 
         btnDeleteSelected.setOnClickListener(view -> {
             int size = giManagementAdapter.getSelected().size();
@@ -597,8 +577,6 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
             }
         });
 
-
-
         btnExitSelection.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -617,64 +595,83 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
             }
         });
 
-
-        final Handler handler = new Handler();
+        /*final Handler handler = new Handler();
         Runnable runnable = new Runnable() {
             public void run() {
 
-                chip_filter_all.setText("SEMUA ("+getCountAllGoodIssue()+")");
-                chip_filter_status_valid.setText("VALID ("+getCountAllGoodIssueValid()+")");
-                chip_filter_status_invalid.setText("BELUM VALID ("+getCountAllGoodIssueInvalid()+")");
-                chip_filter_status_cash_out.setText("SUDAH DIAJUKAN ("+getCountAllGoodIssueCashOut()+")");
-                chip_filter_status_not_yet_cash_out.setText("BELUM DIAJUKAN ("+getCountAllGoodIssueNotYetCashOut()+")");
-                chip_filter_status_recapped.setText("SUDAH DIREKAP ("+getCountAllGoodIssueRecapped()+")");
-                chip_filter_status_not_recapped.setText("BELUM DIREKAP ("+getCountAllGoodIssueNotRecapped()+")");
-                chip_filter_status_invoiced.setText("SUDAH DITAGIHKAN ("+getCountAllGoodIssueInvoiced()+")");
-                chip_filter_status_not_yet_invoiced.setText("BELUM DITAGIHKAN ("+getCountAllGoodIssueNotYetInvoiced()+")");
-                chip_filter_status_transport_type_curah.setText("CURAH ("+getCountAllGoodIssueTypeCurah()+")");
-                chip_filter_status_transport_type_borong.setText("BORONG ("+getCountAllGoodIssueTypeBorong()+")");
+                if(active) {
+                    chip_filter_all.setText("SEMUA (" + getCountAllGoodIssue() + ")");
+                    chip_filter_status_valid.setText("VALID (" + getCountAllGoodIssueValid() + ")");
+                    chip_filter_status_invalid.setText("BELUM VALID (" + getCountAllGoodIssueInvalid() + ")");
+                    chip_filter_status_cash_out.setText("SUDAH DIAJUKAN (" + getCountAllGoodIssueCashOut() + ")");
+                    chip_filter_status_not_yet_cash_out.setText("BELUM DIAJUKAN (" + getCountAllGoodIssueNotYetCashOut() + ")");
+                    chip_filter_status_recapped.setText("SUDAH DIREKAP (" + getCountAllGoodIssueRecapped() + ")");
+                    chip_filter_status_not_recapped.setText("BELUM DIREKAP (" + getCountAllGoodIssueNotRecapped() + ")");
+                    chip_filter_status_invoiced.setText("SUDAH DITAGIHKAN (" + getCountAllGoodIssueInvoiced() + ")");
+                    chip_filter_status_not_yet_invoiced.setText("BELUM DITAGIHKAN (" + getCountAllGoodIssueNotYetInvoiced() + ")");
+                    chip_filter_status_transport_type_curah.setText("CURAH (" + getCountAllGoodIssueTypeCurah() + ")");
+                    chip_filter_status_transport_type_borong.setText("BORONG (" + getCountAllGoodIssueTypeBorong() + ")");
 
 
-                int itemSelectedSize = giManagementAdapter.getSelected().size();
-                float itemSelectedVolume = giManagementAdapter.getSelectedVolume();
+                    int itemSelectedSize = giManagementAdapter.getSelected().size();
+                    float itemSelectedVolume = giManagementAdapter.getSelectedVolume();
 
-                String itemSelectedVolumeAndBuyPriceVal = df.format(itemSelectedVolume).concat(" m3");
-                if (giManagementAdapter.getSelected().size()>0){
+                    String itemSelectedVolumeAndBuyPriceVal = df.format(itemSelectedVolume).concat(" m3");
+                    if (giManagementAdapter.getSelected().size() > 0) {
 
-                    fabExpandMenu.animate().translationY(800).setDuration(100).start();
-                    fabExpandMenu.collapse();
+                        fabExpandMenu.animate().translationY(800).setDuration(100).start();
+                        fabExpandMenu.collapse();
 
-                    tvTotalSelectedItem.setText(itemSelectedSize+" item terpilih");
-                    tvTotalSelectedItem2.setText(itemSelectedVolumeAndBuyPriceVal);
+                        tvTotalSelectedItem.setText(itemSelectedSize + " item terpilih");
+                        tvTotalSelectedItem2.setText(itemSelectedVolumeAndBuyPriceVal);
 
-                    llBottomSelectionOptions.animate()
-                            .translationY(0).alpha(1.0f)
-                            .setDuration(100)
-                            .setListener(new AnimatorListenerAdapter() {
-                                @Override
-                                public void onAnimationStart(Animator animation) {
-                                    super.onAnimationStart(animation);
-                                    llBottomSelectionOptions.setVisibility(View.VISIBLE);
-                                }
-                            });
+                        llBottomSelectionOptions.animate()
+                                .translationY(0).alpha(1.0f)
+                                .setDuration(100)
+                                .setListener(new AnimatorListenerAdapter() {
+                                    @Override
+                                    public void onAnimationStart(Animator animation) {
+                                        super.onAnimationStart(animation);
+                                        llBottomSelectionOptions.setVisibility(View.VISIBLE);
+                                    }
+                                });
 
-                } else {
-                    fabExpandMenu.animate().translationY(0).setDuration(100).start();
+                    } else {
+                        fabExpandMenu.animate().translationY(0).setDuration(100).start();
 
-                    llBottomSelectionOptions.animate()
-                            .translationY(llBottomSelectionOptions.getHeight()).alpha(0.0f)
-                            .setListener(new AnimatorListenerAdapter() {
-                                @Override
-                                public void onAnimationEnd(Animator animation) {
-                                    super.onAnimationEnd(animation);
-                                    llBottomSelectionOptions.setVisibility(View.GONE);
-                                }
-                            });
+                        llBottomSelectionOptions.animate()
+                                .translationY(llBottomSelectionOptions.getHeight()).alpha(0.0f)
+                                .setListener(new AnimatorListenerAdapter() {
+                                    @Override
+                                    public void onAnimationEnd(Animator animation) {
+                                        super.onAnimationEnd(animation);
+                                        llBottomSelectionOptions.setVisibility(View.GONE);
+                                    }
+                                });
+                    }
                 }
                 handler.postDelayed(this, 100);
             }
         };
-        runnable.run();
+        runnable.run();*/
+
+        /*final Handler handler = new Handler();
+        Runnable runnable = new Runnable() {
+            public void run() {
+
+                if(active) {
+                    showCountDataGI();
+                }
+                handler.postDelayed(this, 1000);
+            }
+        };
+        runnable.run();*/
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                showCountDataGI();
+            }
+        }, 2000);
 
     }
 
@@ -1011,8 +1008,11 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
 
     }
 
-    private void showDataDefaultQuery() {
 
+
+
+
+    private void showDataDefaultQuery() {
         Query query = null;
         if (dateStart.isEmpty()&&dateEnd.isEmpty()){
             query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated");
@@ -1027,7 +1027,7 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
             query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated").startAt(dateStart).endAt(dateEnd);
         }
         //query = databaseReference.child("GoodIssueData").orderByChild("giStatus");
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
+        query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 //pd.show();
@@ -1038,15 +1038,13 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
                         GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
                         goodIssueModelArrayList.add(goodIssueModel);
                     }
-                    pd.dismiss();
                     llNoData.setVisibility(View.GONE);
                     //nestedScrollView.setVisibility(View.VISIBLE);
-
+                    showCountDataGI();
                     Collections.reverse(goodIssueModelArrayList);
                     giManagementAdapter = new GIManagementAdapter(context, goodIssueModelArrayList);
                     rvGoodIssueList.setAdapter(giManagementAdapter);
                 } else {
-                    pd.dismiss();
                     llNoData.setVisibility(View.VISIBLE);
                     //nestedScrollView.setVisibility(View.GONE);
                 }
@@ -1062,7 +1060,6 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
         if (goodIssueModelArrayList.size()<1){
             //nestedScrollView.setVisibility(View.GONE);
             llNoData.setVisibility(View.VISIBLE);
-            pd.dismiss();
         }
 
     }
@@ -1174,7 +1171,6 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
             //nestedScrollView.setVisibility(View.GONE);
             llNoData.setVisibility(View.VISIBLE);
         }
-        pd.dismiss();
 
     }
 
@@ -1205,7 +1201,7 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
             llNoData.setVisibility(View.VISIBLE);
         }
 
-        pd.dismiss();
+
     }
 
     private void cashOutStatusOnDataChange(DataSnapshot snapshot, boolean b) {
@@ -1233,7 +1229,6 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
             // nestedScrollView.setVisibility(View.GONE);
             llNoData.setVisibility(View.VISIBLE);
         }
-        pd.dismiss();
 
     }
 
@@ -1274,7 +1269,6 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
                 if (goodIssueModelArrayList.size()<1){
                     llNoData.setVisibility(View.VISIBLE);
                 }
-                pd.dismiss();
             }
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
@@ -1320,7 +1314,6 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
                 if (goodIssueModelArrayList.size()<1){
                     llNoData.setVisibility(View.VISIBLE);
                 }
-                pd.dismiss();
             }
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
@@ -1386,8 +1379,23 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
             llNoData.setVisibility(View.VISIBLE);
         }
 
-        pd.dismiss();
+    }
 
+
+    private void showCountDataGI(){
+
+        chip_filter_all.setText("SEMUA (" + getCountAllGoodIssue() + ")");
+        chip_filter_status_valid.setText("VALID (" + getCountAllGoodIssueValid() + ")");
+        chip_filter_status_invalid.setText("BELUM VALID (" + getCountAllGoodIssueInvalid() + ")");
+        chip_filter_status_cash_out.setText("SUDAH DIAJUKAN (" + getCountAllGoodIssueCashOut() + ")");
+        chip_filter_status_not_yet_cash_out.setText("BELUM DIAJUKAN (" + getCountAllGoodIssueNotYetCashOut() + ")");
+        chip_filter_status_recapped.setText("SUDAH DIREKAP (" + getCountAllGoodIssueRecapped() + ")");
+        chip_filter_status_not_recapped.setText("BELUM DIREKAP (" + getCountAllGoodIssueNotRecapped() + ")");
+        chip_filter_status_invoiced.setText("SUDAH DITAGIHKAN (" + getCountAllGoodIssueInvoiced() + ")");
+        chip_filter_status_not_yet_invoiced.setText("BELUM DITAGIHKAN (" + getCountAllGoodIssueNotYetInvoiced() + ")");
+        chip_filter_status_transport_type_curah.setText("CURAH (" + getCountAllGoodIssueTypeCurah() + ")");
+        chip_filter_status_transport_type_borong.setText("BORONG (" + getCountAllGoodIssueTypeBorong() + ")");
+        pd.dismiss();
     }
 
     @Override
@@ -1524,9 +1532,23 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        //helper.refreshDashboard(this.getApplicationContext());
-        android.os.Process.killProcess(android.os.Process.myPid());
+        rvGoodIssueList.setAdapter(null);
+        goodIssueModelArrayList.clear();
         this.finish();
         super.onBackPressed();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        active = true;
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        rvGoodIssueList.setAdapter(null);
+        goodIssueModelArrayList.clear();
+        active = false;
     }
 }
