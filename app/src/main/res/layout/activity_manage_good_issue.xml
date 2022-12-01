@@ -531,7 +531,7 @@
                     android:layout_width="32dp"
                     android:layout_height="match_parent"
                     android:layout_toStartOf="@+id/btnDeleteSelected"
-                    android:src="@drawable/ic_outline_check_all"
+                    android:src="@drawable/ic_outline_select_all"
                     app:tint="?colorPrimary" />
 
                 <ImageButton

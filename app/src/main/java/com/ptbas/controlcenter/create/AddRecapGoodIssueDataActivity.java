@@ -72,6 +72,7 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.text.pdf.draw.LineSeparator;
+import com.l4digital.fastscroll.FastScrollRecyclerView;
 import com.ptbas.controlcenter.utility.DialogInterface;
 import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.adapter.GIManagementAdapter;
@@ -119,13 +120,13 @@ public class AddRecapGoodIssueDataActivity extends AppCompatActivity {
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
     ArrayList<GoodIssueModel> goodIssueModelArrayList = new ArrayList<>();
     GIManagementAdapter giManagementAdapter;
-    RecyclerView rvGoodIssueList;
+    FastScrollRecyclerView rvGoodIssueList;
     Context context;
     Helper helper = new Helper();
     Boolean expandStatus = true, firstViewDataFirstTimeStatus = true;
     CardView cdvFilter;
     View firstViewData;
-    NestedScrollView nestedScrollView;
+    //NestedScrollView nestedScrollView;
 
     boolean isSelectedAll = false;
 
@@ -187,7 +188,7 @@ public class AddRecapGoodIssueDataActivity extends AppCompatActivity {
         llShowSpinnerRoAndEdtPo = findViewById(R.id.llShowSpinnerRoAndEdtPo);
 
         llNoData = findViewById(R.id.ll_no_data);
-        nestedScrollView = findViewById(R.id.nestedScrollView);
+        //nestedScrollView = findViewById(R.id.nestedScrollView);
 
         btnResetCustomer = findViewById(R.id.btnResetCustomer);
         btnGiSearchByDateReset = findViewById(R.id.btn_gi_search_date_reset);
@@ -889,20 +890,20 @@ public class AddRecapGoodIssueDataActivity extends AppCompatActivity {
                             GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
                             goodIssueModelArrayList.add(goodIssueModel);
                             //fabCreateGiRecap.show();
-                            nestedScrollView.setVisibility(View.VISIBLE);
+                            //nestedScrollView.setVisibility(View.VISIBLE);
                             llNoData.setVisibility(View.GONE);
                         }
 
                     }
                     if (goodIssueModelArrayList.size()==0) {
                         fabCreateGiRecap.hide();
-                        nestedScrollView.setVisibility(View.GONE);
+                        //nestedScrollView.setVisibility(View.GONE);
                         llNoData.setVisibility(View.VISIBLE);
                     }
 
                 } else  {
                     fabCreateGiRecap.hide();
-                    nestedScrollView.setVisibility(View.GONE);
+                    //nestedScrollView.setVisibility(View.GONE);
                     llNoData.setVisibility(View.VISIBLE);
                 }
                 Collections.reverse(goodIssueModelArrayList);
@@ -1013,7 +1014,7 @@ public class AddRecapGoodIssueDataActivity extends AppCompatActivity {
                                 GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
                                 goodIssueModelArrayList.add(goodIssueModel);
                                 fabCreateGiRecap.show();
-                                nestedScrollView.setVisibility(View.VISIBLE);
+                                //nestedScrollView.setVisibility(View.VISIBLE);
                                 llNoData.setVisibility(View.GONE);
                             }
                         }
@@ -1023,13 +1024,13 @@ public class AddRecapGoodIssueDataActivity extends AppCompatActivity {
                     }
                     if (goodIssueModelArrayList.size()==0) {
                         fabCreateGiRecap.hide();
-                        nestedScrollView.setVisibility(View.GONE);
+                        //nestedScrollView.setVisibility(View.GONE);
                         llNoData.setVisibility(View.VISIBLE);
                     }
 
                 } else  {
                     fabCreateGiRecap.hide();
-                    nestedScrollView.setVisibility(View.GONE);
+                    //nestedScrollView.setVisibility(View.GONE);
                     llNoData.setVisibility(View.VISIBLE);
                 }
                 Collections.reverse(goodIssueModelArrayList);

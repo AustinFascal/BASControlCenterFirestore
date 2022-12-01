@@ -66,6 +66,7 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
     Helper helper = new Helper();
     ItemViewHolder itemViewHolder;
     public boolean isSelectedAll = false;
+    GoodIssueModel[] goodIssueModels;
 
     GIManagementAdapter giManagementAdapter;
 
@@ -96,12 +97,30 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
     @Override
     public void onBindViewHolder(@NonNull ItemViewHolder holder, int position) {
         holder.viewBind(goodIssueModelArrayList.get(position));
+
         if (!isSelectedAll) {
             holder.cbSelectItem.setChecked(false);
         } else {
             holder.cbSelectItem.setChecked(true);
         }
         giManagementAdapter = new GIManagementAdapter(context, goodIssueModelArrayList);
+
+        final GoodIssueModel goodIssueModel = goodIssueModels[position];
+        holder.setItemClickListener(new ItemViewHolder.ItemClickListener() {
+            @Override
+            public void onItemCLick(View v, int pos) {
+                CheckBox cbSelectItem = (CheckBox) v;
+                GoodIssueModel currentGoodIssue = goodIssueModels[pos];
+
+                if(cbSelectItem.isChecked()){
+                    currentGoodIssue.setChecked(true);
+                    goodIssueModelArrayList.add(currentGoodIssue);
+                } else if (!cbSelectItem.isChecked()){
+                    currentGoodIssue.setChecked(false);
+                    goodIssueModelArrayList.remove(currentGoodIssue);
+                }
+            }
+        });
     }
 
     @Override
@@ -110,7 +129,7 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
     }
 
 
-    public class ItemViewHolder extends RecyclerView.ViewHolder {
+    public static class ItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         GoodIssueModel goodIssueModel2;
 
         LinearLayout llStatusApproved, llStatusRecapped, llStatusInvoiced, llCashedOutStatus, llRoNeedsUpdate, llHiddenView, llWrapGiStatus;
@@ -124,12 +143,15 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
 
         DecimalFormat df = new DecimalFormat("0.00");
 
-        final View rootView = ((Activity)context).getWindow().getDecorView().findViewById(android.R.id.content);
+        //final View rootView = ((Activity)context).getWindow().getDecorView().findViewById(android.R.id.content);
 
-        FloatingActionsMenu fabExpandMenu = rootView.findViewById(R.id.fab_expand_menu);
+        /*FloatingActionsMenu fabExpandMenu = rootView.findViewById(R.id.fab_expand_menu);
         TextView tvTotalSelectedItem = rootView.findViewById(R.id.tvTotalSelectedItem);
         TextView tvTotalSelectedItem2 = rootView.findViewById(R.id.tvTotalSelectedItem2);
-        LinearLayout llBottomSelectionOptions = rootView.findViewById(R.id.llBottomSelectionOptions);
+        LinearLayout llBottomSelectionOptions = rootView.findViewById(R.id.llBottomSelectionOptions);*/
+
+
+
 
         public ItemViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -158,6 +180,9 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
             btn3 = itemView.findViewById(R.id.btnOpenItemDetail);
             btn4 = itemView.findViewById(R.id.btnClone);
             cbSelectItem = itemView.findViewById(R.id.cbSelectItem);
+
+
+            cbSelectItem.setOnClickListener(this);
         }
 
         public void viewBind(final GoodIssueModel goodIssueModel) {
@@ -166,7 +191,7 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
             cbSelectItem.setChecked(false);
             tvRoUid.setVisibility(View.INVISIBLE);
 
-            if (Objects.equals(helper.ACTIVITY_NAME, "UPDATE")){
+            /*if (Objects.equals(helper.ACTIVITY_NAME, "UPDATE")){
                 btnDeleteGi.setVisibility(View.GONE);
             }
 
@@ -182,7 +207,11 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
 
             cbSelectItem.setOnClickListener(view -> {
                 itemCount();
-            });
+            });*/
+
+
+
+
 
             DecimalFormat df = new DecimalFormat("0.00");
             Double cubication = goodIssueModel.getGiVhlCubication();
@@ -293,7 +322,7 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
             }
 
 
-            db.collection("CashOutData").whereEqualTo("coDocumentID", giCashedOutTo).get()
+            /*db.collection("CashOutData").whereEqualTo("coDocumentID", giCashedOutTo).get()
                     .addOnSuccessListener(queryDocumentSnapshots -> {
                                 for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
                                     CashOutModel cashOutModel = documentSnapshot.toObject(CashOutModel.class);
@@ -427,10 +456,26 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
 
                 md.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
                 md.show();
-            });
+            });*/
 
         }
 
+        ItemClickListener itemClickListener;
+
+        public void setItemClickListener(ItemClickListener ic){
+            this.itemClickListener = ic;
+        }
+
+        @Override
+        public void onClick(View v){
+            this.itemClickListener.onItemCLick(v,getLayoutPosition());
+        }
+
+        interface ItemClickListener{
+            void onItemCLick(View v, int pos);
+        }
+
+/*
         private void itemCount() {
             goodIssueModel2.setChecked(!goodIssueModel2.isChecked());
             cbSelectItem.setChecked(goodIssueModel2.isChecked());
@@ -473,6 +518,7 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
                         });
             }
         }
+*/
     }
 
 
