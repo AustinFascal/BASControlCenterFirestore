@@ -251,6 +251,20 @@
                                         android:textSize="13sp"
                                         android:text="BELUM VALID"/>
                                     <com.google.android.material.chip.Chip
+                                        android:id="@+id/chip_filter_status_recapped"
+                                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:textSize="13sp"
+                                        android:text="SUDAH DIREKAP"/>
+                                    <com.google.android.material.chip.Chip
+                                        android:id="@+id/chip_filter_status_not_yet_recapped"
+                                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:textSize="13sp"
+                                        android:text="BELUM DIREKAP"/>
+                                    <com.google.android.material.chip.Chip
                                         android:id="@+id/chip_filter_status_cash_out"
                                         style="@style/Widget.MaterialComponents.Chip.Choice"
                                         android:layout_width="wrap_content"
@@ -265,20 +279,7 @@
                                         android:textSize="13sp"
                                         android:text="BELUM DIAJUKAN"/>
 
-                                    <com.google.android.material.chip.Chip
-                                        android:id="@+id/chip_filter_status_recapped"
-                                        style="@style/Widget.MaterialComponents.Chip.Choice"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:textSize="13sp"
-                                        android:text="SUDAH DIREKAP"/>
-                                    <com.google.android.material.chip.Chip
-                                        android:id="@+id/chip_filter_status_not_yet_recapped"
-                                        style="@style/Widget.MaterialComponents.Chip.Choice"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:textSize="13sp"
-                                        android:text="BELUM DIREKAP"/>
+
 
                                     <com.google.android.material.chip.Chip
                                         android:id="@+id/chip_filter_status_invoiced"
@@ -375,17 +376,17 @@
         <FrameLayout
             android:layout_below="@+id/cdv_filter"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-        <com.l4digital.fastscroll.FastScrollRecyclerView
-            android:id="@+id/rvItemList"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="10dp"
-            app:bubbleColor="#F56200"
-            app:bubbleTextColor="#ffffff"
-            app:handleColor="#999999"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            tools:listitem="@layout/item_layout_good_issue"/>
+            android:layout_height="wrap_content">
+            <com.l4digital.fastscroll.FastScrollRecyclerView
+                android:id="@+id/rvItemList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="10dp"
+                app:bubbleColor="#F56200"
+                app:bubbleTextColor="#ffffff"
+                app:handleColor="#999999"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/item_layout_good_issue"/>
         </FrameLayout>
 
         <!--

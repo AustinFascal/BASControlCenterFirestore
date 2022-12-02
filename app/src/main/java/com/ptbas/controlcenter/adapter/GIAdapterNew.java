@@ -1,65 +1,37 @@
 package com.ptbas.controlcenter.adapter;
 
 
-import static android.content.ContentValues.TAG;
-
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.os.Build;
-import android.os.VibrationEffect;
-import android.os.Vibrator;
 import android.text.Html;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.getbase.floatingactionbutton.FloatingActionsMenu;
-import com.google.android.material.chip.Chip;
-import com.google.android.material.chip.ChipGroup;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.ptbas.controlcenter.R;
-import com.ptbas.controlcenter.utility.DialogInterface;
-import com.ptbas.controlcenter.utility.Helper;
-import com.ptbas.controlcenter.model.CashOutModel;
 import com.ptbas.controlcenter.model.CustomerModel;
 import com.ptbas.controlcenter.model.GoodIssueModel;
 import com.ptbas.controlcenter.model.ReceivedOrderModel;
-import com.ptbas.controlcenter.update.UpdateGoodIssueActivity;
+import com.ptbas.controlcenter.utility.Helper;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
-import dev.shreyaspatil.MaterialDialog.MaterialDialog;
-import dev.shreyaspatil.MaterialDialog.model.TextAlignment;
-
-public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapter.ItemViewHolder> {
+public class GIAdapterNew extends RecyclerView.Adapter<GIAdapterNew.ItemViewHolder> {
 
     Context context;
     ArrayList<GoodIssueModel> goodIssueModelArrayList;
@@ -68,17 +40,17 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
     public boolean isSelectedAll = false;
     GoodIssueModel[] goodIssueModels;
 
-    GIManagementAdapter giManagementAdapter;
+    GIAdapterNew giManagementAdapter;
 
 
-    public GIManagementAdapter(Context context, ArrayList<GoodIssueModel> goodIssueModelArrayList) {
+    public GIAdapterNew(Context context, ArrayList<GoodIssueModel> goodIssueModelArrayList) {
         this.context = context;
         this.goodIssueModelArrayList = goodIssueModelArrayList;
     }
 
     @NonNull
     @Override
-    public GIManagementAdapter.ItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public GIAdapterNew.ItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView;
         WindowManager wm = (WindowManager)context.getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
         wm.getDefaultDisplay().getMetrics(context.getApplicationContext().getResources().getDisplayMetrics());
@@ -103,9 +75,9 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
         } else {
             holder.cbSelectItem.setChecked(true);
         }
-        giManagementAdapter = new GIManagementAdapter(context, goodIssueModelArrayList);
+        giManagementAdapter = new GIAdapterNew(context, goodIssueModelArrayList);
 
-        //final GoodIssueModel goodIssueModel = goodIssueModels[position];
+        final GoodIssueModel goodIssueModel = goodIssueModels[position];
         holder.setItemClickListener(new ItemViewHolder.ItemClickListener() {
             @Override
             public void onItemCLick(View v, int pos) {
