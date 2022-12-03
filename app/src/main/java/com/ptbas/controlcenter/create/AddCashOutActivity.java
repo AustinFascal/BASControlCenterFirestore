@@ -789,7 +789,7 @@ public class AddCashOutActivity extends AppCompatActivity {
                         for (DocumentSnapshot d : value.getDocuments()) {
 
                             RecapGIModel recapGIModel = d.toObject(RecapGIModel.class);
-                            if (recapGIModel.getRoDocumentID().contains(roDocumentID) && recapGIModel.getRcpGiStatus().equals(false)) {
+                            if (recapGIModel.getRoDocumentID().contains(roDocumentID) && recapGIModel.getRcpGiInvoicedTo().isEmpty()) {
                                 recapGiModelArrayList.add(recapGIModel);
                             }
 

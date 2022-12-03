@@ -3,8 +3,6 @@ package com.ptbas.controlcenter.adapter;
 
 import static android.content.ContentValues.TAG;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -30,14 +28,8 @@ import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.getbase.floatingactionbutton.FloatingActionsMenu;
-import com.google.android.material.chip.Chip;
-import com.google.android.material.chip.ChipGroup;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -63,17 +55,20 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
 
     Context context;
     ArrayList<GoodIssueModel> goodIssueModelArrayList;
+    DialogInterface dialogInterface;
     Helper helper = new Helper();
     ItemViewHolder itemViewHolder;
     public boolean isSelectedAll = false;
-    GoodIssueModel[] goodIssueModels;
-
-    GIManagementAdapter giManagementAdapter;
 
 
     public GIManagementAdapter(Context context, ArrayList<GoodIssueModel> goodIssueModelArrayList) {
         this.context = context;
         this.goodIssueModelArrayList = goodIssueModelArrayList;
+    }
+
+    public void setItems(ArrayList<GoodIssueModel> emp)
+    {
+        goodIssueModelArrayList.addAll(emp);
     }
 
     @NonNull
@@ -97,30 +92,11 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
     @Override
     public void onBindViewHolder(@NonNull ItemViewHolder holder, int position) {
         holder.viewBind(goodIssueModelArrayList.get(position));
-
         if (!isSelectedAll) {
             holder.cbSelectItem.setChecked(false);
         } else {
             holder.cbSelectItem.setChecked(true);
         }
-        giManagementAdapter = new GIManagementAdapter(context, goodIssueModelArrayList);
-
-        //final GoodIssueModel goodIssueModel = goodIssueModels[position];
-        holder.setItemClickListener(new ItemViewHolder.ItemClickListener() {
-            @Override
-            public void onItemCLick(View v, int pos) {
-                CheckBox cbSelectItem = (CheckBox) v;
-                GoodIssueModel currentGoodIssue = goodIssueModels[pos];
-
-                if(cbSelectItem.isChecked()){
-                    currentGoodIssue.setChecked(true);
-                    goodIssueModelArrayList.add(currentGoodIssue);
-                } else if (!cbSelectItem.isChecked()){
-                    currentGoodIssue.setChecked(false);
-                    goodIssueModelArrayList.remove(currentGoodIssue);
-                }
-            }
-        });
     }
 
     @Override
@@ -129,9 +105,7 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
     }
 
 
-    public static class ItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        GoodIssueModel goodIssueModel2;
-
+    public class ItemViewHolder extends RecyclerView.ViewHolder {
         LinearLayout llStatusApproved, llStatusRecapped, llStatusInvoiced, llCashedOutStatus, llRoNeedsUpdate, llHiddenView, llWrapGiStatus;
         TextView tvCubication, tvGiDateTime, tvGiUid, tvRoUid, tvGiMatDetail, tvGiVhlDetail,
                 tvVhlUid, tvPoCustNumber, tvCustomerName;
@@ -139,19 +113,7 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
         Button btn1, btn2, btn3, btn4;
         CardView cardView;
         CheckBox cbSelectItem;
-        String custDocumentID, coAccBy;
-
-        DecimalFormat df = new DecimalFormat("0.00");
-
-        //final View rootView = ((Activity)context).getWindow().getDecorView().findViewById(android.R.id.content);
-
-        /*FloatingActionsMenu fabExpandMenu = rootView.findViewById(R.id.fab_expand_menu);
-        TextView tvTotalSelectedItem = rootView.findViewById(R.id.tvTotalSelectedItem);
-        TextView tvTotalSelectedItem2 = rootView.findViewById(R.id.tvTotalSelectedItem2);
-        LinearLayout llBottomSelectionOptions = rootView.findViewById(R.id.llBottomSelectionOptions);*/
-
-
-
+        String customerNameVal, custDocumentID, coAccBy;
 
         public ItemViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -180,18 +142,14 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
             btn3 = itemView.findViewById(R.id.btnOpenItemDetail);
             btn4 = itemView.findViewById(R.id.btnClone);
             cbSelectItem = itemView.findViewById(R.id.cbSelectItem);
-
-
-            cbSelectItem.setOnClickListener(this);
         }
 
-        public void viewBind(final GoodIssueModel goodIssueModel) {
-            goodIssueModel2 = goodIssueModel;
 
+        public void viewBind(final GoodIssueModel goodIssueModel) {
             cbSelectItem.setChecked(false);
             tvRoUid.setVisibility(View.INVISIBLE);
 
-            /*if (Objects.equals(helper.ACTIVITY_NAME, "UPDATE")){
+            if (Objects.equals(helper.ACTIVITY_NAME, "UPDATE")){
                 btnDeleteGi.setVisibility(View.GONE);
             }
 
@@ -201,17 +159,21 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
                 btnCloneGi.setVisibility(View.GONE);
             }
 
+            /*if (tvGiUid.getText().toString().contains("CL")){
+                btnCloneGi.setVisibility(View.GONE);
+            } else{
+                btnCloneGi.setVisibility(View.VISIBLE);
+            }*/
+
             itemView.setOnClickListener(view -> {
-                itemCount();
+                goodIssueModel.setChecked(!goodIssueModel.isChecked());
+                cbSelectItem.setChecked(goodIssueModel.isChecked());
             });
 
             cbSelectItem.setOnClickListener(view -> {
-                itemCount();
-            });*/
-
-
-
-
+                goodIssueModel.setChecked(!goodIssueModel.isChecked());
+                cbSelectItem.setChecked(goodIssueModel.isChecked());
+            });
 
             DecimalFormat df = new DecimalFormat("0.00");
             Double cubication = goodIssueModel.getGiVhlCubication();
@@ -296,9 +258,11 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
             FirebaseFirestore db = FirebaseFirestore.getInstance();
 
             if (giStatus){
+                //llWrapGiStatus.setVisibility(View.VISIBLE);
                 llStatusApproved.setVisibility(View.VISIBLE);
                 btnApproveGi.setVisibility(View.GONE);
             } else {
+                //llWrapGiStatus.setVisibility(View.GONE);
                 llStatusApproved.setVisibility(View.GONE);
                 btnApproveGi.setVisibility(View.VISIBLE);
             }
@@ -322,7 +286,7 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
             }
 
 
-            /*db.collection("CashOutData").whereEqualTo("coDocumentID", giCashedOutTo).get()
+            db.collection("CashOutData").whereEqualTo("coDocumentID", giCashedOutTo).get()
                     .addOnSuccessListener(queryDocumentSnapshots -> {
                                 for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
                                     CashOutModel cashOutModel = documentSnapshot.toObject(CashOutModel.class);
@@ -456,69 +420,9 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
 
                 md.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
                 md.show();
-            });*/
+            });
 
         }
-
-        ItemClickListener itemClickListener;
-
-        public void setItemClickListener(ItemClickListener ic){
-            this.itemClickListener = ic;
-        }
-
-        @Override
-        public void onClick(View v){
-            this.itemClickListener.onItemCLick(v,getLayoutPosition());
-        }
-
-        interface ItemClickListener{
-            void onItemCLick(View v, int pos);
-        }
-
-/*
-        private void itemCount() {
-            goodIssueModel2.setChecked(!goodIssueModel2.isChecked());
-            cbSelectItem.setChecked(goodIssueModel2.isChecked());
-
-            int itemSelectedSize = giManagementAdapter.getSelected().size();
-            float itemSelectedVolume = giManagementAdapter.getSelectedVolume();
-
-            String itemSelectedVolumeAndBuyPriceVal = df.format(itemSelectedVolume).concat(" m3");
-            if (giManagementAdapter.getSelected().size() > 0) {
-
-                fabExpandMenu.animate().translationY(800).setDuration(100).start();
-                fabExpandMenu.collapse();
-
-                tvTotalSelectedItem.setText(itemSelectedSize + " item terpilih");
-                tvTotalSelectedItem2.setText(itemSelectedVolumeAndBuyPriceVal);
-
-                llBottomSelectionOptions.animate()
-                        .translationY(0).alpha(1.0f)
-                        .setDuration(100)
-                        .setListener(new AnimatorListenerAdapter() {
-                            @Override
-                            public void onAnimationStart(Animator animation) {
-                                super.onAnimationStart(animation);
-                                llBottomSelectionOptions.setVisibility(View.VISIBLE);
-                            }
-                        });
-
-            } else {
-                fabExpandMenu.animate().translationY(0).setDuration(100).start();
-                fabExpandMenu.animate().translationY(0).setDuration(100).start();
-
-                llBottomSelectionOptions.animate()
-                        .translationY(llBottomSelectionOptions.getHeight()).alpha(0.0f)
-                        .setListener(new AnimatorListenerAdapter() {
-                            @Override
-                            public void onAnimationEnd(Animator animation) {
-                                super.onAnimationEnd(animation);
-                                llBottomSelectionOptions.setVisibility(View.GONE);
-                            }
-                        });
-            }
-        }
-*/
     }
 
 
@@ -527,6 +431,7 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
         isSelectedAll=true;
         for (int i = 0; i < goodIssueModelArrayList.size(); i++) {
             goodIssueModelArrayList.get(i).setChecked(true);
+
         }
         notifyDataSetChanged();
     }
@@ -551,7 +456,6 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
         }
         return selected;
     }
-
     public float getSelectedVolume() {
         float selected = 0;
         //ArrayList<GoodIssueModel> selected = new ArrayList<>();

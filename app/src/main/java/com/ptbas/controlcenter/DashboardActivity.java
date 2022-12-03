@@ -1,6 +1,8 @@
 package com.ptbas.controlcenter;
 
 import android.Manifest;
+import android.animation.ArgbEvaluator;
+import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -22,6 +24,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
@@ -206,30 +209,65 @@ public class DashboardActivity extends AppCompatActivity {
         bottomSheetBehavior.setFitToContents(true);
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
 
+        int colorFrom = ContextCompat.getColor(this, R.color.transparent);
+        int colorTo = ContextCompat.getColor(this, R.color.black_semi_transparent);
+        ValueAnimator colorAnimation1 = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
+        ValueAnimator colorAnimation2 = ValueAnimator.ofObject(new ArgbEvaluator(), colorTo, colorFrom);
+        colorAnimation1.setDuration(50); // milliseconds
+        colorAnimation1.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animator) {
+                bottomSheet.setBackgroundColor((int) animator.getAnimatedValue());
+            }
+        });
+
+        colorAnimation2.setDuration(50); // milliseconds
+        colorAnimation2.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animator) {
+                bottomSheet.setBackgroundColor((int) animator.getAnimatedValue());
+            }
+        });
+
+
+
         LinearLayout llAddVehicleFromBottomSheet = bottomSheet.findViewById(R.id.ll_add_vehicle);
         LinearLayout llAddCustomerFromBottomSheet = bottomSheet.findViewById(R.id.ll_add_customer);
         LinearLayout llAddMaterialFromBottomSheet = bottomSheet.findViewById(R.id.ll_add_material);
         LinearLayout llAddSupplierFromBottomSheet = bottomSheet.findViewById(R.id.ll_add_supplier);
         ImageView ivExpandCollapseFromBottomSheet = bottomSheet.findViewById(R.id.iv_expand_collapse);
+        ConstraintLayout bottomSheetPODetails = bottomSheet.findViewById(R.id.bottomSheetPODetails);
+
+        bottomSheetPODetails.setOnClickListener(view1 -> {
+            ivExpandCollapseFromBottomSheet.setImageResource(R.drawable.ic_outline_keyboard_arrow_down);
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+            colorAnimation2.start();
+        });
 
         bottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 switch (newState) {
                     case BottomSheetBehavior.STATE_EXPANDED:
-                        ivExpandCollapseFromBottomSheet.setImageResource(R.drawable.ic_outline_keyboard_arrow_down);
-                        ivExpandCollapseFromBottomSheet.setOnClickListener(view -> bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN));
-                        break;
                     case BottomSheetBehavior.STATE_COLLAPSED:
+                        colorAnimation1.start();
+                        ivExpandCollapseFromBottomSheet.setImageResource(R.drawable.ic_outline_keyboard_arrow_down);
+                        ivExpandCollapseFromBottomSheet.setOnClickListener(view -> {
+                            colorAnimation2.start();
+                            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+                        });
+                        break;
                     case BottomSheetBehavior.STATE_DRAGGING:
+                        colorAnimation2.start();
+                        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
                         ivExpandCollapseFromBottomSheet.setImageResource(R.drawable.ic_outline_keyboard_arrow_up);
                         ivExpandCollapseFromBottomSheet.setOnClickListener(view -> bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED));
                         break;
-                    case BottomSheetBehavior.STATE_HALF_EXPANDED:
                     case BottomSheetBehavior.STATE_HIDDEN:
-                    case BottomSheetBehavior.STATE_SETTLING:
                         break;
                 }
+
+
             }
 
             @Override
