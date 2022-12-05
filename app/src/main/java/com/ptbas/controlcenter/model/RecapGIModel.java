@@ -5,20 +5,20 @@ public class RecapGIModel {
     private boolean isChecked = false;
 
     String rcpGiDocumentID, rcpGiUID, rcpGiDateAndTimeCreated, rcpGiCreatedBy, roDocumentID, rcpGiCoUID, rcpDateDeliveryPeriod, rcpGiInvoicedTo;
-    float roCubication;
+    float rcpGiCubication;
     Boolean rcpGiStatus;
 
     public RecapGIModel() {
     }
 
     public RecapGIModel(String rcpGiDocumentID, String rcpGiUID, String rcpGiDateAndTimeCreated,
-                        String rcpGiCreatedBy, String roDocumentID, float roCubication, String rcpGiCoUID, Boolean rcpGiStatus, String rcpDateDeliveryPeriod, String rcpGiInvoicedTo) {
+                        String rcpGiCreatedBy, String roDocumentID, float rcpGiCubication, String rcpGiCoUID, Boolean rcpGiStatus, String rcpDateDeliveryPeriod, String rcpGiInvoicedTo) {
         this.rcpGiDocumentID = rcpGiDocumentID;
         this.rcpGiUID = rcpGiUID;
         this.rcpGiDateAndTimeCreated = rcpGiDateAndTimeCreated;
         this.rcpGiCreatedBy = rcpGiCreatedBy;
         this.roDocumentID = roDocumentID;
-        this.roCubication = roCubication;
+        this.rcpGiCubication = rcpGiCubication;
         this.rcpGiCoUID = rcpGiCoUID;
         this.rcpGiStatus = rcpGiStatus;
         this.rcpDateDeliveryPeriod = rcpDateDeliveryPeriod;
@@ -57,12 +57,12 @@ public class RecapGIModel {
         this.rcpGiCoUID = rcpGiCoUID;
     }
 
-    public float getRoCubication() {
-        return roCubication;
+    public float getRcpGiCubication() {
+        return rcpGiCubication;
     }
 
-    public void setRoCubication(float roCubication) {
-        this.roCubication = roCubication;
+    public void setRcpGiCubication(float rcpGiCubication) {
+        this.rcpGiCubication = rcpGiCubication;
     }
 
     public String getRcpGiDocumentID() {

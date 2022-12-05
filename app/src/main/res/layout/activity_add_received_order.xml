@@ -174,9 +174,8 @@
                         android:id="@+id/spinnerTaxType"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Jenis Wajib Pajak"
                         android:focusable="false"
-                        android:inputType="textCapCharacters" />
+                        android:hint="Jenis Wajib Pajak" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -308,7 +307,7 @@
                             app:startIconDrawable="@drawable/ic_outline_receipt">
 
                             <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/edtPoUID"
+                                android:id="@+id/edtConnectingRONumber"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:hint="Nomor RO (auto)"

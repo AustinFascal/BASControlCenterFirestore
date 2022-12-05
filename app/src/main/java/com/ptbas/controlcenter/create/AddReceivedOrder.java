@@ -38,6 +38,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
@@ -51,6 +54,8 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.ptbas.controlcenter.model.CustomerModel;
 import com.ptbas.controlcenter.utility.DialogInterface;
 import com.ptbas.controlcenter.utility.Helper;
 import com.ptbas.controlcenter.R;
@@ -76,7 +81,7 @@ public class AddReceivedOrder extends AppCompatActivity {
     LinearLayout llList,llAddItem, llInputAllData, llShowSpinnerRoAndEdtPo;
     String monthStrVal, dayStrVal;
     Button btnAddRow, btnLockRow, btnUnlockRow;
-    TextInputEditText edtPoDate, edtPoNumberCustomer, edtRoNumber;
+    TextInputEditText edtPoDate, edtPoNumberCustomer, edtRoNumber, edtConnectingRONumber;
     TextInputLayout wrapEdtPoNumberPtBas, txtInputEdtPoNumberCustomer;
     AutoCompleteTextView spinnerPoTransportType, spinnerPoCustName, spinnerPoCurrency, spinnerRoType, spinnerPoTOP, spinnerTaxType, spinnerRoUID;
     List<String> productName, transportTypeName, customerName, currencyName, arrayListCustDocumentID;
@@ -119,11 +124,11 @@ public class AddReceivedOrder extends AppCompatActivity {
     ArrayList<String> arrayListTaxType = new ArrayList<>(Arrays.asList(taxTypeStr));
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();
-    DocumentReference refRO = db.collection("ReceivedOrderData").document();
+    //DocumentReference refRO = db.collection("ReceivedOrderData").document();
 
     ImageButton btnResetRouid, btnResetCustomer;
 
-    TextInputEditText edtPoUID;
+    //TextInputEditText edtPoUID;
 
     String roPoCustNumber, roDocumentID, roUID;
 
@@ -153,7 +158,7 @@ public class AddReceivedOrder extends AppCompatActivity {
         spinnerTaxTypeWrap = findViewById(R.id.spinnerTaxTypeWrap);
         spinnerRoUID = findViewById(R.id.spinnerRoUID);
 
-        spinnerTaxTypeWrap.setVisibility(View.GONE);
+        //spinnerTaxTypeWrap.setVisibility(View.GONE);
 
 
         spinnerTaxType.setAdapter(arrayAdapterTaxType);
@@ -239,7 +244,9 @@ public class AddReceivedOrder extends AppCompatActivity {
                 break;
         }
 
-        edtPoUID = findViewById(R.id.edtPoUID);
+        edtConnectingRONumber = findViewById(R.id.edtConnectingRONumber);
+
+        //edtPoUID = findViewById(R.id.edtPoUID);
         btnResetRouid = findViewById(R.id.btnResetRouid);
         btnResetCustomer = findViewById(R.id.btnResetCustomer);
         coordinatorLayout = findViewById(R.id.coordinatorLayout);
@@ -393,19 +400,18 @@ public class AddReceivedOrder extends AppCompatActivity {
             customerID = custID[0];
             randomString = getRandomString(5);
 
-            spinnerTaxTypeWrap.setVisibility(View.VISIBLE);
+            //spinnerTaxTypeWrap.setVisibility(View.VISIBLE);
 
             custDocumentID = arrayListCustDocumentID.get(position);
 
             spinnerRoUID.setText(null);
-            edtPoUID.setText(null);
+            //edtPoUID.setText(null);
             btnResetRouid.setVisibility(View.GONE);
 
             btnResetCustomer.setVisibility(View.VISIBLE);
             spinnerRoUID.setAdapter(null);
 
             receiveOrderNumberList.clear();
-
 
             db.collection("ReceivedOrderData").whereEqualTo("custDocumentID", custDocumentID)
                     .addSnapshotListener((value, error) -> {
@@ -435,6 +441,7 @@ public class AddReceivedOrder extends AppCompatActivity {
         spinnerPoCurrency.setOnFocusChangeListener((view, b) ->
                 spinnerPoCurrency.setText(currencyData));
 
+        spinnerTaxType.setAdapter(arrayAdapterTaxType);
         //TODO Make handler as onkeychangelistener
         final Handler handler = new Handler();
         Runnable runnable = new Runnable() {
@@ -450,6 +457,25 @@ public class AddReceivedOrder extends AppCompatActivity {
                     }
 
                 }
+
+                arrayAdapterTaxType.notifyDataSetChanged();
+                db.collection("CustomerData").whereEqualTo("custDocumentID", custDocumentID)
+                        .addSnapshotListener((value2, error2) -> {
+                            if (value2 != null) {
+                                if (!value2.isEmpty()) {
+                                    for (DocumentSnapshot e : value2.getDocuments()) {
+                                        CustomerModel customerModel = e.toObject(CustomerModel.class);
+                                        if (customerModel.getCustNPWP().isEmpty()){
+                                            spinnerTaxType.setText("NON PKP");
+                                            taxTypeVal = false;
+                                        } else{
+                                            spinnerTaxType.setText("PKP");
+                                            taxTypeVal = true;
+                                        }
+                                    }
+                                }
+                            }
+                        });
                 handler.postDelayed(this, 500);
             }
         };
@@ -481,6 +507,8 @@ public class AddReceivedOrder extends AppCompatActivity {
             String roCustName = Objects.requireNonNull(spinnerPoCustName.getText()).toString();
             String roPoCustNumber = Objects.requireNonNull(edtPoNumberCustomer.getText()).toString();
             String roUID = Objects.requireNonNull(edtRoNumber.getText()).toString();
+
+            String roConnectingRoDocumentUID = Objects.requireNonNull(edtConnectingRONumber.getText()).toString();
 
             String roUIDReplace = roUID.replace(" - ","-");
             int roUIDSize = roUIDReplace.length();
@@ -602,17 +630,29 @@ public class AddReceivedOrder extends AppCompatActivity {
                         }
 
                         // Create RO object
-                        String roDocumentID = refRO.getId();
+                        //String roDocumentID = refRO.getId();
                         ReceivedOrderModel receivedOrderModel =
-                                new ReceivedOrderModel(roDocumentID, roUID, roCreatedBy,
+                                new ReceivedOrderModel(roUID, roUID, roCreatedBy,
                                         roDateCreated, roMatTransport, roCurrency, roPoCustNumber,
-                                        custDocumentID, roType, roTOP, poSubTotalBuy,
+                                        custDocumentID, roConnectingRoDocumentUID, roType, roTOP, poSubTotalBuy,
                                         poSubTotalSell, roCountQuantity, poTotalSellFinal, poEstProfit,
                                         false, productItemsHashMap, taxTypeVal);
 
 
+
+
+
+
+
                         fabActionSaveCloud.setOnClickListener(view1 -> {
                             if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED){
+
+                                if (!edtConnectingRONumber.getText().toString().equals("")){
+                                    db.collection("ReceivedOrderData").whereEqualTo("roDocumentID", edtConnectingRONumber.getText().toString()).get()
+                                            .addOnSuccessListener(queryDocumentSnapshots -> db.collection("ReceivedOrderData").document(edtConnectingRONumber.getText().toString()).update("roConnectingRoDocumentUID", roUID));
+                                }
+
+                                DocumentReference refRO = db.collection("ReceivedOrderData").document(roUID);
                                 refRO.set(receivedOrderModel)
                                         .addOnSuccessListener(unused -> {
                                             Intent intent = new Intent();
@@ -694,7 +734,7 @@ public class AddReceivedOrder extends AppCompatActivity {
 
                             }
                         }
-                        edtPoUID.setText(roUID);
+                        edtConnectingRONumber.setText(roUID);
                     });
 
         });
@@ -703,7 +743,7 @@ public class AddReceivedOrder extends AppCompatActivity {
         btnResetRouid.setOnClickListener(view -> {
             btnResetRouid.setVisibility(View.GONE);
             spinnerRoUID.setText(null);
-            edtPoUID.setText(null);
+            //edtPoUID.setText(null);
         });
 
         btnResetCustomer.setOnClickListener(view -> {
@@ -712,7 +752,7 @@ public class AddReceivedOrder extends AppCompatActivity {
             spinnerPoCustName.setText(null);
             btnResetRouid.setVisibility(View.GONE);
             spinnerRoUID.setText(null);
-            edtPoUID.setText(null);
+            //edtPoUID.setText(null);
             receiveOrderNumberList.clear();
         });
 

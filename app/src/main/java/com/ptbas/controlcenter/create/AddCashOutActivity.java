@@ -132,8 +132,8 @@ public class AddCashOutActivity extends AppCompatActivity {
     TextInputEditText edtPoUID, edtDateStart, edtDateEnd, edtBankNameAndAccountNumber, edtAccountOwnerName, edtPayee;
     DatePickerDialog datePicker;
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-    ArrayList<GoodIssueModel> goodIssueModelArrayList = new ArrayList<>();
-    GIManagementAdapter giManagementAdapter;
+    ArrayList<RecapGIModel> recapGIModelArrayList = new ArrayList<>();
+    //GIManagementAdapter giManagementAdapter;
     RecyclerView rvGoodIssueList;
     CardView cdvFilter;
     View firstViewData;
@@ -580,7 +580,7 @@ public class AddCashOutActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 menu.findItem(R.id.select_all_data_recap).setIcon(ContextCompat.getDrawable(AddCashOutActivity.this, R.drawable.ic_outline_select_all));
-                giManagementAdapter.clearSelection();
+                recapGiManagementAdapter.clearSelection();
                 llBottomSelectionOptions.animate()
                         .translationY(llBottomSelectionOptions.getHeight()).alpha(0.0f)
                         .setListener(new AnimatorListenerAdapter() {
@@ -673,7 +673,7 @@ public class AddCashOutActivity extends AppCompatActivity {
         searchQueryAll();
 
         // CREATE GI MANAGEMENT ADAPTER
-        giManagementAdapter = new GIManagementAdapter(this, goodIssueModelArrayList);
+        recapGiManagementAdapter = new RecapGoodIssueManagementAdapter(this, recapGIModelArrayList);
 
         // HIDE FAB CREATE COR ON CREATE
         fabCreateCOR.animate().translationY(800).setDuration(100).start();
@@ -690,11 +690,14 @@ public class AddCashOutActivity extends AppCompatActivity {
 
                         && !spinnerSupplierName.getText().toString().isEmpty()){
 
-                    int itemSelectedSize = giManagementAdapter.getSelected().size();
-                    float itemSelectedVolume = giManagementAdapter.getSelectedVolume();
+                    int itemSelectedSize = recapGiManagementAdapter.getSelected().size();
+                    float itemSelectedVolume = recapGiManagementAdapter.getSelectedVolume();
                     String itemSelectedSizeVal = String.valueOf(itemSelectedSize).concat(" item terpilih");
                     String itemSelectedVolumeAndBuyPriceVal = df.format(itemSelectedVolume).concat(" m3");
                     //.concat("IDR "+itemSelectedBuyPriceVal);
+
+                    tvTotalSelectedItem.setText(itemSelectedSizeVal);
+                    tvTotalSelectedItem2.setText(itemSelectedVolumeAndBuyPriceVal);
 
                     if (recapGiManagementAdapter.getSelected().size()>0){
                         fabCreateCOR.animate().translationY(0).setDuration(100).start();
@@ -893,7 +896,7 @@ public class AddCashOutActivity extends AppCompatActivity {
             if (!isSelectedAll){
                 isSelectedAll = true;
                 item.setIcon(R.drawable.ic_outline_deselect);
-                giManagementAdapter.selectAll();
+                recapGiManagementAdapter.selectAll();
                 llBottomSelectionOptions.animate()
                         .translationY(0).alpha(1.0f)
                         .setDuration(100)
@@ -907,7 +910,7 @@ public class AddCashOutActivity extends AppCompatActivity {
             } else {
                 isSelectedAll = false;
                 item.setIcon(R.drawable.ic_outline_select_all);
-                giManagementAdapter.clearSelection();
+                recapGiManagementAdapter.clearSelection();
                 llBottomSelectionOptions.animate()
                         .translationY(llBottomSelectionOptions.getHeight()).alpha(0.0f)
                         .setListener(new AnimatorListenerAdapter() {

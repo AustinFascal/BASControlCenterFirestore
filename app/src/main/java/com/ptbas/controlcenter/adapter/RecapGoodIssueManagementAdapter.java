@@ -42,6 +42,8 @@ public class RecapGoodIssueManagementAdapter extends RecyclerView.Adapter<RecapG
     Context context;
     ArrayList<RecapGIModel> recapGoodIssueModelArrayList;
     DialogInterface dialogInterface;
+    public boolean isSelectedAll = false;
+
 
     public RecapGoodIssueManagementAdapter(Context context, ArrayList<RecapGIModel> recapGoodIssueModelArrayList) {
         this.context = context;
@@ -261,6 +263,14 @@ public class RecapGoodIssueManagementAdapter extends RecyclerView.Adapter<RecapG
         return formatter.format(Double.parseDouble(amount));
     }
 
+    public void selectAll(){
+        isSelectedAll=true;
+        for (int i = 0; i < recapGoodIssueModelArrayList.size(); i++) {
+            recapGoodIssueModelArrayList.get(i).setChecked(true);
+        }
+        notifyDataSetChanged();
+    }
+
     public void clearSelection() {
         for (int i = 0; i < recapGoodIssueModelArrayList.size(); i++) {
             recapGoodIssueModelArrayList.get(i).setChecked(false);
@@ -274,6 +284,20 @@ public class RecapGoodIssueManagementAdapter extends RecyclerView.Adapter<RecapG
         for (int i = 0; i < recapGoodIssueModelArrayList.size(); i++) {
             if (recapGoodIssueModelArrayList.get(i).isChecked()) {
                 selected.add(recapGoodIssueModelArrayList.get(i));
+            }
+        }
+        return selected;
+    }
+
+    public float getSelectedVolume() {
+        float selected = 0;
+        //ArrayList<GoodIssueModel> selected = new ArrayList<>();
+        for (int i = 0; i < recapGoodIssueModelArrayList.size(); i++) {
+            if (recapGoodIssueModelArrayList.get(i).isChecked()) {
+                selected += recapGoodIssueModelArrayList.get(i).getRcpGiCubication();
+                if (!recapGoodIssueModelArrayList.get(i).isChecked()){
+                    selected -= recapGoodIssueModelArrayList.get(i).getRcpGiCubication();
+                }
             }
         }
         return selected;

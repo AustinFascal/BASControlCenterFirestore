@@ -7,7 +7,7 @@ import java.util.Map;
 public class ReceivedOrderModel {
 
     String roDocumentID, roUID, roCreatedBy, roDateCreated, roMatType, roCurrency, roPoCustNumber,
-            custDocumentID;
+            custDocumentID, roConnectingRoDocumentUID;
     Integer roType, roTOP;
 
     Boolean custTaxType;
@@ -22,7 +22,7 @@ public class ReceivedOrderModel {
 
     public ReceivedOrderModel(String roDocumentID, String roUID, String roCreatedBy,
                               String roDateCreated, String roMatType, String roCurrency,
-                              String roPoCustNumber, String custDocumentID, Integer roType,
+                              String roPoCustNumber, String custDocumentID, String roConnectingRoDocumentUID, Integer roType,
                               Integer roTOP, Double roSubTotalBuy, Double roSubTotalSell,
                               Double roCountQuantity, Double roTotalSellFinal, Double roEstProfit,
                               Boolean roStatus, HashMap<String, List<ProductItems>> roOrderedItems, Boolean custTaxType) {
@@ -34,6 +34,7 @@ public class ReceivedOrderModel {
         this.roCurrency = roCurrency;
         this.roPoCustNumber = roPoCustNumber;
         this.custDocumentID = custDocumentID;
+        this.roConnectingRoDocumentUID = roConnectingRoDocumentUID;
         this.roType = roType;
         this.roTOP = roTOP;
         this.roSubTotalBuy = roSubTotalBuy;
@@ -44,6 +45,14 @@ public class ReceivedOrderModel {
         this.roStatus = roStatus;
         this.roOrderedItems = roOrderedItems;
         this.custTaxType = custTaxType;
+    }
+
+    public String getRoConnectingRoDocumentUID() {
+        return roConnectingRoDocumentUID;
+    }
+
+    public void setRoConnectingRoDocumentUID(String roConnectingRoDocumentUID) {
+        this.roConnectingRoDocumentUID = roConnectingRoDocumentUID;
     }
 
     public Boolean getCustTaxType() {
