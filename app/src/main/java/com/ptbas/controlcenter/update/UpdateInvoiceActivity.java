@@ -126,7 +126,7 @@ public class UpdateInvoiceActivity extends AppCompatActivity {
     double matBuyPrice, matSellPrice, matCubication, transportServiceSellPrice;
 
     // ID
-    String roPoCustNumber, currencyVal, custDocumentID, invUIDVal, coRoUIDVal, coPoUIDVal, invUID, invPoUID, invDueDateNTimVal;
+    String roPoCustNumber, currencyVal, custDocumentID, invUIDVal, coRoUIDVal, coPoUIDVal, invUID, invPoUID, invDueDateNTimVal, connectingRODocumentUID;
 
     // RO
     String roDocumentID, matTypeVal, matNameVal, transportServiceNameVal;
@@ -490,7 +490,6 @@ public class UpdateInvoiceActivity extends AppCompatActivity {
                             String totalDueDefault = documentSnapshot.get("invTotalDue", String.class);
 
 
-                            searchQueryAll();
 
 
                             invRecalculateStatus = invoiceModel.getInvRecalculate();
@@ -678,6 +677,26 @@ public class UpdateInvoiceActivity extends AppCompatActivity {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                            searchQueryAll();
+
+
+
                             DatabaseReference referenceProfile = FirebaseDatabase.getInstance("https://bas-delivery-report-default-rtdb.asia-southeast1.firebasedatabase.app").getReference("RegisteredUser");
                             referenceProfile.addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
@@ -742,6 +761,9 @@ public class UpdateInvoiceActivity extends AppCompatActivity {
                                                 invPoDate = receivedOrderModel.getRoDateCreated();
                                                 invPoType = receivedOrderModel.getRoType();
 
+                                                connectingRODocumentUID = receivedOrderModel.getRoConnectingRoDocumentUID();
+
+
                                                 tvPoDate.setText(invPoDate);
 
 
@@ -775,6 +797,8 @@ public class UpdateInvoiceActivity extends AppCompatActivity {
 
                                                 }
 
+
+
                                                 tvMatName.setText(matNameVal);
 
 
@@ -805,7 +829,7 @@ public class UpdateInvoiceActivity extends AppCompatActivity {
 
                                                 tvCubicationTotalRev.setText(df.format(totalUnitFinal)+" m3");
                                                 if (invPoType == 2){
-                                                    taxPPN = 0;
+                                                    //taxPPN = 0;
                                                     tvSubTotalRev.setText(currencyVal+" "+currencyFormat(df.format(totalAmountForTransportService)));
                                                     tvDiscRev.setText(currencyVal+" "+"0");
                                                     tvPPNRev.setText(currencyVal+" " +currencyFormat(df.format(taxPPN)));
@@ -1705,12 +1729,12 @@ public class UpdateInvoiceActivity extends AppCompatActivity {
                 goodIssueModelArrayList.clear();
                 if (snapshot.exists()){
                     for (DataSnapshot item : snapshot.getChildren()) {
+
                         if (Objects.equals(item.child("giInvoicedTo").getValue(), invUID)) {
                             GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
                             goodIssueModelArrayList.add(goodIssueModel);
                             nestedScrollView.setVisibility(View.VISIBLE);
                             llNoData.setVisibility(View.GONE);
-
                         }
                     }
                     if (goodIssueModelArrayList.size()==0) {

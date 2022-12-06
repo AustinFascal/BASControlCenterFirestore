@@ -134,7 +134,7 @@ public class AddBankAccountActivity extends AppCompatActivity {
                     arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
                     spinnerBankName.setAdapter(arrayAdapter);
                 } else {
-                    Toast.makeText(AddBankAccountActivity.this, "Not exists", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(AddBankAccountActivity.this, "Not exists", Toast.LENGTH_SHORT).show();
                 }
             }
 

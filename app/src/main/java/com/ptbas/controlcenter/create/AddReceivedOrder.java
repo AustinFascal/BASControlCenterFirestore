@@ -292,7 +292,7 @@ public class AddReceivedOrder extends AppCompatActivity {
                     arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
                     spinnerPoTransportType.setAdapter(arrayAdapter);
                 } else {
-                    Toast.makeText(AddReceivedOrder.this, "Not exists", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(AddReceivedOrder.this, "Not exists", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -319,7 +319,7 @@ public class AddReceivedOrder extends AppCompatActivity {
                             arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
                             spinnerPoCustName.setAdapter(arrayAdapter);
                         } else {
-                            Toast.makeText(AddReceivedOrder.this, "Not exists", Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(AddReceivedOrder.this, "Not exists", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -336,7 +336,7 @@ public class AddReceivedOrder extends AppCompatActivity {
                     arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
                     spinnerPoCurrency.setAdapter(arrayAdapter);
                 } else {
-                    Toast.makeText(AddReceivedOrder.this, "Not exists", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(AddReceivedOrder.this, "Not exists", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -922,7 +922,7 @@ public class AddReceivedOrder extends AppCompatActivity {
                     arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
                     spinnerMaterialName.setAdapter(arrayAdapter);
                 } else {
-                    Toast.makeText(AddReceivedOrder.this, "Not exists", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(AddReceivedOrder.this, "Not exists", Toast.LENGTH_SHORT).show();
                 }
             }
 

@@ -496,7 +496,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
                             arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
                             spinnerCustName.setAdapter(arrayAdapter);
                         } else {
-                            Toast.makeText(AddInvoiceActivity.this, "Not exists", Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(AddInvoiceActivity.this, "Not exists", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -529,7 +529,11 @@ public class AddInvoiceActivity extends AppCompatActivity {
                                                 if (!Objects.requireNonNull(value).isEmpty()) {
                                                     for (DocumentSnapshot e : value.getDocuments()) {
                                                         String spinnerPurchaseOrders = Objects.requireNonNull(e.get("roPoCustNumber")).toString();
-                                                        receiveOrderNumberList.add(spinnerPurchaseOrders);
+                                                        Boolean roStatus = (Boolean) Objects.requireNonNull(e.get("roStatus"));
+                                                        if (roStatus){
+                                                            receiveOrderNumberList.add(spinnerPurchaseOrders);
+                                                        }
+
                                                     }
                                                     ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddInvoiceActivity.this, R.layout.style_spinner, receiveOrderNumberList);
                                                     arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
@@ -619,12 +623,14 @@ public class AddInvoiceActivity extends AppCompatActivity {
                                             if (!value.isEmpty()) {
                                                 for (DocumentSnapshot d : value.getDocuments()) {
                                                     rcpGiUID = Objects.requireNonNull(d.get("rcpGiUID")).toString();
+                                                    /* String[] a = rcpGiUID.split(" - ");*/
+
                                                     rcpGiInvoicedTo = Objects.requireNonNull(d.get("rcpGiInvoicedTo")).toString();
                                                     Chip chip = (Chip)inflater.inflate(R.layout.chip_item, null, false);
                                                     chip.setText(rcpGiUID);
+                                                    //chip.setText(a[1]);
                                                     if (!rcpGiInvoicedTo.isEmpty()){
                                                         chip.setEnabled(false);
-                                                        //chip.setChecked(true);
                                                         chip.setChipIcon(AppCompatResources.getDrawable(context, R.drawable.ic_outline_receipt_long));
                                                         chip.setChipBackgroundColor(ColorStateList.valueOf(ContextCompat.getColor(context, R.color.pure_green)));
                                                     }
@@ -633,7 +639,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
                                                     tvChooseRcpGi.setVisibility(View.VISIBLE);
                                                 }
                                             } else {
-                                                Toast.makeText(AddInvoiceActivity.this, "Not exists", Toast.LENGTH_SHORT).show();
+                                                //Toast.makeText(AddInvoiceActivity.this, "Not exists", Toast.LENGTH_SHORT).show();
                                             }
                                         }
                                     });
@@ -650,48 +656,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
             }
         });
 
-       /* spinnerCoUID.setOnItemClickListener((adapterView, view, i, l) -> {
-            spinnerCoUID.setError(null);
-            String selectedCoUID = (String) adapterView.getItemAtPosition(i);
 
-            btnResetCoUID.setVisibility(View.VISIBLE);
-            ll_wrap_filter_by_couid.setVisibility(View.VISIBLE);
-
-            db.collection("CashOutData").whereEqualTo("coUID", selectedCoUID).get()
-                    .addOnSuccessListener(queryDocumentSnapshots -> {
-                        for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots){
-                            CashOutModel cashOutModel = documentSnapshot.toObject(CashOutModel.class);
-                            cashOutModel.setCoDocumentID(documentSnapshot.getId());
-                            coDocumentID = cashOutModel.getCoDocumentID();
-                            coUID = cashOutModel.getCoUID();
-                            coAccBy = cashOutModel.getCoAccBy();
-
-                            if (coAccBy.isEmpty()){
-                                MaterialDialog md = new MaterialDialog.Builder(this)
-                                        .setAnimation(R.raw.lottie_attention)
-                                        .setTitle("Cash Out Belum Lunas")
-                                        .setMessage("Cash Out belum dibayar ke supplier. Apakah Anda yakin ingin melanjutkan penagihan?")
-                                        .setPositiveButton("LANJUT", R.drawable.ic_outline_navigate_next, (dialogInterface, which) -> {
-                                            dialogInterface.dismiss();
-                                            llStatusCo.setVisibility(View.VISIBLE);
-                                        })
-                                        .setNegativeButton("BATAL", R.drawable.ic_outline_close, (dialogInterface, which) -> {
-                                            dialogInterface.dismiss();
-                                            spinnerCoUID.setText(null);
-                                            llStatusCo.setVisibility(View.GONE);
-                                            btnResetCoUID.setVisibility(View.GONE);
-                                        })
-                                        .setCancelable(false)
-                                        .build();
-
-                                md.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
-                                md.show();
-                            } else {
-                                llStatusCo.setVisibility(View.GONE);
-                            }
-                        }
-                    });
-        });*/
 
 
         db.collection("BankAccountData").whereEqualTo("bankType", "PERUSAHAAN")
@@ -713,7 +678,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
                             arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
                             spinnerBankAccount.setAdapter(arrayAdapter);
                         } else {
-                            Toast.makeText(AddInvoiceActivity.this, "Not exists", Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(AddInvoiceActivity.this, "Not exists", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -907,8 +872,8 @@ public class AddInvoiceActivity extends AppCompatActivity {
                 Collections.sort(datePeriodFiltered);
                 invDateDeliveryPeriod = String.valueOf(datePeriodFiltered);
 
-                String roUIDValNoSpace = rouidVal.replaceAll("\\s","");
-                invUID = getRandomString()+"-INV-"+roUIDValNoSpace;
+                //String roUIDValNoSpace = rouidVal.replaceAll("\\s","");
+                invUID = pouidVal+" - INV - "+getRandomString();
 
 
                 String invCreatedBy = helper.getUserId();
@@ -944,7 +909,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
                             invDateNTimeCreated,  "-", "", "",
                             "", invDateDeliveryPeriod,
                             custDocumentID,  bankAccountID,  roDocumentID, "", "",
-                            totalUnitFinalFinal, invSubTotalFinal, invDiscountFinal, invTaxPPNFinal, invTaxPPHFinal, invTotalDueFinal, coDocumentID, arrayLisyRecapUID);
+                            totalUnitFinalFinal, invSubTotalFinal, invDiscountFinal, invTaxPPNFinal, invTaxPPHFinal, invTotalDueFinal, coDocumentID, arrayLisyRecapUID, invPoType);
 
                 } else if (invPoType == 1){
                     String totalUnitFinalFinal = df.format(totalUnit)+" m3";
@@ -959,7 +924,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
                             invDateNTimeCreated,  "-", "", "",
                             "", invDateDeliveryPeriod,
                             custDocumentID,  bankAccountID,  roDocumentID, "", "",
-                            totalUnitFinalFinal, invSubTotalFinal, invDiscountFinal, invTaxPPNFinal, invTaxPPHFinal, invTotalDueFinal, coDocumentID, arrayLisyRecapUID);
+                            totalUnitFinalFinal, invSubTotalFinal, invDiscountFinal, invTaxPPNFinal, invTaxPPHFinal, invTotalDueFinal, coDocumentID, arrayLisyRecapUID, invPoType);
 
                 } else if (invPoType == 0){
                     String totalUnitFinalFinal = df.format(totalUnit)+" m3";
@@ -975,7 +940,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
                             invDateNTimeCreated,  "-", "", "",
                             "", invDateDeliveryPeriod,
                             custDocumentID,  bankAccountID,  roDocumentID, "", "",
-                            totalUnitFinalFinal, invSubTotalFinal, invDiscountFinal, invTaxPPNFinal, invTaxPPHFinal, invTotalDueFinal, coDocumentID, arrayLisyRecapUID);
+                            totalUnitFinalFinal, invSubTotalFinal, invDiscountFinal, invTaxPPNFinal, invTaxPPHFinal, invTotalDueFinal, coDocumentID, arrayLisyRecapUID, invPoType);
                 }
 
 
@@ -1231,10 +1196,16 @@ public class AddInvoiceActivity extends AppCompatActivity {
                 totalUnitFinal += giManagementAdapter.getSelected().get(i).getGiVhlCubication();
             }
 
+            double taxPPN;
             // TOTAL AMOUNT CALCULATION
             double totalAmountForMaterials = matSellPrice*Double.parseDouble(df.format(totalUnitFinal));
             double totalAmountForTransportService = transportServiceSellPrice*Double.parseDouble(df.format(totalUnitFinal));
-            double taxPPN = Double.parseDouble(df.format((0.11)*totalAmountForMaterials));
+            if (invPoType ==2){
+                taxPPN = Double.parseDouble(df.format((0.11)*totalAmountForMaterials)) + Double.parseDouble(df.format((0.11)*totalAmountForTransportService));
+            } else{
+                taxPPN = Double.parseDouble(df.format((0.11)*totalAmountForMaterials));
+            }
+
             double taxPPH = Double.parseDouble(df.format((0.02)*totalAmountForTransportService));
             double totalDue = totalAmountForMaterials+totalAmountForTransportService+taxPPN-taxPPH;
             double totalDueForTransportService = totalAmountForTransportService-taxPPH;
@@ -1375,7 +1346,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
             tblInvSection5.addCell(cellColHeader(
                     new Paragraph("Jumlah (Unit)", fontMedium), Element.ALIGN_RIGHT));
             tblInvSection5.addCell(cellColHeader(
-                    new Paragraph("Pajak", fontMedium), Element.ALIGN_RIGHT));
+                    new Paragraph("", fontMedium), Element.ALIGN_RIGHT));
             tblInvSection5.addCell(cellColHeader(
                     new Paragraph("Jumlah", fontMedium), Element.ALIGN_RIGHT));
 
@@ -1387,7 +1358,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
                 tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
                         new Paragraph(df.format(totalUnitFinal), fontNormal), Element.ALIGN_RIGHT));
                 tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
-                        new Paragraph(currencyVal+" "+currencyFormat(df.format(taxPPN)), fontNormal), Element.ALIGN_RIGHT));
+                        new Paragraph("", fontNormal), Element.ALIGN_RIGHT));
                 tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
                         new Paragraph(currencyVal+" "+currencyFormat(df.format(totalAmountForMaterials)), fontNormal), Element.ALIGN_RIGHT));
             }
@@ -1399,7 +1370,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
             tblInvSection7.addCell(cellTxtNoBrdrNrmlMainContent(
                     new Paragraph(df.format(totalUnitFinal), fontNormal), Element.ALIGN_RIGHT));
             tblInvSection7.addCell(cellTxtNoBrdrNrmlMainContent(
-                    new Paragraph(currencyVal+" "+currencyFormat(df.format(taxPPH)), fontNormal), Element.ALIGN_RIGHT));
+                    new Paragraph("", fontNormal), Element.ALIGN_RIGHT));
             tblInvSection7.addCell(cellTxtNoBrdrNrmlMainContent(
                     new Paragraph(currencyVal+" "+currencyFormat(df.format(totalAmountForTransportService)), fontNormal), Element.ALIGN_RIGHT));
 
@@ -1412,7 +1383,6 @@ public class AddInvoiceActivity extends AppCompatActivity {
             tblInvSection8.addCell(cellTxtBrdrTopNrmlMainContent(
                     new Paragraph("Sub Total :"+"\n"+"Diskon :"+"\n"+"PPN 11% :"+"\n"+"PPh 23 :"+"\n"+"Total Tagihan:", fontNormal), Element.ALIGN_RIGHT));
             if (invPoType == 2){
-                taxPPN = 0;
                 tblInvSection8.addCell(cellTxtBrdrTopNrmlMainContent(
                         new Paragraph(currencyVal+" "+currencyFormat(df.format(totalAmountForTransportService))+"\n"+currencyVal+" "+"0"+"\n"+currencyVal+" "+currencyFormat(df.format(taxPPN))+"\n"+"("+currencyVal+" "+currencyFormat(df.format(taxPPH))+")"+"\n"+currencyVal+" "+currencyFormat(df.format(totalDueForTransportService)), fontNormal), Element.ALIGN_RIGHT));
             } else if (invPoType == 1){
@@ -1856,12 +1826,14 @@ public class AddInvoiceActivity extends AppCompatActivity {
                         if (!rouidVal.isEmpty()){
                             if (selectedInvUID != null){
                                 if (Objects.equals(item.child("giInvoicedTo").getValue(), selectedInvUID) ){
-                                    if (Objects.equals(item.child("giStatus").getValue(), true)) {
-                                        menu.findItem(R.id.select_all_data_recap).setVisible(true);
-                                        GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
-                                        goodIssueModelArrayList.add(goodIssueModel);
-                                        nestedScrollView.setVisibility(View.VISIBLE);
-                                        llNoData.setVisibility(View.GONE);
+                                    if (Objects.equals(item.child("giConnectingInvoicedTo").getValue(), null)){
+                                        if (Objects.equals(item.child("giStatus").getValue(), true)) {
+                                            menu.findItem(R.id.select_all_data_recap).setVisible(true);
+                                            GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
+                                            goodIssueModelArrayList.add(goodIssueModel);
+                                            nestedScrollView.setVisibility(View.VISIBLE);
+                                            llNoData.setVisibility(View.GONE);
+                                        }
                                     }
                                 }
                             } else {

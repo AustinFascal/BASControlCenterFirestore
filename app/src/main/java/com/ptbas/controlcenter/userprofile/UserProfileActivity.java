@@ -28,6 +28,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.ptbas.controlcenter.DashboardActivity;
 import com.ptbas.controlcenter.MainActivity;
 import com.ptbas.controlcenter.utility.Helper;
 import com.squareup.picasso.Picasso;
@@ -182,12 +183,17 @@ public class UserProfileActivity extends AppCompatActivity {
                             break;
                     }
 
-                    Uri uri = firebaseUser.getPhotoUrl();
 
-                    Picasso.with(UserProfileActivity.this).load(uri).into(imageViewProfilePic);
+                    if (firebaseUser.getPhotoUrl() != null){
+                        Uri  uri = firebaseUser.getPhotoUrl();
+                        Picasso.with(UserProfileActivity.this).load(uri).into(imageViewProfilePic);
+                    } else{
+                        imageViewProfilePic.setImageResource(R.drawable.default_user_profile);
+                    }
 
                 } else {
-                    Toast.makeText(UserProfileActivity.this, "NULL", Toast.LENGTH_SHORT).show();
+                    imageViewProfilePic.setImageResource(R.drawable.default_user_profile);
+                    Toast.makeText(UserProfileActivity.this, "Gagal memuat data. Pastikan Anda terhubung dengan internet.", Toast.LENGTH_SHORT).show();
                 }
                 progressBar.setVisibility(View.GONE);
             }

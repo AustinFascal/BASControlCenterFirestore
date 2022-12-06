@@ -286,7 +286,7 @@ public class AddCashOutActivity extends AppCompatActivity {
                             arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
                             spinnerCustName.setAdapter(arrayAdapter);
                         } else {
-                            Toast.makeText(AddCashOutActivity.this, "Not exists", Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(AddCashOutActivity.this, "Not exists", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -305,7 +305,7 @@ public class AddCashOutActivity extends AppCompatActivity {
                             arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
                             spinnerSupplierName.setAdapter(arrayAdapter);
                         } else {
-                            Toast.makeText(AddCashOutActivity.this, "Not exists", Toast.LENGTH_SHORT).show();
+                           // Toast.makeText(AddCashOutActivity.this, "Not exists", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -780,7 +780,7 @@ public class AddCashOutActivity extends AppCompatActivity {
 
         rouidVal = spinnerRoUID.getText().toString();
         pouidVal = Objects.requireNonNull(edtPoUID.getText()).toString();
-        coUID = getRandomString2(5)+" - "+pouidVal;
+        coUID = pouidVal+" - "+getRandomString2(5);
 
 
         fabCreateCOR.animate().translationY(0).setDuration(100).start();

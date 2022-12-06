@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -85,6 +86,8 @@ public class DashboardActivity extends AppCompatActivity {
 
     boolean doubleBackToExitPressedOnce = false;
 
+    Context context;
+
     CoordinatorLayout coordinatorLayout;
     ConstraintLayout bottomSheet;
     LinearLayout linearLayout, llAddGi, llShowOthers, llAddRo, llAddBKK, llAddRecap, llAddInv, llTopView, llWrapShortcuts, llWrapProfilePic;
@@ -115,6 +118,8 @@ public class DashboardActivity extends AppCompatActivity {
        /* DroidNet mDroidNet = DroidNet.getInstance();
         mDroidNet.addInternetConnectivityListener(this);*/
 
+        context = this;
+
         llWrapProfilePic = findViewById(R.id.wrap_profile_pic);
         bottomSheet = findViewById(R.id.bottomSheetPODetails);
         linearLayout = findViewById(R.id.linearLayoutWashboard);
@@ -141,23 +146,6 @@ public class DashboardActivity extends AppCompatActivity {
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         getWindow().setStatusBarColor(Color.TRANSPARENT);
-
-
-        /*final Handler handler = new Handler();
-        Runnable runnable = new Runnable() {
-            public void run() {
-
-                handler.postDelayed(this, 1000);
-            }
-        };
-        runnable.run();*/
-
-
-
-        /*if (!isConnectingToInternet()){
-            Toast.makeText(DashboardActivity.this, "Not Connected", Toast.LENGTH_SHORT).show();
-        }*/
-
 
 
         // HANDLING SYSTEM UI MODE
@@ -494,11 +482,15 @@ public class DashboardActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 UserModel userModel = snapshot.getValue(UserModel.class);
                 if (userModel != null){
-                    Uri uri = firebaseUser.getPhotoUrl();
-                    swipeContainer.setRefreshing(false);
-                    Picasso.with(DashboardActivity.this).load(uri).into(imageViewProfilePic);
+                    if (firebaseUser.getPhotoUrl() != null){
+                        Uri  uri = firebaseUser.getPhotoUrl();
+                        swipeContainer.setRefreshing(false);
+                        Picasso.with(DashboardActivity.this).load(uri).into(imageViewProfilePic);
+                    } else{
+                        imageViewProfilePic.setImageResource(R.drawable.default_user_profile);
+                    }
                 } else {
-                    Toast.makeText(DashboardActivity.this, "NULL", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(DashboardActivity.this, "Gagal memuat data. Pastikan Anda terhubung dengan internet.", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -589,54 +581,6 @@ public class DashboardActivity extends AppCompatActivity {
         return holder2;
     }
 
-   /* public void haveNetworkConnection() {
-        nestedscrollview.setOnScrollChangeListener((NestedScrollView.OnScrollChangeListener) (v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
-
-            if (scrollY > 50) {
-                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-
-                int nightModeFlags =
-                        DashboardActivity.this.getResources().getConfiguration().uiMode &
-                                Configuration.UI_MODE_NIGHT_MASK;
-                switch (nightModeFlags) {
-                    case Configuration.UI_MODE_NIGHT_YES:
-                        llTopView.setBackgroundColor(ContextCompat.getColor(DashboardActivity.this, android.R.color.black));
-                        llTopView.setElevation(20);
-                        title.setTextColor(ContextCompat.getColor(DashboardActivity.this, R.color.white));
-
-                        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);//  set status text dark
-                        getWindow().setStatusBarColor(ContextCompat.getColor(DashboardActivity.this, R.color.black));// set status background white
-                        break;
-                    case Configuration.UI_MODE_NIGHT_NO:
-                    case Configuration.UI_MODE_NIGHT_UNDEFINED:
-                        llTopView.setBackgroundColor(ContextCompat.getColor(DashboardActivity.this, android.R.color.white));
-                        llTopView.setElevation(20);
-                        title.setTextColor(ContextCompat.getColor(DashboardActivity.this, R.color.black));
-                        //imgbtnMenu.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(DashboardActivity.this, R.color.black)));
-
-                        //Window window = getWindow();
-                        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);//  set status text dark
-                        getWindow().setStatusBarColor(ContextCompat.getColor(DashboardActivity.this, R.color.white));// set status background white
-                        break;
-                }
-
-
-            }
-            if (scrollY < 300) {
-                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-            }
-            if (scrollY < 50) {
-                title.setTextColor(ContextCompat.getColor(DashboardActivity.this, R.color.white));
-                llTopView.setBackgroundColor(ContextCompat.getColor(DashboardActivity.this, android.R.color.transparent));
-                llTopView.setElevation(0);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR);//  set status text dark
-                }
-                getWindow().setStatusBarColor(ContextCompat.getColor(DashboardActivity.this, android.R.color.transparent));// set status background white
-
-            }
-        });
-    }*/
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -663,10 +607,7 @@ public class DashboardActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
-        /*IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-        registerReceiver(networkChangeListener, filter);*/
         super.onResume();
-        //haveNetworkConnection();
     }
 
     @Override
@@ -681,34 +622,4 @@ public class DashboardActivity extends AppCompatActivity {
 
         new Handler(Looper.getMainLooper()).postDelayed(() -> doubleBackToExitPressedOnce=false, 2000);
     }
-
-    /*@Override
-    public void onInternetConnectivityChanged(boolean isConnected) {
-        MaterialDialog invoiceGeneratedInformationDialog = new MaterialDialog.Builder((Activity) this)
-                .setTitle("Oops!")
-                .setAnimation(R.raw.lottie_no_internet)
-                .setMessage("Anda tidak terhubung ke internet, mohon periksa kembali koneksi internet Anda untuk melanjutkan.")
-                .setCancelable(false)
-                .setPositiveButton("COBA LAGI", R.drawable.ic_outline_refresh, (dialogInterface, which) -> {
-                   DroidNet.getInstance().addInternetConnectivityListener(new DroidListener() {
-                       @Override
-                       public void onInternetConnectivityChanged(boolean isConnected) {
-
-                               dialogInterface.dismiss();
-                           //}
-                       }
-                   });
-                })
-                .build();
-        invoiceGeneratedInformationDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
-
-        if (isConnected){
-            invoiceGeneratedInformationDialog.dismiss();
-            Toast.makeText(DashboardActivity.this, "Anda terhubung dengan internet", Toast.LENGTH_SHORT).show();
-        } else{
-            invoiceGeneratedInformationDialog.show();
-        }
-
-    }*/
-
 }

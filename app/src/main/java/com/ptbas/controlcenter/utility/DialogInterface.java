@@ -929,7 +929,7 @@ public class DialogInterface {
                                      String invDateNTimeCreated, String invDueDateNTime, String invVerifiedBy, String invTransferReference,
                                      String invDateNTimeVerified, String invDateDeliveryPeriod,
                                      String custDocumentID, String bankDocumentID, String roDocumentID, String invDateHandover, String invHandOverBy,
-                                     String invTotalVol,String invSubTotal,String invDiscount,String invTaxPPN,String invTaxPPH,String invTotalDue, String coDocumentID, List<String> arrayLisyRecapUID) {
+                                     String invTotalVol,String invSubTotal,String invDiscount,String invTaxPPN,String invTaxPPH,String invTotalDue, String coDocumentID, List<String> arrayLisyRecapUID, int invPoType) {
         MaterialDialog materialDialog = new MaterialDialog.Builder((Activity) context)
                 .setTitle("Buat Invoice")
                 .setAnimation(R.raw.lottie_generate_bill)
@@ -941,7 +941,7 @@ public class DialogInterface {
                             goodIssueModelArrayList,
                             invUID, invCreatedBy, invDateNTimeCreated, invDueDateNTime, invVerifiedBy, invTransferReference,
                             invDateNTimeVerified, invDateDeliveryPeriod, custDocumentID, bankDocumentID, roDocumentID, invDateHandover, invHandOverBy,
-                            invTotalVol, invSubTotal, invDiscount, invTaxPPN, invTaxPPH, invTotalDue, coDocumentID, arrayLisyRecapUID);
+                            invTotalVol, invSubTotal, invDiscount, invTaxPPN, invTaxPPH, invTotalDue, coDocumentID, arrayLisyRecapUID, invPoType);
                     dialogInterface.dismiss();
                 })
                 .setNegativeButton("TIDAK", R.drawable.ic_outline_close, (dialogInterface, which) -> dialogInterface.dismiss())
@@ -986,7 +986,7 @@ public class DialogInterface {
                                   String invDateNTimeVerified, String invDateDeliveryPeriod,
                                   String custDocumentID, String bankDocumentID, String roDocumentID, String invDateHandover,  String invHandOverBy,
                                   String invTotalVol,String invSubTotal,String invDiscount,String invTaxPPN,String invTaxPPH,String invTotalDue, String coDocumentID,
-                                  List<String> arrayLisyRecapUID) {
+                                  List<String> arrayLisyRecapUID, int invPoType) {
 
         GIManagementAdapter giManagementAdapter;
 
@@ -1012,7 +1012,6 @@ public class DialogInterface {
 
                 DatabaseReference databaseReferenceGI = FirebaseDatabase.getInstance().getReference();
                 DocumentReference ref = db.collection("InvoiceData").document(invUID);
-                //String invDocumentID = ref.getId();
 
                 InvoiceModel invoiceModel = new InvoiceModel(
                         invUID, invUID, invCreatedBy, invDateNTimeCreated, invDueDateNTime, invVerifiedBy, invTransferReference,
@@ -1037,14 +1036,16 @@ public class DialogInterface {
                     }
                 });
 
-
-                for (int i = 0; i < giManagementAdapter.getSelected().size(); i++) {
-/*
-                    databaseReferenceGI.child("GoodIssueData").child(giManagementAdapter.getSelected().get(i).getGiUID()).child("giInvoiced").setValue(true);
-*/
-
-                    databaseReferenceGI.child("GoodIssueData").child(giManagementAdapter.getSelected().get(i).getGiUID()).child("giInvoicedTo").setValue(invUID);
+                if (invPoType == 2){
+                    for (int i = 0; i < giManagementAdapter.getSelected().size(); i++) {
+                        databaseReferenceGI.child("GoodIssueData").child(giManagementAdapter.getSelected().get(i).getGiUID()).child("giConnectingInvoicedTo").setValue(invUID);
+                    }
+                } else {
+                    for (int i = 0; i < giManagementAdapter.getSelected().size(); i++) {
+                        databaseReferenceGI.child("GoodIssueData").child(giManagementAdapter.getSelected().get(i).getGiUID()).child("giInvoicedTo").setValue(invUID);
+                    }
                 }
+
                 AddInvoiceActivity addInvoiceActivity = (AddInvoiceActivity) context;
                 addInvoiceActivity.createInvPDF(Helper.getAppPathInvoice(context)+invUID+".pdf");
                 generatingInvoiceDialog.dismiss();
@@ -1439,7 +1440,6 @@ public class DialogInterface {
 
                         public void onFinish() {
                             UpdateCashOutActivity updateCashOutActivity = (UpdateCashOutActivity) context;
-
                             updateCashOutActivity.createCashOutProofPDF(Helper.getAppPathCashOut(context)+coUID+" Periode Pengiriman "+coDateDeliveryPeriod+".pdf");
 
                             generatingCashOutProofDialog.dismiss();

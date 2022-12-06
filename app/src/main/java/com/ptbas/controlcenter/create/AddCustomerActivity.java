@@ -114,7 +114,7 @@ public class AddCustomerActivity extends AppCompatActivity {
                     arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
                     spinnerCustType.setAdapter(arrayAdapter);
                 } else {
-                    Toast.makeText(AddCustomerActivity.this, "Not exists", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(AddCustomerActivity.this, "Not exists", Toast.LENGTH_SHORT).show();
                 }
             }
 

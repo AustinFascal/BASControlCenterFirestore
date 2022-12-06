@@ -109,6 +109,8 @@
         <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/drawable/splash_inset.xml" value="0.1935" />
         <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/drawable/top_shadow_gradient.xml" value="0.1545" />
         <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/drawable/unselected.xml" value="0.229" />
+        <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/layout-land/activity_auth_login.xml" value="0.1" />
+        <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/layout-land/activity_auth_register.xml" value="0.10400000000000001" />
         <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/layout-land/activity_update_cash_out.xml" value="0.17191977077363896" />
         <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/layout-land/activity_update_invoice.xml" value="0.2" />
         <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/layout/activity_add_aio_report.xml" value="0.125" />
@@ -127,7 +129,7 @@
         <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/layout/activity_add_vehicle.xml" value="0.17617753623188406" />
         <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/layout/activity_all_management_menus.xml" value="0.17617753623188406" />
         <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/layout/activity_all_shortcuts.xml" value="0.4" />
-        <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/layout/activity_auth_login.xml" value="0.21927083333333333" />
+        <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/layout/activity_auth_login.xml" value="0.125" />
         <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/layout/activity_auth_register.xml" value="0.1" />
         <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/layout/activity_auth_update_email.xml" value="0.17617753623188406" />
         <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/layout/activity_auth_update_profile.xml" value="0.125" />

@@ -100,7 +100,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
     double matQuantity, matSellPrice, transportServiceSellPrice;
     String invDateNTimeCreated, invTimeCreated, dateStartVal = "", dateEndVal = "", rouidVal= "", currencyVal = "", pouidVal = "",
             monthStrVal, dayStrVal, roPoCustNumber, matTypeVal, matNameVal, transportServiceNameVal,
-            invPoDate = "", invCustName = "", invPoUID = "", custNameVal = "", roDocumentID = "", coDocumentID, coUID, invUID="", bankAccountID = "";
+            invPoDate = "", invCustName = "", invPoUID = "", custNameVal = "", roDocumentID = "", coDocumentID, coUID, invUID="", bankAccountID = "", connectingRODocumentUID = "";
     int invPoType;
 
     Button btnSearchData, imgbtnExpandCollapseFilterLayout;
@@ -126,6 +126,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
 
     List<String> bankAccountDocumentID, bankAccount, arrayListRoUID, arrayListPoUID, arrayListCoUID;
     List<ProductItems> productItemsList;
+    List<ProductItems> productItemsList2;
     List<String> customerName, arrayListCustDocumentID;
 
     LinearLayout llShowSpinnerRoAndEdtPo, llWrapFilterByDateRange, llWrapFilterByRouid, llNoData, llWrapFilter, llBottomSelectionOptions;
@@ -449,7 +450,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
                             arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
                             spinnerCustName.setAdapter(arrayAdapter);
                         } else {
-                            Toast.makeText(AddAIOReportActivity.this, "Not exists", Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(AddAIOReportActivity.this, "Not exists", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -484,7 +485,10 @@ public class AddAIOReportActivity extends AppCompatActivity {
                                             if (!Objects.requireNonNull(value).isEmpty()) {
                                                 for (DocumentSnapshot e : value.getDocuments()) {
                                                     String spinnerPurchaseOrders = Objects.requireNonNull(e.get("roPoCustNumber")).toString();
-                                                    arrayListRoUID.add(spinnerPurchaseOrders);
+                                                    long roType = (long) Objects.requireNonNull(e.get("roType"));
+                                                    if (roType != 2){
+                                                        arrayListRoUID.add(spinnerPurchaseOrders);
+                                                    }
                                                 }
                                                 ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddAIOReportActivity.this, R.layout.style_spinner, arrayListRoUID);
                                                 arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
@@ -722,7 +726,6 @@ public class AddAIOReportActivity extends AppCompatActivity {
             new File(dest).deleteOnExit();
         }
 
-
         db.collection("InvoiceData").get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     if (!queryDocumentSnapshots.isEmpty()) {
@@ -866,9 +869,6 @@ public class AddAIOReportActivity extends AppCompatActivity {
                                             }
 
 
-
-
-
                                             double totalAmountForMaterials;
                                             double totalAmountMatBuyPrice;
                                             double totalAmountForTransportService;
@@ -915,9 +915,6 @@ public class AddAIOReportActivity extends AppCompatActivity {
                                             tblInvSection2.addCell(cellTxtNrml(
                                                     new Paragraph(invTransferDate, fontNormalSmall), Element.ALIGN_CENTER));
 
-
-
-
                                             tblInvSection2.addCell(cellTxtNrml(
                                                     new Paragraph(currencyFormat(df.format(matBuyPrice)), fontNormalSmall), Element.ALIGN_CENTER));
                                             tblInvSection2.addCell(cellTxtNrml(
@@ -947,34 +944,8 @@ public class AddAIOReportActivity extends AppCompatActivity {
                                                         new Paragraph("", fontNormalSmall), Element.ALIGN_CENTER));
                                             }
 
-                                            /*tblInvSection2.addCell(cellTxtNrml(
-                                                    new Paragraph(datePaid, fontNormalSmall), Element.ALIGN_CENTER));*/
-
-                                               /* if (!mArrayListTotalDue.isEmpty()){
-                                                    tblInvSection2.addCell(cellTxtNrml(
-                                                            new Paragraph(mArrayListTotalDue.get(z).toString(), fontNormalSmall), Element.ALIGN_CENTER));
-                                                } else {
-                                                    tblInvSection2.addCell(cellTxtNrml(
-                                                            new Paragraph("", fontNormalSmall), Element.ALIGN_CENTER));
-                                                }
-                                                if (!mArrayListDatePaid.isEmpty()) {
-                                                    tblInvSection2.addCell(cellTxtNrml(
-                                                            new Paragraph(mArrayListDatePaid.get(z), fontNormalSmall), Element.ALIGN_CENTER));
-                                                } else{
-                                                    tblInvSection2.addCell(cellTxtNrml(
-                                                            new Paragraph("", fontNormalSmall), Element.ALIGN_CENTER));
-                                                }*/
-
-                                            //Toast.makeText(context, mArrayListDatePaid.toString(), Toast.LENGTH_SHORT).show();
                                             tblInvSection2.addCell(cellTxtNrml(
                                                     new Paragraph("", fontNormalSmall), Element.ALIGN_CENTER));
-
-                                                /*tblInvSection2.addCell(cellTxtNrml(
-                                                        new Paragraph("", fontNormalSmall), Element.ALIGN_CENTER));
-                                                tblInvSection2.addCell(cellTxtNrml(
-                                                        new Paragraph("", fontNormalSmall), Element.ALIGN_CENTER));
-                                                tblInvSection2.addCell(cellTxtNrml(
-                                                        new Paragraph("", fontNormalSmall), Element.ALIGN_CENTER));*/
 
                                             totalUnitAmountForMaterials = 0;
                                             showOccurances = 0;
@@ -1070,7 +1041,6 @@ public class AddAIOReportActivity extends AppCompatActivity {
         pouidVal = Objects.requireNonNull(edtPoUID.getText()).toString();
 
         CollectionReference refRO = db.collection("ReceivedOrderData");
-
         refRO.whereEqualTo("roDocumentID", roDocumentID).get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     if (productItemsList != null){
@@ -1094,6 +1064,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
                         invPoUID = receivedOrderModel.getRoUID();
                         invPoDate = receivedOrderModel.getRoDateCreated();
                         invPoType = receivedOrderModel.getRoType();
+                        connectingRODocumentUID = receivedOrderModel.getRoConnectingRoDocumentUID();
 
                         HashMap<String, List<ProductItems>> map = receivedOrderModel.getRoOrderedItems();
                         for (HashMap.Entry<String, List<ProductItems>> e : map.entrySet()) {
@@ -1109,6 +1080,34 @@ public class AddAIOReportActivity extends AppCompatActivity {
                                     matSellPrice = productItemsList.get(i).getMatSellPrice();
                                 }
                             }
+                        }
+
+                        if (connectingRODocumentUID!=null){
+                            refRO.whereEqualTo("roDocumentID", connectingRODocumentUID).get()
+                                    .addOnSuccessListener(queryDocumentSnapshots2 -> {
+                                        if (productItemsList2 != null) {
+                                            productItemsList2.clear();
+                                        }
+
+                                        transportServiceSellPrice = 0;
+
+                                        for (QueryDocumentSnapshot documentSnapshot2 : queryDocumentSnapshots2) {
+                                            ReceivedOrderModel receivedOrderModel2 = documentSnapshot2.toObject(ReceivedOrderModel.class);
+                                            receivedOrderModel2.setRoDocumentID(documentSnapshot2.getId());
+
+                                            HashMap<String, List<ProductItems>> map2 = receivedOrderModel2.getRoOrderedItems();
+                                            for (HashMap.Entry<String, List<ProductItems>> e : map2.entrySet()) {
+                                                productItemsList2 = e.getValue();
+                                                for (int i = 0; i<productItemsList2.size();i++){
+                                                    if (productItemsList2.get(0).getMatName().equals("JASA ANGKUT")){
+                                                        transportServiceNameVal = productItemsList2.get(0).getMatName();
+                                                        transportServiceSellPrice = productItemsList2.get(0).getMatBuyPrice();
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    });
+
                         }
 
                         Query query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated");

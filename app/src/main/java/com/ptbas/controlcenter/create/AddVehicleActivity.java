@@ -119,7 +119,7 @@ public class AddVehicleActivity extends AppCompatActivity {
                     arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
                     spinnerVhlBrand.setAdapter(arrayAdapter);
                 } else {
-                    Toast.makeText(AddVehicleActivity.this, "Not exists", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(AddVehicleActivity.this, "Not exists", Toast.LENGTH_SHORT).show();
                 }
             }
 
