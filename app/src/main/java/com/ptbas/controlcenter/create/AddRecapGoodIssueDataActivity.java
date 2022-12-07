@@ -398,7 +398,11 @@ public class AddRecapGoodIssueDataActivity extends AppCompatActivity {
                                                 if (!Objects.requireNonNull(value).isEmpty()) {
                                                     for (DocumentSnapshot e : value.getDocuments()) {
                                                         String spinnerPurchaseOrders = Objects.requireNonNull(e.get("roPoCustNumber")).toString();
-                                                        receiveOrderNumberList.add(spinnerPurchaseOrders);
+                                                        long roType = (long) Objects.requireNonNull(e.get("roType"));
+                                                        if (roType != 2){
+                                                            receiveOrderNumberList.add(spinnerPurchaseOrders);
+                                                        }
+
                                                     }
                                                     ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddRecapGoodIssueDataActivity.this, R.layout.style_spinner, receiveOrderNumberList);
                                                     arrayAdapter.setDropDownViewResource(R.layout.style_spinner);

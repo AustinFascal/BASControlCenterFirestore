@@ -179,7 +179,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
 
     private MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
 
-    double totalAmountForMaterials, totalAmountForTransportService, taxPPN, taxPPH, totalDue, totalDueForTransportService;
+    double totalAmountForMaterials, totalAmountForTransportService, taxPPN, taxPPNService, taxPPH, totalDue, totalDueForTransportService;
 
     List<String> receiveOrderNumberList;
     List<String> invUIDList;
@@ -887,10 +887,11 @@ public class AddInvoiceActivity extends AppCompatActivity {
                 // TOTAL AMOUNT CALCULATION
                 totalAmountForMaterials = matSellPrice*Double.parseDouble(df.format(totalUnit));
                 totalAmountForTransportService = transportServiceSellPrice*Double.parseDouble(df.format(totalUnit));
-                taxPPN = Double.parseDouble(df.format(((0.11)*totalAmountForMaterials))) + Double.parseDouble(df.format(((0.11)*totalAmountForTransportService)));
+                taxPPN = Double.parseDouble(df.format(((0.11)*totalAmountForMaterials)));
+                taxPPNService =Double.parseDouble(df.format(((0.11)*totalAmountForTransportService)));
                 taxPPH = Double.parseDouble(df.format(0.02*totalAmountForTransportService));
                 totalDue = totalAmountForMaterials+totalAmountForTransportService+taxPPN-taxPPH;
-                totalDueForTransportService = totalAmountForTransportService-taxPPH;
+                totalDueForTransportService = totalAmountForTransportService+taxPPNService-taxPPH;
 
                 Toast.makeText(context, arrayLisyRecapUID.toString(), Toast.LENGTH_SHORT).show();
 
@@ -1013,6 +1014,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
 
             // OPEN GENERATED FILE
             dialogInterface.invoiceGeneratedInformation(context, dest);
+
 
         } catch (DocumentException | FileNotFoundException e) {
             e.printStackTrace();
@@ -1208,7 +1210,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
 
             double taxPPH = Double.parseDouble(df.format((0.02)*totalAmountForTransportService));
             double totalDue = totalAmountForMaterials+totalAmountForTransportService+taxPPN-taxPPH;
-            double totalDueForTransportService = totalAmountForTransportService-taxPPH;
+            double totalDueForTransportService = totalAmountForTransportService+taxPPN-taxPPH;
 
             // INIT TABLE
             PdfPTable tblInvSection1 = new PdfPTable(7);

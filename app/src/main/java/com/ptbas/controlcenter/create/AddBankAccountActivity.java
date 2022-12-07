@@ -38,7 +38,7 @@ import java.util.Objects;
 public class AddBankAccountActivity extends AppCompatActivity {
 
     private static final CharSequence ALLOWED_CHARACTERS = "1234567890";
-    TextInputEditText edtAccountOwnerName, edtAccountNumber;
+    TextInputEditText edtAccountOwnerName, edtAccountNumber, edtAccountAlias;
     AutoCompleteTextView spinnerBankName, spinnerBankType;
     FloatingActionButton fabProceed;
     DialogInterface dialogInterface = new DialogInterface();
@@ -90,6 +90,7 @@ public class AddBankAccountActivity extends AppCompatActivity {
 
         edtAccountOwnerName = findViewById(R.id.edtAccountOwnerName);
         edtAccountNumber = findViewById(R.id.edtAccountNumber);
+        edtAccountAlias = findViewById(R.id.edtAccountAlias);
         spinnerBankName = findViewById(R.id.spinnerBankName);
         spinnerBankType = findViewById(R.id.spinnerBankType);
 
@@ -162,6 +163,7 @@ public class AddBankAccountActivity extends AppCompatActivity {
             String bankType = Objects.requireNonNull(spinnerBankType.getText()).toString();
             String bankAccountOwnerName =  Objects.requireNonNull(edtAccountOwnerName.getText()).toString();
             String bankAccountNumber = Objects.requireNonNull(edtAccountNumber.getText()).toString();
+            String bankAccountAlias = Objects.requireNonNull(edtAccountAlias.getText()).toString();
 
             if (TextUtils.isEmpty(bankName)){
                 spinnerBankName.setError("");
@@ -182,21 +184,25 @@ public class AddBankAccountActivity extends AppCompatActivity {
                 edtAccountNumber.setError("");
                 edtAccountNumber.requestFocus();
             }
+            if (TextUtils.isEmpty(bankAccountAlias)){
+                edtAccountAlias.setError("");
+                edtAccountAlias.requestFocus();
+            }
 
             if (!TextUtils.isEmpty(bankName)&&!TextUtils.isEmpty(bankType)&&
                     !TextUtils.isEmpty(bankAccountOwnerName)&&
                     !TextUtils.isEmpty(bankAccountNumber)){
-                insertData(bankName, bankType, bankAccountOwnerName, bankAccountNumber);
+                insertData(bankName, bankType, bankAccountOwnerName, bankAccountNumber, bankAccountAlias);
             }
 
         });
     }
 
-    private void insertData(String bankName, String bankType, String bankAccountOwnerName, String bankAccountNumber) {
+    private void insertData(String bankName, String bankType, String bankAccountOwnerName, String bankAccountNumber, String bankAccountAlias) {
 
         String bankAccountDocumentID = refBankData.getId();
         BankAccountModel bankAccountModel = new BankAccountModel(bankAccountDocumentID,
-                bankName, bankType, bankAccountOwnerName, bankAccountNumber, true);
+                bankName, bankType, bankAccountOwnerName, bankAccountNumber, true, bankAccountAlias);
 
 
         refBankData.set(bankAccountModel)

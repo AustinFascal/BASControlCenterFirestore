@@ -93,6 +93,19 @@
                         android:hint="Rekening Atas Nama"
                         android:inputType="textCapCharacters" />
                 </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:startIconDrawable="@drawable/ic_outline_person">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edtAccountAlias"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Nama Alias Rekening"
+                        android:inputType="textCapCharacters" />
+                </com.google.android.material.textfield.TextInputLayout>
 
 
             </LinearLayout>

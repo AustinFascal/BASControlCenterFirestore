@@ -184,7 +184,7 @@ public class UpdateInvoiceActivity extends AppCompatActivity {
     TextView tvCubicationTotalRev, tvSubTotalRev, tvDiscRev, tvPPNRev, tvPPH23Rev, tvTotalDueRev, tvTotalDueMinus, tvStatusRecalculate, tvStatusDefault;
 
     double totalUnitFinal;
-    double totalAmountForMaterials, totalAmountForTransportService, taxPPN, taxPPH, totalDue, totalDueForTransportService;
+    double totalAmountForMaterials, totalAmountForTransportService, taxPPN, taxPPNService, taxPPH, totalDue, totalDueForTransportService;
 
     private MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
 
@@ -811,10 +811,11 @@ public class UpdateInvoiceActivity extends AppCompatActivity {
                                                 // TOTAL AMOUNT CALCULATION
                                                 totalAmountForMaterials = matSellPrice*Double.parseDouble(df.format(totalUnitFinal));
                                                 totalAmountForTransportService = transportServiceSellPrice*Double.parseDouble(df.format(totalUnitFinal));
-                                                taxPPN = Double.parseDouble(df.format(((0.11)*totalAmountForMaterials))) + Double.parseDouble(df.format(((0.11)*totalAmountForTransportService)));
+                                                taxPPN = Double.parseDouble(df.format(((0.11)*totalAmountForMaterials)));
+                                                taxPPNService =Double.parseDouble(df.format(((0.11)*totalAmountForTransportService)));
                                                 taxPPH = Double.parseDouble(df.format(0.02*totalAmountForTransportService));
                                                 totalDue = totalAmountForMaterials+totalAmountForTransportService+taxPPN-taxPPH;
-                                                totalDueForTransportService = totalAmountForTransportService-taxPPH;
+                                                totalDueForTransportService = totalAmountForTransportService+taxPPNService-taxPPH;
 
                                                 Boolean invRecalculateStatus = invoiceModel.getInvRecalculate();
 

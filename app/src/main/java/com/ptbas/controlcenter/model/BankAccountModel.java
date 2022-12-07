@@ -2,19 +2,28 @@ package com.ptbas.controlcenter.model;
 
 public class BankAccountModel {
 
-    String bankAccountID, bankName, bankType, bankAccountOwnerName, bankAccountNumber;
+    String bankAccountID, bankName, bankType, bankAccountOwnerName, bankAccountNumber, bankAccountAlias;
     Boolean bankStatus;
 
     public BankAccountModel() {
     }
 
-    public BankAccountModel(String bankAccountID, String bankName, String bankType, String bankAccountOwnerName, String bankAccountNumber, Boolean bankStatus) {
+    public BankAccountModel(String bankAccountID, String bankName, String bankType, String bankAccountOwnerName, String bankAccountNumber, Boolean bankStatus, String bankAccountAlias) {
         this.bankAccountID = bankAccountID;
         this.bankName = bankName;
         this.bankType = bankType;
         this.bankAccountOwnerName = bankAccountOwnerName;
         this.bankAccountNumber = bankAccountNumber;
         this.bankStatus = bankStatus;
+        this.bankAccountAlias = bankAccountAlias;
+    }
+
+    public String getBankAccountAlias() {
+        return bankAccountAlias;
+    }
+
+    public void setBankAccountAlias(String bankAccountAlias) {
+        this.bankAccountAlias = bankAccountAlias;
     }
 
     public String getBankAccountID() {
