@@ -187,6 +187,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
     private static final ArrayList<CashOutModel> mArrayListCO = new ArrayList<>();
     private static final ArrayList<Double> mArrayListTotalDue = new ArrayList<>();
     private static final ArrayList<String> mArrayListDatePaid = new ArrayList<>();
+    private static final ArrayList<BankAccountModel> mArrayListBankAlias = new ArrayList<>();
 
     String invTransferDate, invTotalDue, coDocumentUID, testID, bankAccountDocumentUID, bankAccountAlias;
 
@@ -708,7 +709,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
         edtPoUID.setText(null);
     }
 
-    private  void clearSelection(){
+    private void clearSelection(){
         isSelectedAll = false;
         menu.findItem(R.id.select_all_data_recap).setIcon(ContextCompat.getDrawable(AddAIOReportActivity.this, R.drawable.ic_outline_select_all));
 
@@ -734,136 +735,138 @@ public class AddAIOReportActivity extends AppCompatActivity {
 
     public void createAIOPDF(String dest){
 
-
         if (new File(dest).exists()){
             new File(dest).deleteOnExit();
         }
-
-
-
 
         db.collection("InvoiceData").get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     if (!queryDocumentSnapshots.isEmpty()) {
                         List<InvoiceModel> invoiceModels = queryDocumentSnapshots.toObjects(InvoiceModel.class);
                         mArrayList.addAll(invoiceModels);
+
                         db.collection("CashOutData").get()
                                 .addOnSuccessListener(queryDocumentSnapshotsCo -> {
                                     if (!queryDocumentSnapshotsCo.isEmpty()) {
                                         List<CashOutModel> cashOutModels = queryDocumentSnapshotsCo.toObjects(CashOutModel.class);
                                         mArrayListCO.addAll(cashOutModels);
                                     }
-                                    try {
-                                        Rectangle f4Landscape = new Rectangle(936, 596);
-                                        document = new Document(f4Landscape, 10, 10, 10, 10);
-                                        PdfWriter.getInstance(document, new FileOutputStream(dest));
-                                        document.open();
-                                        document.addAuthor("PT BAS");
-                                        document.addCreator("BAS Control Center");
-                                        document.addCreationDate();
-                                        addAIOTtl(document);
-                                        addSpace(document);
 
-                                        Paragraph paragraphBlank = new Paragraph(" ");
+                                    db.collection("BankAccountData").get()
+                                            .addOnSuccessListener(queryDocumentSnapshots3 -> {
+                                                if (!queryDocumentSnapshots3.isEmpty()) {
 
-                                        Paragraph paragraphInvDateCreated =
-                                                new Paragraph("Terakhir diperbarui: "
-                                                        +invDateNTimeCreated+", oleh: "+invCreatedBy, fontNormalSmallItalic);
-                                        paragraphInvDateCreated.setAlignment(Element.ALIGN_RIGHT);
-                                        paragraphInvDateCreated.setSpacingAfter(5);
+                                                    try {
+                                                        Rectangle f4Landscape = new Rectangle(936, 596);
+                                                        document = new Document(f4Landscape, 10, 10, 10, 10);
+                                                        PdfWriter.getInstance(document, new FileOutputStream(dest));
+                                                        document.open();
+                                                        document.addAuthor("PT BAS");
+                                                        document.addCreator("BAS Control Center");
+                                                        document.addCreationDate();
+                                                        addAIOTtl(document);
+                                                        addSpace(document);
 
-                                        Paragraph paragraphInvNote =
-                                                new Paragraph("Mat.: Material; Sup.: Supplier; HJ: Harga Jual; HB: Harga Beli; PPN = 11%; PPH23 = 2%.", fontNormalSmall);
-                                        paragraphInvDateCreated.setAlignment(Element.ALIGN_RIGHT);
-                                        paragraphInvDateCreated.setSpacingAfter(5);
+                                                        Paragraph paragraphBlank = new Paragraph(" ");
 
-                                        // INIT TABLE
-                                        PdfPTable tblInvSection0 = new PdfPTable(3);
-                                        PdfPTable tblInvSection1 = new PdfPTable(16);
-                                        PdfPTable tblInvSection2 = new PdfPTable(16);
-                                        PdfPTable tblInvSection3 = new PdfPTable(15);
+                                                        Paragraph paragraphInvDateCreated =
+                                                                new Paragraph("Terakhir diperbarui: "
+                                                                        +invDateNTimeCreated+", oleh: "+invCreatedBy, fontNormalSmallItalic);
+                                                        paragraphInvDateCreated.setAlignment(Element.ALIGN_RIGHT);
+                                                        paragraphInvDateCreated.setSpacingAfter(5);
 
-                                        // WIDTH PERCENTAGE CONFIG
-                                        tblInvSection0.setWidthPercentage(100);
-                                        tblInvSection1.setWidthPercentage(100);
-                                        tblInvSection2.setWidthPercentage(100);
-                                        tblInvSection3.setWidthPercentage(100);
+                                                        Paragraph paragraphInvNote =
+                                                                new Paragraph("Mat.: Material; Sup.: Supplier; HJ: Harga Jual; HB: Harga Beli; PPN = 11%; PPH23 = 2%.", fontNormalSmall);
+                                                        paragraphInvDateCreated.setAlignment(Element.ALIGN_RIGHT);
+                                                        paragraphInvDateCreated.setSpacingAfter(5);
 
-                                        // WIDTH FLOAT CONFIG
-                                        tblInvSection0.setWidths(new float[]{1,36,14});
-                                        tblInvSection1.setWidths(new float[]{1,3,2,4,3,4,3,3,4,4,3,3,4,4,3,3});
-                                        tblInvSection2.setWidths(new float[]{1,3,2,4,3,4,3,3,4,4,3,3,4,4,3,3});
-                                        tblInvSection3.setWidths(new float[]{4,2,4,3,4,3,3,4,4,3,3,4,4,3,3});
+                                                        // INIT TABLE
+                                                        PdfPTable tblInvSection0 = new PdfPTable(3);
+                                                        PdfPTable tblInvSection1 = new PdfPTable(16);
+                                                        PdfPTable tblInvSection2 = new PdfPTable(16);
+                                                        PdfPTable tblInvSection3 = new PdfPTable(15);
+                                                        PdfPTable tblInvSection4 = new PdfPTable(3);
 
+                                                        tblInvSection4.setHorizontalAlignment(Element.ALIGN_LEFT);
 
-                                        tblInvSection0.addCell(cellTxtNrml(
-                                                new Paragraph("", fontMediumSmall),
-                                                Element.ALIGN_CENTER));
-                                        tblInvSection0.addCell(cellTxtNrml(
-                                                new Paragraph("PENJUALAN", fontMediumSmall),
-                                                Element.ALIGN_CENTER));
-                                        tblInvSection0.addCell(cellTxtNrml(
-                                                new Paragraph("PEMBELIAN", fontMediumSmall),
-                                                Element.ALIGN_CENTER));
+                                                        // WIDTH PERCENTAGE CONFIG
+                                                        tblInvSection0.setWidthPercentage(100);
+                                                        tblInvSection1.setWidthPercentage(100);
+                                                        tblInvSection2.setWidthPercentage(100);
+                                                        tblInvSection3.setWidthPercentage(100);
+                                                        tblInvSection4.setWidthPercentage(15);
 
+                                                        // WIDTH FLOAT CONFIG
+                                                        tblInvSection0.setWidths(new float[]{1,36,14});
+                                                        tblInvSection1.setWidths(new float[]{1,3,2,4,3,4,3,3,4,4,3,3,4,4,3,3});
+                                                        tblInvSection2.setWidths(new float[]{1,3,2,4,3,4,3,3,4,4,3,3,4,4,3,3});
+                                                        tblInvSection3.setWidths(new float[]{4,2,4,3,4,3,3,4,4,3,3,4,4,3,3});
+                                                        tblInvSection4.setWidths(new float[]{2,1,3});
 
-                                        tblInvSection1.addCell(cellTxtNrml(
-                                                new Paragraph("No", fontMediumSmall),
-                                                Element.ALIGN_CENTER));
-                                        tblInvSection1.addCell(cellTxtNrml(
-                                                new Paragraph("Tgl. Kirim", fontMediumSmall),
-                                                Element.ALIGN_CENTER));
-                                        tblInvSection1.addCell(cellTxtNrml(
-                                                new Paragraph("Unit", fontMediumSmall),
-                                                Element.ALIGN_CENTER));
-                                        tblInvSection1.addCell(cellTxtNrml(
-                                                new Paragraph("Total Mat.", fontMediumSmall),
-                                                Element.ALIGN_CENTER));
-                                        tblInvSection1.addCell(cellTxtNrml(
-                                                new Paragraph("PPN Mat.", fontMediumSmall),
-                                                Element.ALIGN_CENTER));
-                                        tblInvSection1.addCell(cellTxtNrml(
-                                                new Paragraph("Total Jasa", fontMediumSmall),
-                                                Element.ALIGN_CENTER));
-                                        tblInvSection1.addCell(cellTxtNrml(
-                                                new Paragraph("PPH23 Jasa", fontMediumSmall),
-                                                Element.ALIGN_CENTER));
-                                        tblInvSection1.addCell(cellTxtNrml(
-                                                new Paragraph("PPN Jasa", fontMediumSmall),
-                                                Element.ALIGN_CENTER));
-                                        tblInvSection1.addCell(cellTxtNrml(
-                                                new Paragraph("Total Jual", fontMediumSmall),
-                                                Element.ALIGN_CENTER));
-                                        tblInvSection1.addCell(cellTxtNrml(
-                                                new Paragraph("Dibayar", fontMediumSmall),
-                                                Element.ALIGN_CENTER));
-                                        tblInvSection1.addCell(cellTxtNrml(
-                                                new Paragraph("Tgl. Masuk", fontMediumSmall),
-                                                Element.ALIGN_CENTER));
-                                        tblInvSection1.addCell(cellTxtNrml(
-                                                new Paragraph("Masuk Ke", fontMediumSmall),
-                                                Element.ALIGN_CENTER));
-                                        tblInvSection1.addCell(cellTxtNrml(
-                                                new Paragraph("Total Beli", fontMediumSmall),
-                                                Element.ALIGN_CENTER));
-                                        tblInvSection1.addCell(cellTxtNrml(
-                                                new Paragraph("Tf. Sup.", fontMediumSmall),
-                                                Element.ALIGN_CENTER));
-                                        tblInvSection1.addCell(cellTxtNrml(
-                                                new Paragraph("Tgl. Keluar", fontMediumSmall),
-                                                Element.ALIGN_CENTER));
-                                        tblInvSection1.addCell(cellTxtNrml(
-                                                new Paragraph("Keluar Via", fontMediumSmall),
-                                                Element.ALIGN_CENTER));
+                                                        tblInvSection0.addCell(cellTxtNrml(
+                                                                new Paragraph("", fontMediumSmall),
+                                                                Element.ALIGN_CENTER));
+                                                        tblInvSection0.addCell(cellTxtNrml(
+                                                                new Paragraph("PENJUALAN", fontMediumSmall),
+                                                                Element.ALIGN_CENTER));
+                                                        tblInvSection0.addCell(cellTxtNrml(
+                                                                new Paragraph("PEMBELIAN", fontMediumSmall),
+                                                                Element.ALIGN_CENTER));
+                                                        tblInvSection1.addCell(cellTxtNrml(
+                                                                new Paragraph("No", fontMediumSmall),
+                                                                Element.ALIGN_CENTER));
+                                                        tblInvSection1.addCell(cellTxtNrml(
+                                                                new Paragraph("Tgl. Kirim", fontMediumSmall),
+                                                                Element.ALIGN_CENTER));
+                                                        tblInvSection1.addCell(cellTxtNrml(
+                                                                new Paragraph("Unit", fontMediumSmall),
+                                                                Element.ALIGN_CENTER));
+                                                        tblInvSection1.addCell(cellTxtNrml(
+                                                                new Paragraph("Total Mat.", fontMediumSmall),
+                                                                Element.ALIGN_CENTER));
+                                                        tblInvSection1.addCell(cellTxtNrml(
+                                                                new Paragraph("PPN Mat.", fontMediumSmall),
+                                                                Element.ALIGN_CENTER));
+                                                        tblInvSection1.addCell(cellTxtNrml(
+                                                                new Paragraph("Total Jasa", fontMediumSmall),
+                                                                Element.ALIGN_CENTER));
+                                                        tblInvSection1.addCell(cellTxtNrml(
+                                                                new Paragraph("PPH23 Jasa", fontMediumSmall),
+                                                                Element.ALIGN_CENTER));
+                                                        tblInvSection1.addCell(cellTxtNrml(
+                                                                new Paragraph("PPN Jasa", fontMediumSmall),
+                                                                Element.ALIGN_CENTER));
+                                                        tblInvSection1.addCell(cellTxtNrml(
+                                                                new Paragraph("Total Jual", fontMediumSmall),
+                                                                Element.ALIGN_CENTER));
+                                                        tblInvSection1.addCell(cellTxtNrml(
+                                                                new Paragraph("Dibayar", fontMediumSmall),
+                                                                Element.ALIGN_CENTER));
+                                                        tblInvSection1.addCell(cellTxtNrml(
+                                                                new Paragraph("Tgl. Masuk", fontMediumSmall),
+                                                                Element.ALIGN_CENTER));
+                                                        tblInvSection1.addCell(cellTxtNrml(
+                                                                new Paragraph("Masuk Ke", fontMediumSmall),
+                                                                Element.ALIGN_CENTER));
+                                                        tblInvSection1.addCell(cellTxtNrml(
+                                                                new Paragraph("Total Beli", fontMediumSmall),
+                                                                Element.ALIGN_CENTER));
+                                                        tblInvSection1.addCell(cellTxtNrml(
+                                                                new Paragraph("Tf. Sup.", fontMediumSmall),
+                                                                Element.ALIGN_CENTER));
+                                                        tblInvSection1.addCell(cellTxtNrml(
+                                                                new Paragraph("Tgl. Keluar", fontMediumSmall),
+                                                                Element.ALIGN_CENTER));
+                                                        tblInvSection1.addCell(cellTxtNrml(
+                                                                new Paragraph("Keluar Via", fontMediumSmall),
+                                                                Element.ALIGN_CENTER));
 
-                                        for (int t = 0; t<16; t++){
-                                            tblInvSection2.addCell(cellTxtNrml(
-                                                    new Paragraph("-", fontMediumWhite), Element.ALIGN_CENTER));
-                                        }
-                                        deliveryPeriod = invDateDeliveryPeriodVal.split(",");
-                                        db.collection("BankAccountData").get()
-                                                .addOnSuccessListener(queryDocumentSnapshots2 -> {
-                                                    if (!queryDocumentSnapshots2.isEmpty()) {
+                                                        for (int t = 0; t<16; t++){
+                                                            tblInvSection2.addCell(cellTxtNrml(
+                                                                    new Paragraph("-", fontMediumWhite), Element.ALIGN_CENTER));
+                                                        }
+                                                        deliveryPeriod = invDateDeliveryPeriodVal.split(",");
+
                                                         for (int i = 0; i < deliveryPeriod.length; i++) {
                                                             for (int j = 0; j < goodIssueModelArrayList.size(); j++) {
                                                                 for (int k = 0; k < invoiceManagementAdapter.getSelected().size(); k++) {
@@ -877,11 +880,6 @@ public class AddAIOReportActivity extends AppCompatActivity {
 
                                                                         bankAccountDocumentUID = invoiceManagementAdapter.getSelected().get(k).getBankDocumentID();
 
-                                                                        List<BankAccountModel> bankAccountModels = queryDocumentSnapshots2.toObjects(BankAccountModel.class);
-                                                                        if (Objects.equals(bankAccountDocumentUID, bankAccountModels.get(k).getBankAccountID())) {
-                                                                            bankAccountAlias = bankAccountModels.get(k).getBankAccountAlias();
-                                                                        }
-
                                                                         if (connectingInvoiceModelArrayList != null) {
                                                                             if (!connectingInvoiceModelArrayList.isEmpty()) {
                                                                                 if (!(connectingInvoiceModelArrayList.size() < invoiceManagementAdapter.getSelected().size())) {
@@ -891,13 +889,16 @@ public class AddAIOReportActivity extends AppCompatActivity {
                                                                                 connectingInvTotalDue = "0.00";
                                                                             }
                                                                         }
-
-
                                                                     }
                                                                 }
-
                                                             }
 
+                                                            for (DocumentSnapshot d : queryDocumentSnapshots3) {
+                                                                BankAccountModel bankAccountModels = d.toObject(BankAccountModel.class);
+                                                                if (Objects.equals(bankAccountModels.getBankAccountID(), bankAccountDocumentUID)){
+                                                                    bankAccountAlias = bankAccountModels.getBankAccountAlias();
+                                                                }
+                                                            }
 
                                                             double totalAmountForMaterials;
                                                             double totalAmountMatBuyPrice;
@@ -906,10 +907,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
                                                             double taxPPN;
                                                             double taxPPNService;
 
-
                                                             sumUnit += totalUnitAmountForMaterials;
-                                            /*sumTotalMat , sumTotalPPNMat, sumTotalService, sumTotalPPH23Service, sumTotalPPNService, sumTotalSell, sumTotalPaid,
-                                                    sumTotalBuy, sumTotalTfSup*/
 
                                                             totalAmountForMaterials = matSellPrice * Double.parseDouble(df.format(totalUnitAmountForMaterials));
                                                             totalAmountMatBuyPrice = matBuyPrice * Double.parseDouble(df.format(totalUnitAmountForMaterials));
@@ -920,8 +918,6 @@ public class AddAIOReportActivity extends AppCompatActivity {
                                                             taxPPNService = Double.parseDouble(df.format(0.11 * totalAmountForTransportService));
 
                                                             double totalDue = totalAmountForMaterials + totalAmountForTransportService - taxPPH + taxPPN + taxPPNService;
-
-                                                            Toast.makeText(context, " | " + totalAmountForMaterials + " | " + totalAmountForTransportService + " | " + taxPPN + " | " + taxPPNService + " | " + taxPPH, Toast.LENGTH_LONG).show();
 
                                                             String rowNumberStrVal = String.valueOf(i + 1);
                                                             tblInvSection2.addCell(cellTxtNrml(
@@ -943,15 +939,10 @@ public class AddAIOReportActivity extends AppCompatActivity {
                                                             tblInvSection2.addCell(cellTxtNrml(
                                                                     new Paragraph(currencyFormat(df.format(totalDue)), fontNormalSmall), Element.ALIGN_CENTER));
 
-
                                                             double connectingInvTotalDueFinal = Double.parseDouble(connectingInvTotalDue.replace(",", "").replace("IDR ", ""));
                                                             double invTotalDueFinal = Double.parseDouble(invTotalDue.replace(",", "").replace("IDR ", ""));
 
                                                             double sumFinalTotalDue = connectingInvTotalDueFinal + invTotalDueFinal;
-
-                                                            Toast.makeText(context, "" + connectingInvTotalDueFinal + " | " + invTotalDueFinal, Toast.LENGTH_LONG).show();
-
-                                                            //int invTotalDueLength = String.valueOf(sumFinalTotalDue).length();
 
                                                             tblInvSection2.addCell(cellTxtNrml(
                                                                     new Paragraph(currencyFormat(df.format(sumFinalTotalDue)), fontNormalSmall), Element.ALIGN_CENTER));
@@ -995,61 +986,99 @@ public class AddAIOReportActivity extends AppCompatActivity {
                                                                         new Paragraph("-", fontMediumWhite), Element.ALIGN_CENTER));
                                                             }
                                                         }
-                                                    }});
 
-                                        tblInvSection3.addCell(cellTxtNrml(
-                                                new Paragraph("TOTAL", fontNormalSmall), Element.ALIGN_CENTER));
-                                        tblInvSection3.addCell(cellTxtNrml(
-                                                new Paragraph(df.format(sumUnit), fontNormalSmall), Element.ALIGN_CENTER));
-                                        tblInvSection3.addCell(cellTxtNrml(
-                                                new Paragraph("-", fontNormalSmall), Element.ALIGN_CENTER));
-                                        tblInvSection3.addCell(cellTxtNrml(
-                                                new Paragraph("-", fontNormalSmall), Element.ALIGN_CENTER));
-                                        tblInvSection3.addCell(cellTxtNrml(
-                                                new Paragraph("-", fontNormalSmall), Element.ALIGN_CENTER));
-                                        tblInvSection3.addCell(cellTxtNrml(
-                                                new Paragraph("-", fontNormalSmall), Element.ALIGN_CENTER));
-                                        tblInvSection3.addCell(cellTxtNrml(
-                                                new Paragraph("-", fontNormalSmall), Element.ALIGN_CENTER));
-                                        tblInvSection3.addCell(cellTxtNrml(
-                                                new Paragraph("-", fontNormalSmall), Element.ALIGN_CENTER));
-                                        tblInvSection3.addCell(cellTxtNrml(
-                                                new Paragraph("-", fontNormalSmall), Element.ALIGN_CENTER));
-                                        tblInvSection3.addCell(cellTxtNrml(
-                                                new Paragraph("-", fontNormalSmall), Element.ALIGN_CENTER));
-                                        tblInvSection3.addCell(cellTxtNrml(
-                                                new Paragraph("-", fontNormalSmall), Element.ALIGN_CENTER));
-                                        tblInvSection3.addCell(cellTxtNrml(
-                                                new Paragraph("-", fontNormalSmall), Element.ALIGN_CENTER));
-                                        tblInvSection3.addCell(cellTxtNrml(
-                                                new Paragraph("-", fontNormalSmall), Element.ALIGN_CENTER));
-                                        tblInvSection3.addCell(cellTxtNrml(
-                                                new Paragraph("-", fontNormalSmall), Element.ALIGN_CENTER));
-                                        tblInvSection3.addCell(cellTxtNrml(
-                                                new Paragraph("-", fontNormalSmall), Element.ALIGN_CENTER));
-
+                                                        tblInvSection3.addCell(cellTxtNrml(
+                                                                new Paragraph("TOTAL", fontNormalSmall), Element.ALIGN_CENTER));
+                                                        tblInvSection3.addCell(cellTxtNrml(
+                                                                new Paragraph(df.format(sumUnit), fontNormalSmall), Element.ALIGN_CENTER));
+                                                        tblInvSection3.addCell(cellTxtNrml(
+                                                                new Paragraph("-", fontNormalSmall), Element.ALIGN_CENTER));
+                                                        tblInvSection3.addCell(cellTxtNrml(
+                                                                new Paragraph("-", fontNormalSmall), Element.ALIGN_CENTER));
+                                                        tblInvSection3.addCell(cellTxtNrml(
+                                                                new Paragraph("-", fontNormalSmall), Element.ALIGN_CENTER));
+                                                        tblInvSection3.addCell(cellTxtNrml(
+                                                                new Paragraph("-", fontNormalSmall), Element.ALIGN_CENTER));
+                                                        tblInvSection3.addCell(cellTxtNrml(
+                                                                new Paragraph("-", fontNormalSmall), Element.ALIGN_CENTER));
+                                                        tblInvSection3.addCell(cellTxtNrml(
+                                                                new Paragraph("-", fontNormalSmall), Element.ALIGN_CENTER));
+                                                        tblInvSection3.addCell(cellTxtNrml(
+                                                                new Paragraph("-", fontNormalSmall), Element.ALIGN_CENTER));
+                                                        tblInvSection3.addCell(cellTxtNrml(
+                                                                new Paragraph("-", fontNormalSmall), Element.ALIGN_CENTER));
+                                                        tblInvSection3.addCell(cellTxtNrml(
+                                                                new Paragraph("-", fontNormalSmall), Element.ALIGN_CENTER));
+                                                        tblInvSection3.addCell(cellTxtNrml(
+                                                                new Paragraph("-", fontNormalSmall), Element.ALIGN_CENTER));
+                                                        tblInvSection3.addCell(cellTxtNrml(
+                                                                new Paragraph("-", fontNormalSmall), Element.ALIGN_CENTER));
+                                                        tblInvSection3.addCell(cellTxtNrml(
+                                                                new Paragraph("-", fontNormalSmall), Element.ALIGN_CENTER));
+                                                        tblInvSection3.addCell(cellTxtNrml(
+                                                                new Paragraph("-", fontNormalSmall), Element.ALIGN_CENTER));
 
 
-                                        document.add(tblInvSection0);
-                                        document.add(tblInvSection1);
-                                        document.add(tblInvSection2);
-                                        document.add(tblInvSection3);
-                                        document.add(paragraphBlank); // SPACE SEPARATOR
-                                        document.add(paragraphInvNote);
-                                        document.add(paragraphInvDateCreated);
+                                                        tblInvSection4.addCell(cellTxtNrml(
+                                                                new Paragraph("HB Mat.", fontMediumSmall),
+                                                                Element.ALIGN_CENTER));
+                                                        tblInvSection4.addCell(cellTxtNrml(
+                                                                new Paragraph(":", fontNormalSmall),
+                                                                Element.ALIGN_CENTER));
+                                                        tblInvSection4.addCell(cellTxtNrml(
+                                                                new Paragraph(currencyFormat(df.format(matBuyPrice)), fontNormalSmall),
+                                                                Element.ALIGN_CENTER));
 
-                                        document.close();
-                                        dialogInterface.aioDocumentGeneratedInformation(context, dest);
+                                                        tblInvSection4.addCell(cellTxtNrml(
+                                                                new Paragraph("HJ Mat.:", fontMediumSmall),
+                                                                Element.ALIGN_CENTER));
+                                                        tblInvSection4.addCell(cellTxtNrml(
+                                                                new Paragraph(":", fontNormalSmall),
+                                                                Element.ALIGN_CENTER));
+                                                        tblInvSection4.addCell(cellTxtNrml(
+                                                                new Paragraph(currencyFormat(df.format(matSellPrice)), fontNormalSmall),
+                                                                Element.ALIGN_CENTER));
 
-                                        connectingRODocumentUID = null;
-                                        connectingInvoiceModelArrayList = null;
-                                        connectingInvTotalDue = "0.00";
-                                    } catch (DocumentException | FileNotFoundException e) {
-                                        e.printStackTrace();
-                                        Toast.makeText(context, e.toString(), Toast.LENGTH_LONG).show();
-                                    }
+                                                        tblInvSection4.addCell(cellTxtNrml(
+                                                                new Paragraph("HJ Jasa", fontMediumSmall),
+                                                                Element.ALIGN_CENTER));
+                                                        tblInvSection4.addCell(cellTxtNrml(
+                                                                new Paragraph(":", fontNormalSmall),
+                                                                Element.ALIGN_CENTER));
+                                                        tblInvSection4.addCell(cellTxtNrml(
+                                                                new Paragraph(currencyFormat(df.format(transportServiceSellPrice)), fontNormalSmall),
+                                                                Element.ALIGN_CENTER));
+
+
+                                                        document.add(tblInvSection0);
+                                                        document.add(tblInvSection1);
+                                                        document.add(tblInvSection2);
+                                                        document.add(tblInvSection3);
+                                                        document.add(paragraphBlank);
+                                                        document.add(tblInvSection4);
+                                                        document.add(paragraphBlank);
+                                                        document.add(paragraphInvNote);
+                                                        document.add(paragraphInvDateCreated);
+
+                                                        document.close();
+                                                        dialogInterface.aioDocumentGeneratedInformation(context, dest);
+
+                                                        connectingRODocumentUID = null;
+                                                        connectingInvoiceModelArrayList = null;
+                                                        connectingInvTotalDue = "0.00";
+                                                    } catch (DocumentException | FileNotFoundException e) {
+                                                        e.printStackTrace();
+                                                        Toast.makeText(context, e.toString(), Toast.LENGTH_LONG).show();
+                                                    }
+
+                                                }
+                                            });
+
+
 
                                 });
+
+
                     }
 
                 });
@@ -1057,9 +1086,8 @@ public class AddAIOReportActivity extends AppCompatActivity {
 
     private void addAIOTtl(Document document) throws DocumentException {
         Paragraph preface1 = new Paragraph();
-        Chunk title = new Chunk("LAPORAN PENGIRIMAN "+matNameVal+" "+matTypeVal+"\n"+
-                custNameFinal+" | PO: "+pouidVal+" | "+currencyFormat(df.format(matQuantity)) +" m3"+"\n"+
-                "("+currencyVal+") "+ "HJ Mat.: "+ matSellPrice +" | " +"HJ Jasa: "+transportServiceSellPrice +" | "+"HB Mat.: "+ matBuyPrice, fontBold);
+        Chunk title = new Chunk("LAPORAN PENGIRIMAN "+matNameVal+" "+matTypeVal+" ("+currencyVal+")"+"\n"+
+                custNameFinal+" | PO: "+pouidVal+" | "+currencyFormat(df.format(matQuantity)) +" m3", fontBold);
         Paragraph paragraphTitle = new Paragraph(title);
         paragraphTitle.setAlignment(Element.ALIGN_LEFT);
         document.add(paragraphTitle);

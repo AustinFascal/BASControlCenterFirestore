@@ -25,6 +25,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -111,7 +112,7 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
                 tvVhlUid, tvPoCustNumber, tvCustomerName;
         RelativeLayout btnDeleteGi, btnApproveGi, btnCloneGi;
         Button btn1, btn2, btn3, btn4;
-        CardView cardView;
+        ConstraintLayout cardView;
         CheckBox cbSelectItem;
         String customerNameVal, custDocumentID, coAccBy;
 

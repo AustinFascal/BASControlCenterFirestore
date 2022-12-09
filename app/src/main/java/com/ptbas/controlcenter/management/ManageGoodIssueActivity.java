@@ -48,6 +48,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.SearchView;
 import androidx.cardview.widget.CardView;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -1109,7 +1110,7 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
                     tvVhlUid, tvPoCustNumber, tvCustomerName;
             RelativeLayout btnDeleteGi, btnApproveGi, btnCloneGi;
             Button btn1, btn2, btn3, btn4;
-            CardView cardView;
+            ConstraintLayout cardView;
             CheckBox cbSelectItem;
 
             ItemClickListener itemClickListener;
