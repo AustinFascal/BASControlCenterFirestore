@@ -341,7 +341,10 @@ public class AddCashOutActivity extends AppCompatActivity {
                                                 if (!Objects.requireNonNull(value).isEmpty()) {
                                                     for (DocumentSnapshot e : value.getDocuments()) {
                                                         String spinnerPurchaseOrders = Objects.requireNonNull(e.get("roPoCustNumber")).toString();
-                                                        receiveOrderNumberList.add(spinnerPurchaseOrders);
+                                                        long roType = (long) Objects.requireNonNull(e.get("roType"));
+                                                        if (roType != 2){
+                                                            receiveOrderNumberList.add(spinnerPurchaseOrders);
+                                                        }
                                                     }
                                                     ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(AddCashOutActivity.this, R.layout.style_spinner, receiveOrderNumberList);
                                                     arrayAdapter.setDropDownViewResource(R.layout.style_spinner);
@@ -792,7 +795,7 @@ public class AddCashOutActivity extends AppCompatActivity {
                         for (DocumentSnapshot d : value.getDocuments()) {
 
                             RecapGIModel recapGIModel = d.toObject(RecapGIModel.class);
-                            if (recapGIModel.getRoDocumentID().contains(roDocumentID) && recapGIModel.getRcpGiInvoicedTo().isEmpty()) {
+                            if (recapGIModel.getRoDocumentID().contains(roDocumentID) && recapGIModel.getRcpGiStatus().equals(false)) {
                                 recapGiModelArrayList.add(recapGIModel);
                             }
 

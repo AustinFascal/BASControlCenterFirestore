@@ -90,7 +90,6 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -118,7 +117,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
     GIManagementAdapter giManagementAdapter;
     CashOutManagementAdapter cashOutManagementAdapter;
     InvoiceManagementAdapter invoiceManagementAdapter;
-    RecyclerView rvGoodIssueList;
+    RecyclerView rvList;
     Context context;
     Helper helper = new Helper();
     Boolean expandStatus = true, firstViewDataFirstTimeStatus = true;
@@ -189,7 +188,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
     private static final ArrayList<String> mArrayListDatePaid = new ArrayList<>();
     private static final ArrayList<BankAccountModel> mArrayListBankAlias = new ArrayList<>();
 
-    String invTransferDate, invTotalDue, coDocumentUID, testID, bankAccountDocumentUID, bankAccountAlias;
+    String invTransferDate, invTotalDue, coDocumentUID, testID, bankAccountDocumentUID, coBankAccountDocumentUID, bankAccountAlias, coBankAccountAlias;
 
 
 
@@ -243,7 +242,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
         edtPoUID = findViewById(R.id.pouid);
         edtDateStart = findViewById(R.id.edt_gi_date_filter_start);
         edtDateEnd = findViewById(R.id.edt_gi_date_filter_end);
-        rvGoodIssueList = findViewById(R.id.rvItemList);
+        rvList = findViewById(R.id.rvItemList);
         imgbtnExpandCollapseFilterLayout = findViewById(R.id.imgbtnExpandCollapseFilterLayout);
         llWrapFilterByDateRange = findViewById(R.id.ll_wrap_filter_by_date_range);
         llWrapFilterByRouid = findViewById(R.id.ll_wrap_filter_by_rouid);
@@ -879,6 +878,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
                                                                         testID = goodIssueModelArrayList.get(j).getGiCashedOutTo();
 
                                                                         bankAccountDocumentUID = invoiceManagementAdapter.getSelected().get(k).getBankDocumentID();
+                                                                        /*coBankAccountDocumentUID = cashOutManagementAdapter.getSelected().get(k).getBankDocumentID();*/
 
                                                                         if (connectingInvoiceModelArrayList != null) {
                                                                             if (!connectingInvoiceModelArrayList.isEmpty()) {
@@ -893,12 +893,30 @@ public class AddAIOReportActivity extends AppCompatActivity {
                                                                 }
                                                             }
 
+
+                                                            for (int z = 0; z < mArrayListCO.size(); z++) {
+                                                                if (mArrayListCO.get(z).getCoDocumentID().equals(testID)) {
+                                                                    priceListTest = mArrayListCO.get(z).getCoTotal();
+                                                                    datePaid = mArrayListCO.get(z).getCoDateAndTimeACC();
+                                                                    mArrayListTotalDue.add(priceListTest);
+                                                                    mArrayListDatePaid.add(datePaid);
+
+                                                                    coBankAccountDocumentUID = mArrayListCO.get(z).getBankDocumentID();
+                                                                    //coBankAccountAlias = mArrayListBankAlias.get(z).getBankAccountAlias();
+                                                                }
+                                                            }
+
+
                                                             for (DocumentSnapshot d : queryDocumentSnapshots3) {
                                                                 BankAccountModel bankAccountModels = d.toObject(BankAccountModel.class);
                                                                 if (Objects.equals(bankAccountModels.getBankAccountID(), bankAccountDocumentUID)){
                                                                     bankAccountAlias = bankAccountModels.getBankAccountAlias();
                                                                 }
+                                                                if (Objects.equals(bankAccountModels.getBankAccountID(), coBankAccountDocumentUID)){
+                                                                    coBankAccountAlias = bankAccountModels.getBankAccountAlias();
+                                                                }
                                                             }
+
 
                                                             double totalAmountForMaterials;
                                                             double totalAmountMatBuyPrice;
@@ -949,19 +967,15 @@ public class AddAIOReportActivity extends AppCompatActivity {
                                                             tblInvSection2.addCell(cellTxtNrml(
                                                                     new Paragraph(invTransferDate, fontNormalSmall), Element.ALIGN_CENTER));
 
+
                                                             tblInvSection2.addCell(cellTxtNrml(
                                                                     new Paragraph(bankAccountAlias, fontNormalSmall), Element.ALIGN_CENTER));
                                                             tblInvSection2.addCell(cellTxtNrml(
                                                                     new Paragraph(currencyFormat(df.format(totalAmountMatBuyPrice)), fontNormalSmall), Element.ALIGN_CENTER));
 
-                                                            for (int z = 0; z < mArrayListCO.size(); z++) {
-                                                                if (mArrayListCO.get(z).getCoDocumentID().equals(testID)) {
-                                                                    priceListTest = mArrayListCO.get(z).getCoTotal();
-                                                                    datePaid = mArrayListCO.get(z).getCoDateAndTimeACC();
-                                                                    mArrayListTotalDue.add(priceListTest);
-                                                                    mArrayListDatePaid.add(datePaid);
-                                                                }
-                                                            }
+
+
+
                                                             if (!mArrayListCO.isEmpty()) {
                                                                 tblInvSection2.addCell(cellTxtNrml(
                                                                         new Paragraph(currencyFormat(dfRound.format(priceListTest)), fontNormalSmall), Element.ALIGN_CENTER));
@@ -975,7 +989,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
                                                             }
 
                                                             tblInvSection2.addCell(cellTxtNrml(
-                                                                    new Paragraph("", fontNormalSmall), Element.ALIGN_CENTER));
+                                                                    new Paragraph(coBankAccountAlias, fontNormalSmall), Element.ALIGN_CENTER));
 
                                                             totalUnitAmountForMaterials = 0;
                                                             showOccurances = 0;
@@ -1326,7 +1340,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
                     }
                     Collections.reverse(invoiceModelArrayList);
                     invoiceManagementAdapter = new InvoiceManagementAdapter(context, invoiceModelArrayList);
-                    rvGoodIssueList.setAdapter(invoiceManagementAdapter);
+                    rvList.setAdapter(invoiceManagementAdapter);
                 });
     }
 
@@ -1353,7 +1367,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
 
                 Collections.reverse(goodIssueModelArrayList);
                 giManagementAdapter = new GIManagementAdapter(context, goodIssueModelArrayList);
-                rvGoodIssueList.setAdapter(giManagementAdapter);
+                rvList.setAdapter(giManagementAdapter);
             }
 
             @Override
@@ -1453,7 +1467,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
         super.onResume();
         // HANDLE RESPONSIVE CONTENT
         RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 1);
-        rvGoodIssueList.setLayoutManager(mLayoutManager);
+        rvList.setLayoutManager(mLayoutManager);
     }
 
     @Override
