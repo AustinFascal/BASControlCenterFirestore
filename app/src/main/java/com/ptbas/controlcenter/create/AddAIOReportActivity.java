@@ -106,8 +106,9 @@ public class AddAIOReportActivity extends AppCompatActivity {
 
     Button btnSearchData, imgbtnExpandCollapseFilterLayout;
     AutoCompleteTextView spinnerRoUID, spinnerCustName;
-    TextInputEditText edtPoUID, edtDateStart, edtDateEnd;
-    DatePickerDialog datePicker;
+    TextInputEditText edtPoUID;
+    //edtDateStart, edtDateEnd;
+    //DatePickerDialog datePicker;
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
     ArrayList<GoodIssueModel> goodIssueModelArrayList = new ArrayList<>();
     ArrayList<CashOutModel> cashOutModelArrayList = new ArrayList<>();
@@ -134,7 +135,8 @@ public class AddAIOReportActivity extends AppCompatActivity {
 
     LinearLayout llShowSpinnerRoAndEdtPo, llWrapFilterByDateRange, llWrapFilterByRouid, llNoData, llWrapFilter, llBottomSelectionOptions;
 
-    ImageButton btnResetCustomer, btnGiSearchByDateReset, btnGiSearchByRoUIDReset, btnExitSelection;
+    ImageButton btnResetCustomer, btnGiSearchByRoUIDReset, btnExitSelection;
+    //btnGiSearchByDateReset
 
     ExtendedFloatingActionButton fabCreateDocument;
 
@@ -240,8 +242,8 @@ public class AddAIOReportActivity extends AppCompatActivity {
         spinnerCustName = findViewById(R.id.spinnerCustName);
         spinnerRoUID = findViewById(R.id.rouid);
         edtPoUID = findViewById(R.id.pouid);
-        edtDateStart = findViewById(R.id.edt_gi_date_filter_start);
-        edtDateEnd = findViewById(R.id.edt_gi_date_filter_end);
+        //edtDateStart = findViewById(R.id.edt_gi_date_filter_start);
+        //edtDateEnd = findViewById(R.id.edt_gi_date_filter_end);
         rvList = findViewById(R.id.rvItemList);
         imgbtnExpandCollapseFilterLayout = findViewById(R.id.imgbtnExpandCollapseFilterLayout);
         llWrapFilterByDateRange = findViewById(R.id.ll_wrap_filter_by_date_range);
@@ -258,7 +260,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
         llBottomSelectionOptions = findViewById(R.id.llBottomSelectionOptions);
 
         btnResetCustomer = findViewById(R.id.btnResetCustomer);
-        btnGiSearchByDateReset = findViewById(R.id.btn_gi_search_date_reset);
+        //btnGiSearchByDateReset = findViewById(R.id.btn_gi_search_date_reset);
         btnGiSearchByRoUIDReset = findViewById(R.id.btnResetRouid);
         fabCreateDocument = findViewById(R.id.fabCreateCOR);
 
@@ -289,7 +291,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
         // SET DEFAULT LANG CODE TO ENGLISH
         LangUtils.setLocale(this, "en");
 
-        edtDateStart.setOnClickListener(view -> {
+        /*edtDateStart.setOnClickListener(view -> {
             final Calendar calendar = Calendar.getInstance();
             dayStrVal = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
             monthStrVal = String.valueOf(calendar.get(Calendar.MONTH));
@@ -319,9 +321,9 @@ public class AddAIOReportActivity extends AppCompatActivity {
                         btnGiSearchByDateReset.setVisibility(View.VISIBLE);
                     }, Integer.parseInt(yearStrVal), Integer.parseInt(monthStrVal), Integer.parseInt(dayStrVal));
             datePicker.show();
-        });
+        });*/
 
-        edtDateEnd.setOnClickListener(view -> {
+        /*edtDateEnd.setOnClickListener(view -> {
             final Calendar calendar = Calendar.getInstance();
             dayStrVal = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
             monthStrVal = String.valueOf(calendar.get(Calendar.MONTH));
@@ -353,7 +355,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
                         btnGiSearchByDateReset.setVisibility(View.VISIBLE);
                     }, Integer.parseInt(yearStrVal), Integer.parseInt(monthStrVal), Integer.parseInt(dayStrVal));
             datePicker.show();
-        });
+        });*/
 
         final String userId = helper.getUserId();
         DatabaseReference referenceProfile = FirebaseDatabase.getInstance("https://bas-delivery-report-default-rtdb.asia-southeast1.firebasedatabase.app").getReference("RegisteredUser");
@@ -541,7 +543,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
 
         });
 
-        btnGiSearchByDateReset.setOnClickListener(view -> {
+        /*btnGiSearchByDateReset.setOnClickListener(view -> {
             clearSelection();
             menu.findItem(R.id.select_all_data_recap).setVisible(false);
             edtDateStart.setText(null);
@@ -549,7 +551,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
             edtDateStart.clearFocus();
             edtDateEnd.clearFocus();
             btnGiSearchByDateReset.setVisibility(View.GONE);
-        });
+        });*/
 
         btnGiSearchByRoUIDReset.setOnClickListener(view -> {
             spinnerRoUID.setText(null);
@@ -677,7 +679,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
 
         btnExitSelection.setOnClickListener(view -> clearSelection());
 
-        searchQueryAll();
+        //searchQueryAll();
     }
 
     public static String removeDuplicates(String txt, String splitterRegex)

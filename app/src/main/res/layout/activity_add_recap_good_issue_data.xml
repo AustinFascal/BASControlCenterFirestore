@@ -82,7 +82,7 @@
                         android:id="@+id/llShowSpinnerRoAndEdtPo"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
+                        android:orientation="horizontal"
                         android:divider="@drawable/divider_transparent"
                         android:showDividers="middle"
                         android:visibility="gone">
@@ -92,6 +92,7 @@
                             android:layout_height="wrap_content"
                             android:divider="@drawable/divider_transparent"
                             android:gravity="top"
+                            android:layout_weight="1"
                             android:orientation="horizontal"
                             android:showDividers="middle"
                             android:visibility="visible">
@@ -124,6 +125,7 @@
                                 app:tint="@color/white" />
                         </LinearLayout>
                         <LinearLayout
+                            android:layout_weight="1"
                             android:id="@+id/ll_wrap_filter_by_pouid"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -146,6 +148,7 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:hint="ID Nomor PO Customer (auto)"
+                                    android:focusable="false"
                                     android:inputType="textCapCharacters"
                                     android:maxLines="1" />
                             </com.google.android.material.textfield.TextInputLayout>

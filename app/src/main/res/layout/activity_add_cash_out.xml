@@ -54,307 +54,339 @@
                             android:orientation="vertical"
                             android:showDividers="middle"
                             android:visibility="visible">
-
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:divider="@drawable/divider_transparent"
-                                android:gravity="top"
                                 android:orientation="horizontal"
+                                android:divider="@drawable/divider_transparent"
                                 android:showDividers="middle"
                                 android:visibility="visible">
-
-                                <com.google.android.material.textfield.TextInputLayout
-                                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
-                                    app:boxBackgroundColor="@color/pure_grey"
+                                <LinearLayout
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:divider="@drawable/divider_transparent"
+                                    android:showDividers="middle"
                                     android:layout_weight="1"
-                                    app:startIconDrawable="@drawable/ic_outline_person">
-
-                                    <AutoCompleteTextView
-                                        android:id="@+id/spinnerCustName"
+                                    android:visibility="visible">
+                                    <LinearLayout
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
-                                        android:hint="Pilih Pelanggan" />
-                                </com.google.android.material.textfield.TextInputLayout>
+                                        android:divider="@drawable/divider_transparent"
+                                        android:gravity="top"
+                                        android:orientation="horizontal"
+                                        android:showDividers="middle"
+                                        android:visibility="visible">
 
-                                <ImageButton
-                                    android:id="@+id/btnResetCustomer"
-                                    android:layout_width="55dp"
-                                    android:layout_height="match_parent"
-                                    android:layout_gravity="center_vertical"
-                                    android:layout_marginBottom="1dp"
-                                    android:background="@drawable/filled_box"
-                                    android:scaleType="centerInside"
-                                    android:src="@drawable/ic_outline_restore"
-                                    android:visibility="gone"
-                                    app:tint="@color/white" />
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:id="@+id/llShowSpinnerRoAndEdtPo"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="vertical"
-                                android:divider="@drawable/divider_transparent"
-                                android:showDividers="middle"
-                                android:visibility="gone">
-                                <LinearLayout
-                                    android:id="@+id/ll_wrap_filter_by_rouid"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:divider="@drawable/divider_transparent"
-                                    android:gravity="top"
-                                    android:orientation="horizontal"
-                                    android:showDividers="middle"
-                                    android:visibility="visible">
-
-                                    <com.google.android.material.textfield.TextInputLayout
-                                        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
-                                        app:boxBackgroundColor="@color/pure_grey"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="match_parent"
-                                        android:layout_weight="1"
-                                        app:startIconDrawable="@drawable/ic_outline_receipt">
-
-                                        <AutoCompleteTextView
-                                            android:id="@+id/rouid"
+                                        <com.google.android.material.textfield.TextInputLayout
+                                            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+                                            app:boxBackgroundColor="@color/pure_grey"
                                             android:layout_width="match_parent"
                                             android:layout_height="wrap_content"
-                                            android:hint="ID Received Order" />
-                                    </com.google.android.material.textfield.TextInputLayout>
+                                            android:layout_weight="1"
+                                            app:startIconDrawable="@drawable/ic_outline_person">
 
-                                    <ImageButton
-                                        android:id="@+id/btnResetRouid"
-                                        android:layout_width="55dp"
-                                        android:layout_height="match_parent"
-                                        android:layout_gravity="center_vertical"
-                                        android:layout_marginBottom="1dp"
-                                        android:background="@drawable/filled_box"
-                                        android:scaleType="centerInside"
-                                        android:src="@drawable/ic_outline_restore"
-                                        android:visibility="gone"
-                                        app:tint="@color/white" />
+                                            <AutoCompleteTextView
+                                                android:id="@+id/spinnerCustName"
+                                                android:layout_width="match_parent"
+                                                android:layout_height="wrap_content"
+                                                android:hint="Pilih Pelanggan" />
+                                        </com.google.android.material.textfield.TextInputLayout>
+
+                                        <ImageButton
+                                            android:id="@+id/btnResetCustomer"
+                                            android:layout_width="55dp"
+                                            android:layout_height="match_parent"
+                                            android:layout_gravity="center_vertical"
+                                            android:layout_marginBottom="1dp"
+                                            android:background="@drawable/filled_box"
+                                            android:scaleType="centerInside"
+                                            android:src="@drawable/ic_outline_restore"
+                                            android:visibility="gone"
+                                            app:tint="@color/white" />
+                                    </LinearLayout>
+                                    <LinearLayout
+                                        android:id="@+id/llShowSpinnerRoAndEdtPo"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:orientation="vertical"
+                                        android:divider="@drawable/divider_transparent"
+                                        android:showDividers="middle"
+                                        android:visibility="gone">
+                                        <LinearLayout
+                                            android:id="@+id/ll_wrap_filter_by_rouid"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:divider="@drawable/divider_transparent"
+                                            android:gravity="top"
+                                            android:orientation="horizontal"
+                                            android:showDividers="middle"
+                                            android:visibility="visible">
+
+                                            <com.google.android.material.textfield.TextInputLayout
+                                                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+                                                app:boxBackgroundColor="@color/pure_grey"
+                                                android:layout_width="match_parent"
+                                                android:layout_height="match_parent"
+                                                android:layout_weight="1"
+                                                app:startIconDrawable="@drawable/ic_outline_receipt">
+
+                                                <AutoCompleteTextView
+                                                    android:id="@+id/rouid"
+                                                    android:layout_width="match_parent"
+                                                    android:layout_height="wrap_content"
+                                                    android:hint="ID Received Order" />
+                                            </com.google.android.material.textfield.TextInputLayout>
+
+                                            <ImageButton
+                                                android:id="@+id/btnResetRouid"
+                                                android:layout_width="55dp"
+                                                android:layout_height="match_parent"
+                                                android:layout_gravity="center_vertical"
+                                                android:layout_marginBottom="1dp"
+                                                android:background="@drawable/filled_box"
+                                                android:scaleType="centerInside"
+                                                android:src="@drawable/ic_outline_restore"
+                                                android:visibility="gone"
+                                                app:tint="@color/white" />
+                                        </LinearLayout>
+                                        <LinearLayout
+                                            android:id="@+id/ll_wrap_filter_by_pouid"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:divider="@drawable/divider_transparent"
+                                            android:gravity="center_vertical"
+                                            android:orientation="horizontal"
+                                            android:showDividers="middle"
+                                            android:visibility="visible">
+
+                                            <com.google.android.material.textfield.TextInputLayout
+                                                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                                                app:boxBackgroundColor="@color/pure_grey"
+                                                android:layout_width="match_parent"
+                                                android:layout_height="wrap_content"
+                                                android:layout_weight="1"
+                                                app:startIconDrawable="@drawable/ic_outline_receipt">
+
+                                                <com.google.android.material.textfield.TextInputEditText
+                                                    android:id="@+id/pouid"
+                                                    android:layout_width="match_parent"
+                                                    android:layout_height="wrap_content"
+                                                    android:hint="ID Nomor PO Customer (auto)"
+                                                    android:focusable="false"
+                                                    android:inputType="textCapCharacters"
+                                                    android:maxLines="1" />
+                                            </com.google.android.material.textfield.TextInputLayout>
+
+                                        </LinearLayout>
+                                        <!--<LinearLayout
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:divider="@drawable/divider_transparent"
+                                            android:gravity="top"
+                                            android:orientation="horizontal"
+                                            android:showDividers="middle"
+                                            android:visibility="visible">
+
+                                            <com.google.android.material.textfield.TextInputLayout
+                                                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+                                                app:boxBackgroundColor="@color/pure_grey"
+                                                android:layout_width="match_parent"
+                                                android:layout_height="match_parent"
+                                                android:layout_weight="1"
+                                                app:startIconDrawable="@drawable/ic_outline_receipt">
+
+                                                <AutoCompleteTextView
+                                                    android:id="@+id/spinnerRcpID"
+                                                    android:layout_width="match_parent"
+                                                    android:layout_height="wrap_content"
+                                                    android:hint="ID Rekap Good Issue" />
+                                            </com.google.android.material.textfield.TextInputLayout>
+
+                                            <ImageButton
+                                                android:id="@+id/btnResetRcpID"
+                                                android:layout_width="55dp"
+                                                android:layout_height="match_parent"
+                                                android:layout_gravity="center_vertical"
+                                                android:layout_marginBottom="1dp"
+                                                android:background="@drawable/filled_box"
+                                                android:scaleType="centerInside"
+                                                android:src="@drawable/ic_outline_restore"
+                                                android:visibility="gone"
+                                                app:tint="@color/white" />
+                                        </LinearLayout>-->
+
+                                    </LinearLayout>
                                 </LinearLayout>
                                 <LinearLayout
-                                    android:id="@+id/ll_wrap_filter_by_pouid"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
+                                    android:orientation="vertical"
                                     android:divider="@drawable/divider_transparent"
-                                    android:gravity="center_vertical"
-                                    android:orientation="horizontal"
                                     android:showDividers="middle"
+                                    android:layout_weight="1"
                                     android:visibility="visible">
-
-                                    <com.google.android.material.textfield.TextInputLayout
-                                        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
-                                        app:boxBackgroundColor="@color/pure_grey"
+                                    <LinearLayout
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
-                                        android:layout_weight="1"
-                                        app:startIconDrawable="@drawable/ic_outline_receipt">
-
-                                        <com.google.android.material.textfield.TextInputEditText
-                                            android:id="@+id/pouid"
+                                        android:divider="@drawable/divider_transparent"
+                                        android:gravity="top"
+                                        android:orientation="horizontal"
+                                        android:showDividers="middle">
+                                        <com.google.android.material.textfield.TextInputLayout
+                                            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+                                            app:boxBackgroundColor="@color/pure_grey"
                                             android:layout_width="match_parent"
                                             android:layout_height="wrap_content"
-                                            android:hint="ID Nomor PO Customer (auto)"
-                                            android:inputType="textCapCharacters"
-                                            android:maxLines="1" />
-                                    </com.google.android.material.textfield.TextInputLayout>
+                                            android:layout_weight="1"
+                                            app:startIconDrawable="@drawable/ic_outline_person">
 
-                                </LinearLayout>
-                                <!--<LinearLayout
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:divider="@drawable/divider_transparent"
-                                    android:gravity="top"
-                                    android:orientation="horizontal"
-                                    android:showDividers="middle"
-                                    android:visibility="visible">
+                                            <AutoCompleteTextView
+                                                android:id="@+id/spinnerSupplierName"
+                                                android:layout_width="match_parent"
+                                                android:layout_height="wrap_content"
+                                                android:hint="Pilih Supplier"
+                                                android:inputType="textCapCharacters" />
 
-                                    <com.google.android.material.textfield.TextInputLayout
-                                        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
-                                        app:boxBackgroundColor="@color/pure_grey"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="match_parent"
-                                        android:layout_weight="1"
-                                        app:startIconDrawable="@drawable/ic_outline_receipt">
 
-                                        <AutoCompleteTextView
-                                            android:id="@+id/spinnerRcpID"
-                                            android:layout_width="match_parent"
-                                            android:layout_height="wrap_content"
-                                            android:hint="ID Rekap Good Issue" />
-                                    </com.google.android.material.textfield.TextInputLayout>
-
-                                    <ImageButton
-                                        android:id="@+id/btnResetRcpID"
-                                        android:layout_width="55dp"
-                                        android:layout_height="match_parent"
-                                        android:layout_gravity="center_vertical"
-                                        android:layout_marginBottom="1dp"
-                                        android:background="@drawable/filled_box"
-                                        android:scaleType="centerInside"
-                                        android:src="@drawable/ic_outline_restore"
+                                        </com.google.android.material.textfield.TextInputLayout>
+                                        <ImageButton
+                                            android:id="@+id/btnResetSupplier"
+                                            android:layout_width="55dp"
+                                            android:layout_height="match_parent"
+                                            android:layout_gravity="center_vertical"
+                                            android:layout_marginBottom="1dp"
+                                            android:background="@drawable/filled_box"
+                                            android:scaleType="centerInside"
+                                            android:src="@drawable/ic_outline_restore"
+                                            android:visibility="gone"
+                                            app:tint="@color/white" />
+                                    </LinearLayout>
+                                    <LinearLayout
                                         android:visibility="gone"
-                                        app:tint="@color/white" />
-                                </LinearLayout>-->
+                                        android:orientation="vertical"
+                                        android:id="@+id/llWrapSupplierDetail"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:divider="@drawable/divider_transparent"
+                                        android:showDividers="middle">
+                                        <com.google.android.material.textfield.TextInputLayout
+                                            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                                            app:boxBackgroundColor="@color/pure_grey"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:layout_weight="1"
+                                            app:startIconDrawable="@drawable/ic_identity_number">
 
+                                            <com.google.android.material.textfield.TextInputEditText
+                                                android:id="@+id/edtBankNameAndAccountNumber"
+                                                android:layout_width="match_parent"
+                                                android:layout_height="wrap_content"
+                                                android:focusable="false"
+                                                android:hint="Nomor Rekening (auto)"
+                                                android:maxLines="1"
+                                                android:inputType="none"/>
+                                        </com.google.android.material.textfield.TextInputLayout>
+                                        <LinearLayout
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:orientation="horizontal"
+                                            android:divider="@drawable/divider_transparent"
+                                            android:showDividers="middle"
+                                            android:visibility="visible">
+                                            <com.google.android.material.textfield.TextInputLayout
+                                                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                                                app:boxBackgroundColor="@color/pure_grey"
+                                                android:layout_width="match_parent"
+                                                android:layout_height="wrap_content"
+                                                android:layout_weight="1"
+                                                app:startIconDrawable="@drawable/ic_outline_person">
+
+                                                <com.google.android.material.textfield.TextInputEditText
+                                                    android:id="@+id/edtAccountOwnerName"
+                                                    android:layout_width="match_parent"
+                                                    android:layout_height="wrap_content"
+                                                    android:hint="Rekening Atas Nama (auto)"
+                                                    android:maxLines="1"
+                                                    android:focusable="false"
+                                                    android:inputType="none"/>
+                                            </com.google.android.material.textfield.TextInputLayout>
+                                            <com.google.android.material.textfield.TextInputLayout
+                                                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                                                app:boxBackgroundColor="@color/pure_grey"
+                                                android:layout_width="match_parent"
+                                                android:layout_height="wrap_content"
+                                                android:layout_weight="1"
+                                                app:startIconDrawable="@drawable/ic_outline_person">
+
+                                                <com.google.android.material.textfield.TextInputEditText
+                                                    android:id="@+id/edtPayee"
+                                                    android:layout_width="match_parent"
+                                                    android:layout_height="wrap_content"
+                                                    android:hint="Penerima Pembayaran (auto)"
+                                                    android:focusable="false"
+                                                    android:maxLines="1"
+                                                    android:inputType="textCapWords"/>
+                                            </com.google.android.material.textfield.TextInputLayout>
+                                        </LinearLayout>
+                                    </LinearLayout>
+                                </LinearLayout>
                             </LinearLayout>
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:divider="@drawable/divider_transparent"
-                                android:gravity="top"
-                                android:orientation="horizontal"
-                                android:showDividers="middle">
-                                <com.google.android.material.textfield.TextInputLayout
-                                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
-                                    app:boxBackgroundColor="@color/pure_grey"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    app:startIconDrawable="@drawable/ic_outline_person">
+                            <!-- <LinearLayout
+                                 android:id="@+id/ll_wrap_filter_by_date_range"
+                                 android:layout_width="match_parent"
+                                 android:layout_height="wrap_content"
+                                 android:divider="@drawable/divider_transparent"
+                                 android:orientation="horizontal"
+                                 android:showDividers="middle"
+                                 android:tag="firstView">
 
-                                    <AutoCompleteTextView
-                                        android:id="@+id/spinnerSupplierName"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
-                                        android:hint="Pilih Supplier"
-                                        android:inputType="textCapCharacters" />
+                                 <com.google.android.material.textfield.TextInputLayout
+                                     style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                                     app:boxBackgroundColor="@color/pure_grey"
+                                     android:layout_width="match_parent"
+                                     android:layout_height="wrap_content"
+                                     android:layout_weight="1"
+                                     app:startIconDrawable="@drawable/ic_outline_today">
 
+                                     <com.google.android.material.textfield.TextInputEditText
+                                         android:id="@+id/edt_gi_date_filter_start"
+                                         android:layout_width="match_parent"
+                                         android:layout_height="wrap_content"
+                                         android:focusable="false"
+                                         android:hint="Mulai"
+                                         android:inputType="none" />
+                                 </com.google.android.material.textfield.TextInputLayout>
 
-                                </com.google.android.material.textfield.TextInputLayout>
-                                <ImageButton
-                                    android:id="@+id/btnResetSupplier"
-                                    android:layout_width="55dp"
-                                    android:layout_height="match_parent"
-                                    android:layout_gravity="center_vertical"
-                                    android:layout_marginBottom="1dp"
-                                    android:background="@drawable/filled_box"
-                                    android:scaleType="centerInside"
-                                    android:src="@drawable/ic_outline_restore"
-                                    android:visibility="gone"
-                                    app:tint="@color/white" />
-                            </LinearLayout>
+                                 <com.google.android.material.textfield.TextInputLayout
+                                     style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                                     app:boxBackgroundColor="@color/pure_grey"
+                                     android:layout_width="match_parent"
+                                     android:layout_height="wrap_content"
+                                     android:layout_weight="1"
+                                     app:startIconDrawable="@drawable/ic_outline_today">
 
-                            <LinearLayout
-                                android:visibility="gone"
-                                android:orientation="vertical"
-                                android:id="@+id/llWrapSupplierDetail"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:divider="@drawable/divider_transparent"
-                                android:showDividers="middle">
-                                <com.google.android.material.textfield.TextInputLayout
-                                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
-                                    app:boxBackgroundColor="@color/pure_grey"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    app:startIconDrawable="@drawable/ic_identity_number">
+                                     <com.google.android.material.textfield.TextInputEditText
+                                         android:id="@+id/edt_gi_date_filter_end"
+                                         android:layout_width="match_parent"
+                                         android:layout_height="wrap_content"
+                                         android:focusable="false"
+                                         android:hint="Akhir"
+                                         android:inputType="none" />
+                                 </com.google.android.material.textfield.TextInputLayout>
 
-                                    <com.google.android.material.textfield.TextInputEditText
-                                        android:id="@+id/edtBankNameAndAccountNumber"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
-                                        android:focusable="false"
-                                        android:hint="Nomor Rekening (auto)"
-                                        android:maxLines="1"
-                                        android:inputType="none"/>
-                                </com.google.android.material.textfield.TextInputLayout>
-                                <com.google.android.material.textfield.TextInputLayout
-                                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
-                                    app:boxBackgroundColor="@color/pure_grey"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    app:startIconDrawable="@drawable/ic_outline_person">
-
-                                    <com.google.android.material.textfield.TextInputEditText
-                                        android:id="@+id/edtAccountOwnerName"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
-                                        android:hint="Rekening Atas Nama (auto)"
-                                        android:maxLines="1"
-                                        android:focusable="false"
-                                        android:inputType="none"/>
-                                </com.google.android.material.textfield.TextInputLayout>
-                                <com.google.android.material.textfield.TextInputLayout
-                                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
-                                    app:boxBackgroundColor="@color/pure_grey"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    app:startIconDrawable="@drawable/ic_outline_person">
-
-                                    <com.google.android.material.textfield.TextInputEditText
-                                        android:id="@+id/edtPayee"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
-                                        android:hint="Penerima Pembayaran (auto)"
-                                        android:maxLines="1"
-                                        android:inputType="textCapWords"/>
-                                </com.google.android.material.textfield.TextInputLayout>
-
-                            </LinearLayout>
-                            <LinearLayout
-                                android:id="@+id/ll_wrap_filter_by_date_range"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:divider="@drawable/divider_transparent"
-                                android:orientation="horizontal"
-                                android:showDividers="middle"
-                                android:tag="firstView">
-
-                                <com.google.android.material.textfield.TextInputLayout
-                                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
-                                    app:boxBackgroundColor="@color/pure_grey"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    app:startIconDrawable="@drawable/ic_outline_today">
-
-                                    <com.google.android.material.textfield.TextInputEditText
-                                        android:id="@+id/edt_gi_date_filter_start"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
-                                        android:focusable="false"
-                                        android:hint="Mulai"
-                                        android:inputType="none" />
-                                </com.google.android.material.textfield.TextInputLayout>
-
-                                <com.google.android.material.textfield.TextInputLayout
-                                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
-                                    app:boxBackgroundColor="@color/pure_grey"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    app:startIconDrawable="@drawable/ic_outline_today">
-
-                                    <com.google.android.material.textfield.TextInputEditText
-                                        android:id="@+id/edt_gi_date_filter_end"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
-                                        android:focusable="false"
-                                        android:hint="Akhir"
-                                        android:inputType="none" />
-                                </com.google.android.material.textfield.TextInputLayout>
-
-                                <ImageButton
-                                    android:id="@+id/btn_gi_search_date_reset"
-                                    android:layout_width="55dp"
-                                    android:layout_height="match_parent"
-                                    android:layout_gravity="center_vertical"
-                                    android:layout_marginBottom="1dp"
-                                    android:background="@drawable/filled_box"
-                                    android:scaleType="centerInside"
-                                    android:src="@drawable/ic_outline_restore"
-                                    android:visibility="gone"
-                                    app:tint="@color/white" />
-                            </LinearLayout>
+                                 <ImageButton
+                                     android:id="@+id/btn_gi_search_date_reset"
+                                     android:layout_width="55dp"
+                                     android:layout_height="match_parent"
+                                     android:layout_gravity="center_vertical"
+                                     android:layout_marginBottom="1dp"
+                                     android:background="@drawable/filled_box"
+                                     android:scaleType="centerInside"
+                                     android:src="@drawable/ic_outline_restore"
+                                     android:visibility="gone"
+                                     app:tint="@color/white" />
+                             </LinearLayout>-->
 
                             <Button
                                 android:id="@+id/caridata"

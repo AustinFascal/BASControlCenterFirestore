@@ -58,8 +58,14 @@
                     android:visibility="gone"
                     app:tint="@color/white" />
             </LinearLayout>
-
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:divider="@drawable/divider_transparent"
+            android:orientation="horizontal"
+            android:showDividers="middle">
             <com.google.android.material.textfield.TextInputLayout
+                android:layout_weight="1"
                 style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -75,6 +81,7 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
+                android:layout_weight="1"
                 style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -91,7 +98,7 @@
                     android:inputType="none"
                     android:maxLines="1" />
             </com.google.android.material.textfield.TextInputLayout>
-
+        </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -135,17 +142,6 @@
                         android:inputType="textCapCharacters"
                         android:maxLines="1" />
                 </com.google.android.material.textfield.TextInputLayout>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:baselineAligned="false"
-                android:divider="@drawable/divider_transparent"
-                android:orientation="horizontal"
-                android:showDividers="middle">
-
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
                     android:layout_width="match_parent"
@@ -180,17 +176,14 @@
                         android:inputType="none"
                         android:text="@string/dash" />
                 </com.google.android.material.textfield.TextInputLayout>
-
             </LinearLayout>
 
-
             <LinearLayout
-                android:id="@+id/ll_detail_type_curah"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="100dp"
+                android:baselineAligned="false"
                 android:divider="@drawable/divider_transparent"
-                android:orientation="vertical"
+                android:orientation="horizontal"
                 android:showDividers="middle">
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -198,6 +191,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:boxBackgroundColor="@color/pure_grey"
+                    android:layout_weight="1"
                     app:startIconDrawable="@drawable/ic_outline_receipt">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -215,6 +209,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:boxBackgroundColor="@color/pure_grey"
+                    android:layout_weight="1"
                     app:placeholderText="Contoh: L4332AAD"
                     app:startIconDrawable="@drawable/ic_100">
 
@@ -226,6 +221,20 @@
                         android:inputType="textCapCharacters"
                         android:maxLines="1" />
                 </com.google.android.material.textfield.TextInputLayout>
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/ll_detail_type_curah"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="100dp"
+                android:divider="@drawable/divider_transparent"
+                android:orientation="vertical"
+                android:showDividers="middle">
+
+
 
                 <LinearLayout
                     android:id="@+id/ll_height_correction_feature"

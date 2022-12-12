@@ -792,9 +792,10 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                             MaterialDialog confirmVolChange = new MaterialDialog.Builder(AddGoodIssueActivity.this)
                                     .setAnimation(R.raw.lottie_bill_generated)
                                     .setMessage("Perubahan volume terlihat sangat signifikan. Periksa kembali data yang Anda masukkan.")
-                                    .setCancelable(true)
+                                    .setCancelable(false)
                                     .setPositiveButton("Cek Kembali", (dialogInterface, which) -> {
                                         dialogInterface.dismiss();
+                                        pd.dismiss();
                                     })
                                     .setNegativeButton("Lanjutkan", R.drawable.ic_outline_check, (dialogInterface, which) -> {
                                         dialogInterface.dismiss();
@@ -916,14 +917,13 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                             MaterialDialog confirmVolChange = new MaterialDialog.Builder(AddGoodIssueActivity.this)
                                     .setAnimation(R.raw.lottie_bill_generated)
                                     .setMessage("Perubahan volume terlihat sangat signifikan. Periksa kembali data yang Anda masukkan.")
-                                    .setCancelable(true)
+                                    .setCancelable(false)
                                     .setPositiveButton("Cek Kembali", (dialogInterface, which) -> {
                                         dialogInterface.dismiss();
+                                        pd.dismiss();
                                     })
                                     .setNegativeButton("Lanjutkan", R.drawable.ic_outline_check, (dialogInterface, which) -> {
                                         dialogInterface.dismiss();
-
-
                                         insertData(giUID, giCreatedBy, giVerifiedBy, roDocumentID, giMatName, giMatType,
                                                 giNoteNumber, giVhlUID, giDate, new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date()),
                                                 Integer.parseInt(giVhlLength),
@@ -1003,6 +1003,7 @@ public class AddGoodIssueActivity extends AppCompatActivity {
                     DatabaseReference refGI = FirebaseDatabase.getInstance("https://bas-delivery-report-default-rtdb.asia-southeast1.firebasedatabase.app").getReference("GoodIssueData");
                     refGI.child(giUID).setValue(goodIssueModel).addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
+                            pd.dismiss();
                             dialogInterface.savedGIInformationFromManagement(AddGoodIssueActivity.this, vhlUIDList, pd);
                         } else {
                             try{

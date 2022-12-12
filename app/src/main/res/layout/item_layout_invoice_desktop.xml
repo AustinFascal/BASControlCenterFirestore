@@ -1,0 +1,428 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/cdvItem">
+
+        <RelativeLayout
+            android:paddingVertical="8dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <CheckBox
+                android:id="@+id/cbSelectItem"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_centerVertical="true" />
+
+            <LinearLayout
+                android:id="@+id/ll_wrap_cubication"
+                android:layout_width="130dp"
+                android:gravity="center"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toEndOf="@+id/cbSelectItem"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvVolume"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="0m3"
+                    android:textAlignment="center"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvPoNumber"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="2"
+                    android:text="Nomor PO"
+                    android:textAlignment="center"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llWrapStatusAndDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginHorizontal="8dp"
+                android:layout_toEndOf="@+id/ll_wrap_cubication"
+                android:gravity="center_vertical"
+                android:orientation="vertical">
+
+                <TableLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TableRow android:weightSum="3">
+
+
+                        <LinearLayout
+                            android:id="@+id/llWrapItemStatus"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="horizontal"
+                            android:visibility="visible">
+
+
+                            <LinearLayout
+                                android:id="@+id/llStatusApproved"
+
+                                android:layout_width="18dp"
+                                android:layout_height="18dp"
+                                android:layout_marginStart="4dp"
+                                android:background="@drawable/pill_green"
+                                android:gravity="center"
+                                android:padding="3dp"
+                                android:visibility="gone">
+
+                                <ImageView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:src="@drawable/ic_outline_verified" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:id="@+id/llStatusRecapped"
+
+                                android:layout_width="18dp"
+                                android:layout_height="18dp"
+                                android:layout_marginStart="4dp"
+                                android:background="@drawable/pill_green"
+                                android:gravity="center"
+                                android:padding="3dp"
+                                android:visibility="gone">
+
+                                <ImageView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:src="@drawable/ic_outline_bookmarked" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:id="@+id/llCashedOutStatus"
+
+                                android:layout_width="18dp"
+                                android:layout_height="18dp"
+                                android:layout_marginStart="4dp"
+                                android:background="@drawable/pill_green"
+                                android:gravity="center"
+                                android:padding="3dp"
+                                android:visibility="gone">
+
+                                <ImageView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:src="@drawable/ic_outline_cashed_out" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:id="@+id/ll_status_invoiced"
+
+                                android:layout_width="18dp"
+                                android:layout_height="18dp"
+                                android:layout_marginStart="4dp"
+                                android:background="@drawable/pill_green"
+                                android:gravity="center"
+                                android:padding="3dp"
+                                android:visibility="gone">
+
+                                <ImageView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:src="@drawable/ic_outline_receipt_long" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:id="@+id/llStatusArchived"
+                                android:layout_width="18dp"
+                                android:layout_height="18dp"
+                                android:layout_marginStart="4dp"
+                                android:background="@drawable/pill_green"
+                                android:gravity="center"
+                                android:padding="3dp"
+                                android:visibility="gone">
+
+                                <ImageView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:src="@drawable/ic_outline_archive" />
+                            </LinearLayout>
+
+
+                        </LinearLayout>
+
+                        <!--<TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_column="2"
+                            android:layout_weight="1"
+                            android:paddingHorizontal="10dp"
+                            android:text=""
+                            android:textSize="14sp" />-->
+
+
+
+
+
+
+
+                    </TableRow>
+
+
+
+                    <TableRow android:weightSum="3">
+
+                        <TextView
+                            android:id="@+id/tvDateCreated"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:ellipsize="end"
+                            android:maxLines="2"
+                            android:text="Tanggal Dibuat" />
+
+                        <!--<TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_column="2"
+                            android:layout_weight="1"
+                            android:paddingHorizontal="10dp"
+                            android:text=""
+                            android:textSize="14sp" />-->
+
+
+
+                    </TableRow>
+                </TableLayout>
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llWrapItemGoodIssue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginHorizontal="8dp"
+                android:layout_toStartOf="@+id/llHiddenView"
+                android:layout_toEndOf="@+id/llWrapStatusAndDate"
+                android:gravity="center_vertical"
+                android:orientation="vertical">
+
+                <TableLayout
+
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TableRow android:gravity="center_vertical"
+                        android:weightSum="3">
+
+                        <TextView
+                            android:id="@+id/tvInvoiceID"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Nomor Invoice" />
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:paddingHorizontal="10dp"
+                            android:text="" />
+
+                        <TextView
+                            android:id="@+id/tvCustomerName"
+                            android:layout_width="150dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:ellipsize="end"
+                            android:maxLines="2"
+                            android:text="Nama Customer" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:paddingHorizontal="10dp"
+                            android:text="" />
+                        <TextView
+                            android:id="@+id/tvDateDeliveryPeriod"
+                            android:layout_width="180dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:ellipsize="end"
+                            android:maxLines="2"
+                            android:text="Periode Pengiriman" />
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:paddingHorizontal="10dp"
+                            android:text="" />
+
+                        <TextView
+                            android:id="@+id/tvTotalDue"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:ellipsize="end"
+                            android:maxLines="2"
+                            android:text="Total Tagihan"
+                            android:textStyle="bold" />
+
+
+                        <TextView
+                            android:id="@+id/tvCoTotal"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:ellipsize="end"
+                            android:maxLines="2"
+                            android:text="Nomor RO UID"
+                            android:textSize="11sp"
+                            android:textStyle="bold"
+                            android:visibility="gone" />
+                    </TableRow>
+
+                </TableLayout>
+
+
+            </LinearLayout>
+
+
+
+
+
+            <LinearLayout
+                android:id="@+id/llHiddenView"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:orientation="horizontal"
+                android:paddingHorizontal="5dp">
+
+                <RelativeLayout
+                    android:visibility="gone"
+                    android:id="@+id/btn_clone_gi"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_alignStart="@+id/btnClone"
+                        android:layout_alignTop="@+id/btnClone"
+                        android:layout_alignEnd="@+id/btnClone"
+                        android:layout_alignBottom="@+id/btnClone"
+                        android:scaleType="center"
+                        android:src="@drawable/ic_baseline_content_copy"
+                        app:tint="?colorPrimary" />
+
+                    <Button
+                        android:id="@+id/btnClone"
+                        android:contentDescription="NULL"
+                        style="@style/MaterialDialog.NegativeButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:tag="DeleteGI" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/rlBtnDeleteItem"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_alignStart="@+id/btnDeleteItem"
+                        android:layout_alignTop="@+id/btnDeleteItem"
+                        android:layout_alignEnd="@+id/btnDeleteItem"
+                        android:layout_alignBottom="@+id/btnDeleteItem"
+                        android:scaleType="center"
+                        android:src="@drawable/ic_outline_delete_forever"
+                        app:tint="?colorPrimary" />
+
+                    <Button
+                        android:id="@+id/btnDeleteItem"
+                        style="@style/MaterialDialog.NegativeButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:contentDescription="NULL"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:tag="DeleteGI"
+                        tools:ignore="SpeakableTextPresentCheck,SpeakableTextPresentCheck" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/rlBtnOpenItemDetail"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignStart="@+id/btnOpenItemDetail"
+                        android:layout_alignTop="@+id/btnOpenItemDetail"
+                        android:layout_alignEnd="@+id/btnOpenItemDetail"
+                        android:layout_alignBottom="@+id/btnOpenItemDetail"
+                        android:scaleType="center"
+                        android:src="@drawable/ic_outline_info"
+                        app:tint="?colorPrimary" />
+
+                    <Button
+                        android:id="@+id/btnOpenItemDetail"
+                        style="@style/MaterialDialog.NegativeButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        tools:ignore="SpeakableTextPresentCheck,SpeakableTextPresentCheck,SpeakableTextPresentCheck,SpeakableTextPresentCheck,SpeakableTextPresentCheck,SpeakableTextPresentCheck,SpeakableTextPresentCheck" />
+
+                </RelativeLayout>
+
+            </LinearLayout>
+        </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/light_grey"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+<!--
+</androidx.cardview.widget.CardView>-->

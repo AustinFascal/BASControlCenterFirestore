@@ -529,18 +529,20 @@ public class ManageInvoiceActivity extends AppCompatActivity {
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         int width = displayMetrics.widthPixels;
-        if (width<=1080){
+        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 1);
+        rvInvoiceList.setLayoutManager(mLayoutManager);
+        /*if (width<=1080){
             RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 1);
             rvInvoiceList.setLayoutManager(mLayoutManager);
-        }
-        if (width>1080&&width<1366){
+        }*/
+        /*if (width>1080&&width<1366){
             RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 2);
             rvInvoiceList.setLayoutManager(mLayoutManager);
         }
         if (width>=1366){
             RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 3);
             rvInvoiceList.setLayoutManager(mLayoutManager);
-        }
+        }*/
         chip_filter_all.isChecked();
         showDataDefaultQuery();
     }

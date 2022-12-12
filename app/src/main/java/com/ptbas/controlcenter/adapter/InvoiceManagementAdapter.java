@@ -45,7 +45,7 @@ public class InvoiceManagementAdapter extends RecyclerView.Adapter<InvoiceManage
     @NonNull
     @Override
     public InvoiceManagementAdapter.ItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_layout_invoice, parent, false);
+        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_layout_invoice_desktop, parent, false);
         return new ItemViewHolder(itemView);
     }
 
@@ -62,14 +62,12 @@ public class InvoiceManagementAdapter extends RecyclerView.Adapter<InvoiceManage
 
     public class ItemViewHolder extends RecyclerView.ViewHolder {
         LinearLayout llStatusPaid, llStatusUnpaid, llHiddenView;
-        TextView tvInvDateCreated, tvInvUID, tvPoCustNumber, tvPoCustName, tvRoMatSellPriceCubicAndTaxType, tvPoTransportTypeAndMatName;
-        Button btnDeleteInv, btnShowItemDetail;
-        RelativeLayout rlOpenInvDetail, rlBtnPrintItem;
+        TextView tvVolume, tvPoNumber, tvInvoiceID, tvDateCreated, tvCustomerName, tvDateDeliveryPeriod, tvTotalDue;
+        Button btnDeleteItem, btnOpenItemDetail;
+        RelativeLayout rlBtnDeleteItem, rlBtnOpenItemDetail;
         CheckBox cbSelectItem;
-        //ImageView` ivExpandLlHiddenView;
-        CardView cardView;
         String invPoType, custDocmentID, invPoUID, currency, matNameVal;
-        double matSellPrice, matQuantity;
+        double matQuantity;
         List<ProductItems> productItemsList;
 
         DecimalFormat df = new DecimalFormat("0.00");
@@ -79,24 +77,23 @@ public class InvoiceManagementAdapter extends RecyclerView.Adapter<InvoiceManage
         public ItemViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            cardView = itemView.findViewById(R.id.cdvItem);
             cbSelectItem = itemView.findViewById(R.id.cbSelectItem);
             llHiddenView = itemView.findViewById(R.id.llHiddenView);
-            //ivExpandLlHiddenView = itemView.findViewById(R.id.ivExpandLlHiddenView);
-            rlOpenInvDetail = itemView.findViewById(R.id.rlBtnOpenItemDetail);
-            rlBtnPrintItem = itemView.findViewById(R.id.rlBtnPrintItem);
+            rlBtnDeleteItem = itemView.findViewById(R.id.rlBtnDeleteItem);
+            rlBtnOpenItemDetail = itemView.findViewById(R.id.rlBtnOpenItemDetail);
             llStatusPaid = itemView.findViewById(R.id.ll_status_paid);
             llStatusUnpaid = itemView.findViewById(R.id.ll_status_unpaid);
-            tvInvDateCreated = itemView.findViewById(R.id.tvDateCreated);
-            tvInvUID = itemView.findViewById(R.id.tv_inv_uid);
-            tvPoCustNumber = itemView.findViewById(R.id.tv_po_cust_number);
-            tvPoCustName = itemView.findViewById(R.id.tv_po_cust_name);
-            btnDeleteInv = itemView.findViewById(R.id.rlBtnDeleteItem);
-            btnShowItemDetail = itemView.findViewById(R.id.btnOpenItemDetail);
-            tvRoMatSellPriceCubicAndTaxType = itemView.findViewById(R.id.tvRoMatSellPriceCubicAndTaxType);
-            tvPoTransportTypeAndMatName = itemView.findViewById(R.id.tvPoTransportTypeAndMatName);
 
-            //llHiddenView.getLayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
+            tvVolume = itemView.findViewById(R.id.tvVolume);
+            tvPoNumber = itemView.findViewById(R.id.tvPoNumber);
+            tvInvoiceID = itemView.findViewById(R.id.tvInvoiceID);
+            tvDateCreated = itemView.findViewById(R.id.tvDateCreated);
+            tvCustomerName = itemView.findViewById(R.id.tvCustomerName);
+            tvDateDeliveryPeriod = itemView.findViewById(R.id.tvDateDeliveryPeriod);
+            tvTotalDue = itemView.findViewById(R.id.tvTotalDue);
+
+            btnOpenItemDetail = itemView.findViewById(R.id.btnOpenItemDetail);
+            btnDeleteItem = itemView.findViewById(R.id.btnDeleteItem);
 
         }
 
@@ -104,7 +101,6 @@ public class InvoiceManagementAdapter extends RecyclerView.Adapter<InvoiceManage
             cbSelectItem.setChecked(false);
             dialogInterface = new DialogInterface();
 
-            rlBtnPrintItem.setVisibility(View.GONE);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -123,10 +119,13 @@ public class InvoiceManagementAdapter extends RecyclerView.Adapter<InvoiceManage
 
             String invUID = invoiceModel.getInvUID();
             String invDocumentID = invoiceModel.getInvDocumentUID();
-
-            String invPoCustName = invoiceModel.getCustDocumentID();
+            String invRoUID = invoiceModel.getRoDocumentID();
             String invDateCreated = invoiceModel.getInvDateNTimeCreated();
-            //String invPoType = "TEST";
+            String invVolume = invoiceModel.getInvTotalVol();
+            String invTotalDue = invoiceModel.getInvTotalDue();
+            String invDateDeliveryPeriod = invoiceModel.getInvDateDeliveryPeriod();
+            String invPoCustName = invoiceModel.getCustDocumentID();
+
             String invStatus = invoiceModel.getInvVerifiedBy();
 
             CollectionReference refRO = db.collection("ReceivedOrderData");
@@ -135,7 +134,7 @@ public class InvoiceManagementAdapter extends RecyclerView.Adapter<InvoiceManage
                 if (task.isSuccessful()){
                     for(DocumentSnapshot documentSnapshot : task.getResult()){
                         String getDocumentID = documentSnapshot.getId();
-                        if (getDocumentID.equals(invoiceModel.getRoDocumentID())){
+                        if (getDocumentID.equals(invRoUID)){
 
                             ReceivedOrderModel receivedOrderModel = documentSnapshot.toObject(ReceivedOrderModel.class);
 
@@ -152,26 +151,14 @@ public class InvoiceManagementAdapter extends RecyclerView.Adapter<InvoiceManage
                             if (receivedOrderModel.getRoType().equals(2)){
                                 invPoType = "JASA ANGKUT SAJA";
                             }
-
-
-
+                            tvPoNumber.setText(invPoUID);
                             /*HashMap<String, List<ProductItems>> map = receivedOrderModel.getRoOrderedItems();
                             for (HashMap.Entry<String, List<ProductItems>> e : map.entrySet()) {
                                 productItemsList = e.getValue();
                                 for (int i = 0; i<productItemsList.size();i++){
-                                    matNameVal = productItemsList.get(i).getMatName();
-                                    matSellPrice = productItemsList.get(i).getMatBuyPrice();
-                                    matQuantity = productItemsList.get(i).getMatQuantity();
-                                }
-                            }*/
-
-                            HashMap<String, List<ProductItems>> map = receivedOrderModel.getRoOrderedItems();
-                            for (HashMap.Entry<String, List<ProductItems>> e : map.entrySet()) {
-                                productItemsList = e.getValue();
-                                for (int i = 0; i<productItemsList.size();i++){
                                     if (productItemsList.get(0).getMatName().equals("JASA ANGKUT")){
-                                    /*transportServiceNameVal = productItemsList.get(0).getMatName();
-                                    transportServiceSellPrice = productItemsList.get(0).getMatBuyPrice();*/
+                                    *//*transportServiceNameVal = productItemsList.get(0).getMatName();
+                                    transportServiceSellPrice = productItemsList.get(0).getMatBuyPrice();*//*
                                     } else {
                                         matNameVal = productItemsList.get(i).getMatName();
                                         matSellPrice = productItemsList.get(i).getMatSellPrice();
@@ -179,10 +166,10 @@ public class InvoiceManagementAdapter extends RecyclerView.Adapter<InvoiceManage
                                     }
                                 }
 
-                            }
+                            }*/
 
-                            tvPoTransportTypeAndMatName.setText(invPoType.concat(" | "+matNameVal));
-                            tvPoCustNumber.setText("PO: "+invPoUID);
+                            /*tvPoTransportTypeAndMatName.setText(invPoType.concat(" | "+matNameVal));
+                            tvPoCustNumber.setText("PO: "+invPoUID);*/
 
                             CollectionReference refCust = db.collection("CustomerData");
 
@@ -192,7 +179,7 @@ public class InvoiceManagementAdapter extends RecyclerView.Adapter<InvoiceManage
                                         String getDocumentID2 = documentSnapshot2.getId();
                                         if (getDocumentID2.equals(custDocmentID)){
                                             CustomerModel customerModel = documentSnapshot2.toObject(CustomerModel.class);
-                                            tvPoCustName.setText(customerModel.getCustName());
+                                            tvCustomerName.setText(customerModel.getCustName());
 
                                             String custTaxStatus;
                                             if (customerModel.getCustNPWP().equals("")||customerModel.getCustNPWP().isEmpty()){
@@ -201,11 +188,11 @@ public class InvoiceManagementAdapter extends RecyclerView.Adapter<InvoiceManage
                                                 custTaxStatus = "PKP";
                                             }
 
-                                            tvRoMatSellPriceCubicAndTaxType.setText(custTaxStatus + " | " + currency
+                                            /*tvRoMatSellPriceCubicAndTaxType.setText(custTaxStatus + " | " + currency
                                                     + " " +
                                                     currencyFormat(df.format(matSellPrice))
                                                     + "/m3 | " +
-                                                    currencyFormat(df.format(matQuantity))+ " m3");
+                                                    currencyFormat(df.format(matQuantity))+ " m3");*/
                                         }
                                     }
                                 }
@@ -215,38 +202,23 @@ public class InvoiceManagementAdapter extends RecyclerView.Adapter<InvoiceManage
                 }
             });
 
+            tvVolume.setText(invVolume);
 
+            tvDateCreated.setText(invDateCreated);
+            tvInvoiceID.setText(invUID);
 
+            tvDateDeliveryPeriod.setText(invDateDeliveryPeriod);
+            tvTotalDue.setText(invTotalDue);
 
-
-
-
-            tvInvUID.setText(invUID);
-            tvInvDateCreated.setText(invDateCreated);
-
-            tvPoCustName.setText(invPoCustName);
-            if (!invStatus.isEmpty()){
+            /*if (!invStatus.isEmpty()){
                 llStatusPaid.setVisibility(View.VISIBLE);
                 llStatusUnpaid.setVisibility(View.GONE);
             } else {
                 llStatusPaid.setVisibility(View.GONE);
                 llStatusUnpaid.setVisibility(View.VISIBLE);
-            }
+            }*/
 
-            /*ivExpandLlHiddenView.setOnClickListener(view -> {
-                if (llHiddenView.getVisibility() == View.VISIBLE) {
-                    llHiddenView.setVisibility(View.GONE);
-                    TransitionManager.beginDelayedTransition(cardView, new AutoTransition());
-                    ivExpandLlHiddenView.setImageResource(R.drawable.ic_outline_keyboard_arrow_down);
-                }
-                else {
-                    TransitionManager.beginDelayedTransition(cardView, new AutoTransition());
-                    llHiddenView.setVisibility(View.VISIBLE);
-                    ivExpandLlHiddenView.setImageResource(R.drawable.ic_outline_keyboard_arrow_up);
-                }
-            });*/
-
-            btnShowItemDetail.setOnClickListener(new View.OnClickListener() {
+            btnOpenItemDetail.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Intent i = new Intent(context, UpdateInvoiceActivity.class);
@@ -259,7 +231,7 @@ public class InvoiceManagementAdapter extends RecyclerView.Adapter<InvoiceManage
             /*btnApproveInv.setOnClickListener(view ->
                     dialogInterface.approveInvConfirmation(context, invDocumentID));*/
 
-            btnDeleteInv.setOnClickListener(view ->
+            btnDeleteItem.setOnClickListener(view ->
                     dialogInterface.deleteInvConfirmation(context, invDocumentID));
         }
     }

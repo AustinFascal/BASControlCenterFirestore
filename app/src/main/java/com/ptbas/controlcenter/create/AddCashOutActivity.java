@@ -124,12 +124,14 @@ public class AddCashOutActivity extends AppCompatActivity {
     LinearLayout llBottomSelectionOptions, llNoData, llWrapFilter, llShowSpinnerRoAndEdtPo, llWrapSupplierDetail;
     ImageButton btnExitSelection;
     TextView tvTotalSelectedItem, tvTotalSelectedItem2;
-    ImageButton btnGiSearchByDateReset, btnResetRouid, btnResetCustomer, btnResetSupplier;
+    ImageButton btnResetRouid, btnResetCustomer, btnResetSupplier;
+    //btnGiSearchByDateReset
     ExtendedFloatingActionButton fabCreateCOR;
     Button btnSearchData, imgbtnExpandCollapseFilterLayout;
     AutoCompleteTextView spinnerRoUID, spinnerCustName, spinnerSupplierName;
     //spinnerRcpID
-    TextInputEditText edtPoUID, edtDateStart, edtDateEnd, edtBankNameAndAccountNumber, edtAccountOwnerName, edtPayee;
+    TextInputEditText edtPoUID, edtBankNameAndAccountNumber, edtAccountOwnerName, edtPayee;
+    //edtDateStart, edtDateEnd,
     DatePickerDialog datePicker;
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
     ArrayList<RecapGIModel> recapGIModelArrayList = new ArrayList<>();
@@ -184,7 +186,7 @@ public class AddCashOutActivity extends AppCompatActivity {
 
         btnSearchData = findViewById(R.id.caridata);
         btnExitSelection = findViewById(R.id.btnExitSelection);
-        btnGiSearchByDateReset = findViewById(R.id.btn_gi_search_date_reset);
+        //btnGiSearchByDateReset = findViewById(R.id.btn_gi_search_date_reset);
         btnResetRouid = findViewById(R.id.btnResetRouid);
         btnResetCustomer = findViewById(R.id.btnResetCustomer);
         btnResetSupplier = findViewById(R.id.btnResetSupplier);
@@ -199,8 +201,8 @@ public class AddCashOutActivity extends AppCompatActivity {
         //spinnerRcpID.setFilters(new InputFilter[] {new InputFilter.AllCaps()});
 
         edtPoUID = findViewById(R.id.pouid);
-        edtDateStart = findViewById(R.id.edt_gi_date_filter_start);
-        edtDateEnd = findViewById(R.id.edt_gi_date_filter_end);
+        //edtDateStart = findViewById(R.id.edt_gi_date_filter_start);
+        //edtDateEnd = findViewById(R.id.edt_gi_date_filter_end);
         edtBankNameAndAccountNumber = findViewById(R.id.edtBankNameAndAccountNumber);
         edtAccountOwnerName = findViewById(R.id.edtAccountOwnerName);
         edtPayee = findViewById(R.id.edtPayee);
@@ -369,7 +371,7 @@ public class AddCashOutActivity extends AppCompatActivity {
             }
         });
 
-        edtDateStart.setOnClickListener(view -> {
+        /*edtDateStart.setOnClickListener(view -> {
             final Calendar calendar = Calendar.getInstance();
             dayStrVal = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
             monthStrVal = String.valueOf(calendar.get(Calendar.MONTH));
@@ -431,7 +433,7 @@ public class AddCashOutActivity extends AppCompatActivity {
                         btnGiSearchByDateReset.setVisibility(View.VISIBLE);
                     }, Integer.parseInt(yearStrVal), Integer.parseInt(monthStrVal), Integer.parseInt(dayStrVal));
             datePicker.show();
-        });
+        });*/
 
         spinnerSupplierName.setOnItemClickListener((adapterView, view, i, l) -> {
             spinnerSupplierName.setError(null);
@@ -500,7 +502,7 @@ public class AddCashOutActivity extends AppCompatActivity {
             edtAccountOwnerName.setText(null);
             edtPayee.setText(null);
         });
-        btnGiSearchByDateReset.setOnClickListener(view -> {
+       /* btnGiSearchByDateReset.setOnClickListener(view -> {
             edtDateStart.setText(null);
             edtDateEnd.setText(null);
             edtDateStart.clearFocus();
@@ -508,7 +510,7 @@ public class AddCashOutActivity extends AppCompatActivity {
             dateStartVal = "";
             dateEndVal = "";
             btnGiSearchByDateReset.setVisibility(View.GONE);
-        });
+        });*/
         btnResetRouid.setOnClickListener(view -> {
             spinnerRoUID.setText(null);
             rouidVal = null;

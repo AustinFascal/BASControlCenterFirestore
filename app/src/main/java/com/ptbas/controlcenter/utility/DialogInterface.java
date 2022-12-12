@@ -1085,7 +1085,7 @@ public class DialogInterface {
             public void onFinish() {
 
                 AddAIOReportActivity addAIOReportActivity = (AddAIOReportActivity) context;
-                addAIOReportActivity.createAIOPDF(Helper.getAppPathAIOReport(context)+"test"+".pdf");
+                addAIOReportActivity.createAIOPDF(Helper.getAppPathAIOReport(context)+"AIO Report"+".pdf");
                 generatingInvoiceDialog.dismiss();
             }
         }.start();
