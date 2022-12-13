@@ -193,7 +193,7 @@
                             </com.google.android.material.textfield.TextInputLayout>
 
                             <ImageButton
-                                android:id="@+id/btn_gi_search_date_reset"
+                                android:id="@+id/btnGiSearchByDateReset"
                                 android:layout_width="50dp"
                                 android:layout_height="match_parent"
                                 android:layout_gravity="center_vertical"
@@ -207,7 +207,7 @@
                         </LinearLayout>
 
                         <LinearLayout
-                            android:id="@+id/ll_wrap_filter_chip_group"
+                            android:id="@+id/llWrapFilterChipGroup"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:gravity="center_vertical"
@@ -222,14 +222,14 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="10dp">
                                 <com.google.android.material.chip.ChipGroup
-                                    android:id="@+id/chip_group_filter_query"
+                                    android:id="@+id/chipGroup"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     app:singleLine="true"
                                     app:singleSelection="true"
                                     app:chipSpacingHorizontal="6dp">
                                     <com.google.android.material.chip.Chip
-                                        android:id="@+id/chip_filter_all"
+                                        android:id="@+id/chipFilterAll"
                                         style="@style/Widget.MaterialComponents.Chip.Choice"
                                         android:checked="true"
                                         android:textSize="13sp"
@@ -237,42 +237,42 @@
                                         android:layout_height="wrap_content"
                                         android:text="SEMUA"/>
                                     <com.google.android.material.chip.Chip
-                                        android:id="@+id/chip_filter_status_valid"
+                                        android:id="@+id/chipFilterValid"
                                         style="@style/Widget.MaterialComponents.Chip.Choice"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:textSize="13sp"
                                         android:text="VALID"/>
                                     <com.google.android.material.chip.Chip
-                                        android:id="@+id/chip_filter_status_invalid"
+                                        android:id="@+id/chipFilterInvalid"
                                         style="@style/Widget.MaterialComponents.Chip.Choice"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:textSize="13sp"
                                         android:text="BELUM VALID"/>
                                     <com.google.android.material.chip.Chip
-                                        android:id="@+id/chip_filter_status_recapped"
+                                        android:id="@+id/chipFilterRcpTrue"
                                         style="@style/Widget.MaterialComponents.Chip.Choice"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:textSize="13sp"
                                         android:text="SUDAH DIREKAP"/>
                                     <com.google.android.material.chip.Chip
-                                        android:id="@+id/chip_filter_status_not_yet_recapped"
+                                        android:id="@+id/chipFilterRcpFalse"
                                         style="@style/Widget.MaterialComponents.Chip.Choice"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:textSize="13sp"
                                         android:text="BELUM DIREKAP"/>
                                     <com.google.android.material.chip.Chip
-                                        android:id="@+id/chip_filter_status_cash_out"
+                                        android:id="@+id/chipFilterCOTrue"
                                         style="@style/Widget.MaterialComponents.Chip.Choice"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:textSize="13sp"
                                         android:text="SUDAH DIAJUKAN"/>
                                     <com.google.android.material.chip.Chip
-                                        android:id="@+id/chip_filter_status_not_yet_cash_out"
+                                        android:id="@+id/chipFilterCOFalse"
                                         style="@style/Widget.MaterialComponents.Chip.Choice"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
@@ -282,14 +282,14 @@
 
 
                                     <com.google.android.material.chip.Chip
-                                        android:id="@+id/chip_filter_status_invoiced"
+                                        android:id="@+id/chipFilterInvTrue"
                                         style="@style/Widget.MaterialComponents.Chip.Choice"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:textSize="13sp"
                                         android:text="SUDAH DITAGIHKAN"/>
                                     <com.google.android.material.chip.Chip
-                                        android:id="@+id/chip_filter_status_not_yet_invoiced"
+                                        android:id="@+id/chipFilterInvFalse"
                                         style="@style/Widget.MaterialComponents.Chip.Choice"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
@@ -297,14 +297,14 @@
                                         android:text="BELUM DITAGIHKAN"/>
 
                                     <com.google.android.material.chip.Chip
-                                        android:id="@+id/chip_filter_status_transport_type_curah"
+                                        android:id="@+id/chipFilterCurah"
                                         style="@style/Widget.MaterialComponents.Chip.Choice"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:textSize="13sp"
                                         android:text="CURAH"/>
                                     <com.google.android.material.chip.Chip
-                                        android:id="@+id/chip_filter_status_transport_type_borong"
+                                        android:id="@+id/chipFilterBorong"
                                         style="@style/Widget.MaterialComponents.Chip.Choice"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
@@ -378,7 +378,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <com.l4digital.fastscroll.FastScrollRecyclerView
-                android:id="@+id/rvItemList"
+                android:id="@+id/recyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingTop="10dp"
@@ -558,7 +558,7 @@
 
 
         <com.getbase.floatingactionbutton.FloatingActionsMenu
-            android:id="@+id/fab_expand_menu"
+            android:id="@+id/fabExpandMenu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
@@ -574,7 +574,7 @@
             tools:ignore="RelativeOverlap">
 
             <com.getbase.floatingactionbutton.FloatingActionButton
-                android:id="@+id/fab_action_recap_data"
+                android:id="@+id/fabActionCreateRecap"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:fab_colorNormal="@color/white"
@@ -583,7 +583,7 @@
                 app:fab_title="Buat Rekap Untuk Cash Out" />
 
             <com.getbase.floatingactionbutton.FloatingActionButton
-                android:id="@+id/fab_action_create_ro"
+                android:id="@+id/fabActionCreateGi"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:fab_colorNormal="@color/white"

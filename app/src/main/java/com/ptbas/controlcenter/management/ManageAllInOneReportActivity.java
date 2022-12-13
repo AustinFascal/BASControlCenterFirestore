@@ -115,8 +115,8 @@ public class ManageAllInOneReportActivity extends AppCompatActivity {
         context = this;
 
         fabExpandMenu = findViewById(R.id.fab_expand_menu);
-        fabActionCreateInv = findViewById(R.id.fab_action_create_ro);
-        fabActionRecapData = findViewById(R.id.fab_action_recap_data);
+        //fabActionCreateInv = findViewById(R.id.fab_action_create_ro);
+        //fabActionRecapData = findViewById(R.id.fab_action_recap_data);
 
         cdvFilter = findViewById(R.id.cdv_filter);
         nestedScrollView = findViewById(R.id.nestedScrollView);
@@ -139,7 +139,7 @@ public class ManageAllInOneReportActivity extends AppCompatActivity {
         chip_filter_status_invoiced = findViewById(R.id.chip_filter_status_invoiced);
         chip_filter_status_not_yet_invoiced = findViewById(R.id.chip_filter_status_not_yet_invoiced);
         chip_filter_status_transport_type_curah = findViewById(R.id.chip_filter_status_transport_type_curah);
-        chip_filter_status_transport_type_borong = findViewById(R.id.chip_filter_status_transport_type_borong);
+        //chip_filter_status_transport_type_borong = findViewById(R.id.chip_filter_status_transport_type_borong);
 
         llBottomSelectionOptions = findViewById(R.id.llBottomSelectionOptions);
         tvTotalSelectedItem = findViewById(R.id.tvTotalSelectedItem);
