@@ -115,7 +115,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
     ArrayList<InvoiceModel> invoiceModelArrayList = new ArrayList<>();
     ArrayList<InvoiceModel> connectingInvoiceModelArrayList = new ArrayList<>();
     ArrayList<BankAccountModel> bankAccountModelArrayList = new ArrayList<>();
-    GIManagementAdapter giManagementAdapter;
+    //GIManagementAdapter giManagementAdapter;
     CashOutManagementAdapter cashOutManagementAdapter;
     InvoiceManagementAdapter invoiceManagementAdapter;
     RecyclerView rvList;
@@ -372,7 +372,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
         });
 
         // CREATE GI MANAGEMENT ADAPTER
-        giManagementAdapter = new GIManagementAdapter(this, goodIssueModelArrayList);
+        //giManagementAdapter = new GIManagementAdapter(this, goodIssueModelArrayList);
         //invoiceManagementAdapter = new InvoiceManagementAdapter(this, invoiceModelArrayList);
         cashOutManagementAdapter = new CashOutManagementAdapter(this, cashOutModelArrayList);
         invoiceManagementAdapter = new InvoiceManagementAdapter(this, invoiceModelArrayList);
@@ -714,7 +714,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
         isSelectedAll = false;
         menu.findItem(R.id.select_all_data_recap).setIcon(ContextCompat.getDrawable(AddAIOReportActivity.this, R.drawable.ic_outline_select_all));
 
-        giManagementAdapter.clearSelection();
+        invoiceManagementAdapter.clearSelection();
         llBottomSelectionOptions.animate()
                 .translationY(llBottomSelectionOptions.getHeight()).alpha(0.0f)
                 .setListener(new AnimatorListenerAdapter() {
@@ -1346,7 +1346,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
                 });
     }
 
-    private void searchQueryAll(){
+    /*private void searchQueryAll(){
         Query query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated");
         query.addValueEventListener(new ValueEventListener() {
             @Override
@@ -1377,7 +1377,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
 
             }
         });
-    }
+    }*/
 
     private void expandFilterViewValidation() {
         if (expandStatus){
@@ -1430,7 +1430,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
             if (!isSelectedAll){
                 isSelectedAll = true;
                 item.setIcon(R.drawable.ic_outline_deselect);
-                giManagementAdapter.selectAll();
+                //giManagementAdapter.selectAll();
                 llBottomSelectionOptions.animate()
                         .translationY(0).alpha(1.0f)
                         .setDuration(100)
@@ -1444,7 +1444,7 @@ public class AddAIOReportActivity extends AppCompatActivity {
             } else {
                 isSelectedAll = false;
                 item.setIcon(R.drawable.ic_outline_select_all);
-                giManagementAdapter.clearSelection();
+                //giManagementAdapter.clearSelection();
                 llBottomSelectionOptions.animate()
                         .translationY(llBottomSelectionOptions.getHeight()).alpha(0.0f)
                         .setListener(new AnimatorListenerAdapter() {

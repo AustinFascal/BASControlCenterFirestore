@@ -243,25 +243,27 @@
 
             <LinearLayout
                 android:id="@+id/llWrapItemGoodIssue"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_marginHorizontal="8dp"
                 android:layout_toStartOf="@+id/llHiddenView"
                 android:layout_toEndOf="@+id/llWrapStatusAndDate"
-                android:gravity="center_vertical"
+                android:gravity="center"
                 android:orientation="vertical">
 
                 <TableLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:gravity="center">
 
                     <TableRow android:weightSum="3">
 
 
                         <TextView
+                            android:layout_marginStart="8dp"
                             android:id="@+id/tvCustomerName"
-                            android:layout_width="150dp"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:ellipsize="end"
@@ -269,39 +271,27 @@
                             android:text="Nama Customer" />
 
                         <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1"
-                            android:paddingHorizontal="10dp"
-                            android:text="" />
-
-                        <TextView
+                            android:layout_marginStart="8dp"
                             android:id="@+id/tv_po_cust_number"
-                            android:layout_width="match_parent"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:ellipsize="end"
                             android:maxLines="2"
-                            android:text="Nomor PO Customer"
-                            android:textStyle="bold" />
+                            android:text="Nomor PO Customer" />
 
                         <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1"
-                            android:paddingHorizontal="10dp"
-                            android:text="" />
-
-                        <TextView
+                            android:layout_marginStart="8dp"
+                            android:layout_marginEnd="8dp"
                             android:id="@+id/tv_gi_mat_detail"
-                            android:layout_width="match_parent"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:ellipsize="end"
                             android:maxLines="2"
                             android:text="Jenis Material | Nama Material" />
 
-                        <TextView
+                       <!-- <TextView
                             android:id="@+id/tvCoTotal"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -311,7 +301,7 @@
                             android:text="Nomor RO UID"
                             android:textSize="11sp"
                             android:textStyle="bold"
-                            android:visibility="gone" />
+                            android:visibility="gone" />-->
                     </TableRow>
 
                 </TableLayout>

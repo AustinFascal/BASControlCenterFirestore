@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -71,9 +72,11 @@ public class RecapGoodIssueManagementAdapter extends RecyclerView.Adapter<RecapG
     public class ItemViewHolder extends RecyclerView.ViewHolder {
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        TextView tvCubication, tvDateCreated, tvPoCustNumber, tvRcpGiUID, tvMatNTransportType, tvCustomerName;
+        TextView tvCubication, tvTotalRecap, tvMatName, tvDateCreated, tvRcpGiUID, tvCustomerName, tvRoType;
+
+        //tvPoCustNumber tvMatNTransportType
         CheckBox cbSelectItem;
-        String roPoUID, roCustName;
+        String roPoUID, roCustName, poType, currency;
 
         Helper helper;
 
@@ -90,11 +93,14 @@ public class RecapGoodIssueManagementAdapter extends RecyclerView.Adapter<RecapG
         public ItemViewHolder(@NonNull View itemView) {
             super(itemView);
             cbSelectItem = itemView.findViewById(R.id.cbSelectItem);
+            tvMatName = itemView.findViewById(R.id.tvMatName);
             tvCubication = itemView.findViewById(R.id.tvCubication);
             tvDateCreated = itemView.findViewById(R.id.tvDateCreated);
             tvRcpGiUID = itemView.findViewById(R.id.tvRcpGiUID);
-            tvPoCustNumber = itemView.findViewById(R.id.tvPoCustNumber);
-            tvMatNTransportType = itemView.findViewById(R.id.tvMatNTransportType);
+            tvRoType = itemView.findViewById(R.id.tvRoType);
+            tvTotalRecap = itemView.findViewById(R.id.tvTotalRecap);
+            //tvPoCustNumber = itemView.findViewById(R.id.tvPoCustNumber);
+            //tvMatNTransportType = itemView.findViewById(R.id.tvMatNTransportType);
             tvCustomerName = itemView.findViewById(R.id.tvCustomerName);
 
             llWrapItemStatus = itemView.findViewById(R.id.llWrapItemStatus);
@@ -138,6 +144,99 @@ public class RecapGoodIssueManagementAdapter extends RecyclerView.Adapter<RecapG
                         totalUnit += goodIssueModelArrayList.get(i).getGiVhlCubication();
                     }
                     tvCubication.setText(Html.fromHtml(df.format(totalUnit) +" m\u00B3"));
+
+                    CollectionReference refCust = db.collection("CustomerData");
+
+                    db.collection("ReceivedOrderData").whereEqualTo("roDocumentID", recapGIModel.getRoDocumentID()).get()
+                            .addOnSuccessListener(queryDocumentSnapshots -> {
+                                for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots){
+                                    ReceivedOrderModel receivedOrderModel = documentSnapshot.toObject(ReceivedOrderModel.class);
+                                    //receivedOrderModel.setRoDocumentID(documentSnapshot.getId());
+                                    roPoUID = receivedOrderModel.getRoPoCustNumber();
+                                    roCustName = receivedOrderModel.getCustDocumentID();
+                                    currency = receivedOrderModel.getRoCurrency();
+
+
+                            /*HashMap<String, List<ProductItems>> map = receivedOrderModel.getRoOrderedItems();
+                            for (HashMap.Entry<String, List<ProductItems>> e : map.entrySet()) {
+                                productItemsList = e.getValue();
+                                for (int i = 0; i<productItemsList.size();i++){
+                                    matNameVal = productItemsList.get(i).getMatName();
+                                    matSellPrice = productItemsList.get(i).getMatBuyPrice();
+                                    matQuantity = productItemsList.get(i).getMatQuantity();
+                                }
+
+                            }*/
+
+                                    HashMap<String, List<ProductItems>> map = receivedOrderModel.getRoOrderedItems();
+                                    for (HashMap.Entry<String, List<ProductItems>> e : map.entrySet()) {
+                                        productItemsList = e.getValue();
+                                        for (int i = 0; i<productItemsList.size();i++){
+                                            if (productItemsList.get(0).getMatName().equals("JASA ANGKUT")){
+                                                //transportServiceNameVal = productItemsList.get(0).getMatName();
+                                                //transportServiceSellPrice = productItemsList.get(0).getMatBuyPrice();
+                                                //matNameVal = productItemsList.get(0).getMatName();
+                                                //matQuantity = productItemsList.get(i).getMatQuantity();
+                                        /*matSellPrice = productItemsList.get(0).getMatBuyPrice();
+                                        matQuantity = productItemsList.get(0).getMatQuantity();*/
+                                            } else {
+                                                matNameVal = productItemsList.get(i).getMatName();
+                                                matSellPrice = productItemsList.get(i).getMatBuyPrice();
+                                                matQuantity = productItemsList.get(i).getMatQuantity();
+                                            }
+                                            if (productItemsList.size()>1){
+                                                matNameVal = productItemsList.get(1).getMatName();
+                                            }
+                                        }
+
+                                        double totalRecap = matSellPrice*totalUnit;
+                                        tvTotalRecap.setText(currency +" "+ currencyFormat(df.format(totalRecap)));
+
+                                    }
+
+                                    if (receivedOrderModel.getRoType().equals(0)){
+                                        poType = "JASA ANGKUT + MATERIAL";
+                                    }
+                                    if (receivedOrderModel.getRoType().equals(1)){
+                                        poType = "MATERIAL SAJA";
+                                    }
+                                    if (receivedOrderModel.getRoType().equals(2)){
+                                        poType = "JASA ANGKUT SAJA";
+                                    }
+
+                                    //matDetail = receivedOrderModel.getRoMatType()+" | "+matNameVal;
+                                    //tvMatName.setText(matDetail);
+                                    tvRoType.setText(receivedOrderModel.getRoMatType()+ " | " +poType);
+                                    tvMatName.setText(matNameVal);
+                                }
+                                //tvPoCustNumber.setText("PO: "+roPoUID);
+
+                                refCust.get().addOnCompleteListener(task -> {
+                                    if (task.isSuccessful()){
+                                        for(DocumentSnapshot documentSnapshot : task.getResult()){
+                                            String getDocumentID = documentSnapshot.getId();
+                                            if (getDocumentID.equals(roCustName)){
+                                                CustomerModel customerModel = documentSnapshot.toObject(CustomerModel.class);
+                                                tvCustomerName.setText(customerModel.getCustName());
+
+                            /*String custTaxStatus;
+                            if (customerModel.getCustNPWP().equals("")||customerModel.getCustNPWP().isEmpty()){
+                                custTaxStatus = "NON PKP";
+                            } else {
+                                custTaxStatus = "PKP";
+                            }*/
+
+                           /* tvRoMatSellPriceCubicAndTaxType.setText(custTaxStatus + " | " + currency
+                                    + " " +
+                                    currencyFormat(df.format(matSellPrice))
+                                    + "/m3 | " +
+                                    currencyFormat(df.format(matQuantity))+ " m3");*/
+                                            }
+                                        }
+                                    }
+                                });
+
+                            });
                 }
 
                 @Override
@@ -145,6 +244,13 @@ public class RecapGoodIssueManagementAdapter extends RecyclerView.Adapter<RecapG
 
                 }
             });
+
+
+            tvRcpGiUID.setText(recapGIModel.getRcpGiUID());
+
+
+
+
 
             //tvCubication.setText(Html.fromHtml(df.format(recapGIModel.getRoCubication()) +" m\u00B3"));
 
@@ -160,61 +266,8 @@ public class RecapGoodIssueManagementAdapter extends RecyclerView.Adapter<RecapG
 
 
 
-            tvRcpGiUID.setText(recapGIModel.getRcpGiUID());
-
-            CollectionReference refCust = db.collection("CustomerData");
-
-            db.collection("ReceivedOrderData").whereEqualTo("roDocumentID", recapGIModel.getRoDocumentID()).get()
-                    .addOnSuccessListener(queryDocumentSnapshots -> {
-                        for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots){
-                            ReceivedOrderModel receivedOrderModel = documentSnapshot.toObject(ReceivedOrderModel.class);
-                            //receivedOrderModel.setRoDocumentID(documentSnapshot.getId());
-                            roPoUID = receivedOrderModel.getRoPoCustNumber();
-                            roCustName = receivedOrderModel.getCustDocumentID();
 
 
-                            HashMap<String, List<ProductItems>> map = receivedOrderModel.getRoOrderedItems();
-                            for (HashMap.Entry<String, List<ProductItems>> e : map.entrySet()) {
-                                productItemsList = e.getValue();
-                                for (int i = 0; i<productItemsList.size();i++){
-                                    matNameVal = productItemsList.get(i).getMatName();
-                                    matSellPrice = productItemsList.get(i).getMatBuyPrice();
-                                    matQuantity = productItemsList.get(i).getMatQuantity();
-                                }
-
-                            }
-
-                            matDetail = receivedOrderModel.getRoMatType()+" - "+matNameVal;
-                            tvMatNTransportType.setText(matDetail);
-                        }
-                        tvPoCustNumber.setText("PO: "+roPoUID);
-
-                        refCust.get().addOnCompleteListener(task -> {
-                            if (task.isSuccessful()){
-                                for(DocumentSnapshot documentSnapshot : task.getResult()){
-                                    String getDocumentID = documentSnapshot.getId();
-                                    if (getDocumentID.equals(roCustName)){
-                                        CustomerModel customerModel = documentSnapshot.toObject(CustomerModel.class);
-                                        tvCustomerName.setText(customerModel.getCustName());
-
-                            /*String custTaxStatus;
-                            if (customerModel.getCustNPWP().equals("")||customerModel.getCustNPWP().isEmpty()){
-                                custTaxStatus = "NON PKP";
-                            } else {
-                                custTaxStatus = "PKP";
-                            }*/
-
-                           /* tvRoMatSellPriceCubicAndTaxType.setText(custTaxStatus + " | " + currency
-                                    + " " +
-                                    currencyFormat(df.format(matSellPrice))
-                                    + "/m3 | " +
-                                    currencyFormat(df.format(matQuantity))+ " m3");*/
-                                    }
-                                }
-                            }
-                        });
-
-                    });
 
 
 

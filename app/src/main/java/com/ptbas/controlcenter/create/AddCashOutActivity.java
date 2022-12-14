@@ -785,7 +785,7 @@ public class AddCashOutActivity extends AppCompatActivity {
 
         rouidVal = spinnerRoUID.getText().toString();
         pouidVal = Objects.requireNonNull(edtPoUID.getText()).toString();
-        coUID = pouidVal+" - "+getRandomString2(5);
+        coUID = pouidVal+" - CO - "+getRandomString2(5);
 
 
         fabCreateCOR.animate().translationY(0).setDuration(100).start();

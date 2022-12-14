@@ -407,18 +407,19 @@
                     style="@style/MaterialDialog.NegativeButton"
                     android:layout_width="32dp"
                     android:layout_height="match_parent"
-                    android:layout_toStartOf="@+id/btnVerifySelected"
+                    android:layout_alignParentEnd="true"
+
                     android:src="@drawable/ic_outline_delete_forever"
                     app:tint="?colorPrimary" />
 
-                <ImageButton
+                <!--<ImageButton
                     android:id="@+id/btnVerifySelected"
                     style="@style/MaterialDialog.NegativeButton"
                     android:layout_width="32dp"
                     android:layout_height="match_parent"
                     android:layout_alignParentEnd="true"
                     android:src="@drawable/ic_outline_currency"
-                    app:tint="?colorPrimary" />
+                    app:tint="?colorPrimary" />-->
             </RelativeLayout>
 
 

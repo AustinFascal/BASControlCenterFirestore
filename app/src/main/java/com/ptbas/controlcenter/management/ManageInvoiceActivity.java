@@ -145,7 +145,7 @@ public class ManageInvoiceActivity extends AppCompatActivity {
         btnExitSelection = findViewById(R.id.btnExitSelection);
         btnDeleteSelected = findViewById(R.id.btnDeleteSelected);
         btnSelectAll = findViewById(R.id.btnSelectAll);
-        btnVerifySelected = findViewById(R.id.btnVerifySelected);
+        //btnVerifySelected = findViewById(R.id.btnVerifySelected);
 
         TypedValue typedValue = new TypedValue();
         Resources.Theme theme = context.getTheme();
@@ -277,7 +277,7 @@ public class ManageInvoiceActivity extends AppCompatActivity {
 
         btnSelectAll.setVisibility(View.GONE);
 
-        btnVerifySelected.setOnClickListener(view -> {
+       /* btnVerifySelected.setOnClickListener(view -> {
             int size = invManagementAdapter.getSelected().size();
             MaterialDialog md = new MaterialDialog.Builder((Activity) context)
                     .setAnimation(R.raw.lottie_approval)
@@ -310,7 +310,7 @@ public class ManageInvoiceActivity extends AppCompatActivity {
 
             md.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
             md.show();
-        });
+        });*/
 
 
         btnDeleteSelected.setOnClickListener(view -> {

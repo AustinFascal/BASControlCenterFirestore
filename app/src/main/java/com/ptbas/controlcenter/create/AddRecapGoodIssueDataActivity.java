@@ -619,7 +619,7 @@ public class AddRecapGoodIssueDataActivity extends AppCompatActivity {
 
                 String coTimeCreated =
                         new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
-                rcpGiUID = rouidVal + " - "+ rcpDateDeliveryPeriod +" - RCP - "+ getRandomString2(5);
+                rcpGiUID = rouidVal + " - RCP - "+ getRandomString2(5);
 
                 Toast.makeText(context, rcpDateDeliveryPeriod, Toast.LENGTH_SHORT).show();
                 dialogInterface.confirmCreateRecap(context, rcpGiUID, coDateCreated + " | " + coTimeCreated + " WIB", helper.getUserId(), roDocumentID, roPoCustNumber, rcpDateDeliveryPeriod, totalUnit, goodIssueModelArrayList);

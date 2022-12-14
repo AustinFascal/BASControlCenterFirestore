@@ -1047,7 +1047,7 @@ public class DialogInterface {
                 }
 
                 AddInvoiceActivity addInvoiceActivity = (AddInvoiceActivity) context;
-                addInvoiceActivity.createInvPDF(Helper.getAppPathInvoice(context)+invUID+".pdf");
+                addInvoiceActivity.createInvPDF(Helper.getAppPathInvoice(context)+invUID+" Periode Pengiriman "+invDateDeliveryPeriod+".pdf");
                 generatingInvoiceDialog.dismiss();
             }
         }.start();

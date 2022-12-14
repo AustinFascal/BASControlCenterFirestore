@@ -108,8 +108,10 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
 
     public class ItemViewHolder extends RecyclerView.ViewHolder {
         LinearLayout llStatusApproved, llStatusRecapped, llStatusInvoiced, llCashedOutStatus, llRoNeedsUpdate, llHiddenView, llWrapGiStatus;
-        TextView tvCubication, tvGiDateTime, tvGiUid, tvRoUid, tvGiMatDetail, tvGiVhlDetail,
+        TextView tvCubication, tvGiDateTime, tvGiUid, tvGiMatDetail, tvGiVhlDetail,
                 tvVhlUid, tvPoCustNumber, tvCustomerName;
+
+        //tvRoUid
         RelativeLayout btnDeleteGi, btnApproveGi, btnCloneGi;
         Button btn1, btn2, btn3, btn4;
         ConstraintLayout cardView;
@@ -129,7 +131,7 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
             tvCubication = itemView.findViewById(R.id.tv_cubication);
             tvGiDateTime = itemView.findViewById(R.id.tvDateCreated);
             tvGiUid = itemView.findViewById(R.id.tv_gi_uid);
-            tvRoUid = itemView.findViewById(R.id.tvCoTotal);
+            //tvRoUid = itemView.findViewById(R.id.tvCoTotal);
             tvPoCustNumber = itemView.findViewById(R.id.tv_po_cust_number);
             tvGiMatDetail = itemView.findViewById(R.id.tv_gi_mat_detail);
             tvGiVhlDetail = itemView.findViewById(R.id.tv_gi_vhl_detail);
@@ -148,7 +150,7 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
 
         public void viewBind(final GoodIssueModel goodIssueModel) {
             cbSelectItem.setChecked(false);
-            tvRoUid.setVisibility(View.INVISIBLE);
+           // tvRoUid.setVisibility(View.INVISIBLE);
 
             if (Objects.equals(helper.ACTIVITY_NAME, "UPDATE")){
                 btnDeleteGi.setVisibility(View.GONE);
