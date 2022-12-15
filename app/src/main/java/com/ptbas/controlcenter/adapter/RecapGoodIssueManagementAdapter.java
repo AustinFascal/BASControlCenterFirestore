@@ -1,14 +1,15 @@
 package com.ptbas.controlcenter.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -24,6 +25,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.ptbas.controlcenter.R;
+import com.ptbas.controlcenter.update.UpdateRecapActivity;
 import com.ptbas.controlcenter.utility.DialogInterface;
 import com.ptbas.controlcenter.utility.Helper;
 import com.ptbas.controlcenter.model.CustomerModel;
@@ -72,16 +74,17 @@ public class RecapGoodIssueManagementAdapter extends RecyclerView.Adapter<RecapG
     public class ItemViewHolder extends RecyclerView.ViewHolder {
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        TextView tvCubication, tvTotalRecap, tvMatName, tvDateCreated, tvRcpGiUID, tvCustomerName, tvRoType;
+        TextView tvCubication, tvTotalRecap, tvMatName, tvDateCreated,tvDateDeliveryPeriod, tvRcpGiUID, tvCustomerName, tvRoType;
 
         //tvPoCustNumber tvMatNTransportType
         CheckBox cbSelectItem;
         String roPoUID, roCustName, poType, currency;
+        Button btnDeleteItem, btnOpenItemDetail;
 
         Helper helper;
 
         List<ProductItems> productItemsList;
-        double matSellPrice, matQuantity, transportServiceSellPrice;
+        double matBuyPrice, matQuantity, transportServiceSellPrice;
         String matNameVal, matDetail;
 
         float totalUnit = 0;
@@ -92,10 +95,12 @@ public class RecapGoodIssueManagementAdapter extends RecyclerView.Adapter<RecapG
 
         public ItemViewHolder(@NonNull View itemView) {
             super(itemView);
+
             cbSelectItem = itemView.findViewById(R.id.cbSelectItem);
             tvMatName = itemView.findViewById(R.id.tvMatName);
             tvCubication = itemView.findViewById(R.id.tvCubication);
             tvDateCreated = itemView.findViewById(R.id.tvDateCreated);
+            tvDateDeliveryPeriod = itemView.findViewById(R.id.tvDateDeliveryPeriod);
             tvRcpGiUID = itemView.findViewById(R.id.tvRcpGiUID);
             tvRoType = itemView.findViewById(R.id.tvRoType);
             tvTotalRecap = itemView.findViewById(R.id.tvTotalRecap);
@@ -105,6 +110,9 @@ public class RecapGoodIssueManagementAdapter extends RecyclerView.Adapter<RecapG
 
             llWrapItemStatus = itemView.findViewById(R.id.llWrapItemStatus);
             llStatusApproved = itemView.findViewById(R.id.llStatusApproved);
+
+            btnOpenItemDetail = itemView.findViewById(R.id.btnOpenItemDetail);
+            btnDeleteItem = itemView.findViewById(R.id.btnDeleteItem);
         }
 
         public void viewBind(RecapGIModel recapGIModel) {
@@ -116,6 +124,7 @@ public class RecapGoodIssueManagementAdapter extends RecyclerView.Adapter<RecapG
             String rcpGiCoUID = recapGIModel.getRcpGiCoUID();
 
             DecimalFormat df = new DecimalFormat("0.00");
+
 
 
             DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
@@ -181,7 +190,7 @@ public class RecapGoodIssueManagementAdapter extends RecyclerView.Adapter<RecapG
                                         matQuantity = productItemsList.get(0).getMatQuantity();*/
                                             } else {
                                                 matNameVal = productItemsList.get(i).getMatName();
-                                                matSellPrice = productItemsList.get(i).getMatBuyPrice();
+                                                matBuyPrice = productItemsList.get(i).getMatBuyPrice();
                                                 matQuantity = productItemsList.get(i).getMatQuantity();
                                             }
                                             if (productItemsList.size()>1){
@@ -189,7 +198,7 @@ public class RecapGoodIssueManagementAdapter extends RecyclerView.Adapter<RecapG
                                             }
                                         }
 
-                                        double totalRecap = matSellPrice*totalUnit;
+                                        double totalRecap = matBuyPrice *Double.parseDouble(df.format(totalUnit));
                                         tvTotalRecap.setText(currency +" "+ currencyFormat(df.format(totalRecap)));
 
                                     }
@@ -275,6 +284,7 @@ public class RecapGoodIssueManagementAdapter extends RecyclerView.Adapter<RecapG
 
             tvDateCreated.setText(recapGIModel.getRcpGiDateAndTimeCreated());
 
+            tvDateDeliveryPeriod.setText(recapGIModel.getRcpDateDeliveryPeriod());
             cbSelectItem.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -304,6 +314,19 @@ public class RecapGoodIssueManagementAdapter extends RecyclerView.Adapter<RecapG
                 llStatusApproved.setVisibility(View.GONE);
                 llStatusApproved.setVisibility(View.GONE);
             }
+
+            btnOpenItemDetail.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent i = new Intent(context, UpdateRecapActivity.class);
+                    i.putExtra("key", rcpDocumentID);
+                    context.startActivity(i);
+                    //Toast.makeText(context, coDocumentID, Toast.LENGTH_SHORT).show();
+                }
+            });
+
+            btnDeleteItem.setOnClickListener(view ->
+                    dialogInterface.deleteRcpConfirmation(context, rcpDocumentID));
 
 
         }

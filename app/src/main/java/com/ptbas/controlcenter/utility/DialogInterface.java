@@ -21,6 +21,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -45,6 +46,8 @@ import com.ptbas.controlcenter.model.RecapGIModel;
 import com.ptbas.controlcenter.create.AddRecapGoodIssueDataActivity;
 import com.ptbas.controlcenter.model.ReceivedOrderModel;
 import com.ptbas.controlcenter.update.UpdateCashOutActivity;
+import com.ptbas.controlcenter.update.UpdateGoodIssueActivity;
+import com.ptbas.controlcenter.update.UpdateRecapActivity;
 
 import java.io.File;
 import java.text.DecimalFormat;
@@ -652,6 +655,34 @@ public class DialogInterface {
                                     dialogInterface.dismiss();
                                 }
                             }
+
+
+                            ArrayList<GoodIssueModel> goodIssueModelArrayList = new ArrayList<>();
+                            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+                            Query query = databaseReference.child("GoodIssueData");
+                            query.addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    goodIssueModelArrayList.clear();
+                                    if (snapshot.exists()){
+                                        for (DataSnapshot item : snapshot.getChildren()) {
+                                            if (Objects.equals(item.child("giCashedOutTo").getValue(), coDocumentID)) {
+                                                GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
+                                                goodIssueModelArrayList.add(goodIssueModel);
+                                            }
+                                        }
+
+                                        for (int i = 0; i < goodIssueModelArrayList.size(); i++) {
+                                            databaseReference.child("GoodIssueData").child(goodIssueModelArrayList.get(i).getGiUID()).child("giCashedOutTo").setValue("");
+                                        }
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+
+                                }
+                            });
                         }
                     });
                     // TODO DETECT USER MODEL - IF SUPER ADMIN, ABLE TO VERIFY
@@ -859,6 +890,54 @@ public class DialogInterface {
         md.show();
     }
 
+
+
+    public void deleteRcpConfirmation(Context context, String rcpDocumentUID) {
+        MaterialDialog mBottomSheetDialog = new MaterialDialog.Builder((Activity) context)
+                .setTitle("Hapus Data")
+                .setAnimation(R.raw.lottie_delete)
+                .setMessage("Apakah Anda yakin ingin menghapus data Rekap yang Anda pilih? Setelah dihapus, data tidak dapat dikembalikan.")
+                .setCancelable(true)
+                .setPositiveButton("YA", R.drawable.ic_outline_check, (dialogInterface, which) -> {
+
+                    refRecap.document(rcpDocumentUID).delete();
+
+                    ArrayList<GoodIssueModel> goodIssueModelArrayList = new ArrayList<>();
+                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+                    Query query = databaseReference.child("GoodIssueData");
+                    query.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            goodIssueModelArrayList.clear();
+                            if (snapshot.exists()){
+                                for (DataSnapshot item : snapshot.getChildren()) {
+                                    if (Objects.equals(item.child("giRecappedTo").getValue(), rcpDocumentUID)) {
+                                        GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
+                                        goodIssueModelArrayList.add(goodIssueModel);
+                                    }
+                                }
+
+                                for (int i = 0; i < goodIssueModelArrayList.size(); i++) {
+                                    databaseReference.child("GoodIssueData").child(goodIssueModelArrayList.get(i).getGiUID()).child("giRecappedTo").setValue("");
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
+                    goodIssueModelArrayList.clear();
+                    dialogInterface.dismiss();
+                })
+                .setNegativeButton("TIDAK", R.drawable.ic_outline_close, (dialogInterface, which) -> dialogInterface.dismiss())
+                .build();
+
+        mBottomSheetDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
+        mBottomSheetDialog.show();
+    }
+
     public void deleteInvConfirmation(Context context, String invDocumentID) {
         MaterialDialog mBottomSheetDialog = new MaterialDialog.Builder((Activity) context)
                 .setTitle("Hapus Data")
@@ -868,6 +947,35 @@ public class DialogInterface {
                 .setPositiveButton("YA", R.drawable.ic_outline_check, (dialogInterface, which) -> {
                     removeAllItemsFromInvoice(invDocumentID);
                     refInv.document(invDocumentID).delete();
+
+                    ArrayList<GoodIssueModel> goodIssueModelArrayList = new ArrayList<>();
+                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+                    Query query = databaseReference.child("GoodIssueData");
+                    query.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            goodIssueModelArrayList.clear();
+                            if (snapshot.exists()){
+                                for (DataSnapshot item : snapshot.getChildren()) {
+                                    if (Objects.equals(item.child("giInvoicedTo").getValue(), invDocumentID)) {
+                                        GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
+                                        goodIssueModelArrayList.add(goodIssueModel);
+                                    }
+                                }
+
+                                for (int i = 0; i < goodIssueModelArrayList.size(); i++) {
+                                    databaseReference.child("GoodIssueData").child(goodIssueModelArrayList.get(i).getGiUID()).child("giInvoicedTo").setValue("");
+                                    databaseReference.child("GoodIssueData").child(goodIssueModelArrayList.get(i).getGiUID()).child("giConnectingInvoicedTo").setValue("");
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
+
                     dialogInterface.dismiss();
                 })
                 .setNegativeButton("TIDAK", R.drawable.ic_outline_close, (dialogInterface, which) -> dialogInterface.dismiss())
@@ -1299,7 +1407,50 @@ public class DialogInterface {
 
 
 
+    public void confirmCreateRecapFromUpdate(Context context, String rcpGiUID, String rcpGiDateAndTimeCreated,
+                                   String rcpGiCreatedBy, String roUIDVal, String poUID, String rcpDateDeliveryPeriod, String totalUnit,
+                                   ArrayList<GoodIssueModel> goodIssueModelArrayList) {
 
+        MaterialDialog materialDialog = new MaterialDialog.Builder((Activity) context)
+                .setTitle("Buat Rekap")
+                .setAnimation(R.raw.lottie_generate_bill)
+                .setMessage("Apakah Anda yakin ingin membuat rekapitulasi data Good Issue terpilih?")
+                .setCancelable(true)
+                .setPositiveButton("YA", R.drawable.ic_outline_check, (dialogInterface, which) -> {
+                    GIManagementAdapter giManagementAdapter;
+
+                    giManagementAdapter = new GIManagementAdapter(context, goodIssueModelArrayList);
+                    //int itemSelectedSize = giManagementAdapter.getSelected().size();
+
+                    MaterialDialog generatingInvoiceDialog = new MaterialDialog.Builder((Activity) context)
+                            .setTitle("Memproses Permintaan")
+                            .setMessage("Data rekap sedang diproses. Harap tunggu ...")
+                            .setAnimation(R.raw.lottie_generate_bill)
+                            .setCancelable(false)
+                            .build();
+
+                    generatingInvoiceDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
+                    generatingInvoiceDialog.show();
+
+                    new CountDownTimer(2000, 1000) {
+                        public void onTick(long millisUntilFinished) {
+                        }
+
+                        public void onFinish() {
+                            UpdateRecapActivity updateRecapActivity = (UpdateRecapActivity) context;
+                            updateRecapActivity.createPDF(Helper.getAppPath(context)+rcpGiUID+" Periode Pengiriman "+rcpDateDeliveryPeriod+".pdf");
+                            generatingInvoiceDialog.dismiss();
+                        }
+                    }.start();
+
+                    dialogInterface.dismiss();
+                })
+                .setNegativeButton("TIDAK", R.drawable.ic_outline_close, (dialogInterface, which) -> dialogInterface.dismiss())
+                .build();
+
+        materialDialog.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
+        materialDialog.show();
+    }
 
 
     public void confirmCreateRecap(Context context, String rcpGiUID, String rcpGiDateAndTimeCreated,
@@ -1340,7 +1491,6 @@ public class DialogInterface {
                             RecapGIModel recapGIModel = new RecapGIModel(rcpGiUID, rcpGiUID, rcpGiDateAndTimeCreated, rcpGiCreatedBy, roUIDVal, totalUnit, "", false, rcpDateDeliveryPeriod, "");
 
                             refRCPGI.set(recapGIModel);
-
                             for (int i = 0; i < giManagementAdapter.getSelected().size(); i++) {
                                 databaseReferenceGI.child("GoodIssueData").child(giManagementAdapter.getSelected().get(i).getGiUID()).child("giRecappedTo").setValue(rcpGiUID);
                             }

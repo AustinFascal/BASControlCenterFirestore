@@ -78,7 +78,7 @@
                 android:layout_toEndOf="@+id/ll_wrap_cubication"
                 android:gravity="center"
                 android:orientation="horizontal"
-                android:weightSum="4">
+                android:weightSum="5">
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -270,6 +270,25 @@
                         android:ellipsize="end"
                         android:maxLines="2"
                         android:text="Nama Customer"
+                        android:textSize="11sp" />
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvDateDeliveryPeriod"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:maxLines="2"
+                        android:text="Periode Pengiriman"
                         android:textSize="11sp" />
 
 

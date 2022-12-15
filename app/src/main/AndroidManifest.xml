@@ -24,6 +24,9 @@
             android:name=".update.UpdateVehicleData"
             android:exported="false" />
         <activity
+            android:name=".update.UpdateRecapActivity"
+            android:exported="false" />
+        <activity
             android:name=".management.ManageProductDataActivity"
             android:exported="false" />
         <activity

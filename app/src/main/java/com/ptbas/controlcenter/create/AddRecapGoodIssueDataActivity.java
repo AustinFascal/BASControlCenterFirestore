@@ -1083,7 +1083,7 @@ public class AddRecapGoodIssueDataActivity extends AppCompatActivity {
     @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == R.id.filter_data_recap) {
+        if (item.getItemId() == R.id.itemShowHideFilter) {
             imgbtnExpandCollapseFilterLayout.setVisibility(View.VISIBLE);
             TransitionManager.beginDelayedTransition(cdvFilter, new AutoTransition());
             if (cdvFilter.getVisibility() == View.GONE) {
@@ -1095,7 +1095,7 @@ public class AddRecapGoodIssueDataActivity extends AppCompatActivity {
             }
             return true;
         }
-        if (item.getItemId() == R.id.refresh_data_recap) {
+        /*if (item.getItemId() == R.id.refresh_data_recap) {
             View viewLayout = AddRecapGoodIssueDataActivity.this.getCurrentFocus();
             if (viewLayout != null) {
                 InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -1126,7 +1126,7 @@ public class AddRecapGoodIssueDataActivity extends AppCompatActivity {
                 searchQuery();
             }
             return true;
-        }
+        }*/
 
         if (item.getItemId() == R.id.select_all_data_recap) {
 

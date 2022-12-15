@@ -37,14 +37,14 @@
                     android:layout_marginBottom="6dp"
                     android:orientation="vertical">
                     <LinearLayout
-                        android:paddingTop="12dp"
+                        android:paddingTop="8dp"
                         android:gravity="center"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical">
                         <LinearLayout
                             android:id="@+id/llWrapFilter"
-                            android:paddingTop="12dp"
+                            android:paddingVertical="12dp"
                             android:gravity="center"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -56,8 +56,6 @@
                                 android:layout_marginTop="12dp"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:divider="@drawable/divider_transparent"
-                                android:showDividers="middle"
                                 android:orientation="horizontal">
 
                                 <LinearLayout
@@ -206,6 +204,39 @@
                                                 android:textSize="14sp" />
                                         </TableRow>
 
+
+                                    </TableLayout>
+
+
+
+
+
+                                </LinearLayout>
+                                <LinearLayout
+                                    android:layout_weight="1"
+                                    android:layout_marginStart="24dp"
+                                    android:id="@+id/llWrapFilter2"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:divider="@drawable/divider_transparent"
+                                    android:showDividers="middle"
+                                    android:visibility="visible">
+                                    <TextView
+                                        style="@style/TextAppearance.AppCompat.Title"
+
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:ellipsize="end"
+                                        android:gravity="center_vertical"
+                                        android:text=""
+                                        android:textSize="16sp"
+                                        android:textStyle="bold" />
+
+                                    <TableLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content">
                                         <TableRow>
 
                                             <TextView
@@ -268,36 +299,6 @@
                                                 android:textSize="14sp" />
                                         </TableRow>
 
-                                        <TableRow>
-
-                                            <TextView
-                                                style="@style/TextAppearance.AppCompat.Body1"
-                                                android:layout_width="wrap_content"
-                                                android:layout_height="wrap_content"
-                                                android:layout_column="1"
-                                                android:text="Tanggal PO"
-                                                android:textSize="14sp" />
-
-                                            <TextView
-                                                android:layout_width="wrap_content"
-                                                android:layout_height="wrap_content"
-                                                android:layout_column="2"
-                                                android:paddingHorizontal="10dp"
-                                                android:text=":"
-                                                android:textSize="14sp" />
-
-                                            <TextView
-                                                style="@style/TextAppearance.AppCompat.Body1"
-                                                android:id="@+id/tvPoDate"
-                                                android:layout_width="wrap_content"
-                                                android:layout_height="wrap_content"
-                                                android:layout_column="3"
-                                                android:layout_weight="1"
-                                                android:ellipsize="end"
-                                                android:maxLines="2"
-                                                android:text="date"
-                                                android:textSize="14sp" />
-                                        </TableRow>
 
                                         <TableRow>
 
@@ -329,37 +330,6 @@
                                                 android:text="string"
                                                 android:textSize="14sp" />
                                         </TableRow>
-                                    </TableLayout>
-
-
-
-
-
-                                </LinearLayout>
-                                <LinearLayout
-                                    android:layout_weight="1"
-                                    android:id="@+id/llWrapFilter2"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:orientation="vertical"
-                                    android:divider="@drawable/divider_transparent"
-                                    android:showDividers="middle"
-                                    android:visibility="visible">
-                                    <TextView
-                                        style="@style/TextAppearance.AppCompat.Title"
-
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_weight="1"
-                                        android:ellipsize="end"
-                                        android:gravity="center_vertical"
-                                        android:text=""
-                                        android:textSize="16sp"
-                                        android:textStyle="bold" />
-
-                                    <TableLayout
-                                        android:layout_width="match_parent"
-                                        android:layout_height="wrap_content">
                                         <TableRow>
 
                                             <TextView
@@ -390,6 +360,36 @@
                                                 android:text="dateArray"
                                                 android:textSize="14sp" />
                                         </TableRow>
+
+                                    </TableLayout>
+
+
+                                </LinearLayout>
+                                <LinearLayout
+                                    android:layout_weight="1"
+                                    android:id="@+id/llWrapFilter3"
+                                    android:layout_marginStart="24dp"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:divider="@drawable/divider_transparent"
+                                    android:showDividers="middle"
+                                    android:visibility="visible">
+                                    <TextView
+                                        style="@style/TextAppearance.AppCompat.Title"
+
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:ellipsize="end"
+                                        android:gravity="center_vertical"
+                                        android:text=""
+                                        android:textSize="16sp"
+                                        android:textStyle="bold" />
+
+                                    <TableLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content">
 
                                         <TableRow>
 
@@ -459,7 +459,7 @@
                                                 android:layout_width="wrap_content"
                                                 android:layout_height="wrap_content"
                                                 android:layout_column="1"
-                                                android:text="Total Tagihan"
+                                                android:text="Total Biaya"
                                                 android:textSize="14sp" />
 
                                             <TextView
@@ -488,19 +488,7 @@
 
                             </LinearLayout>
                         </LinearLayout>
-                        <Button
-                            android:layout_marginVertical="24dp"
-                            android:id="@+id/imgbtnExpandCollapseFilterLayout"
-                            style="@style/MaterialDialog.NegativeButton"
-                            android:layout_width="wrap_content"
-                            android:layout_height="40dp"
-                            android:drawableEnd="@drawable/ic_outline_keyboard_arrow_up"
-                            android:drawableTint="?colorPrimary"
-                            android:textSize="15sp"
-                            android:textStyle="bold"
-                            android:textAlignment="textStart"
-                            android:text="Lihat Daftar Good Issue"
-                            android:visibility="visible" />
+
                     </LinearLayout>
 
                 </ScrollView>
@@ -546,8 +534,7 @@
                 android:layout_height="match_parent"
                 android:paddingTop="10dp"
                 android:paddingBottom="80dp"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                />
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
         </androidx.core.widget.NestedScrollView>
 
     </RelativeLayout>
