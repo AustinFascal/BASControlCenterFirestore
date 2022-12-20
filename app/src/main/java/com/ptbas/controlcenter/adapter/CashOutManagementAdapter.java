@@ -6,6 +6,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,8 +29,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.ptbas.controlcenter.model.CustomerModel;
 import com.ptbas.controlcenter.utility.DialogInterface;
 import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.utility.Helper;
@@ -63,7 +67,7 @@ public class CashOutManagementAdapter extends RecyclerView.Adapter<CashOutManage
     @NonNull
     @Override
     public CashOutManagementAdapter.ItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_layout_cash_out, parent, false);
+        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_layout_cash_out_desktop, parent, false);
         return new ItemViewHolder(itemView);
     }
 
@@ -81,11 +85,11 @@ public class CashOutManagementAdapter extends RecyclerView.Adapter<CashOutManage
     public class ItemViewHolder extends RecyclerView.ViewHolder {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         LinearLayout llWrapItemStatus, llStatusApproved, llStatusPaid;
-        TextView tvDateCreated, tvTotalDue, tvCoUID, tvPoNumber, tvSupplierName;
-        Button btnDeleteItem, btnShowItemDetail, btnPrintItem, btnItemPaid;
-        //btnApproveItem
-        RelativeLayout rlBtnDeleteItem, rlOpenItemDetail, rlBtnPrintItem, rlBtnItemPaid, rlBtnApproveItem;
-        CardView cdvItem;
+        TextView tvCubication, tvCustomerName, tvMatName, tvDateCreated, tvTotalDue, tvCoUID, tvPoType, tvSupplierName, tvDateDeliveryPeriod;
+        Button btnDeleteItem, btnShowItemDetail, btnItemPaid;
+        //btnApproveItem btnPrintItem
+        RelativeLayout rlBtnDeleteItem, rlOpenItemDetail, rlBtnItemPaid, rlBtnApproveItem;
+        //CardView cdvItem; rlBtnPrintItem
         CheckBox cbSelectItem;
 
         DecimalFormat df = new DecimalFormat("0.00");
@@ -102,6 +106,7 @@ public class CashOutManagementAdapter extends RecyclerView.Adapter<CashOutManage
         double totalUnit = 0;
         ArrayList<GoodIssueModel> goodIssueModelArrayList = new ArrayList<>();
 
+        String matNameVal, poType, roCustName;
 
 
         public ItemViewHolder(@NonNull View itemView) {
@@ -113,23 +118,29 @@ public class CashOutManagementAdapter extends RecyclerView.Adapter<CashOutManage
             tvDateCreated = itemView.findViewById(R.id.tvDateCreated);
             tvTotalDue = itemView.findViewById(R.id.tvTotalDue);
             tvCoUID = itemView.findViewById(R.id.tvCoUID);
-            tvPoNumber = itemView.findViewById(R.id.tvPoNumber);
+            tvPoType = itemView.findViewById(R.id.tvPoType);
             tvSupplierName = itemView.findViewById(R.id.tvSupplierName);
 
             btnDeleteItem = itemView.findViewById(R.id.btnDeleteItem);
             btnShowItemDetail = itemView.findViewById(R.id.btnOpenItemDetail);
-            btnPrintItem = itemView.findViewById(R.id.btnPrintItem);
+            //btnPrintItem = itemView.findViewById(R.id.btnPrintItem);
             btnItemPaid = itemView.findViewById(R.id.btnItemPaid);
             //btnApproveItem = itemView.findViewById(R.id.btnApproveItem);
 
             rlBtnDeleteItem = itemView.findViewById(R.id.rlBtnDeleteItem);
             rlOpenItemDetail = itemView.findViewById(R.id.rlBtnOpenItemDetail);
-            rlBtnPrintItem = itemView.findViewById(R.id.rlBtnPrintItem);
+           // rlBtnPrintItem = itemView.findViewById(R.id.rlBtnPrintItem);
             rlBtnItemPaid  = itemView.findViewById(R.id.rlBtnItemPaid);
             rlBtnApproveItem = itemView.findViewById(R.id.rlBtnApproveItem);
 
-            cdvItem = itemView.findViewById(R.id.cdvItem);
+            //cdvItem = itemView.findViewById(R.id.cdvItem);
             cbSelectItem = itemView.findViewById(R.id.cbSelectItem);
+
+
+            tvDateDeliveryPeriod = itemView.findViewById(R.id.tvDateDeliveryPeriod);
+            tvCubication = itemView.findViewById(R.id.tvCubication);
+            tvMatName = itemView.findViewById(R.id.tvMatName);
+            tvCustomerName = itemView.findViewById(R.id.tvCustomerName);
         }
 
         public void viewBind(CashOutModel cashOutModel) {
@@ -158,21 +169,24 @@ public class CashOutManagementAdapter extends RecyclerView.Adapter<CashOutManage
                 }
             });
 
-            btnPrintItem.setVisibility(View.GONE);
-            rlBtnPrintItem.setVisibility(View.GONE);
+            //btnPrintItem.setVisibility(View.GONE);
+            //rlBtnPrintItem.setVisibility(View.GONE);
 
             coDateCreated = cashOutModel.getCoDateAndTimeCreated();
             coUID = cashOutModel.getCoUID();
 
+            tvDateDeliveryPeriod.setText(cashOutModel.getCoDateDeliveryPeriod());
 
+            CollectionReference refCust = db.collection("CustomerData");
 
             db.collection("ReceivedOrderData").whereEqualTo("roDocumentID", cashOutModel.getRoDocumentID()).get()
                     .addOnSuccessListener(queryDocumentSnapshots -> {
                         for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots){
                             ReceivedOrderModel receivedOrderModel = documentSnapshot.toObject(ReceivedOrderModel.class);
-                            //receivedOrderModel.setRoDocumentID(documentSnapshot.getId());
                             coPoUID = receivedOrderModel.getRoPoCustNumber();
-                            tvPoNumber.setText("PO: "+coPoUID);
+                            roCustName = receivedOrderModel.getCustDocumentID();
+
+                            //tvPoNumber.setText(coPoUID);
 
 
                             HashMap<String, List<ProductItems>> map = receivedOrderModel.getRoOrderedItems();
@@ -183,17 +197,36 @@ public class CashOutManagementAdapter extends RecyclerView.Adapter<CashOutManage
                                         //transportServiceNameVal = productItemsList.get(0).getMatName();
                                         //transportServiceSellPrice = productItemsList.get(0).getMatBuyPrice();
                                     } else {
-                                        //matNameVal = productItemsList.get(i).getMatName();
-                                        //matCubication = productItemsList.get(i).getMatQuantity();
+                                        matNameVal = productItemsList.get(i).getMatName();
                                         matBuyPrice = productItemsList.get(i).getMatBuyPrice();
+                                        //matQuantity = productItemsList.get(i).getMatQuantity();
+                                    }
+                                    if (productItemsList.size()>1){
+                                        matNameVal = productItemsList.get(1).getMatName();
                                     }
                                 }
                             }
 
+
+
+                            if (receivedOrderModel.getRoType().equals(0)){
+                                poType = "JASA ANGKUT + MATERIAL";
+                            }
+                            if (receivedOrderModel.getRoType().equals(1)){
+                                poType = "MATERIAL SAJA";
+                            }
+                            if (receivedOrderModel.getRoType().equals(2)){
+                                poType = "JASA ANGKUT SAJA";
+                            }
+
+                            tvPoType.setText(receivedOrderModel.getRoMatType()+ " | " +poType);
+                            tvMatName.setText(matNameVal);
+
+
                             DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
 
                             Query query = databaseReference.child("GoodIssueData");
-                            query.addValueEventListener(new ValueEventListener() {
+                            query.addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                                     if (snapshot.exists()){
@@ -212,6 +245,8 @@ public class CashOutManagementAdapter extends RecyclerView.Adapter<CashOutManage
                                     double totalIDR = matBuyPrice * totalUnit;
                                     coTotal = "IDR " + currencyFormat(dfRound.format(totalIDR));
                                     tvTotalDue.setText(coTotal);
+
+                                    tvCubication.setText(Html.fromHtml(df.format(totalUnit) +" m\u00B3"));
                                 }
 
 
@@ -222,6 +257,22 @@ public class CashOutManagementAdapter extends RecyclerView.Adapter<CashOutManage
                             });
                         }
                         tvSupplierName.setText(coSupplierName);
+
+
+
+
+
+                        refCust.get().addOnCompleteListener(task -> {
+                            if (task.isSuccessful()){
+                                for(DocumentSnapshot documentSnapshot : task.getResult()){
+                                    String getDocumentID = documentSnapshot.getId();
+                                    if (getDocumentID.equals(roCustName)){
+                                        CustomerModel customerModel = documentSnapshot.toObject(CustomerModel.class);
+                                        tvCustomerName.setText(customerModel.getCustName());
+                                    }
+                                }
+                            }
+                        });
                     });
 
 
@@ -239,7 +290,7 @@ public class CashOutManagementAdapter extends RecyclerView.Adapter<CashOutManage
             coAccBy = cashOutModel.getCoAccBy();
 
             tvDateCreated.setText(coDateCreated);
-            tvCoUID.setText("CO: "+ coUID);
+            tvCoUID.setText(coUID);
 
            // tvTotalDue.setText(coTotal);
 
@@ -280,72 +331,6 @@ public class CashOutManagementAdapter extends RecyclerView.Adapter<CashOutManage
                     context.startActivity(i);
                 }
             });
-
-            btnPrintItem.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    List<String> selectedItems = Arrays.asList(context.getResources().getStringArray(R.array.choosePrint));
-                    boolean[] checkedItemArrayInit = new boolean[]{
-                            true,
-                            false
-                    };
-
-                    AlertDialog.Builder alertChoosePrint = new AlertDialog.Builder(context);
-                    alertChoosePrint.setTitle("Pilih yang ingin dicetak");
-                    alertChoosePrint.setCancelable(true);
-                    alertChoosePrint.setMultiChoiceItems(R.array.choosePrint, checkedItemArrayInit, new android.content.DialogInterface.OnMultiChoiceClickListener() {
-                        @Override
-                        public void onClick(android.content.DialogInterface dialogInterface, int i, boolean b) {
-                            checkedItemArrayInit[i] = b;
-                        }
-                    });
-
-                    alertChoosePrint.setPositiveButton("CETAK", new android.content.DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(android.content.DialogInterface dialogInterface, int i) {
-                            for (int j=0; j<checkedItemArrayInit.length; j++){
-                                boolean checked = checkedItemArrayInit[j];
-                                if (checked){
-                                    if (selectedItems.get(j).equals("Cash Out")){
-                                        if (ContextCompat.checkSelfPermission(context,
-                                                Manifest.permission.WRITE_EXTERNAL_STORAGE)!=
-                                                PackageManager.PERMISSION_GRANTED){
-                                            ActivityCompat.requestPermissions((Activity) context,
-                                                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 10);
-                                        } else{
-                                            Toast.makeText(context, "Under development", Toast.LENGTH_SHORT).show();
-                                        }
-                                    }
-                                    //Toast.makeText(context, selectedItems.get(j), Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        }
-                    });
-
-                    alertChoosePrint.setNegativeButton("BATAL", new android.content.DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(android.content.DialogInterface dialogInterface, int i) {
-
-                        }
-                    });
-
-                    alertChoosePrint.show();
-                }
-            });
-
-            /*btnItemPaid.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    dialogInterface.coPaidConfirm(context, coDocumentID);
-                }
-            });*/
-
-            /*btnApproveItem.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    dialogInterface.approveCoConfirm(context, coDocumentID);
-                }
-            });*/
 
 
             //!!TODO CREATE OPTION TO PRINT FROM LIST ITEM

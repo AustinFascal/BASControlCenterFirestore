@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -98,6 +99,8 @@ public class ManageRecapGoodIssueActivity extends AppCompatActivity {
 
     CollectionReference refRcp = db.collection("RecapData");
 
+    ProgressDialog pd;
+
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,6 +108,11 @@ public class ManageRecapGoodIssueActivity extends AppCompatActivity {
         setContentView(R.layout.activity_manage_recap_good_issue);
 
         context = this;
+
+        pd = new ProgressDialog(ManageRecapGoodIssueActivity.this);
+        pd.setMessage("Memproses ...");
+        pd.setCancelable(false);
+        pd.show();
 
         fabExpandMenu = findViewById(R.id.fab_expand_menu);
         fabActionCreateCo = findViewById(R.id.fabActionCreateCo);
@@ -116,14 +124,14 @@ public class ManageRecapGoodIssueActivity extends AppCompatActivity {
         wrapFilter = findViewById(R.id.llWrapFilter);
         llWrapFilterByDateRange = findViewById(R.id.ll_wrap_filter_by_date_range);
         llNoData = findViewById(R.id.ll_no_data);
-        ll_wrap_filter_chip_group = findViewById(R.id.ll_wrap_filter_chip_group);
+        ll_wrap_filter_chip_group = findViewById(R.id.llWrapFilterChipGroup);
         rvItemList = findViewById(R.id.rvItemList);
         edtGiDateFilterStart = findViewById(R.id.edt_gi_date_filter_start);
         edtGiDateFilterEnd = findViewById(R.id.edt_gi_date_filter_end);
         btnGiSearchByDateReset = findViewById(R.id.btn_gi_search_date_reset);
         btnGiSearchByTypeReset = findViewById(R.id.btn_gi_search_by_type_reset);
 
-        chipGroup = findViewById(R.id.chip_group_filter_query);
+        chipGroup = findViewById(R.id.chipGroup);
         llBottomSelectionOptions = findViewById(R.id.llBottomSelectionOptions);
         tvTotalSelectedItem = findViewById(R.id.tvTotalSelectedItem);
         btnExitSelection = findViewById(R.id.btnExitSelection);
@@ -367,6 +375,8 @@ public class ManageRecapGoodIssueActivity extends AppCompatActivity {
 
         db.collection("RecapData").orderBy("rcpGiDateAndTimeCreated")
                 .addSnapshotListener((value, error) -> {
+
+                    pd.dismiss();
                     recapGiModelArrayList.clear();
                     if (!value.isEmpty()){
                         for (DocumentSnapshot d : value.getDocuments()) {
@@ -389,7 +399,7 @@ public class ManageRecapGoodIssueActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(@NonNull Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.query_search_menu, menu);
+        inflater.inflate(R.menu.menu_recap_gi, menu);
 
         MenuItem.OnActionExpandListener onActionExpandListener = new MenuItem.OnActionExpandListener() {
             @Override

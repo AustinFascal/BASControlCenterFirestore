@@ -47,7 +47,6 @@ public class RecapGoodIssueManagementAdapter extends RecyclerView.Adapter<RecapG
     DialogInterface dialogInterface;
     public boolean isSelectedAll = false;
 
-
     public RecapGoodIssueManagementAdapter(Context context, ArrayList<RecapGIModel> recapGoodIssueModelArrayList) {
         this.context = context;
         this.recapGoodIssueModelArrayList = recapGoodIssueModelArrayList;
@@ -76,7 +75,6 @@ public class RecapGoodIssueManagementAdapter extends RecyclerView.Adapter<RecapG
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         TextView tvCubication, tvTotalRecap, tvMatName, tvDateCreated,tvDateDeliveryPeriod, tvRcpGiUID, tvCustomerName, tvRoType;
 
-        //tvPoCustNumber tvMatNTransportType
         CheckBox cbSelectItem;
         String roPoUID, roCustName, poType, currency;
         Button btnDeleteItem, btnOpenItemDetail;
@@ -104,8 +102,6 @@ public class RecapGoodIssueManagementAdapter extends RecyclerView.Adapter<RecapG
             tvRcpGiUID = itemView.findViewById(R.id.tvRcpGiUID);
             tvRoType = itemView.findViewById(R.id.tvRoType);
             tvTotalRecap = itemView.findViewById(R.id.tvTotalRecap);
-            //tvPoCustNumber = itemView.findViewById(R.id.tvPoCustNumber);
-            //tvMatNTransportType = itemView.findViewById(R.id.tvMatNTransportType);
             tvCustomerName = itemView.findViewById(R.id.tvCustomerName);
 
             llWrapItemStatus = itemView.findViewById(R.id.llWrapItemStatus);
@@ -124,11 +120,7 @@ public class RecapGoodIssueManagementAdapter extends RecyclerView.Adapter<RecapG
             String rcpGiCoUID = recapGIModel.getRcpGiCoUID();
 
             DecimalFormat df = new DecimalFormat("0.00");
-
-
-
             DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-
 
             Query query = databaseReference.child("GoodIssueData");
             query.keepSynced(false);
@@ -160,34 +152,15 @@ public class RecapGoodIssueManagementAdapter extends RecyclerView.Adapter<RecapG
                             .addOnSuccessListener(queryDocumentSnapshots -> {
                                 for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots){
                                     ReceivedOrderModel receivedOrderModel = documentSnapshot.toObject(ReceivedOrderModel.class);
-                                    //receivedOrderModel.setRoDocumentID(documentSnapshot.getId());
                                     roPoUID = receivedOrderModel.getRoPoCustNumber();
                                     roCustName = receivedOrderModel.getCustDocumentID();
                                     currency = receivedOrderModel.getRoCurrency();
-
-
-                            /*HashMap<String, List<ProductItems>> map = receivedOrderModel.getRoOrderedItems();
-                            for (HashMap.Entry<String, List<ProductItems>> e : map.entrySet()) {
-                                productItemsList = e.getValue();
-                                for (int i = 0; i<productItemsList.size();i++){
-                                    matNameVal = productItemsList.get(i).getMatName();
-                                    matSellPrice = productItemsList.get(i).getMatBuyPrice();
-                                    matQuantity = productItemsList.get(i).getMatQuantity();
-                                }
-
-                            }*/
-
                                     HashMap<String, List<ProductItems>> map = receivedOrderModel.getRoOrderedItems();
                                     for (HashMap.Entry<String, List<ProductItems>> e : map.entrySet()) {
                                         productItemsList = e.getValue();
                                         for (int i = 0; i<productItemsList.size();i++){
                                             if (productItemsList.get(0).getMatName().equals("JASA ANGKUT")){
-                                                //transportServiceNameVal = productItemsList.get(0).getMatName();
-                                                //transportServiceSellPrice = productItemsList.get(0).getMatBuyPrice();
-                                                //matNameVal = productItemsList.get(0).getMatName();
-                                                //matQuantity = productItemsList.get(i).getMatQuantity();
-                                        /*matSellPrice = productItemsList.get(0).getMatBuyPrice();
-                                        matQuantity = productItemsList.get(0).getMatQuantity();*/
+
                                             } else {
                                                 matNameVal = productItemsList.get(i).getMatName();
                                                 matBuyPrice = productItemsList.get(i).getMatBuyPrice();
@@ -213,12 +186,9 @@ public class RecapGoodIssueManagementAdapter extends RecyclerView.Adapter<RecapG
                                         poType = "JASA ANGKUT SAJA";
                                     }
 
-                                    //matDetail = receivedOrderModel.getRoMatType()+" | "+matNameVal;
-                                    //tvMatName.setText(matDetail);
                                     tvRoType.setText(receivedOrderModel.getRoMatType()+ " | " +poType);
                                     tvMatName.setText(matNameVal);
                                 }
-                                //tvPoCustNumber.setText("PO: "+roPoUID);
 
                                 refCust.get().addOnCompleteListener(task -> {
                                     if (task.isSuccessful()){
@@ -227,19 +197,6 @@ public class RecapGoodIssueManagementAdapter extends RecyclerView.Adapter<RecapG
                                             if (getDocumentID.equals(roCustName)){
                                                 CustomerModel customerModel = documentSnapshot.toObject(CustomerModel.class);
                                                 tvCustomerName.setText(customerModel.getCustName());
-
-                            /*String custTaxStatus;
-                            if (customerModel.getCustNPWP().equals("")||customerModel.getCustNPWP().isEmpty()){
-                                custTaxStatus = "NON PKP";
-                            } else {
-                                custTaxStatus = "PKP";
-                            }*/
-
-                           /* tvRoMatSellPriceCubicAndTaxType.setText(custTaxStatus + " | " + currency
-                                    + " " +
-                                    currencyFormat(df.format(matSellPrice))
-                                    + "/m3 | " +
-                                    currencyFormat(df.format(matQuantity))+ " m3");*/
                                             }
                                         }
                                     }
@@ -257,31 +214,6 @@ public class RecapGoodIssueManagementAdapter extends RecyclerView.Adapter<RecapG
 
             tvRcpGiUID.setText(recapGIModel.getRcpGiUID());
 
-
-
-
-
-            //tvCubication.setText(Html.fromHtml(df.format(recapGIModel.getRoCubication()) +" m\u00B3"));
-
-
-
-
-
-
-
-            /*DecimalFormat df = new DecimalFormat("0.00");
-            float cubication = recapGIModel.getRoCubication();
-            tvCubication.setText(Html.fromHtml(df.format(cubication) +" m\u00B3"));*/
-
-
-
-
-
-
-
-
-
-
             tvDateCreated.setText(recapGIModel.getRcpGiDateAndTimeCreated());
 
             tvDateDeliveryPeriod.setText(recapGIModel.getRcpDateDeliveryPeriod());
@@ -290,7 +222,6 @@ public class RecapGoodIssueManagementAdapter extends RecyclerView.Adapter<RecapG
                 public void onClick(View view) {
                     recapGIModel.setChecked(!recapGIModel.isChecked());
                     cbSelectItem.setChecked(recapGIModel.isChecked());
-                    //Toast.makeText(context, recapGIModel.getRcpGiDocumentID(), Toast.LENGTH_SHORT).show();
                 }
             });
 
@@ -302,11 +233,6 @@ public class RecapGoodIssueManagementAdapter extends RecyclerView.Adapter<RecapG
                 }
             });
 
-            /*if (helper.ACTIVITY_NAME == "UPDATE"){
-                btnDelete.setVisibility(View.GONE);
-            }*/
-
-            //Boolean recapStatus = recapGIModel.get
             if (!rcpGiCoUID.isEmpty()){
                 llStatusApproved.setVisibility(View.VISIBLE);
                 llStatusApproved.setVisibility(View.VISIBLE);
@@ -321,7 +247,6 @@ public class RecapGoodIssueManagementAdapter extends RecyclerView.Adapter<RecapG
                     Intent i = new Intent(context, UpdateRecapActivity.class);
                     i.putExtra("key", rcpDocumentID);
                     context.startActivity(i);
-                    //Toast.makeText(context, coDocumentID, Toast.LENGTH_SHORT).show();
                 }
             });
 
@@ -367,7 +292,6 @@ public class RecapGoodIssueManagementAdapter extends RecyclerView.Adapter<RecapG
 
     public float getSelectedVolume() {
         float selected = 0;
-        //ArrayList<GoodIssueModel> selected = new ArrayList<>();
         for (int i = 0; i < recapGoodIssueModelArrayList.size(); i++) {
             if (recapGoodIssueModelArrayList.get(i).isChecked()) {
                 selected += recapGoodIssueModelArrayList.get(i).getRcpGiCubication();

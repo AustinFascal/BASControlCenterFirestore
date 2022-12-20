@@ -49,7 +49,7 @@
                         app:tint="@color/light_grey" />
 
                     <com.google.android.material.textfield.TextInputLayout
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -131,7 +131,6 @@
                                 style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                app:boxBackgroundColor="@color/pure_grey"
                                 android:layout_weight="1"
                                 app:startIconDrawable="@drawable/ic_outline_today">
 
@@ -148,7 +147,6 @@
                                 style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                app:boxBackgroundColor="@color/pure_grey"
                                 android:layout_weight="1"
                                 app:startIconDrawable="@drawable/ic_outline_today">
 
@@ -174,6 +172,58 @@
                                 app:tint="@color/white" />
 
                         </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/llWrapFilterChipGroup"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+                            <ImageView
+                                app:tint="?colorAccent"
+                                android:layout_width="24dp"
+                                android:layout_height="match_parent"
+                                android:src="@drawable/ic_outline_drag_indicator" />
+                            <HorizontalScrollView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="10dp">
+                                <com.google.android.material.chip.ChipGroup
+                                    android:id="@+id/chipGroup"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    app:singleLine="true"
+                                    app:singleSelection="true"
+                                    app:chipSpacingHorizontal="6dp">
+                                    <com.google.android.material.chip.Chip
+                                        android:id="@+id/chipFilterAll"
+                                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                                        android:checked="true"
+                                        android:textSize="13sp"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="SEMUA"/>
+
+                                    <com.google.android.material.chip.Chip
+                                        android:id="@+id/chipFilterCurah"
+                                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:textSize="13sp"
+                                        android:text="CURAH"/>
+                                    <com.google.android.material.chip.Chip
+                                        android:id="@+id/chipFilterBorong"
+                                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:textSize="13sp"
+                                        android:text="BORONG"/>
+
+                                </com.google.android.material.chip.ChipGroup>
+                            </HorizontalScrollView>
+
+                        </LinearLayout>
+
 
                         <!--<LinearLayout
                             android:id="@+id/ll_wrap_filter_by_name_and_type"
@@ -463,7 +513,7 @@
                     android:layout_width="32dp"
                     android:layout_height="match_parent"
                     android:layout_toStartOf="@+id/btnDeleteSelected"
-                    android:src="@drawable/ic_outline_check_all"
+                    android:src="@drawable/ic_outline_select_all"
                     app:tint="?colorPrimary" />
 
                 <ImageButton
@@ -471,18 +521,11 @@
                     style="@style/MaterialDialog.NegativeButton"
                     android:layout_width="32dp"
                     android:layout_height="match_parent"
-                    android:layout_toStartOf="@+id/btnVerifySelected"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="752dp"
                     android:src="@drawable/ic_outline_delete_forever"
                     app:tint="?colorPrimary" />
 
-                <ImageButton
-                    android:id="@+id/btnVerifySelected"
-                    style="@style/MaterialDialog.NegativeButton"
-                    android:layout_width="32dp"
-                    android:layout_height="match_parent"
-                    android:layout_alignParentEnd="true"
-                    android:src="@drawable/ic_outline_verified"
-                    app:tint="?colorPrimary" />
             </RelativeLayout>
 
 

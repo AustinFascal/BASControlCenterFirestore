@@ -53,7 +53,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        app:boxBackgroundColor="@color/pure_grey"
                         app:placeholderText="Pilih Kategori">
 
                         <AutoCompleteTextView
@@ -133,7 +132,6 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                app:boxBackgroundColor="@color/pure_grey"
                                 app:startIconDrawable="@drawable/ic_outline_today">
 
                                 <com.google.android.material.textfield.TextInputEditText
@@ -149,7 +147,6 @@
                                 style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                app:boxBackgroundColor="@color/pure_grey"
                                 android:layout_weight="1"
                                 app:startIconDrawable="@drawable/ic_outline_today">
 
@@ -270,14 +267,14 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:textSize="13sp"
-                                        android:text="SUDAH DIBAYAR"/>
+                                        android:text="LUNAS"/>
                                     <com.google.android.material.chip.Chip
                                         android:id="@+id/chip_filter_status_invalid"
                                         style="@style/Widget.MaterialComponents.Chip.Choice"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:textSize="13sp"
-                                        android:text="BELUM DIBAYAR"/>
+                                        android:text="BELUM LUNAS"/>
 
 
                                 </com.google.android.material.chip.ChipGroup>
@@ -403,6 +400,23 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@+id/cdv_filter"
+            android:visibility="visible">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvItemList"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingTop="10dp"
+                android:paddingBottom="80dp"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/item_layout_good_issue_desktop" />
+        </androidx.core.widget.NestedScrollView>
+
+       <!-- <androidx.core.widget.NestedScrollView
+            android:id="@+id/nestedScrollView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/cdv_filter"
             android:fillViewport="true"
             android:scrollbars="vertical">
 
@@ -413,8 +427,8 @@
                 android:paddingTop="10dp"
                 android:paddingBottom="80dp"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:listitem="@layout/item_layout_cash_out" />
-        </androidx.core.widget.NestedScrollView>
+                tools:listitem="@layout/item_layout_cash_out_desktop" />
+        </androidx.core.widget.NestedScrollView>-->
 
         <LinearLayout
             android:visibility="gone"

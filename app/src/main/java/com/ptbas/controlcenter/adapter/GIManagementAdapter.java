@@ -156,6 +156,11 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
                 btnDeleteGi.setVisibility(View.GONE);
             }
 
+            if (Objects.equals(helper.ACTIVITY_NAME, "DETAIL")){
+                btnDeleteGi.setVisibility(View.GONE);
+                cbSelectItem.setVisibility(View.GONE);
+            }
+
             if (helper.UPDATE_GOOD_ISSUE_IN_INVOICE){
                 btnCloneGi.setVisibility(View.VISIBLE);
             } else{
@@ -180,7 +185,7 @@ public class GIManagementAdapter extends RecyclerView.Adapter<GIManagementAdapte
 
             DecimalFormat df = new DecimalFormat("0.00");
             Double cubication = goodIssueModel.getGiVhlCubication();
-            String dateNTime = goodIssueModel.getGiDateCreated()+" | "+goodIssueModel.getGiTimeCreted() + " WIB";
+            String dateNTime = goodIssueModel.getGiDateCreated()+" "+goodIssueModel.getGiTimeCreted();
 
             String[] partGiUID = goodIssueModel.getGiUID().split("-");
             String giUID = partGiUID[0];

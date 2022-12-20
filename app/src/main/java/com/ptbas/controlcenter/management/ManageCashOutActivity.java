@@ -15,6 +15,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -81,7 +82,7 @@ public class ManageCashOutActivity extends AppCompatActivity {
     CardView cdvFilter;
     FloatingActionsMenu fabExpandMenu;
     FloatingActionButton fabActionCreateCo, fabActionRecapData;
-    NestedScrollView nestedScrollView;
+    //NestedScrollView nestedScrollView;
     TextInputEditText edtGiDateFilterStart, edtGiDateFilterEnd;
     AutoCompleteTextView spinnerSearchType;
     ImageButton btnGiSearchByDateReset, btnGiSearchByTypeReset;
@@ -106,6 +107,8 @@ public class ManageCashOutActivity extends AppCompatActivity {
 
     CollectionReference refCO = db.collection("CashOutData");
 
+    ProgressDialog pd;
+
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,12 +117,17 @@ public class ManageCashOutActivity extends AppCompatActivity {
 
         context = this;
 
+        pd = new ProgressDialog(ManageCashOutActivity.this);
+        pd.setMessage("Memproses ...");
+        pd.setCancelable(false);
+        pd.show();
+
         fabExpandMenu = findViewById(R.id.fab_expand_menu);
         fabActionCreateCo = findViewById(R.id.fabActionCreateCo);
         //fabActionRecapData = findViewById(R.id.fab_action_recap_data);
 
         cdvFilter = findViewById(R.id.cdv_filter);
-        nestedScrollView = findViewById(R.id.nestedScrollView);
+        //nestedScrollView = findViewById(R.id.nestedScrollView);
         spinnerSearchType = findViewById(R.id.spinner_search_type);
         wrapSearchBySpinner = findViewById(R.id.wrap_search_by_spinner);
         wrapFilter = findViewById(R.id.llWrapFilter);
@@ -425,6 +433,7 @@ public class ManageCashOutActivity extends AppCompatActivity {
 
         db.collection("CashOutData").orderBy("coDateAndTimeCreated")
                 .addSnapshotListener((value, error) -> {
+                    pd.dismiss();
                     cashCoutModelArrayList.clear();
                     if (!value.isEmpty()){
                         for (DocumentSnapshot d : value.getDocuments()) {
@@ -432,10 +441,10 @@ public class ManageCashOutActivity extends AppCompatActivity {
                             cashCoutModelArrayList.add(cashOutModel);
                         }
                         llNoData.setVisibility(View.GONE);
-                        nestedScrollView.setVisibility(View.VISIBLE);
+                        ////nestedScrollView.setVisibility(View.VISIBLE);
                     } else{
                         llNoData.setVisibility(View.VISIBLE);
-                        nestedScrollView.setVisibility(View.GONE);
+                        //nestedScrollView.setVisibility(View.GONE);
                     }
                     Collections.reverse(cashCoutModelArrayList);
                     cashOutManagementAdapter = new CashOutManagementAdapter(context, cashCoutModelArrayList);
@@ -535,7 +544,7 @@ public class ManageCashOutActivity extends AppCompatActivity {
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         int width = displayMetrics.widthPixels;
-        if (width<=1080){
+       /* if (width<=1080){
             RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 1);
             rvItemList.setLayoutManager(mLayoutManager);
         }
@@ -546,7 +555,10 @@ public class ManageCashOutActivity extends AppCompatActivity {
         if (width>=1366){
             RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 3);
             rvItemList.setLayoutManager(mLayoutManager);
-        }
+        }*/
+
+        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 1);
+        rvItemList.setLayoutManager(mLayoutManager);
         chip_filter_all.isChecked();
         showDataDefaultQuery();
     }

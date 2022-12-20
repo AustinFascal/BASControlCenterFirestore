@@ -73,6 +73,7 @@ import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.l4digital.fastscroll.FastScrollRecyclerView;
 import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.adapter.GIManagementAdapter;
 import com.ptbas.controlcenter.utility.DialogInterface;
@@ -144,7 +145,7 @@ public class UpdateCashOutActivity extends AppCompatActivity {
     DialogInterface dialogInterface = new DialogInterface();
 
     CardView cdvFilter;
-    NestedScrollView nestedScrollView;
+    //NestedScrollView nestedScrollView;
     TextInputEditText edtSupplierBankNameAndAccountNumber, edtSupplierAccountOwnerName, edtPayee;
 
     // edtBankNameAndAccountNumber
@@ -161,7 +162,7 @@ public class UpdateCashOutActivity extends AppCompatActivity {
     DatePickerDialog datePicker;
 
     GIManagementAdapter giManagementAdapter;
-    RecyclerView rvGoodIssueList;
+    FastScrollRecyclerView rvGoodIssueList;
 
     List<String> arrayListRoUID, arrayListPoUID, arrayListSupplierUID;
     List<ProductItems> productItemsList;
@@ -224,7 +225,7 @@ public class UpdateCashOutActivity extends AppCompatActivity {
         edtSupplierAccountOwnerName = findViewById(R.id.edtSupplierAccountOwnerName);
         edtPayee = findViewById(R.id.edtPayee);
 
-        nestedScrollView = findViewById(R.id.nestedScrollView);
+       // nestedScrollView = findViewById(R.id.nestedScrollView);
 
         fabPrint = findViewById(R.id.fabPrint);
 
@@ -236,7 +237,7 @@ public class UpdateCashOutActivity extends AppCompatActivity {
         tvCreatedBy = findViewById(R.id.tvCreatedBy);
         tvDateAndTimeCreated = findViewById(R.id.tvDateAndTimeCreated);
 
-        rvGoodIssueList = findViewById(R.id.rvItemList);
+        rvGoodIssueList = findViewById(R.id.recyclerView);
 
         imgbtnExpandCollapseFilterLayout = findViewById(R.id.imgbtnExpandCollapseFilterLayout);
 
@@ -1604,20 +1605,20 @@ public class UpdateCashOutActivity extends AppCompatActivity {
                         if (Objects.equals(item.child("giCashedOutTo").getValue(), coID)) {
                             GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
                             goodIssueModelArrayList.add(goodIssueModel);
-                            nestedScrollView.setVisibility(View.VISIBLE);
+                            //nestedScrollView.setVisibility(View.VISIBLE);
                             llNoData.setVisibility(View.GONE);
 
                         }
                     }
                     if (goodIssueModelArrayList.size()==0) {
                         fabPrint.hide();
-                        nestedScrollView.setVisibility(View.GONE);
+                       // nestedScrollView.setVisibility(View.GONE);
                         llNoData.setVisibility(View.VISIBLE);
                     }
 
                 } else  {
                     fabPrint.hide();
-                    nestedScrollView.setVisibility(View.GONE);
+                    //nestedScrollView.setVisibility(View.GONE);
                     llNoData.setVisibility(View.VISIBLE);
                 }
                 Collections.reverse(goodIssueModelArrayList);

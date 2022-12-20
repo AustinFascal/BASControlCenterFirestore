@@ -48,7 +48,6 @@
                         style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense.ExposedDropdownMenu"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:boxBackgroundColor="@color/pure_grey"
                         android:layout_weight="1"
                         app:placeholderText="Pilih Kategori">
 
@@ -113,7 +112,6 @@
                                 style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                app:boxBackgroundColor="@color/pure_grey"
                                 android:layout_weight="1"
                                 app:startIconDrawable="@drawable/ic_outline_today">
 
@@ -130,7 +128,6 @@
                                 style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                app:boxBackgroundColor="@color/pure_grey"
                                 android:layout_weight="1"
                                 app:startIconDrawable="@drawable/ic_outline_today">
 

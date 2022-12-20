@@ -582,7 +582,7 @@ public class DialogInterface {
                                     if (getDocumentID.equals(coDocumentID)){
                                         db.collection("CashOutData").document(coDocumentID).update("coStatusPayment", true);
                                         db.collection("CashOutData").document(coDocumentID).update("coAccBy", helper.getUserId());
-                                        db.collection("CashOutData").document(coDocumentID).update("coDateAndTimeACC", coDateCreated + " | " + coTimeCreated + " WIB");
+                                        db.collection("CashOutData").document(coDocumentID).update("coDateAndTimeACC", coDateCreated + " " + coTimeCreated);
 
                                         dialogInterface.dismiss();
                                     }
@@ -623,7 +623,7 @@ public class DialogInterface {
                                     if (getDocumentID.equals(coDocumentID)){
                                         db.collection("CashOutData").document(coDocumentID).update("coStatusApproval", true);
                                         db.collection("CashOutData").document(coDocumentID).update("coApprovedBy", helper.getUserId());
-                                        db.collection("CashOutData").document(coDocumentID).update("coDateAndTimeApproved", coDateCreated + " | " + coTimeCreated + " WIB");
+                                        db.collection("CashOutData").document(coDocumentID).update("coDateAndTimeApproved", coDateCreated + " " + coTimeCreated);
                                         dialogInterface.dismiss();
                                     }
                                 }

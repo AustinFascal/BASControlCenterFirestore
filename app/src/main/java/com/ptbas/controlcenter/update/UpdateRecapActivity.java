@@ -175,12 +175,15 @@ public class UpdateRecapActivity extends AppCompatActivity {
     //DecimalFormat dfRound = new DecimalFormat("0");
     DecimalFormat dfRound1 = new DecimalFormat("0");
 
+    ProgressDialog pd;
 
     ActivityUpdateRecapBinding binding;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //setContentView(R.layout.activity_update_recap);
+
+
 
         binding = ActivityUpdateRecapBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
@@ -193,7 +196,11 @@ public class UpdateRecapActivity extends AppCompatActivity {
         context = this;
         //cdvFilter = findViewById(R.id.cdv_filter);
 
-        helper.ACTIVITY_NAME = "UPDATE";
+        helper.ACTIVITY_NAME = "DETAIL";
+
+        pd = new ProgressDialog(this);
+        pd.setMessage("Memproses");
+        pd.setCancelable(false);
 
         loadRecapData();
 
@@ -262,9 +269,8 @@ public class UpdateRecapActivity extends AppCompatActivity {
 
 
     private void loadRecapData() {
-        ProgressDialog pd = new ProgressDialog(context);
-        pd.setMessage("Memproses");
-        pd.setCancelable(false);
+
+        pd.show();
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
@@ -379,11 +385,11 @@ public class UpdateRecapActivity extends AppCompatActivity {
                                                         }
                                                     });
 
-                                            searchQueryAll();
+
                                         }
                                     }
                                 });
-
+                        searchQueryAll();
                     });
         } else {
             Toast.makeText(context, "Not Found", Toast.LENGTH_SHORT).show();
@@ -698,9 +704,10 @@ public class UpdateRecapActivity extends AppCompatActivity {
 
     private void searchQueryAll(){
         Query query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated");
-        query.addValueEventListener(new ValueEventListener() {
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                pd.dismiss();
                 goodIssueModelArrayList.clear();
                 if (snapshot.exists()){
                     for (DataSnapshot item : snapshot.getChildren()) {
@@ -708,23 +715,23 @@ public class UpdateRecapActivity extends AppCompatActivity {
                         if (Objects.equals(item.child("giRecappedTo").getValue(), rcpDocumentID)) {
                             GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
                             goodIssueModelArrayList.add(goodIssueModel);
-                            binding.nestedScrollView.setVisibility(View.VISIBLE);
+                            //binding.nestedScrollView.setVisibility(View.VISIBLE);
                             binding.llNoData.setVisibility(View.GONE);
 
                         }
                     }
                     if (goodIssueModelArrayList.size()==0) {
-                        binding.nestedScrollView.setVisibility(View.GONE);
+                        //binding.nestedScrollView.setVisibility(View.GONE);
                         binding.llNoData.setVisibility(View.VISIBLE);
                     }
 
                 } else  {
-                    binding.nestedScrollView.setVisibility(View.GONE);
+                    //binding.nestedScrollView.setVisibility(View.GONE);
                     binding.llNoData.setVisibility(View.VISIBLE);
                 }
                 Collections.reverse(goodIssueModelArrayList);
                 giManagementAdapter = new GIManagementAdapter(context, goodIssueModelArrayList);
-                binding.rvItemList.setAdapter(giManagementAdapter);
+                binding.recyclerView.setAdapter(giManagementAdapter);
 
                 totalUnitFinal = 0;
 
@@ -821,6 +828,6 @@ public class UpdateRecapActivity extends AppCompatActivity {
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         int width = displayMetrics.widthPixels;
         RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 1);
-        binding.rvItemList.setLayoutManager(mLayoutManager);
+        binding.recyclerView.setLayoutManager(mLayoutManager);
     }
 }

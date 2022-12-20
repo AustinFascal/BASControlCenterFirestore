@@ -64,7 +64,6 @@
 
                                 <com.google.android.material.textfield.TextInputLayout
                                     style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
-                                    app:boxBackgroundColor="@color/pure_grey"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
@@ -102,7 +101,6 @@
 
                                 <com.google.android.material.textfield.TextInputLayout
                                     style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
-                                    app:boxBackgroundColor="@color/pure_grey"
                                     android:layout_width="match_parent"
                                     android:layout_height="match_parent"
                                     android:layout_weight="1"
@@ -140,7 +138,6 @@
 
                                 <com.google.android.material.textfield.TextInputLayout
                                     style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
-                                    app:boxBackgroundColor="@color/pure_grey"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
@@ -169,7 +166,6 @@
 
                                 <com.google.android.material.textfield.TextInputLayout
                                     style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
-                                    app:boxBackgroundColor="@color/pure_grey"
                                     android:layout_width="match_parent"
                                     android:layout_height="match_parent"
                                     android:layout_weight="1"
@@ -237,7 +233,7 @@
 
                                     <com.google.android.material.textfield.TextInputLayout
                                         style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
-                                        app:boxBackgroundColor="@color/pure_grey"
+
                                         android:layout_width="match_parent"
                                         android:layout_height="match_parent"
                                         android:layout_weight="1"
@@ -285,7 +281,6 @@
 
                                 <com.google.android.material.textfield.TextInputLayout
                                     style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
-                                    app:boxBackgroundColor="@color/pure_grey"
                                     android:layout_width="match_parent"
                                     android:layout_height="match_parent"
                                     android:layout_weight="1"
@@ -312,7 +307,6 @@
                             </LinearLayout>
                             <com.google.android.material.textfield.TextInputLayout
                                 style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
-                                app:boxBackgroundColor="@color/pure_grey"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 app:startIconDrawable="@drawable/ic_outline_person">
@@ -336,7 +330,6 @@
 
                                 <com.google.android.material.textfield.TextInputLayout
                                     style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
-                                    app:boxBackgroundColor="@color/pure_grey"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
@@ -353,7 +346,6 @@
 
                                 <com.google.android.material.textfield.TextInputLayout
                                     style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
-                                    app:boxBackgroundColor="@color/pure_grey"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
@@ -590,12 +582,13 @@
                 android:layout_height="wrap_content"
                 android:text="Data tidak ditemukan"/>
         </LinearLayout>
+
         <androidx.core.widget.NestedScrollView
-            android:visibility="visible"
             android:id="@+id/nestedScrollView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/cdv_filter">
+            android:layout_below="@+id/cdv_filter"
+            android:visibility="visible">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvItemList"
@@ -604,7 +597,7 @@
                 android:paddingTop="10dp"
                 android:paddingBottom="80dp"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:listitem="@layout/item_layout_good_issue" />
+                tools:listitem="@layout/item_layout_recap_gi_desktop" />
         </androidx.core.widget.NestedScrollView>
         <LinearLayout
             android:visibility="gone"

@@ -18,6 +18,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
@@ -73,6 +74,7 @@ import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.text.pdf.draw.LineSeparator;
 import com.l4digital.fastscroll.FastScrollRecyclerView;
+import com.ptbas.controlcenter.management.ManageGoodIssueActivity;
 import com.ptbas.controlcenter.utility.DialogInterface;
 import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.adapter.GIManagementAdapter;
@@ -155,6 +157,9 @@ public class AddRecapGoodIssueDataActivity extends AppCompatActivity {
 
     private Menu menu;
 
+
+    ProgressDialog pd;
+
     List<String> receiveOrderNumberList;
 
     String rcpDateDeliveryPeriod, custDocumentID;
@@ -167,6 +172,13 @@ public class AddRecapGoodIssueDataActivity extends AppCompatActivity {
         context = this;
 
         vibrator  = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+
+        helper.ACTIVITY_NAME = "UPDATE";
+
+        pd = new ProgressDialog(AddRecapGoodIssueDataActivity.this);
+        pd.setMessage("Memproses ...");
+        pd.setCancelable(false);
+        pd.show();
 
         //receiveOrderNumberList = new ArrayList<>();
 
@@ -622,7 +634,7 @@ public class AddRecapGoodIssueDataActivity extends AppCompatActivity {
                 rcpGiUID = rouidVal + " - RCP - "+ getRandomString2(5);
 
                 Toast.makeText(context, rcpDateDeliveryPeriod, Toast.LENGTH_SHORT).show();
-                dialogInterface.confirmCreateRecap(context, rcpGiUID, coDateCreated + " | " + coTimeCreated + " WIB", helper.getUserId(), roDocumentID, roPoCustNumber, rcpDateDeliveryPeriod, totalUnit, goodIssueModelArrayList);
+                dialogInterface.confirmCreateRecap(context, rcpGiUID, coDateCreated + " " + coTimeCreated, helper.getUserId(), roDocumentID, roPoCustNumber, rcpDateDeliveryPeriod, totalUnit, goodIssueModelArrayList);
             }
         });
 
@@ -884,6 +896,7 @@ public class AddRecapGoodIssueDataActivity extends AppCompatActivity {
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                pd.dismiss();
                 goodIssueModelArrayList.clear();
                 if (snapshot.exists()){
                     for (DataSnapshot item : snapshot.getChildren()) {
@@ -923,6 +936,8 @@ public class AddRecapGoodIssueDataActivity extends AppCompatActivity {
     }
 
     private void searchQuery(){
+
+        pd.show();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             vibrator.vibrate(VibrationEffect.createOneShot(100,
                     VibrationEffect.DEFAULT_AMPLITUDE));
@@ -1005,6 +1020,8 @@ public class AddRecapGoodIssueDataActivity extends AppCompatActivity {
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                pd.dismiss();
                 goodIssueModelArrayList.clear();
                 if (snapshot.exists()){
                     for (DataSnapshot item : snapshot.getChildren()) {
@@ -1095,39 +1112,6 @@ public class AddRecapGoodIssueDataActivity extends AppCompatActivity {
             }
             return true;
         }
-        /*if (item.getItemId() == R.id.refresh_data_recap) {
-            View viewLayout = AddRecapGoodIssueDataActivity.this.getCurrentFocus();
-            if (viewLayout != null) {
-                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(viewLayout.getWindowToken(), 0);
-            }
-
-            if (spinnerCustUID.getText().toString().isEmpty()){
-                spinnerCustUID.setError("");
-            } else{
-                spinnerCustUID.setError(null);
-            }
-
-            if (spinnerRoUID.getText().toString().isEmpty()){
-                spinnerRoUID.setError("");
-            } else{
-                spinnerRoUID.setError(null);
-            }
-
-            if (Objects.requireNonNull(edtPoUID.getText()).toString().isEmpty()){
-                edtPoUID.setError("");
-            } else{
-                edtPoUID.setError(null);
-            }
-
-            if (!spinnerCustUID.getText().toString().isEmpty()&&
-                    !spinnerRoUID.getText().toString().isEmpty()&&
-                    !edtPoUID.getText().toString().isEmpty()){
-                searchQuery();
-            }
-            return true;
-        }*/
-
         if (item.getItemId() == R.id.select_all_data_recap) {
 
             if (!isSelectedAll){
@@ -1161,7 +1145,8 @@ public class AddRecapGoodIssueDataActivity extends AppCompatActivity {
 
             return true;
         }
-
+        helper.ACTIVITY_NAME = null;
+        helper.UPDATE_GOOD_ISSUE_IN_INVOICE = false;
         onBackPressed();
         return super.onOptionsItemSelected(item);
     }
@@ -1194,8 +1179,16 @@ public class AddRecapGoodIssueDataActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-
+        helper.ACTIVITY_NAME = null;
+        helper.UPDATE_GOOD_ISSUE_IN_INVOICE = false;
         firstViewDataFirstTimeStatus = true;
         super.onBackPressed();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        helper.ACTIVITY_NAME = null;
+        helper.UPDATE_GOOD_ISSUE_IN_INVOICE = false;
     }
 }

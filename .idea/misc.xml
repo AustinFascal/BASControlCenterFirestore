@@ -9,22 +9,41 @@
         <entry key="..\:/AUSTINFASCALISKANDAR/Projects/TravelPermitBAS/app/src/main/res/layout/activity_main.xml" value="0.22" />
         <entry key="..\:/AUSTINFASCALISKANDAR/Projects/TravelPermitBAS/app/src/main/res/layout/activity_register.xml" value="0.22" />
         <entry key="..\:/AUSTINFASCALISKANDAR/Projects/TravelPermitBAS/app/src/main/res/layout/activity_user_profile.xml" value="0.1" />
+        <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/drawable-xxhdpi/ic_sort_calendar_ascending.xml" value="0.24" />
+        <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/drawable-xxhdpi/ic_sort_calendar_descending.xml" value="0.24" />
+        <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout-land/activity_update_cash_out.xml" value="0.11302083333333333" />
         <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout-land/activity_update_invoice.xml" value="0.1" />
+        <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout/activity_add_aio_report.xml" value="0.12421875" />
+        <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout/activity_add_bank_account.xml" value="0.12421875" />
         <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout/activity_add_cash_out.xml" value="0.176" />
+        <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout/activity_add_customer.xml" value="0.12421875" />
         <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout/activity_add_good_issue.xml" value="0.12082066869300911" />
+        <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout/activity_add_invoice.xml" value="0.12421875" />
+        <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout/activity_add_recap_good_issue_data.xml" value="0.12421875" />
         <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout/activity_add_received_order.xml" value="0.2484375" />
+        <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout/activity_add_supplier.xml" value="0.12421875" />
+        <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout/activity_add_vehicle.xml" value="0.12421875" />
         <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout/activity_good_issue_management.xml" value="0.12082066869300911" />
         <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout/activity_invoice_management.xml" value="0.16799999999999998" />
+        <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout/activity_manage_cashout.xml" value="0.12421875" />
+        <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout/activity_manage_good_issue.xml" value="0.12421875" />
+        <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout/activity_manage_invoice.xml" value="0.12421875" />
+        <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout/activity_manage_recap_good_issue.xml" value="0.152" />
+        <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout/activity_manage_received_order.xml" value="0.12421875" />
         <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout/activity_update_good_issue.xml" value="0.17255434782608695" />
         <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout/activity_update_invoice.xml" value="0.2484375" />
         <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout/activity_update_recap.xml" value="0.2" />
+        <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout/item_layout_cash_out.xml" value="0.12421875" />
+        <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout/item_layout_cash_out_desktop.xml" value="0.264" />
         <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout/item_layout_good_issue.xml" value="0.2484375" />
         <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout/item_layout_good_issue_desktop.xml" value="0.2" />
         <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout/item_layout_invoice.xml" value="0.4" />
         <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout/item_layout_invoice_desktop.xml" value="0.1" />
-        <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout/item_layout_recap_gi_desktop.xml" value="0.264" />
+        <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout/item_layout_recap_gi_desktop.xml" value="0.2" />
         <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/layout/item_layout_received_order.xml" value="0.2484375" />
         <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/menu/aio_menu.xml" value="0.1" />
+        <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/menu/menu_recap_gi.xml" value="0.12421875" />
+        <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/menu/query_search_menu.xml" value="0.12421875" />
         <entry key="..\:/Android/Projects/CMH/BASControlCenterFirestore/app/src/main/res/menu/recap_gi_menu.xml" value="0.12421875" />
         <entry key="..\:/Android/Projects/CMH/BASReportProject/app/src/main/res/drawable/bg_gradient1.xml" value="0.1065" />
         <entry key="..\:/Android/Projects/CMH/BASReportProject/app/src/main/res/drawable/border.xml" value="0.2275" />

@@ -15,7 +15,7 @@
         app:showAsAction="always"/>
     <item
         android:title="Urutkan Tanggal"
-        android:icon="@drawable/ic_sort_calendar_descending"
+        android:icon="@drawable/ic_sort_calendar_ascending"
         android:id="@+id/menu_sort"
         app:showAsAction="always" />
     <item

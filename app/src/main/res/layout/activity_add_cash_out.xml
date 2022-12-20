@@ -80,7 +80,6 @@
 
                                         <com.google.android.material.textfield.TextInputLayout
                                             style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
-                                            app:boxBackgroundColor="@color/pure_grey"
                                             android:layout_width="match_parent"
                                             android:layout_height="wrap_content"
                                             android:layout_weight="1"
@@ -125,7 +124,6 @@
 
                                             <com.google.android.material.textfield.TextInputLayout
                                                 style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
-                                                app:boxBackgroundColor="@color/pure_grey"
                                                 android:layout_width="match_parent"
                                                 android:layout_height="match_parent"
                                                 android:layout_weight="1"
@@ -162,7 +160,6 @@
 
                                             <com.google.android.material.textfield.TextInputLayout
                                                 style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
-                                                app:boxBackgroundColor="@color/pure_grey"
                                                 android:layout_width="match_parent"
                                                 android:layout_height="wrap_content"
                                                 android:layout_weight="1"
@@ -190,7 +187,7 @@
 
                                             <com.google.android.material.textfield.TextInputLayout
                                                 style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
-                                                app:boxBackgroundColor="@color/pure_grey"
+
                                                 android:layout_width="match_parent"
                                                 android:layout_height="match_parent"
                                                 android:layout_weight="1"
@@ -235,7 +232,6 @@
                                         android:showDividers="middle">
                                         <com.google.android.material.textfield.TextInputLayout
                                             style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
-                                            app:boxBackgroundColor="@color/pure_grey"
                                             android:layout_width="match_parent"
                                             android:layout_height="wrap_content"
                                             android:layout_weight="1"
@@ -272,7 +268,6 @@
                                         android:showDividers="middle">
                                         <com.google.android.material.textfield.TextInputLayout
                                             style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
-                                            app:boxBackgroundColor="@color/pure_grey"
                                             android:layout_width="match_parent"
                                             android:layout_height="wrap_content"
                                             android:layout_weight="1"
@@ -296,7 +291,6 @@
                                             android:visibility="visible">
                                             <com.google.android.material.textfield.TextInputLayout
                                                 style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
-                                                app:boxBackgroundColor="@color/pure_grey"
                                                 android:layout_width="match_parent"
                                                 android:layout_height="wrap_content"
                                                 android:layout_weight="1"
@@ -313,7 +307,6 @@
                                             </com.google.android.material.textfield.TextInputLayout>
                                             <com.google.android.material.textfield.TextInputLayout
                                                 style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
-                                                app:boxBackgroundColor="@color/pure_grey"
                                                 android:layout_width="match_parent"
                                                 android:layout_height="wrap_content"
                                                 android:layout_weight="1"
@@ -343,7 +336,7 @@
 
                                  <com.google.android.material.textfield.TextInputLayout
                                      style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
-                                     app:boxBackgroundColor="@color/pure_grey"
+
                                      android:layout_width="match_parent"
                                      android:layout_height="wrap_content"
                                      android:layout_weight="1"
@@ -360,7 +353,7 @@
 
                                  <com.google.android.material.textfield.TextInputLayout
                                      style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
-                                     app:boxBackgroundColor="@color/pure_grey"
+
                                      android:layout_width="match_parent"
                                      android:layout_height="wrap_content"
                                      android:layout_weight="1"

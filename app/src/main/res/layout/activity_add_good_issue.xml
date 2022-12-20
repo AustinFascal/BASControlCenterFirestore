@@ -35,7 +35,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    app:boxBackgroundColor="@color/pure_grey"
                     app:startIconDrawable="@drawable/ic_outline_person">
 
                     <AutoCompleteTextView
@@ -69,7 +68,6 @@
                 style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:boxBackgroundColor="@color/pure_grey"
                 app:startIconDrawable="@drawable/ic_outline_receipt">
 
                 <AutoCompleteTextView
@@ -85,7 +83,6 @@
                 style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:boxBackgroundColor="@color/pure_grey"
                 app:prefixText="RO-"
                 app:startIconDrawable="@drawable/ic_outline_receipt">
 
@@ -110,7 +107,6 @@
                     style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:boxBackgroundColor="@color/pure_grey"
                     android:layout_weight="1"
                     app:startIconDrawable="@drawable/ic_outline_category">
 
@@ -128,7 +124,6 @@
                     style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:boxBackgroundColor="@color/pure_grey"
                     android:layout_weight="1"
                     app:startIconDrawable="@drawable/ic_product_loading">
 
@@ -146,7 +141,6 @@
                     style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:boxBackgroundColor="@color/pure_grey"
                     android:layout_weight="1"
                     app:startIconDrawable="@drawable/ic_outline_today">
 
@@ -163,7 +157,6 @@
                     style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:boxBackgroundColor="@color/pure_grey"
                     android:layout_weight="1"
                     app:startIconDrawable="@drawable/ic_outline_access_time">
 
@@ -190,7 +183,6 @@
                     style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:boxBackgroundColor="@color/pure_grey"
                     android:layout_weight="1"
                     app:startIconDrawable="@drawable/ic_outline_receipt">
 
@@ -208,7 +200,6 @@
                     style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:boxBackgroundColor="@color/pure_grey"
                     android:layout_weight="1"
                     app:placeholderText="Contoh: L4332AAD"
                     app:startIconDrawable="@drawable/ic_100">
@@ -255,7 +246,6 @@
                             style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            app:boxBackgroundColor="@color/pure_grey"
                             android:layout_weight="1"
                             app:expandedHintEnabled="true"
                             app:placeholderText="Contoh: 55"
@@ -343,7 +333,6 @@
                         style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:boxBackgroundColor="@color/pure_grey"
                         android:layout_weight="1"
                         app:suffixText="cm">
 
@@ -361,7 +350,6 @@
                         style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:boxBackgroundColor="@color/pure_grey"
                         android:layout_weight="1"
                         app:suffixText="cm">
 
@@ -379,7 +367,6 @@
                         style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:boxBackgroundColor="@color/pure_grey"
                         android:layout_weight="1"
                         app:suffixText="cm">
 
@@ -405,7 +392,6 @@
                         style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:boxBackgroundColor="@color/pure_grey"
                         android:layout_marginEnd="8dp"
                         android:layout_weight="1"
                         app:suffixText="m3">
@@ -424,7 +410,6 @@
                         style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:boxBackgroundColor="@color/pure_grey"
                         android:layout_marginEnd="8dp"
                         android:layout_weight="1"
                         app:suffixText="m3">
