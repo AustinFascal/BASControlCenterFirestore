@@ -583,7 +583,7 @@
                 android:text="Data tidak ditemukan"/>
         </LinearLayout>
 
-        <androidx.core.widget.NestedScrollView
+        <!--<androidx.core.widget.NestedScrollView
             android:id="@+id/nestedScrollView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -598,7 +598,23 @@
                 android:paddingBottom="80dp"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:listitem="@layout/item_layout_recap_gi_desktop" />
-        </androidx.core.widget.NestedScrollView>
+        </androidx.core.widget.NestedScrollView>-->
+
+        <FrameLayout
+            android:layout_below="@+id/cdv_filter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <com.l4digital.fastscroll.FastScrollRecyclerView
+                android:id="@+id/recyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="10dp"
+                app:bubbleColor="#F56200"
+                app:bubbleTextColor="#ffffff"
+                app:handleColor="#999999"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/item_layout_good_issue_desktop"/>
+        </FrameLayout>
         <LinearLayout
             android:visibility="gone"
             android:translationY="0.0dp"

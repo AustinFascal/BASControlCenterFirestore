@@ -82,6 +82,7 @@ import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.text.pdf.draw.LineSeparator;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
+import com.l4digital.fastscroll.FastScrollRecyclerView;
 import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.adapter.GIManagementAdapter;
 import com.ptbas.controlcenter.model.CustomerModel;
@@ -121,7 +122,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
     double matSellPrice, transportServiceSellPrice;
     String  invDateNTimeCreated, invTimeCreated, dateStartVal = "", dateEndVal = "", rouidVal= "", currencyVal = "", pouidVal = "",
             monthStrVal, dayStrVal, roPoCustNumber, matTypeVal, matNameVal, transportServiceNameVal,
-            invPoDate = "", invCustName = "", invPoUID = "", custNameVal = "", roDocumentID = "", coDocumentID, coUID, rcpGiUID, coAccBy,
+            invPoDate = "", invCustName = "", invPoUID = "", custNameVal = "", roDocumentID = "", coDocumentID, coUID, rcpGiUID, coAccBy, rcpDateDeliveryPeriod,
             custAddressVal = "", invCustNameVal= "", invUID="", invPotypeVal = "", customerData = "", customerID ="", bankAccountID = "", bankNameVal, bankAccountNumberVal, bankAccountOwnerNameVal;
     int invPoType, invPoTOP, roType;
     String  rcpGiInvoicedTo;
@@ -133,13 +134,13 @@ public class AddInvoiceActivity extends AppCompatActivity {
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
     ArrayList<GoodIssueModel> goodIssueModelArrayList = new ArrayList<>();
     GIManagementAdapter giManagementAdapter;
-    RecyclerView rvGoodIssueList;
+    FastScrollRecyclerView rvGoodIssueList;
     Context context;
     Helper helper = new Helper();
     Boolean expandStatus = true, firstViewDataFirstTimeStatus = true;
     CardView cdvFilter;
     View firstViewData;
-    NestedScrollView nestedScrollView;
+    //NestedScrollView nestedScrollView;
 
     TextView tvTotalSelectedItem, tvTotalSelectedItem2;
 
@@ -241,7 +242,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
         edtPoUID = findViewById(R.id.pouid);
         edtDateStart = findViewById(R.id.edt_gi_date_filter_start);
         edtDateEnd = findViewById(R.id.edt_gi_date_filter_end);
-        rvGoodIssueList = findViewById(R.id.rvItemList);
+        rvGoodIssueList = findViewById(R.id.recyclerView);
         imgbtnExpandCollapseFilterLayout = findViewById(R.id.imgbtnExpandCollapseFilterLayout);
         //llStatusCo = findViewById(R.id.llStatusCo);
         //ll_wrap_filter_by_couid = findViewById(R.id.ll_wrap_filter_by_couid);
@@ -252,7 +253,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
         //llShowSpinnerRoAndEdtPo = findViewById(R.id.llShowSpinnerRoAndEdtPo);
 
         llNoData = findViewById(R.id.ll_no_data);
-        nestedScrollView = findViewById(R.id.nestedScrollView);
+        //nestedScrollView = findViewById(R.id.nestedScrollView);
 
         tvTotalSelectedItem = findViewById(R.id.tvTotalSelectedItem);
         tvTotalSelectedItem2 = findViewById(R.id.tvTotalSelectedItem2);
@@ -623,11 +624,15 @@ public class AddInvoiceActivity extends AppCompatActivity {
                                             if (!value.isEmpty()) {
                                                 for (DocumentSnapshot d : value.getDocuments()) {
                                                     rcpGiUID = Objects.requireNonNull(d.get("rcpGiUID")).toString();
+                                                    //rcpDateDeliveryPeriod = Objects.requireNonNull(d.get("rcpDateDeliveryPeriod")).toString();
                                                     /* String[] a = rcpGiUID.split(" - ");*/
+
+                                                    //String splitRcpGiUId[] = rcpGiUID.split(" - ");
 
                                                     rcpGiInvoicedTo = Objects.requireNonNull(d.get("rcpGiInvoicedTo")).toString();
                                                     Chip chip = (Chip)inflater.inflate(R.layout.chip_item, null, false);
                                                     chip.setText(rcpGiUID);
+                                                    //chip.setText(splitRcpGiUId[1] + " - " + splitRcpGiUId[2]+ " | " + rcpDateDeliveryPeriod);
                                                     //chip.setText(a[1]);
                                                     if (!rcpGiInvoicedTo.isEmpty()){
                                                         chip.setEnabled(false);
@@ -1819,7 +1824,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
 
 
         // Chip chip = (Chip) chipGroup.getChildAt(i);
-        query.addValueEventListener(new ValueEventListener() {
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 goodIssueModelArrayList.clear();
@@ -1833,7 +1838,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
                                             menu.findItem(R.id.select_all_data_recap).setVisible(true);
                                             GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
                                             goodIssueModelArrayList.add(goodIssueModel);
-                                            nestedScrollView.setVisibility(View.VISIBLE);
+                                            //nestedScrollView.setVisibility(View.VISIBLE);
                                             llNoData.setVisibility(View.GONE);
                                         }
                                     }
@@ -1848,7 +1853,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
                                                     menu.findItem(R.id.select_all_data_recap).setVisible(true);
                                                     GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
                                                     goodIssueModelArrayList.add(goodIssueModel);
-                                                    nestedScrollView.setVisibility(View.VISIBLE);
+                                                    //nestedScrollView.setVisibility(View.VISIBLE);
                                                     llNoData.setVisibility(View.GONE);
                                                 }
                                             }
@@ -1862,13 +1867,13 @@ public class AddInvoiceActivity extends AppCompatActivity {
                     }
                     if (goodIssueModelArrayList.size()==0) {
                         fabCreateDocument.hide();
-                        nestedScrollView.setVisibility(View.GONE);
+                        //nestedScrollView.setVisibility(View.GONE);
                         llNoData.setVisibility(View.VISIBLE);
                     }
 
                 } else  {
                     fabCreateDocument.hide();
-                    nestedScrollView.setVisibility(View.GONE);
+                    //nestedScrollView.setVisibility(View.GONE);
                     llNoData.setVisibility(View.VISIBLE);
                 }
 
@@ -1887,7 +1892,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
     private void searchQueryAll(){
 
         Query query = databaseReference.child("GoodIssueData").orderByChild("giDateCreated");
-        query.addValueEventListener(new ValueEventListener() {
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 goodIssueModelArrayList.clear();
@@ -1900,20 +1905,20 @@ public class AddInvoiceActivity extends AppCompatActivity {
                             GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
                             goodIssueModelArrayList.add(goodIssueModel);
                             fabCreateDocument.show();
-                            nestedScrollView.setVisibility(View.VISIBLE);
+                            //nestedScrollView.setVisibility(View.VISIBLE);
                             llNoData.setVisibility(View.GONE);
                         }
 
                     }
                     if (goodIssueModelArrayList.size()==0) {
                         fabCreateDocument.hide();
-                        nestedScrollView.setVisibility(View.GONE);
+                        //nestedScrollView.setVisibility(View.GONE);
                         llNoData.setVisibility(View.VISIBLE);
                     }
 
                 } else  {
                     fabCreateDocument.hide();
-                    nestedScrollView.setVisibility(View.GONE);
+                    //nestedScrollView.setVisibility(View.GONE);
                     llNoData.setVisibility(View.VISIBLE);
                 }
 
