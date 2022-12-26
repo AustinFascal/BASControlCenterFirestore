@@ -648,7 +648,7 @@ public class AddCashOutActivity extends AppCompatActivity {
 
                     if  (!statusSelectedRecap){
                         dialogInterface.confirmCreateCashOutProof(context, db,
-                                coUID, coDateCreated + " | " + coTimeCreated + " WIB",
+                                coUID, coDateCreated + " " + coTimeCreated,
                                 helper.getUserId(), "","", "", "",
                                 suppplieruidVal, roDocumentID, false, false, true, recapGiManagementAdapter);
                     } else {

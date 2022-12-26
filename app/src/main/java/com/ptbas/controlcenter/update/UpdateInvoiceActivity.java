@@ -1102,7 +1102,7 @@ public class UpdateInvoiceActivity extends AppCompatActivity {
 
             Paragraph paragraphInvDateCreated =
                     new Paragraph("Terakhir diperbarui: "
-                            +invDateCreated+" | "+invTimeCreated+" WIB, oleh: "+invPrintedBy, fontNormalSmallItalic);
+                            +invDateCreated+" "+invTimeCreated+", oleh: "+invPrintedBy, fontNormalSmallItalic);
             paragraphInvDateCreated.setAlignment(Element.ALIGN_RIGHT);
             paragraphInvDateCreated.setSpacingAfter(5);
 

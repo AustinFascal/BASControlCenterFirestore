@@ -1,10 +1,14 @@
 package com.ptbas.controlcenter.model;
 
+import java.util.List;
+
 public class InvoiceModel {
 
     String invDateHandover, invHandoverBy, invDocumentUID, invUID, invCreatedBy, invDateNTimeCreated, invVerifiedBy,
             invDueDateNTime, invDateVerified, invTransferReference, invDateDeliveryPeriod, custDocumentID, bankDocumentID, roDocumentID,
             invTotalVol, invSubTotal, invDiscount, invTaxPPN, invTaxPPH, invTotalDue, coDocumentUID;
+
+    List<String> invRecapGiUID;
 
     private boolean isChecked = false;
 
@@ -14,7 +18,7 @@ public class InvoiceModel {
     }
 
     public InvoiceModel(String invDocumentUID, String invUID, String invCreatedBy, String invDateNTimeCreated, String invDueDateNTime, String invVerifiedBy, String invDateVerified, String invTransferReference, String invDateDeliveryPeriod, String custDocumentID, String bankDocumentID, String roDocumentID, String invDateHandover, String invHandoverBy, Boolean invRecalculate,
-                        String invTotalVol, String invSubTotal,String invDiscount,String invTaxPPN,String invTaxPPH,String invTotalDue, String coDocumentUID) {
+                        String invTotalVol, String invSubTotal,String invDiscount,String invTaxPPN,String invTaxPPH,String invTotalDue, String coDocumentUID, List<String> invRecapGiUID) {
         this.invDocumentUID = invDocumentUID;
         this.invUID = invUID;
         this.invCreatedBy = invCreatedBy;
@@ -37,8 +41,16 @@ public class InvoiceModel {
         this.invTaxPPH = invTaxPPH;
         this.invTotalDue = invTotalDue;
         this.coDocumentUID = coDocumentUID;
+        this.invRecapGiUID = invRecapGiUID;
     }
 
+    public List<String> getInvRecapGiUID() {
+        return invRecapGiUID;
+    }
+
+    public void setInvRecapGiUID(List<String> invRecapGiUID) {
+        this.invRecapGiUID = invRecapGiUID;
+    }
 
     public String getCoDocumentUID() {
         return coDocumentUID;

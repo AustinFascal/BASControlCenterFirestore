@@ -78,6 +78,7 @@ import com.ptbas.controlcenter.adapter.GIManagementAdapter;
 import com.ptbas.controlcenter.create.AddGoodIssueActivity;
 import com.ptbas.controlcenter.create.AddRecapGoodIssueDataActivity;
 import com.ptbas.controlcenter.databinding.ActivityManageGoodIssueBinding;
+import com.ptbas.controlcenter.model.CashOutModel;
 import com.ptbas.controlcenter.model.CustomerModel;
 import com.ptbas.controlcenter.model.GoodIssueModel;
 import com.ptbas.controlcenter.model.ReceivedOrderModel;
@@ -680,6 +681,8 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
         ActivityManageGoodIssueBinding binding;
         ProgressDialog pd;
 
+        String coAccBy;
+
         public GIAdapter(Context c, ArrayList<GoodIssueModel> goodIssueModelArrayList, GIAdapter giAdapter, ActivityManageGoodIssueBinding binding){
             this.c = c;
             this.goodIssueModelArrayList = goodIssueModelArrayList;
@@ -749,6 +752,8 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
             holder.tvGiVhlDetail.setText(vhlDetail);
             holder.tvVhlUid.setText(vhlUID);
 
+
+
             FirebaseFirestore db1 = FirebaseFirestore.getInstance();
             db1.collection("ReceivedOrderData").whereEqualTo("roDocumentID", roDocumentID)
                     .addSnapshotListener((value, error) -> {
@@ -807,6 +812,22 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
             } else {
                 holder.llCashedOutStatus.setVisibility(View.GONE);
             }
+
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            db.collection("CashOutData").whereEqualTo("coDocumentID", giCashedOutTo).get()
+                    .addOnSuccessListener(queryDocumentSnapshots -> {
+                                for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                                    CashOutModel cashOutModel = documentSnapshot.toObject(CashOutModel.class);
+                                    cashOutModel.setCoDocumentID(documentSnapshot.getId());
+                                    coAccBy = cashOutModel.getCoAccBy();
+                                    if (!coAccBy.isEmpty()){
+                                        holder.llCashedOutStatus.setBackground(ContextCompat.getDrawable(c, R.drawable.pill_green));
+                                    } else {
+                                        holder.llCashedOutStatus.setBackground(ContextCompat.getDrawable(c, R.drawable.pill_red));
+                                    }
+                                }
+                            }
+                    );
 
             holder.btn3.setOnClickListener(view -> {
                 String giUID1 =goodIssueModel.getGiUID();
@@ -1848,7 +1869,7 @@ public class ManageGoodIssueActivity extends AppCompatActivity {
             return true;
         } else if (item.getItemId() == R.id.menu_refresh){
             checkSelectedChipFilter();
-            item.setIcon(R.drawable.ic_sort_calendar_descending);
+            //item.setIcon(R.drawable.ic_sort_calendar_descending);
             return true;
         }else if (item.getItemId() == R.id.menu_sort){
             if (sortStatus){

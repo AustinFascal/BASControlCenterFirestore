@@ -350,7 +350,7 @@
         </androidx.core.widget.NestedScrollView>
 
         <LinearLayout
-            android:visibility="gone"
+            android:visibility="visible"
             android:translationY="0.0dp"
             android:id="@+id/llBottomSelectionOptions"
             android:layout_width="match_parent"
@@ -395,11 +395,11 @@
                     style="@style/MaterialDialog.NegativeButton"
                     android:layout_width="32dp"
                     android:layout_height="match_parent"
-                    android:layout_toStartOf="@+id/btnDeleteSelected"
+                    android:layout_alignParentEnd="true"
                     android:src="@drawable/ic_outline_check_all"
                     app:tint="?colorPrimary" />
 
-                <ImageButton
+               <!-- <ImageButton
                     android:id="@+id/btnDeleteSelected"
                     style="@style/MaterialDialog.NegativeButton"
                     android:layout_width="32dp"
@@ -407,7 +407,7 @@
                     android:layout_alignParentEnd="true"
 
                     android:src="@drawable/ic_outline_delete_forever"
-                    app:tint="?colorPrimary" />
+                    app:tint="?colorPrimary" />-->
 
                 <!--<ImageButton
                     android:id="@+id/btnVerifySelected"

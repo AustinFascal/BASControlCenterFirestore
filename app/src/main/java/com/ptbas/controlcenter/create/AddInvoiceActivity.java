@@ -886,7 +886,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
                 invTimeCreated =
                         new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
                 invDateNTimeCreated =
-                        new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(new Date()).concat(" | "+invTimeCreated+" WIB");
+                        new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(new Date()).concat(" "+invTimeCreated);
 
 
                 // TOTAL AMOUNT CALCULATION
@@ -1833,7 +1833,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
                         if (!rouidVal.isEmpty()){
                             if (selectedInvUID != null){
                                 if (Objects.equals(item.child("giInvoicedTo").getValue(), selectedInvUID) ){
-                                    if (Objects.equals(item.child("giConnectingInvoicedTo").getValue(), null)){
+                                    //if (Objects.equals(item.child("giConnectingInvoicedTo").getValue(), null)){
                                         if (Objects.equals(item.child("giStatus").getValue(), true)) {
                                             menu.findItem(R.id.select_all_data_recap).setVisible(true);
                                             GoodIssueModel goodIssueModel = item.getValue(GoodIssueModel.class);
@@ -1841,7 +1841,7 @@ public class AddInvoiceActivity extends AppCompatActivity {
                                             //nestedScrollView.setVisibility(View.VISIBLE);
                                             llNoData.setVisibility(View.GONE);
                                         }
-                                    }
+                                    //}
                                 }
                             } else {
                                 for (int i = 0; i < chipGroup.getChildCount(); i++){

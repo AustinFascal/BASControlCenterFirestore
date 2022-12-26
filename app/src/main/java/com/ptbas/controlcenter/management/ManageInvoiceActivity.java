@@ -102,7 +102,9 @@ public class ManageInvoiceActivity extends AppCompatActivity {
 
     LinearLayout llBottomSelectionOptions;
     TextView tvTotalSelectedItem;
-    ImageButton btnExitSelection, btnDeleteSelected, btnSelectAll, btnVerifySelected;
+    ImageButton btnExitSelection, btnSelectAll, btnVerifySelected;
+
+    //btnDeleteSelected
 
     CollectionReference refINV = db.collection("InvoiceData");
 
@@ -143,7 +145,7 @@ public class ManageInvoiceActivity extends AppCompatActivity {
         llBottomSelectionOptions = findViewById(R.id.llBottomSelectionOptions);
         tvTotalSelectedItem = findViewById(R.id.tvTotalSelectedItem);
         btnExitSelection = findViewById(R.id.btnExitSelection);
-        btnDeleteSelected = findViewById(R.id.btnDeleteSelected);
+        //btnDeleteSelected = findViewById(R.id.btnDeleteSelected);
         btnSelectAll = findViewById(R.id.btnSelectAll);
         //btnVerifySelected = findViewById(R.id.btnVerifySelected);
 
@@ -313,6 +315,7 @@ public class ManageInvoiceActivity extends AppCompatActivity {
         });*/
 
 
+/*
         btnDeleteSelected.setOnClickListener(view -> {
             int size = invManagementAdapter.getSelected().size();
             MaterialDialog md = new MaterialDialog.Builder(ManageInvoiceActivity.this)
@@ -330,21 +333,25 @@ public class ManageInvoiceActivity extends AppCompatActivity {
                                         for (int i = 0; i < size; i++){
                                             db.collection("InvoiceData").document(invManagementAdapter.getSelected().get(i).getInvDocumentUID()).delete();
                                             dialogInterface.dismiss();
-                                           /* if (getDocumentID.equals(roManagementAdapter.getSelected().get(i).getRoDocumentID())){
+                                           */
+/* if (getDocumentID.equals(roManagementAdapter.getSelected().get(i).getRoDocumentID())){
 
                                                 //roManagementAdapter.clearSelection();
-                                            }*/
+                                            }*//*
+
                                         }
 
                                     }
                                 }
                             }
                         });
-                        /*dialogInterface.dismiss();
+                        */
+/*dialogInterface.dismiss();
                         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
                         for (int i = 0; i < cashOutManagementAdapter.getSelected().size(); i++) {
                             //databaseReference.child("ReceivedOrderData").child(roManagementAdapter.getSelected().get(i).getGiUID()).removeValue();
-                        }*/
+                        }*//*
+
 
                     })
                     .setNegativeButton("TIDAK", R.drawable.ic_outline_close, (dialogInterface, which) -> dialogInterface.dismiss())
@@ -353,6 +360,7 @@ public class ManageInvoiceActivity extends AppCompatActivity {
             md.getAnimationView().setScaleType(ImageView.ScaleType.FIT_CENTER);
             md.show();
         });
+*/
 
 
         btnExitSelection.setOnClickListener(new View.OnClickListener() {

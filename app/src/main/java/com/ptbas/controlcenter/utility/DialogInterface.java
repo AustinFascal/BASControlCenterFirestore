@@ -16,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SearchView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -938,6 +939,8 @@ public class DialogInterface {
         mBottomSheetDialog.show();
     }
 
+
+
     public void deleteInvConfirmation(Context context, String invDocumentID) {
         MaterialDialog mBottomSheetDialog = new MaterialDialog.Builder((Activity) context)
                 .setTitle("Hapus Data")
@@ -945,8 +948,10 @@ public class DialogInterface {
                 .setMessage("Apakah Anda yakin ingin menghapus data Invoice yang Anda pilih? Setelah dihapus, data tidak dapat dikembalikan.")
                 .setCancelable(true)
                 .setPositiveButton("YA", R.drawable.ic_outline_check, (dialogInterface, which) -> {
-                    removeAllItemsFromInvoice(invDocumentID);
-                    refInv.document(invDocumentID).delete();
+
+
+
+
 
                     ArrayList<GoodIssueModel> goodIssueModelArrayList = new ArrayList<>();
                     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
@@ -967,6 +972,10 @@ public class DialogInterface {
                                     databaseReference.child("GoodIssueData").child(goodIssueModelArrayList.get(i).getGiUID()).child("giInvoicedTo").setValue("");
                                     databaseReference.child("GoodIssueData").child(goodIssueModelArrayList.get(i).getGiUID()).child("giConnectingInvoicedTo").setValue("");
                                 }
+
+
+
+
                             }
                         }
 
@@ -975,6 +984,45 @@ public class DialogInterface {
 
                         }
                     });
+
+                    db.collection("InvoiceData").whereEqualTo("invDocumentUID", invDocumentID).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                        @Override
+                        public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+
+
+                            for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots){
+                                InvoiceModel invoiceModel = documentSnapshot.toObject(InvoiceModel.class);
+                                invoiceModel.setRoDocumentID(documentSnapshot.getId());
+                                List<String> map = invoiceModel.getInvRecapGiUID();
+
+                                Toast.makeText(context, map.toString(), Toast.LENGTH_LONG).show();
+
+                                refRecap.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                        if (task.isSuccessful()){
+                                            for(DocumentSnapshot documentSnapshot : task.getResult()){
+                                                String getDocumentID = documentSnapshot.getId();
+                                                for (int i = 0; i<map.size();i++){
+                                                    if (getDocumentID.equals(map.get(i))) {
+                                                        db.collection("RecapData").document(map.get(i)).update("rcpGiInvoicedTo", "");
+                                                    }
+                                                }
+
+                                            }
+                                            removeAllItemsFromInvoice(invDocumentID);
+                                            refInv.document(invDocumentID).delete();
+
+                                        }
+                                    }
+                                });
+
+                            }
+
+
+                        }
+                    });
+
 
                     dialogInterface.dismiss();
                 })
@@ -1059,23 +1107,17 @@ public class DialogInterface {
         materialDialog.show();
     }
 
-    public void confirmCreateAIO(Context context, FirebaseFirestore db,
-                                 ArrayList<GoodIssueModel> goodIssueModelArrayList,
-                                 String invUID, String invCreatedBy,
-                                 String invDateNTimeCreated, String invDueDateNTime, String invVerifiedBy, String invTransferReference,
-                                 String invDateNTimeVerified, String invDateDeliveryPeriod,
-                                 String custDocumentID, String bankDocumentID, String roDocumentID, String invDateHandover, String invHandOverBy) {
+    public void confirmCreateAIO(Context context,
+                                 ArrayList<GoodIssueModel> goodIssueModelArrayList) {
         MaterialDialog materialDialog = new MaterialDialog.Builder((Activity) context)
                 .setTitle("Buat Laporan AIO")
                 .setAnimation(R.raw.lottie_generate_bill)
-                .setMessage("Apakah Anda yakin ingin membuat laporan AIO dari Cash Out yang terpilih?")
+                .setMessage("Apakah Anda yakin ingin membuat laporan AIO dari Invoice yang terpilih?")
                 .setCancelable(true)
                 .setPositiveButton("YA", R.drawable.ic_outline_check, (dialogInterface, which) -> {
 
-                    generatingAIOReport(context, db,
-                            goodIssueModelArrayList,
-                            invUID, invCreatedBy, invDateNTimeCreated, invDueDateNTime, invVerifiedBy, invTransferReference,
-                            invDateNTimeVerified, invDateDeliveryPeriod, custDocumentID, bankDocumentID, roDocumentID, invDateHandover, invHandOverBy);
+                    generatingAIOReport(context,
+                            goodIssueModelArrayList);
                     dialogInterface.dismiss();
                 })
                 .setNegativeButton("TIDAK", R.drawable.ic_outline_close, (dialogInterface, which) -> dialogInterface.dismiss())
@@ -1124,7 +1166,7 @@ public class DialogInterface {
                 InvoiceModel invoiceModel = new InvoiceModel(
                         invUID, invUID, invCreatedBy, invDateNTimeCreated, invDueDateNTime, invVerifiedBy, invTransferReference,
                         invDateNTimeVerified, invDateDeliveryPeriod, custDocumentID, bankDocumentID, roDocumentID, invDateHandover, invHandOverBy, false,
-                        invTotalVol, invSubTotal, invDiscount, invTaxPPN, invTaxPPH, invTotalDue, coDocumentID);
+                        invTotalVol, invSubTotal, invDiscount, invTaxPPN, invTaxPPH, invTotalDue, coDocumentID, arrayLisyRecapUID);
 
                 ref.set(invoiceModel);
 
@@ -1163,18 +1205,7 @@ public class DialogInterface {
 
 
 
-    public void generatingAIOReport(Context context, FirebaseFirestore db,
-                                    ArrayList<GoodIssueModel> goodIssueModelArrayList,
-                                    String invUID, String invCreatedBy,
-                                    String invDateNTimeCreated, String invDueDateNTime, String invVerifiedBy, String invTransferReference,
-                                    String invDateNTimeVerified, String invDateDeliveryPeriod,
-                                    String custDocumentID, String bankDocumentID, String roDocumentID, String invDateHandover,  String invHandOverBy) {
-
-        GIManagementAdapter giManagementAdapter;
-
-        giManagementAdapter = new GIManagementAdapter(context, goodIssueModelArrayList);
-        //int itemSelectedSize = giManagementAdapter.getSelected().size();
-
+    public void generatingAIOReport(Context context, ArrayList<GoodIssueModel> goodIssueModelArrayList) {
 
         MaterialDialog generatingInvoiceDialog = new MaterialDialog.Builder((Activity) context)
                 .setTitle("Memproses Permintaan")
@@ -1191,7 +1222,6 @@ public class DialogInterface {
             }
 
             public void onFinish() {
-
                 AddAIOReportActivity addAIOReportActivity = (AddAIOReportActivity) context;
                 addAIOReportActivity.createAIOPDF(Helper.getAppPathAIOReport(context)+"AIO Report"+".pdf");
                 generatingInvoiceDialog.dismiss();
@@ -1408,8 +1438,8 @@ public class DialogInterface {
 
 
     public void confirmCreateRecapFromUpdate(Context context, String rcpGiUID, String rcpGiDateAndTimeCreated,
-                                   String rcpGiCreatedBy, String roUIDVal, String poUID, String rcpDateDeliveryPeriod, String totalUnit,
-                                   ArrayList<GoodIssueModel> goodIssueModelArrayList) {
+                                             String rcpGiCreatedBy, String roUIDVal, String poUID, String rcpDateDeliveryPeriod, String totalUnit,
+                                             ArrayList<GoodIssueModel> goodIssueModelArrayList) {
 
         MaterialDialog materialDialog = new MaterialDialog.Builder((Activity) context)
                 .setTitle("Buat Rekap")

@@ -198,6 +198,9 @@ public class UpdateCashOutActivity extends AppCompatActivity {
     String bankAccountID = "", bankNameVal, bankAccountNumberVal, bankAccountOwnerNameVal, coDateDeliveryPeriod;
 
     float totalUnitAmountForMaterials;
+    /*String coTimeAcc =
+            new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());*/
+    String dateAcc = new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(new Date());
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -664,6 +667,7 @@ public class UpdateCashOutActivity extends AppCompatActivity {
                             statusSwitch.setOnCheckedChangeListener((compoundButton, b) -> {
                                 pd.show();
                                 if (statusSwitch.isChecked()) {
+                                    refCO.document(coID).update("coDateAndTimeACC", dateAcc);
                                     refCO.document(coID).update("coAccBy", helper.getUserId()).addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
@@ -674,6 +678,7 @@ public class UpdateCashOutActivity extends AppCompatActivity {
                                         }
                                     });
                                 } else {
+                                    //refCO.document(coID).update("coDateAndTimeACC", dateAndTimeAcc);
                                     refCO.document(coID).update("coAccBy", "").addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
@@ -744,7 +749,7 @@ public class UpdateCashOutActivity extends AppCompatActivity {
                                         refCO.document(coID).update("coTotal", totalDueFloat);
                                         refCO.document(coID).update("coBookedStep1Date", finalBookedStep1Date);
                                         refCO.document(coID).update("bankDocumentID", bankAccountID);
-                                        refCO.document(coID).update("coDateAndTimeACC", finalPaidDate);
+                                        //refCO.document(coID).update("coDateAndTimeACC", finalPaidDate);
                                         refCO.document(coID).update("coTransferReference", transferProofReference);
                                         refCO.document(coID).update("coBookedStep1By", helper.getUserId()).addOnCompleteListener(new OnCompleteListener<Void>() {
                                             @Override
@@ -763,7 +768,7 @@ public class UpdateCashOutActivity extends AppCompatActivity {
                                     } else {
                                         refCO.document(coID).update("coBookedStep1Date", "");
                                         refCO.document(coID).update("bankDocumentID", "");
-                                        refCO.document(coID).update("coDateAndTimeACC", "");
+                                        //refCO.document(coID).update("coDateAndTimeACC", "");
                                         refCO.document(coID).update("coTransferReference", "");
                                         refCO.document(coID).update("coBookedStep1By", "").addOnCompleteListener(new OnCompleteListener<Void>() {
                                             @Override

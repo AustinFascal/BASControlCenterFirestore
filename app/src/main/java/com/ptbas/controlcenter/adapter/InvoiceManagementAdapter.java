@@ -128,7 +128,7 @@ public class InvoiceManagementAdapter extends RecyclerView.Adapter<InvoiceManage
             String invPoCustName = invoiceModel.getCustDocumentID();
             boolean recalculateInvStatus = invoiceModel.getInvRecalculate();
 
-            String invDateVerified = invoiceModel.getInvDateVerified();
+            String invDateHandover = invoiceModel.getInvDateHandover();
 
             CollectionReference refRO = db.collection("ReceivedOrderData");
 
@@ -225,7 +225,7 @@ public class InvoiceManagementAdapter extends RecyclerView.Adapter<InvoiceManage
                 tvTotalDue.setTextColor(AppCompatResources.getColorStateList(context, R.color.black));
             }
 
-            if (!invDateVerified.isEmpty()){
+            if (!invDateHandover.isEmpty()){
                 llStatusPaid.setVisibility(View.VISIBLE);
                 llStatusUnpaid.setVisibility(View.GONE);
             } else {
@@ -233,19 +233,11 @@ public class InvoiceManagementAdapter extends RecyclerView.Adapter<InvoiceManage
                 llStatusUnpaid.setVisibility(View.VISIBLE);
             }
 
-            btnOpenItemDetail.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent i = new Intent(context, UpdateInvoiceActivity.class);
-                    i.putExtra("key", invDocumentID);
-                    context.startActivity(i);
-                    //Toast.makeText(context, coDocumentID, Toast.LENGTH_SHORT).show();
-                }
+            btnOpenItemDetail.setOnClickListener(view -> {
+                Intent i = new Intent(context, UpdateInvoiceActivity.class);
+                i.putExtra("key", invDocumentID);
+                context.startActivity(i);
             });
-
-            /*btnApproveInv.setOnClickListener(view ->
-                    dialogInterface.approveInvConfirmation(context, invDocumentID));*/
-
             btnDeleteItem.setOnClickListener(view ->
                     dialogInterface.deleteInvConfirmation(context, invDocumentID));
         }
