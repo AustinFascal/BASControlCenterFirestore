@@ -9,7 +9,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -25,7 +24,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
@@ -39,8 +37,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.droidnet.DroidListener;
-import com.droidnet.DroidNet;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
@@ -54,19 +50,19 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.normal.TedPermission;
 import com.ptbas.controlcenter.adapter.MainFeaturesMenuAdapter;
-import com.ptbas.controlcenter.adapter.StatisticsAdapter;
-import com.ptbas.controlcenter.create.AddCustomerActivity;
-import com.ptbas.controlcenter.create.AddGoodIssueActivity;
-import com.ptbas.controlcenter.create.AddCashOutActivity;
-import com.ptbas.controlcenter.create.AddInvoiceActivity;
-import com.ptbas.controlcenter.create.AddProductData;
-import com.ptbas.controlcenter.create.AddRecapGoodIssueDataActivity;
-import com.ptbas.controlcenter.create.AddReceivedOrder;
-import com.ptbas.controlcenter.create.AddSupplierActivity;
-import com.ptbas.controlcenter.create.AddVehicleActivity;
-import com.ptbas.controlcenter.utility.Helper;
+import com.ptbas.controlcenter.adapter.StatsAdapter;
+import com.ptbas.controlcenter.create.AddCustActivity;
+import com.ptbas.controlcenter.create.AddGiActivity;
+import com.ptbas.controlcenter.create.AddCoActivity;
+import com.ptbas.controlcenter.create.AddInvActivity;
+import com.ptbas.controlcenter.create.AddProdActivity;
+import com.ptbas.controlcenter.create.AddRcpActivity;
+import com.ptbas.controlcenter.create.AddRoActivity;
+import com.ptbas.controlcenter.create.AddSplrActivity;
+import com.ptbas.controlcenter.create.AddVhlActivity;
+import com.ptbas.controlcenter.utility.HelperUtils;
 import com.ptbas.controlcenter.model.MainFeatureModel;
-import com.ptbas.controlcenter.model.StatisticsModel;
+import com.ptbas.controlcenter.model.StatsModel;
 import com.ptbas.controlcenter.model.UserModel;
 import com.ptbas.controlcenter.userprofile.UserProfileActivity;
 
@@ -75,8 +71,6 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
-import dev.shreyaspatil.MaterialDialog.MaterialDialog;
 
 public class DashboardActivity extends AppCompatActivity {
 
@@ -102,9 +96,9 @@ public class DashboardActivity extends AppCompatActivity {
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
 
     MainFeaturesMenuAdapter mainFeaturesMenuAdapter;
-    StatisticsAdapter statisticsAdapter;
+    StatsAdapter statsAdapter;
 
-    Helper helper = new Helper();
+    HelperUtils helperUtils = new HelperUtils();
 
     BottomSheetBehavior<ConstraintLayout> bottomSheetBehavior;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -267,28 +261,28 @@ public class DashboardActivity extends AppCompatActivity {
         tvShowAllMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(DashboardActivity.this, AllManagementMenus.class);
+                Intent intent = new Intent(DashboardActivity.this, AllManagementMenusActivity.class);
                 startActivity(intent);
             }
         });
 
         llAddVehicleFromBottomSheet.setOnClickListener(view -> {
-            Intent intent = new Intent(DashboardActivity.this, AddVehicleActivity.class);
+            Intent intent = new Intent(DashboardActivity.this, AddVhlActivity.class);
             startActivity(intent);
         });
 
         llAddCustomerFromBottomSheet.setOnClickListener(view -> {
-            Intent intent = new Intent(DashboardActivity.this, AddCustomerActivity.class);
+            Intent intent = new Intent(DashboardActivity.this, AddCustActivity.class);
             startActivity(intent);
         });
 
         llAddMaterialFromBottomSheet.setOnClickListener(view -> {
-            Intent intent = new Intent(DashboardActivity.this, AddProductData.class);
+            Intent intent = new Intent(DashboardActivity.this, AddProdActivity.class);
             startActivity(intent);
         });
 
         llAddSupplierFromBottomSheet.setOnClickListener(view -> {
-            Intent intent = new Intent(DashboardActivity.this, AddSupplierActivity.class);
+            Intent intent = new Intent(DashboardActivity.this, AddSplrActivity.class);
             startActivity(intent);
         });
 
@@ -315,24 +309,24 @@ public class DashboardActivity extends AppCompatActivity {
 
         // DASHBOARD'S SHORTCUTS CLICK LISTENER
         llAddRo.setOnClickListener(view -> {
-            Intent i = new Intent(this, AddReceivedOrder.class);
+            Intent i = new Intent(this, AddRoActivity.class);
             startActivityForResult(i, LAUNCH_SECOND_ACTIVITY);
         });
         llAddGi.setOnClickListener(view -> {
-            Intent intent = new Intent(DashboardActivity.this, AddGoodIssueActivity.class);
+            Intent intent = new Intent(DashboardActivity.this, AddGiActivity.class);
             startActivity(intent);
         });
 
         llAddRecap.setOnClickListener(view -> {
-            Intent intent = new Intent(DashboardActivity.this, AddRecapGoodIssueDataActivity.class);
+            Intent intent = new Intent(DashboardActivity.this, AddRcpActivity.class);
             startActivity(intent);
         });
         llAddBKK.setOnClickListener(view -> {
-            Intent intent = new Intent(DashboardActivity.this, AddCashOutActivity.class);
+            Intent intent = new Intent(DashboardActivity.this, AddCoActivity.class);
             startActivity(intent);
         });
         llAddInv.setOnClickListener(view -> {
-            Intent intent = new Intent(DashboardActivity.this, AddInvoiceActivity.class);
+            Intent intent = new Intent(DashboardActivity.this, AddInvActivity.class);
             startActivity(intent);
         });
         llShowOthers.setOnClickListener(view -> bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED));
@@ -360,7 +354,7 @@ public class DashboardActivity extends AppCompatActivity {
         rvMainFeatures.setAdapter(mainFeaturesMenuAdapter);
 
         // REFRESH DASHBOARD'S CONTENTS
-        swipeContainer.setOnRefreshListener(() -> helper.refreshDashboard(DashboardActivity.this));
+        swipeContainer.setOnRefreshListener(() -> helperUtils.refreshDashboard(DashboardActivity.this));
 
         // SUM VEHICLE
         databaseReference.child("ProductData").addValueEventListener(new ValueEventListener() {
@@ -470,8 +464,8 @@ public class DashboardActivity extends AppCompatActivity {
     public void showStatistics(){
         LinearLayoutManager layoutManager = new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL, false);
         rvStatistics.setLayoutManager(layoutManager);
-        statisticsAdapter = new StatisticsAdapter(dataQueueStatistic(), (Context) this);
-        rvStatistics.setAdapter(statisticsAdapter);
+        statsAdapter = new StatsAdapter(dataQueueStatistic(), (Context) this);
+        rvStatistics.setAdapter(statsAdapter);
     }
 
     private void showUserProfile(FirebaseUser firebaseUser) {
@@ -539,41 +533,41 @@ public class DashboardActivity extends AppCompatActivity {
     }
 
 
-    public ArrayList<StatisticsModel> dataQueueStatistic(){
+    public ArrayList<StatsModel> dataQueueStatistic(){
 
-        ArrayList<StatisticsModel> holder2 = new ArrayList<>();
+        ArrayList<StatsModel> holder2 = new ArrayList<>();
 
-        StatisticsModel ob1 = new StatisticsModel();
+        StatsModel ob1 = new StatsModel();
         ob1.setHeader(finalCountActiveReceivedOrderData);
         ob1.setDesc("RO Perlu Divalidasi");
         holder2.add(ob1);
 
-        StatisticsModel ob2 = new StatisticsModel();
+        StatsModel ob2 = new StatsModel();
         ob2.setHeader(finalCountActiveGoodIssueData);
         ob2.setDesc("GI Perlu Divalidasi");
         holder2.add(ob2);
 
-        StatisticsModel ob3 = new StatisticsModel();
+        StatsModel ob3 = new StatsModel();
         ob3.setHeader(finalCountActiveGoodIssueDataToBKK);
         ob3.setDesc("GI Perlu Ditagihkan");
         holder2.add(ob3);
 
-        StatisticsModel ob4 = new StatisticsModel();
+        StatsModel ob4 = new StatsModel();
         ob4.setHeader(finalCountMaterial);
         ob4.setDesc("Jumlah Material");
         holder2.add(ob4);
 
-        StatisticsModel ob5 = new StatisticsModel();
+        StatsModel ob5 = new StatsModel();
         ob5.setHeader(finalCountUser);
         ob5.setDesc("Jumlah Pengguna");
         holder2.add(ob5);
 
-        StatisticsModel ob6 = new StatisticsModel();
+        StatsModel ob6 = new StatsModel();
         ob6.setHeader(finalCountCustomer);
         ob6.setDesc("Jumlah Customer");
         holder2.add(ob6);
 
-        StatisticsModel ob7 = new StatisticsModel();
+        StatsModel ob7 = new StatsModel();
         ob7.setHeader("0");
         ob7.setDesc("Jumlah Supplier");
         holder2.add(ob7);
@@ -595,7 +589,7 @@ public class DashboardActivity extends AppCompatActivity {
                             .setTextColor(ContextCompat.getColor(this, R.color.dark_green))
                             .setBackgroundTint(ContextCompat.getColor(this, R.color.pure_green))
                             .setAction("TAMBAH LAGI", view1 -> {
-                                Intent i = new Intent(this, AddReceivedOrder.class);
+                                Intent i = new Intent(this, AddRoActivity.class);
                                 startActivityForResult(i, LAUNCH_SECOND_ACTIVITY);
                             })
                             .setActionTextColor(ContextCompat.getColor(this, R.color.black))

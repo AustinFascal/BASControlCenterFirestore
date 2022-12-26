@@ -12,17 +12,17 @@ import com.droidnet.DroidNet
 import com.google.android.material.tabs.TabLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.ptbas.controlcenter.adapter.OnBoardViewPagerAdapter
+import com.ptbas.controlcenter.adapter.OnBoardAdapter
 import com.ptbas.controlcenter.auth.LoginActivity
 import com.ptbas.controlcenter.auth.RegisterActivity
-import com.ptbas.controlcenter.model.OnBoardingData
+import com.ptbas.controlcenter.model.OnBoardingModel
 
 
 class MainActivity : AppCompatActivity() {
 
     var authProfile: FirebaseAuth? = null
 
-    var onBoardViewPagerAdapter: OnBoardViewPagerAdapter? = null
+    var onBoardAdapter: OnBoardAdapter? = null
     var tabLayout: TabLayout? = null
     var onBoardViewPager: ViewPager? = null
     var next: TextView? = null
@@ -50,10 +50,10 @@ class MainActivity : AppCompatActivity() {
         tabLayout = findViewById(R.id.tabIndicator)
         next = findViewById(R.id.next)
 
-        val onBoardingData: MutableList<OnBoardingData> = ArrayList()
-        onBoardingData.add(OnBoardingData("All-in-One Place", "Aplikasi pusat kontrol manajemen PT Bintang Andalan Sejahtera", R.drawable.img_desc1))
-        onBoardingData.add(OnBoardingData("Easy Management", "Temukan berbagai fitur untuk memudahkan manajemen aktivitas operasional", R.drawable.img_desc2))
-        onBoardingData.add(OnBoardingData("Seamless and Responsive", "Akses aplikasi melalui berbagai macam perangkat secara responsif", R.drawable.img_desc3))
+        val onBoardingData: MutableList<OnBoardingModel> = ArrayList()
+        onBoardingData.add(OnBoardingModel("All-in-One Place", "Aplikasi pusat kontrol manajemen PT Bintang Andalan Sejahtera", R.drawable.img_desc1))
+        onBoardingData.add(OnBoardingModel("Easy Management", "Temukan berbagai fitur untuk memudahkan manajemen aktivitas operasional", R.drawable.img_desc2))
+        onBoardingData.add(OnBoardingModel("Seamless and Responsive", "Akses aplikasi melalui berbagai macam perangkat secara responsif", R.drawable.img_desc3))
 
         setOnBoardingViewPagerAdapter(onBoardingData)
 
@@ -105,10 +105,10 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun setOnBoardingViewPagerAdapter(onBoardingData: List<OnBoardingData>) {
+    private fun setOnBoardingViewPagerAdapter(onBoardingData: List<OnBoardingModel>) {
         onBoardViewPager = findViewById(R.id.screenPager)
-        onBoardViewPagerAdapter = OnBoardViewPagerAdapter(this, onBoardingData)
-        onBoardViewPager!!.adapter = onBoardViewPagerAdapter
+        onBoardAdapter = OnBoardAdapter(this, onBoardingData)
+        onBoardViewPager!!.adapter = onBoardAdapter
         tabLayout?.setupWithViewPager(onBoardViewPager)
     }
 

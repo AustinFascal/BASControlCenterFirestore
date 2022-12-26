@@ -24,7 +24,7 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.ptbas.controlcenter.utility.Helper;
+import com.ptbas.controlcenter.utility.HelperUtils;
 import com.ptbas.controlcenter.R;
 
 public class ChangePasswordActivity extends AppCompatActivity {
@@ -36,7 +36,7 @@ public class ChangePasswordActivity extends AppCompatActivity {
     private Button buttonChangePass, buttonReAuthenticate;
     private EditText editTextPassCur, editTextPassNew, editTextPassConfirmNew;
 
-    Helper helper = new Helper();
+    HelperUtils helperUtils = new HelperUtils();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,11 +46,11 @@ public class ChangePasswordActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         // ACTION BAR FOR STANDARD ACTIVITY
         assert actionBar != null;
-        helper.handleActionBarConfigForStandardActivity(
+        helperUtils.handleActionBarConfigForStandardActivity(
                 this, actionBar, "Perbarui Kata Sandi");
 
         // SYSTEM UI MODE FOR STANDARD ACTIVITY
-        helper.handleUIModeForStandardActivity(this, actionBar);
+        helperUtils.handleUIModeForStandardActivity(this, actionBar);
         // showing the back button in action bar
         actionBar.setDisplayHomeAsUpEnabled(true);
 

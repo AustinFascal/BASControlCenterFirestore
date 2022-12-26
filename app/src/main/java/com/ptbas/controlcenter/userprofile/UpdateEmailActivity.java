@@ -25,7 +25,7 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.ptbas.controlcenter.utility.Helper;
+import com.ptbas.controlcenter.utility.HelperUtils;
 import com.ptbas.controlcenter.MainActivityOld;
 import com.ptbas.controlcenter.R;
 
@@ -39,7 +39,7 @@ public class UpdateEmailActivity extends AppCompatActivity {
     private Button buttonUpdateEmail;
     private EditText editTextNewEmail, editTextPass;
 
-    Helper helper = new Helper();
+    HelperUtils helperUtils = new HelperUtils();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,11 +49,11 @@ public class UpdateEmailActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         // ACTION BAR FOR STANDARD ACTIVITY
         assert actionBar != null;
-        helper.handleActionBarConfigForStandardActivity(
+        helperUtils.handleActionBarConfigForStandardActivity(
                 this, actionBar, "Perbarui Email");
 
         // SYSTEM UI MODE FOR STANDARD ACTIVITY
-        helper.handleUIModeForStandardActivity(this, actionBar);
+        helperUtils.handleUIModeForStandardActivity(this, actionBar);
         // showing the back button in action bar
         actionBar.setDisplayHomeAsUpEnabled(true);
 

@@ -11,19 +11,18 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ptbas.controlcenter.R;
-import com.ptbas.controlcenter.create.AddAIOReportActivity;
-import com.ptbas.controlcenter.create.AddBankAccountActivity;
-import com.ptbas.controlcenter.create.AddSupplierActivity;
-import com.ptbas.controlcenter.management.ManageCustomerActivity;
-import com.ptbas.controlcenter.management.ManageGoodIssueActivity;
-import com.ptbas.controlcenter.management.ManageCashOutActivity;
-import com.ptbas.controlcenter.management.ManageInvoiceActivity;
-import com.ptbas.controlcenter.management.ManageProductDataActivity;
-import com.ptbas.controlcenter.management.ManageRecapGoodIssueActivity;
-import com.ptbas.controlcenter.management.ManageReceivedOrderActivity;
-import com.ptbas.controlcenter.management.ManageSupplierActivity;
-import com.ptbas.controlcenter.management.ManageUserActivity;
-import com.ptbas.controlcenter.management.ManageVehicleActivity;
+import com.ptbas.controlcenter.create.AddAioReportActivity;
+import com.ptbas.controlcenter.create.AddBankAccActivity;
+import com.ptbas.controlcenter.management.CustDataActivity;
+import com.ptbas.controlcenter.management.GiDataActivity;
+import com.ptbas.controlcenter.management.CoDataActivity;
+import com.ptbas.controlcenter.management.InvDataActivity;
+import com.ptbas.controlcenter.management.ProdDataActivity;
+import com.ptbas.controlcenter.management.RcpDataActivity;
+import com.ptbas.controlcenter.management.RoDataActivity;
+import com.ptbas.controlcenter.management.SplrDataActivity;
+import com.ptbas.controlcenter.management.UserDataActivity;
+import com.ptbas.controlcenter.management.VhlDataActivity;
 import com.ptbas.controlcenter.model.MainFeatureModel;
 import com.ptbas.controlcenter.viewholder.MainFeatureViewHolder;
 
@@ -67,65 +66,65 @@ public class MainFeaturesMenuAdapter extends RecyclerView.Adapter<MainFeatureVie
             @Override
             public void onClick(View view) {
                 if (holder.tv1.getText().toString().equals("Data\nPengguna")){
-                    Intent intent2 = new Intent(context, ManageUserActivity.class);
+                    Intent intent2 = new Intent(context, UserDataActivity.class);
                     intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(intent2);
                 }
                 if (holder.tv1.getText().toString().equals("Data\nArmada")){
-                    Intent intent2 = new Intent(context, ManageVehicleActivity.class);
+                    Intent intent2 = new Intent(context, VhlDataActivity.class);
                     intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(intent2);
                 }
                 if (holder.tv1.getText().toString().equals("Data\nReceived Order")){
-                    Intent intent2 = new Intent(context, ManageReceivedOrderActivity.class);
+                    Intent intent2 = new Intent(context, RoDataActivity.class);
                     intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(intent2);
                 }
                 if (holder.tv1.getText().toString().equals("Data\nGood Issue")){
-                    Intent intent2 = new Intent(context, ManageGoodIssueActivity.class);
+                    Intent intent2 = new Intent(context, GiDataActivity.class);
                     intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(intent2);
                 }
                 if (holder.tv1.getText().toString().equals("Data Laporan\nAll-in-One")){
-                    Intent intent2 = new Intent(context, AddAIOReportActivity.class);
+                    Intent intent2 = new Intent(context, AddAioReportActivity.class);
                     intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(intent2);
                 }
 
 
                 if (holder.tv1.getText().toString().equals("Data Rekap\nGood Issue")){
-                    Intent intent2 = new Intent(context, ManageRecapGoodIssueActivity.class);
+                    Intent intent2 = new Intent(context, RcpDataActivity.class);
                     intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(intent2);
                 }
                 if (holder.tv1.getText().toString().equals("Data\nCustomer")){
-                    Intent intent2 = new Intent(context, ManageCustomerActivity.class);
+                    Intent intent2 = new Intent(context, CustDataActivity.class);
                     intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(intent2);
                 }
                 if (holder.tv1.getText().toString().equals("Data\nCash Out")){
-                    Intent intent2 = new Intent(context, ManageCashOutActivity.class);
+                    Intent intent2 = new Intent(context, CoDataActivity.class);
                     intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(intent2);
                 }
                 if (holder.tv1.getText().toString().equals("Manajemen\nMaterial")){
-                    Intent intent2 = new Intent(context, ManageProductDataActivity.class);
+                    Intent intent2 = new Intent(context, ProdDataActivity.class);
                     intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(intent2);
                 }
 
                 if (holder.tv1.getText().toString().equals("Data\nInvoice")){
-                    Intent intent2 = new Intent(context, ManageInvoiceActivity.class);
+                    Intent intent2 = new Intent(context, InvDataActivity.class);
                     intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(intent2);
                 }
                 if (holder.tv1.getText().toString().equals("Data\nRekening Bank")){
-                    Intent intent2 = new Intent(context, AddBankAccountActivity.class);
+                    Intent intent2 = new Intent(context, AddBankAccActivity.class);
                     intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(intent2);
                 }
                 if (holder.tv1.getText().toString().equals("Data\nSupplier")){
-                    Intent intent2 = new Intent(context, ManageSupplierActivity.class);
+                    Intent intent2 = new Intent(context, SplrDataActivity.class);
                     intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(intent2);
                 }

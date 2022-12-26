@@ -20,7 +20,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidUserException;
-import com.ptbas.controlcenter.utility.Helper;
+import com.ptbas.controlcenter.utility.HelperUtils;
 import com.ptbas.controlcenter.MainActivityOld;
 import com.ptbas.controlcenter.R;
 
@@ -32,7 +32,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
     private FirebaseAuth authProfile;
     private final static String TAG = "ForgotPasswordActivity";
 
-    Helper helper = new Helper();
+    HelperUtils helperUtils = new HelperUtils();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,11 +42,11 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         // ACTION BAR FOR STANDARD ACTIVITY
         assert actionBar != null;
-        helper.handleActionBarConfigForStandardActivity(
+        helperUtils.handleActionBarConfigForStandardActivity(
                 this, actionBar, "Lupa Kata Sandi");
 
         // SYSTEM UI MODE FOR STANDARD ACTIVITY
-        helper.handleUIModeForStandardActivity(this, actionBar);
+        helperUtils.handleUIModeForStandardActivity(this, actionBar);
         // showing the back button in action bar
         actionBar.setDisplayHomeAsUpEnabled(true);
 

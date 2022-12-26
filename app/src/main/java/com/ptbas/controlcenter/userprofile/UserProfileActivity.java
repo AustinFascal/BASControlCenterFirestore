@@ -28,9 +28,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.ptbas.controlcenter.DashboardActivity;
 import com.ptbas.controlcenter.MainActivity;
-import com.ptbas.controlcenter.utility.Helper;
+import com.ptbas.controlcenter.utility.HelperUtils;
 import com.squareup.picasso.Picasso;
 import com.ptbas.controlcenter.R;
 import com.ptbas.controlcenter.model.UserModel;
@@ -46,7 +45,7 @@ public class UserProfileActivity extends AppCompatActivity {
 
     private int intResume = 0;
 
-    Helper helper = new Helper();
+    HelperUtils helperUtils = new HelperUtils();
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -59,11 +58,11 @@ public class UserProfileActivity extends AppCompatActivity {
 
         // ACTION BAR FOR STANDARD ACTIVITY
         assert actionBar != null;
-        helper.handleActionBarConfigForStandardActivity(
+        helperUtils.handleActionBarConfigForStandardActivity(
                 this, actionBar, "Profil Akun");
 
         // SYSTEM UI MODE FOR STANDARD ACTIVITY
-        helper.handleUIModeForStandardActivity(this, actionBar);
+        helperUtils.handleUIModeForStandardActivity(this, actionBar);
         // showing the back button in action bar
         actionBar.setDisplayHomeAsUpEnabled(true);
 

@@ -9,13 +9,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.ptbas.controlcenter.auth.LoginActivity;
 import com.ptbas.controlcenter.auth.RegisterActivity;
-import com.ptbas.controlcenter.utility.Helper;
+import com.ptbas.controlcenter.utility.HelperUtils;
 
 import java.util.Objects;
 
 public class MainActivityOld extends AppCompatActivity {
 
-    Helper helper = new Helper();
+    HelperUtils helperUtils = new HelperUtils();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +39,7 @@ public class MainActivityOld extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        if (helper.getUserId()!=null){
+        if (helperUtils.getUserId()!=null){
             startActivity(new Intent(MainActivityOld.this, LoginActivity.class));
             finish();
         }

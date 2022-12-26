@@ -21,24 +21,23 @@
         android:theme="@style/Theme.TravelPermitBAS"
         tools:targetApi="31">
         <activity
-            android:name=".update.UpdateVehicleData"
+            android:name=".update.UpdtVhlActivity"
             android:exported="false" />
         <activity
-            android:name=".update.UpdateRecapActivity"
+            android:name=".update.UpdtRcpActivity"
             android:exported="false" />
         <activity
-            android:name=".management.ManageProductDataActivity"
+            android:name=".management.ProdDataActivity"
             android:exported="false" />
         <activity
-            android:name=".update.UpdateProductData"
+            android:name=".update.UpdtProdActivity"
             android:exported="false" />
         <activity
-            android:name=".create.AddProductData"
+            android:name=".create.AddProdActivity"
             android:exported="false" />
         <activity
-            android:name=".create.AddBankAccountActivity"
+            android:name=".create.AddBankAccActivity"
             android:exported="false" />
-
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.ptbas.controlcenter.fileprovider"
@@ -50,56 +49,53 @@
         </provider>
 
         <activity
-            android:name=".create.AddRecapGoodIssueDataActivity"
+            android:name=".create.AddRcpActivity"
             android:exported="false" />
 
         <activity
-            android:name=".create.AddAIOReportActivity"
+            android:name=".create.AddAioReportActivity"
             android:exported="false" />
         <activity
-            android:name=".create.AddCustomerActivity"
+            android:name=".create.AddCustActivity"
             android:exported="false" />
         <activity
-            android:name=".management.ManageCashOutActivity"
-            android:exported="false" />
-        <activity
-            android:name=".management.ManageAllInOneReportActivity"
+            android:name=".management.CoDataActivity"
             android:exported="false" />
 
         <activity
-            android:name=".management.ManageInvoiceActivity"
+            android:name=".management.InvDataActivity"
             android:exported="false" />
         <activity
-            android:name=".management.ManageCustomerActivity"
+            android:name=".management.CustDataActivity"
             android:exported="false" />
         <activity
-            android:name=".management.ManageGoodIssueActivity"
+            android:name=".management.GiDataActivity"
             android:exported="false" />
         <activity
-            android:name=".management.ManageRecapGoodIssueActivity"
+            android:name=".management.RcpDataActivity"
             android:exported="false" />
         <activity
-            android:name=".management.ManageReceivedOrderActivity"
+            android:name=".management.RoDataActivity"
             android:exported="false" />
         <activity
-            android:name=".management.ManageSupplierActivity"
+            android:name=".management.SplrDataActivity"
             android:exported="false" />
         <activity
-            android:name=".management.ManageVehicleActivity"
+            android:name=".management.VhlDataActivity"
             android:exported="false" />
         <activity
-            android:name=".management.ManageUserActivity"
+            android:name=".management.UserDataActivity"
             android:exported="false" />
         <activity
-            android:name=".create.AddCashOutActivity"
+            android:name=".create.AddCoActivity"
             android:exported="false"
             android:noHistory="true" />
         <activity
-            android:name=".create.AddInvoiceActivity"
+            android:name=".create.AddInvActivity"
             android:exported="false"
             android:noHistory="true" />
         <activity
-            android:name=".create.AddSupplierActivity"
+            android:name=".create.AddSplrActivity"
             android:exported="false"
             android:noHistory="true" />
         <activity
@@ -107,26 +103,26 @@
             android:exported="false"
             android:theme="@style/Theme.TravelPermitBAS.NoActionBar" />
         <activity
-            android:name=".AllManagementMenus"
+            android:name=".AllManagementMenusActivity"
             android:exported="false" />
         <activity
-            android:name=".create.AddReceivedOrder"
+            android:name=".create.AddRoActivity"
             android:exported="false" />
         <activity
-            android:name=".create.AddGoodIssueActivity"
+            android:name=".create.AddGiActivity"
             android:exported="false" />
         <activity
-            android:name=".update.UpdateGoodIssueActivity"
+            android:name=".update.UpdtGiActivity"
             android:exported="false" />
         <activity
-            android:name=".update.UpdateCashOutActivity"
+            android:name=".update.UpdtCoActivity"
             android:exported="false" />
 
         <activity
-            android:name=".update.UpdateInvoiceActivity"
+            android:name=".update.UpdtInvActivity"
             android:exported="false" />
         <activity
-            android:name=".create.AddVehicleActivity"
+            android:name=".create.AddVhlActivity"
             android:exported="false" />
         <activity
             android:name=".userprofile.ChangePasswordActivity"

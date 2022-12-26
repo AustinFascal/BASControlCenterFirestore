@@ -1,0 +1,398 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/coordinatorLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".create.AddRoActivity">
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_save_po_data"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="end|bottom"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="24dp"
+        android:contentDescription="@string/default_content_description"
+        android:src="@drawable/ic_outline_check"
+        android:tintMode="@color/white"
+        app:backgroundTint="@color/pure_orange" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            tools:context=".create.AddRoActivity">
+
+            <LinearLayout
+                android:id="@+id/ll_input_all_data"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:divider="@drawable/divider_transparent"
+                android:orientation="vertical"
+                android:padding="24dp"
+                android:showDividers="middle">
+
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:divider="@drawable/divider_transparent"
+                    android:orientation="horizontal"
+                    android:showDividers="middle">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        app:startIconDrawable="@drawable/ic_outline_today">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edt_po_date"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:focusable="false"
+                            android:hint="@string/inputDateRequired"
+                            android:inputType="none" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        app:suffixText="hari"
+                        app:startIconDrawable="@drawable/ic_outline_today">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/edt_po_TOP"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="T.O.P."
+                            android:inputType="number" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:divider="@drawable/divider_transparent"
+                    android:orientation="horizontal"
+                    android:showDividers="middle">
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        app:startIconDrawable="@drawable/ic_product_loading">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/spinner_po_transport_type"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/inputPoProductType"
+                            android:inputType="textCapCharacters" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        app:startIconDrawable="@drawable/ic_outline_currency">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/spinner_po_currency"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                            android:hint="@string/inputCurrency"
+                            android:inputType="textFilter|textCapCharacters" />
+                    </com.google.android.material.textfield.TextInputLayout>
+                </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:divider="@drawable/divider_transparent"
+                android:gravity="top"
+                android:orientation="horizontal"
+                android:showDividers="middle"
+                android:visibility="visible">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    app:startIconDrawable="@drawable/ic_outline_person">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/spinner_po_cust_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/inputCustomerName"
+                        android:inputType="textCapCharacters" />
+                </com.google.android.material.textfield.TextInputLayout>
+                <ImageButton
+                    android:id="@+id/btnResetCustomer"
+                    android:layout_width="55dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginBottom="1dp"
+                    android:background="@drawable/filled_box"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/ic_outline_restore"
+                    android:visibility="gone"
+                    app:tint="@color/white" />
+            </LinearLayout>
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/spinnerTaxTypeWrap"
+                    app:startIconDrawable="@drawable/ic_product_loading">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/spinnerTaxType"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:focusable="false"
+                        android:hint="Jenis Wajib Pajak" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/txt_input_edt_po_number_customer"
+                    app:placeholderText="Biarkan kosong apabila belum tersedia"
+                    app:startIconDrawable="@drawable/ic_outline_receipt">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edt_po_number_customer"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/inputPoNumberCustomer"
+                        android:inputType="textCapCharacters" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!--<LinearLayout
+                    android:id="@+id/ll_po_number_availability"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <Button
+                        style="@style/MaterialDialog.NegativeButton"
+                        android:id="@+id/btn_po_number_available"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:drawableLeft="@drawable/ic_outline_add_circle"
+                        android:text="Tambah Nomor PO"
+                        android:textAllCaps="true" />
+                </LinearLayout>-->
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/wrap_edt_po_number_ptbas"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:startIconDrawable="@drawable/ic_outline_receipt">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edt_po_number_ptbas"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890/"
+                        android:focusable="false"
+                        android:hint="@string/inputPoNumberPtBas2"
+                        android:inputType="none" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:startIconDrawable="@drawable/ic_outline_menu">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/spinner_ro_type"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/inputRoType"
+                        android:focusable="false"
+                        android:inputType="none" />
+                </com.google.android.material.textfield.TextInputLayout>
+                <LinearLayout
+                    android:id="@+id/llShowSpinnerRoAndEdtPo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:divider="@drawable/divider_transparent"
+                    android:showDividers="middle"
+                    android:visibility="gone">
+                    <LinearLayout
+                        android:id="@+id/ll_wrap_filter_by_rouid"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:divider="@drawable/divider_transparent"
+                        android:gravity="top"
+                        android:orientation="horizontal"
+                        android:showDividers="middle"
+                        android:visibility="visible">
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            app:startIconDrawable="@drawable/ic_outline_receipt">
+
+                            <AutoCompleteTextView
+                                android:id="@+id/spinnerRoUID"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="Hubungkan Nomor PO Material" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <ImageButton
+                            android:id="@+id/btnResetRouid"
+                            android:layout_width="55dp"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginBottom="1dp"
+                            android:background="@drawable/filled_box"
+                            android:scaleType="centerInside"
+                            android:src="@drawable/ic_outline_restore"
+                            android:visibility="gone"
+                            app:tint="@color/white" />
+                    </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/ll_wrap_filter_by_pouid"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:divider="@drawable/divider_transparent"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:showDividers="middle"
+                        android:visibility="visible">
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            app:startIconDrawable="@drawable/ic_outline_receipt">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/edtConnectingRONumber"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="Nomor RO (auto)"
+                                android:inputType="textCapCharacters"
+                                android:maxLines="1" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_add_item"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/light_grey" />
+
+
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Daftar Item" />
+
+                    <HorizontalScrollView
+                        android:layout_width="wrap_content"
+                        android:minWidth="200dp"
+                        android:layout_height="wrap_content">
+
+                        <LinearLayout
+                            android:id="@+id/layout_list"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical" />
+                    </HorizontalScrollView>
+
+                    <Button
+                        style="@style/MaterialDialog.NegativeButton"
+                        android:id="@+id/btn_add_list"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:drawableLeft="@drawable/ic_outline_add_circle"
+                        android:text="TAMBAH ITEM"
+                        android:layout_gravity="center"
+                        android:textAllCaps="true" />
+
+
+
+
+                    <!-- <TextView
+                         android:id="@+id/tv_sum_total"
+                         android:layout_width="match_parent"
+                         android:layout_height="wrap_content"
+                         android:layout_marginTop="8dp"
+                         android:text="SUM TOTAL" />-->
+
+                </LinearLayout>
+                <Button
+                    android:layout_gravity="center"
+                    android:visibility="gone"
+                    style="@style/MaterialDialog.PositiveButton"
+                    android:id="@+id/btn_lock_row"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:textColor="@color/white"
+                    android:drawableLeft="@drawable/ic_outline_lock"
+                    android:text="KUNCI ITEM"
+                    android:drawableTint="@color/white"
+                    android:drawableTintMode="src_in"
+                    android:textAllCaps="true" />
+
+                <Button
+                    android:layout_gravity="center"
+                    style="@style/MaterialDialog.PositiveButton"
+                    android:id="@+id/btn_unlock_row"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:textColor="@color/white"
+                    android:visibility="gone"
+                    android:drawableLeft="@drawable/ic_outline_lock_open"
+                    android:text="UBAH ITEM"
+                    android:drawableTint="@color/white"
+                    android:drawableTintMode="src_in"
+                    android:textAllCaps="true" />
+            </LinearLayout>
+        </ScrollView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    <include layout="@layout/bottom_sheet_purchase_order_details"/>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
