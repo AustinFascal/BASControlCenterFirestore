@@ -96,7 +96,6 @@ public class UpdtRcpActivity extends AppCompatActivity {
     CollectionReference refCust = db.collection("CustomerData");
     CollectionReference refBankAccount = db.collection("BankAccountData");
 
-    int invPoType, invPoTOP;
     double matBuyPrice, matSellPrice, matCubication, transportServiceSellPrice;
 
     // ID
@@ -106,35 +105,14 @@ public class UpdtRcpActivity extends AppCompatActivity {
     String roDocumentID, matTypeVal, matNameVal, transportServiceNameVal;
 
     int poType;
-    // Bank
-    String bankAccountID, bankName, bankAccountNumber, bankAccountOwnerName;
 
     // INV
-    String invHandOverBy, invDateHandover, dateHandover, finalPaidDate, finalDateHandover, invDueDateNTime, invMainID, invVerifiedBy, invPrintedBy,
-            invCreatedByVal, invApprovedByVal, invHandOverByVal, invPoDate, custNameFinal, custNameVal,
-            custAddressVal, invPotypeVal, coCreatedBy, transferProofReference, invTransferReference;
+    String  custNameVal, coCreatedBy, transferProofReference, invTransferReference;
 
     // DATE
-    String dayStrVal, monthStrVal, invDateDeliveryPeriod, invDatePaid, invDateAndTimeCreatedVal,
-            coDateDeliveryPeriodVal, coCustomerNameVal;
+    String coCustomerNameVal;
 
-    Boolean coStatusApprovalVal, coStatusPaymentVal, expandStatus = true;
-
-    // INIT Component
-    //CardView cdvFilter;
-    /*TextInputEditText edtDatePaid, edtTransferProofReference, edtVerifiedBy,
-            edtAccountOwnerName, edtPayee;*/
-    TextView tvSubTotal, tvDisc, tvPPN, tvPPH23, tvTotalDue, tvStatus, tvDueDateNTime, tvCreatedBy, tvDateAndTimeCreated, tvApprovedBy,
-            tvUID, tvCoUID, tvCustomerName, tvRoUID, tvPoUID, tvDateDeliveryPeriod, tvPoDate, tvPoTransportType,
-            tvCubicationTotal, tvMatName;
-    //AutoCompleteTextView spinnerBankAccount;
-    //Button imgbtnExpandCollapseFilterLayout;
-    //LinearLayout binding.llNoData, llWrapFilter, llWrapSupplierDetail;
-    //ImageButton btnDatePaidReset;
-    //SwitchCompat statusSwitch;
-    //DatePickerDialog datePicker;
     GiDataAdapter giDataAdapter;
-    //RecyclerView rvGoodIssueList;
 
     List<ProductItems> productItemsList;
 
@@ -149,16 +127,6 @@ public class UpdtRcpActivity extends AppCompatActivity {
     private static final Font fontBigBold = new Font(Font.FontFamily.TIMES_ROMAN, 18, Font.BOLD, BaseColor.BLACK);
 
     private Menu menu;
-
-    //TextInputEditText edtDateHandover, edtHandoverBy;
-    //SwitchCompat statusSwitchHandover;
-
-    TextView tvStatusHandover;
-    //ImageButton btnDateHandoverReset;
-
-
-    //SwitchCompat statusSwitchRecalculate, statusSwitchDefault;
-    TextView tvCubicationTotalRev, tvSubTotalRev, tvDiscRev, tvPPNRev, tvPPH23Rev, tvTotalDueRev, tvTotalDueMinus, tvStatusRecalculate, tvStatusDefault;
 
     double totalUnitFinal;
     double totalAmountForMaterials, totalAmountForTransportService, taxPPN, taxPPNService, taxPPH, totalDue, totalDueForTransportService;

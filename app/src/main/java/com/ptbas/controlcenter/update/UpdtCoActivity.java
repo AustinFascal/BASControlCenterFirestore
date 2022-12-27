@@ -87,6 +87,7 @@ import com.ptbas.controlcenter.model.ProductItems;
 import com.ptbas.controlcenter.model.RoModel;
 import com.ptbas.controlcenter.model.SplrModel;
 import com.ptbas.controlcenter.utility.LangUtils;
+import com.ptbas.controlcenter.utility.PdfPCellUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -200,6 +201,8 @@ public class UpdtCoActivity extends AppCompatActivity {
     /*String coTimeAcc =
             new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());*/
     String dateAcc = new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(new Date());
+
+    PdfPCellUtils pdfPCellUtils;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -1090,22 +1093,6 @@ public class UpdtCoActivity extends AppCompatActivity {
 
     }
 
-    private static String getRandomString() {
-        final Random random=new Random();
-        final StringBuilder sb=new StringBuilder(5);
-        for(int i = 0; i< 5; ++i)
-            sb.append(ALLOWED_CHARACTERS.charAt(random.nextInt(ALLOWED_CHARACTERS.length())));
-        return sb.toString();
-    }
-
-    private static String getRandomString2(final int sizeOfRandomString)
-    {
-        final Random random=new Random();
-        final StringBuilder sb=new StringBuilder(sizeOfRandomString);
-        for(int i=0;i<sizeOfRandomString;++i)
-            sb.append(ALLOWED_CHARACTERS.charAt(random.nextInt(ALLOWED_CHARACTERS.length())));
-        return sb.toString();
-    }
 
     public void createCashOutProofPDF(String dest){
         if (new File(dest).exists()){
@@ -1144,6 +1131,8 @@ public class UpdtCoActivity extends AppCompatActivity {
         }
     }
 
+
+
     private void addCoTtl(Document document) throws DocumentException {
         Paragraph preface1 = new Paragraph();
         Chunk title = new Chunk("CASH-OUT (KEPERLUAN INTERNAL)", fontBold);
@@ -1153,17 +1142,10 @@ public class UpdtCoActivity extends AppCompatActivity {
         preface1.setAlignment(Element.ALIGN_CENTER);
         preface1.setSpacingAfter(20);
         document.add(preface1);
+
+        //pdfPCellUtils.addPdfTitle(document, "CASH-OUT (KEPERLUAN INTERNAL)", fontBold, 20);
     }
-    public static PdfPCell cellTxtNrml(Paragraph paragraph, int alignment) {
-        paragraph.setAlignment(alignment);
-        paragraph.setLeading(0, 1);
-        PdfPCell cell = new PdfPCell();
-        cell.addElement(paragraph);
-        cell.setHorizontalAlignment(alignment);
-        cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
-        return cell;
-    }
-    public static PdfPCell cellTxtNoBrdrNrml(Paragraph paragraph, int alignment) throws DocumentException {
+   /* public static PdfPCell cellTxtNoBrdrNrml(Paragraph paragraph, int alignment) throws DocumentException {
         paragraph.setAlignment(alignment);
         paragraph.setLeading(0, 1);
         PdfPCell cell = new PdfPCell();
@@ -1171,17 +1153,7 @@ public class UpdtCoActivity extends AppCompatActivity {
         cell.setHorizontalAlignment(alignment);
         cell.setBorder(PdfPCell.NO_BORDER);
         return cell;
-    }
-    public static PdfPCell cellTxtNoBrdrNrmlWthPadLft(Paragraph paragraph, int alignment) throws DocumentException {
-        paragraph.setAlignment(alignment);
-        paragraph.setLeading(0, 1);
-        PdfPCell cell = new PdfPCell();
-        cell.addElement(paragraph);
-        cell.setPaddingLeft(5);
-        cell.setHorizontalAlignment(alignment);
-        cell.setBorder(PdfPCell.NO_BORDER);
-        return cell;
-    }
+    }*/
     public static PdfPCell cellTxtNoBrdrNrmlMainContent(Paragraph paragraph, int alignment) throws DocumentException {
         paragraph.setAlignment(alignment);
         paragraph.setLeading(0, 1);
@@ -1257,39 +1229,6 @@ public class UpdtCoActivity extends AppCompatActivity {
             paragraphInvDateCreated.setAlignment(Element.ALIGN_RIGHT);
             paragraphInvDateCreated.setSpacingAfter(5);
 
-            // INIT IMAGE BCA QR CODE
-            Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.bca_qr_bas);
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            bm.compress(Bitmap.CompressFormat.JPEG, 90, stream);
-            Image img = null;
-            byte[] byteArray = stream.toByteArray();
-            try {
-                img = Image.getInstance(byteArray);
-                img.setAlignment(Image.TEXTWRAP);
-                img.scaleAbsolute(80f, 80f);
-            } catch (BadElementException | IOException e) {
-                e.printStackTrace();
-            }
-
-// TOTAL UNIT CALCULATION
-            /*float totalUnitFinal = 0;
-            for (int i = 0; i < goodIssueModelArrayList.size(); i++) {
-                totalUnitFinal += goodIssueModelArrayList.get(i).getGiVhlCubication();
-            }*/
-            // TOTAL UNIT CALCULATION
-            //float totalUnitFinal = totalUnit;
-            /*for (int i = 0; i < goodIssueModelArrayList.size(); i++){
-                totalUnitFinal += goodIssueModelArrayList.get(i).getGiVhlCubication();
-            }*/
-
-            // TOTAL AMOUNT CALCULATION
-            // double totalAmountForMaterials = matBuyPrice *totalUnitFinal;
-            //double totalAmountForTransportService = transportServiceSellPrice*totalUnitFinal;
-            /*double taxPPN = (0.11)*totalAmountForMaterials;
-            double taxPPH = (0.02)*totalAmountForTransportService;*/
-            //double totalDue = totalAmountForMaterials+totalAmountForTransportService;
-            //double totalDueForTransportService = totalAmountForTransportService;
-
             // INIT TABLE
             PdfPTable tblInvSection1 = new PdfPTable(7);
             PdfPTable tblInvSection2 = new PdfPTable(7);
@@ -1342,66 +1281,66 @@ public class UpdtCoActivity extends AppCompatActivity {
             tblInvSection1.addCell(cellColHeaderNoBrdr(
                     new Paragraph("PEMBAYARAN", fontMediumWhite),
                     Element.ALIGN_LEFT));
-            tblInvSection1.addCell(cellTxtNoBrdrNrml(
+            tblInvSection1.addCell(PdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph("", fontMediumWhite),
                     Element.ALIGN_LEFT));
-            tblInvSection1.addCell(cellTxtNoBrdrNrml(
+            tblInvSection1.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph("", fontMediumWhite),
                     Element.ALIGN_LEFT));
-            tblInvSection1.addCell(cellTxtNoBrdrNrml(
+            tblInvSection1.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph("", fontMediumWhite),
                     Element.ALIGN_LEFT));
             tblInvSection1.addCell(cellColHeaderNoBrdr(
                     new Paragraph("DETAIL CO", fontMediumWhite),
                     Element.ALIGN_LEFT));
-            tblInvSection1.addCell(cellTxtNoBrdrNrml(
+            tblInvSection1.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph("", fontMediumWhite),
                     Element.ALIGN_LEFT));
-            tblInvSection1.addCell(cellTxtNoBrdrNrml(
+            tblInvSection1.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph("", fontMediumWhite),
                     Element.ALIGN_LEFT));
 
-            tblInvSection2.addCell(cellTxtNoBrdrNrml(
+            tblInvSection2.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph("KE REKENING", fontNormal),
                     Element.ALIGN_LEFT));
-            tblInvSection2.addCell(cellTxtNoBrdrNrml(
+            tblInvSection2.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph(":", fontNormal),
                     Element.ALIGN_LEFT));
-            tblInvSection2.addCell(cellTxtNoBrdrNrml(
+            tblInvSection2.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph(coBankNameAndAccountNumberVal, fontNormal),
                     Element.ALIGN_LEFT));
-            tblInvSection2.addCell(cellTxtNoBrdrNrml(
+            tblInvSection2.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph("", fontMediumWhite),
                     Element.ALIGN_LEFT));
-            tblInvSection2.addCell(cellTxtNoBrdrNrml(
+            tblInvSection2.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph("No. CO", fontNormal),
                     Element.ALIGN_LEFT));
-            tblInvSection2.addCell(cellTxtNoBrdrNrml(
+            tblInvSection2.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph(":", fontNormal),
                     Element.ALIGN_LEFT));
-            tblInvSection2.addCell(cellTxtNoBrdrNrml(
+            tblInvSection2.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph(coUIDVal, fontNormal),
                     Element.ALIGN_LEFT));
 
-            tblInvSection3.addCell(cellTxtNoBrdrNrml(
+            tblInvSection3.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph("REK. A/N - DIBAYAR KE", fontNormal),
                     Element.ALIGN_LEFT));
-            tblInvSection3.addCell(cellTxtNoBrdrNrml(
+            tblInvSection3.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph(":", fontNormal),
                     Element.ALIGN_LEFT));
-            tblInvSection3.addCell(cellTxtNoBrdrNrml(
+            tblInvSection3.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph(coAccountOwnerNameVal + " - " + coPayeeVal , fontNormal),
                     Element.ALIGN_LEFT));
-            tblInvSection3.addCell(cellTxtNoBrdrNrml(
+            tblInvSection3.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph("", fontMediumWhite),
                     Element.ALIGN_LEFT));
-            tblInvSection3.addCell(cellTxtNoBrdrNrml(
+            tblInvSection3.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph("No. PO"+"\n"+"Tanggal PO"+"\n"+"Jenis PO", fontNormal),
                     Element.ALIGN_LEFT));
-            tblInvSection3.addCell(cellTxtNoBrdrNrml(
+            tblInvSection3.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph(":"+"\n"+":"+"\n"+":", fontNormal),
                     Element.ALIGN_LEFT));
-            tblInvSection3.addCell(cellTxtNoBrdrNrml(
+            tblInvSection3.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph(roPoCustNumber+"\n"+invPoDate+"\n"+invPotypeVal, fontNormal),
                     Element.ALIGN_LEFT));
 
@@ -1503,7 +1442,7 @@ public class UpdtCoActivity extends AppCompatActivity {
             tblInvSection10.addCell(cellColHeaderNoBrdr(
                     new Paragraph("TERBILANG", fontMediumWhite),
                     Element.ALIGN_LEFT));
-            tblInvSection10.addCell(cellTxtNoBrdrNrml(
+            tblInvSection10.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph("", fontMediumWhite),
                     Element.ALIGN_LEFT));
 
@@ -1514,7 +1453,7 @@ public class UpdtCoActivity extends AppCompatActivity {
             //int indexTotalDueComaVal = totalDueVal.lastIndexOf('.');
 
 
-            tblInvSection11.addCell(cellTxtNoBrdrNrml(
+            tblInvSection11.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph(
                             NumberToWordsUtils.convert(math(totalAmountForMaterialsFinal)) +
                                     " Rupiah", fontMedium),
@@ -1523,7 +1462,7 @@ public class UpdtCoActivity extends AppCompatActivity {
                     new Paragraph(
                             " Rupiah", fontMedium),
                     Element.ALIGN_LEFT));*/
-            tblInvSection11.addCell(cellTxtNoBrdrNrml(
+            tblInvSection11.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph("", fontMediumWhite),
                     Element.ALIGN_LEFT));
 

@@ -633,12 +633,6 @@ public class AddRoActivity extends AppCompatActivity {
                                         poSubTotalSell, roCountQuantity, poTotalSellFinal, poEstProfit,
                                         false, productItemsHashMap, taxTypeVal);
 
-
-
-
-
-
-
                         fabActionSaveCloud.setOnClickListener(view1 -> {
                             if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED){
 

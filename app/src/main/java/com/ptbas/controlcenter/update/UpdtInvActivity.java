@@ -89,6 +89,7 @@ import com.ptbas.controlcenter.model.InvModel;
 import com.ptbas.controlcenter.model.ProductItems;
 import com.ptbas.controlcenter.model.RoModel;
 import com.ptbas.controlcenter.utility.LangUtils;
+import com.ptbas.controlcenter.utility.PdfPCellUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -190,6 +191,7 @@ public class UpdtInvActivity extends AppCompatActivity {
 
     Boolean invRecalculateStatus;
 
+    PdfPCellUtils pdfPCellUtils;
 
     //DecimalFormat dfRound = new DecimalFormat("0");
     DecimalFormat dfRound1 = new DecimalFormat("0");
@@ -1010,7 +1012,7 @@ public class UpdtInvActivity extends AppCompatActivity {
         cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
         return cell;
     }
-    public static PdfPCell cellTxtNoBrdrNrml(Paragraph paragraph, int alignment) throws DocumentException {
+    /*public static PdfPCell pdfPCellUtils.cellTxtNoBrdrNrml(Paragraph paragraph, int alignment) throws DocumentException {
         paragraph.setAlignment(alignment);
         paragraph.setLeading(0, 1);
         PdfPCell cell = new PdfPCell();
@@ -1018,7 +1020,7 @@ public class UpdtInvActivity extends AppCompatActivity {
         cell.setHorizontalAlignment(alignment);
         cell.setBorder(PdfPCell.NO_BORDER);
         return cell;
-    }
+    }*/
     public static PdfPCell cellTxtNoBrdrNrmlWthPadLft(Paragraph paragraph, int alignment) throws DocumentException {
         paragraph.setAlignment(alignment);
         paragraph.setLeading(0, 1);
@@ -1191,66 +1193,66 @@ public class UpdtInvActivity extends AppCompatActivity {
             tblInvSection1.addCell(cellColHeaderNoBrdr(
                     new Paragraph("DITAGIH KE", fontMediumWhite),
                     Element.ALIGN_LEFT));
-            tblInvSection1.addCell(cellTxtNoBrdrNrml(
+            tblInvSection1.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph("", fontMediumWhite),
                     Element.ALIGN_LEFT));
-            tblInvSection1.addCell(cellTxtNoBrdrNrml(
+            tblInvSection1.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph("", fontMediumWhite),
                     Element.ALIGN_LEFT));
-            tblInvSection1.addCell(cellTxtNoBrdrNrml(
+            tblInvSection1.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph("", fontMediumWhite),
                     Element.ALIGN_LEFT));
             tblInvSection1.addCell(cellColHeaderNoBrdr(
                     new Paragraph("DETAIL TAGIHAN", fontMediumWhite),
                     Element.ALIGN_LEFT));
-            tblInvSection1.addCell(cellTxtNoBrdrNrml(
+            tblInvSection1.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph("", fontMediumWhite),
                     Element.ALIGN_LEFT));
-            tblInvSection1.addCell(cellTxtNoBrdrNrml(
+            tblInvSection1.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph("", fontMediumWhite),
                     Element.ALIGN_LEFT));
 
-            tblInvSection2.addCell(cellTxtNoBrdrNrml(
+            tblInvSection2.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph("Nama", fontNormal),
                     Element.ALIGN_LEFT));
-            tblInvSection2.addCell(cellTxtNoBrdrNrml(
+            tblInvSection2.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph(":", fontNormal),
                     Element.ALIGN_LEFT));
-            tblInvSection2.addCell(cellTxtNoBrdrNrml(
+            tblInvSection2.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph(invCustName, fontNormal),
                     Element.ALIGN_LEFT));
-            tblInvSection2.addCell(cellTxtNoBrdrNrml(
+            tblInvSection2.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph("", fontMediumWhite),
                     Element.ALIGN_LEFT));
-            tblInvSection2.addCell(cellTxtNoBrdrNrml(
+            tblInvSection2.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph("Nomor Tagihan", fontNormal),
                     Element.ALIGN_LEFT));
-            tblInvSection2.addCell(cellTxtNoBrdrNrml(
+            tblInvSection2.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph(":", fontNormal),
                     Element.ALIGN_LEFT));
-            tblInvSection2.addCell(cellTxtNoBrdrNrml(
+            tblInvSection2.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph(invMainID, fontNormal),
                     Element.ALIGN_LEFT));
 
-            tblInvSection3.addCell(cellTxtNoBrdrNrml(
+            tblInvSection3.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph("Alamat", fontNormal),
                     Element.ALIGN_LEFT));
-            tblInvSection3.addCell(cellTxtNoBrdrNrml(
+            tblInvSection3.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph(":", fontNormal),
                     Element.ALIGN_LEFT));
-            tblInvSection3.addCell(cellTxtNoBrdrNrml(
+            tblInvSection3.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph(custAddressVal, fontNormal),
                     Element.ALIGN_LEFT));
-            tblInvSection3.addCell(cellTxtNoBrdrNrml(
+            tblInvSection3.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph("", fontMediumWhite),
                     Element.ALIGN_LEFT));
-            tblInvSection3.addCell(cellTxtNoBrdrNrml(
+            tblInvSection3.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph("No. PO"+"\n"+"Tanggal PO"+"\n"+"Jenis PO"+"\n"+"Jatuh Tempo", fontNormal),
                     Element.ALIGN_LEFT));
-            tblInvSection3.addCell(cellTxtNoBrdrNrml(
+            tblInvSection3.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph(":"+"\n"+":"+"\n"+":"+"\n"+":", fontNormal),
                     Element.ALIGN_LEFT));
-            tblInvSection3.addCell(cellTxtNoBrdrNrml(
+            tblInvSection3.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph(invPoUID+"\n"+invPoDate+"\n"+invPotypeVal+"\n"+invDueDateNTime, fontNormal),
                     Element.ALIGN_LEFT));
 
@@ -1264,9 +1266,9 @@ public class UpdtInvActivity extends AppCompatActivity {
 
             //invDateDeliveryPeriod = String.valueOf(datePeriodFiltered);
 
-            tblInvSectionDatePeriod.addCell(cellTxtNoBrdrNrmlMainContent(
+            tblInvSectionDatePeriod.addCell(pdfPCellUtils.cellTxtNoBrdrNrmlMainContent(
                     new Paragraph("Pengiriman Tanggal: "+invDateDeliveryPeriod, fontNormal), Element.ALIGN_LEFT));
-            tblInvSectionDatePeriod.addCell(cellTxtNoBrdrNrmlMainContent(
+            tblInvSectionDatePeriod.addCell(pdfPCellUtils.cellTxtNoBrdrNrmlMainContent(
                     new Paragraph("", fontNormal), Element.ALIGN_LEFT));
 
             tblInvSection5.addCell(cellColHeader(
@@ -1309,29 +1311,29 @@ public class UpdtInvActivity extends AppCompatActivity {
             if (invRecalculateStatus){
 
                 for (int i = 0; i<productItemsList.size();i++){
-                    tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
+                    tblInvSection6.addCell(pdfPCellUtils.cellTxtNoBrdrNrmlMainContent(
                             new Paragraph(matNameVal, fontNormal), Element.ALIGN_LEFT));
-                    tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
+                    tblInvSection6.addCell(pdfPCellUtils.cellTxtNoBrdrNrmlMainContent(
                             new Paragraph(currencyVal+" "+currencyFormat(df.format(matSellPrice)), fontNormal), Element.ALIGN_RIGHT));
-                    tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
+                    tblInvSection6.addCell(pdfPCellUtils.cellTxtNoBrdrNrmlMainContent(
                             new Paragraph(df.format(totalUnitFinal), fontNormal), Element.ALIGN_RIGHT));
-                    tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
+                    tblInvSection6.addCell(pdfPCellUtils.cellTxtNoBrdrNrmlMainContent(
                             new Paragraph("", fontNormal), Element.ALIGN_RIGHT));
-                    tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
+                    tblInvSection6.addCell(pdfPCellUtils.cellTxtNoBrdrNrmlMainContent(
                             new Paragraph(currencyVal+" "+currencyFormat(dfRound1.format(totalAmountForMaterials)), fontNormal), Element.ALIGN_RIGHT));
                 }
 
 
 
-                tblInvSection7.addCell(cellTxtNoBrdrNrmlMainContent(
+                tblInvSection7.addCell(pdfPCellUtils.cellTxtNoBrdrNrmlMainContent(
                         new Paragraph(transportServiceNameVal, fontNormal), Element.ALIGN_LEFT));
-                tblInvSection7.addCell(cellTxtNoBrdrNrmlMainContent(
+                tblInvSection7.addCell(pdfPCellUtils.cellTxtNoBrdrNrmlMainContent(
                         new Paragraph(currencyVal+" "+currencyFormat(df.format(transportServiceSellPrice)), fontNormal), Element.ALIGN_RIGHT));
-                tblInvSection7.addCell(cellTxtNoBrdrNrmlMainContent(
+                tblInvSection7.addCell(pdfPCellUtils.cellTxtNoBrdrNrmlMainContent(
                         new Paragraph(df.format(totalUnitFinal), fontNormal), Element.ALIGN_RIGHT));
-                tblInvSection7.addCell(cellTxtNoBrdrNrmlMainContent(
+                tblInvSection7.addCell(pdfPCellUtils.cellTxtNoBrdrNrmlMainContent(
                         new Paragraph("", fontNormal), Element.ALIGN_RIGHT));
-                tblInvSection7.addCell(cellTxtNoBrdrNrmlMainContent(
+                tblInvSection7.addCell(pdfPCellUtils.cellTxtNoBrdrNrmlMainContent(
                         new Paragraph(currencyVal+" "+currencyFormat(dfRound1.format(totalAmountForTransportService)), fontNormal), Element.ALIGN_RIGHT));
 
                 if (invPoType == 2){
@@ -1348,27 +1350,27 @@ public class UpdtInvActivity extends AppCompatActivity {
             } else{
 
                 for (int i = 0; i<productItemsList.size();i++){
-                    tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
+                    tblInvSection6.addCell(pdfPCellUtils.cellTxtNoBrdrNrmlMainContent(
                             new Paragraph(matNameVal, fontNormal), Element.ALIGN_LEFT));
-                    tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
+                    tblInvSection6.addCell(pdfPCellUtils.cellTxtNoBrdrNrmlMainContent(
                             new Paragraph(currencyVal+" "+currencyFormat(df.format(matSellPrice)), fontNormal), Element.ALIGN_RIGHT));
-                    tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
+                    tblInvSection6.addCell(pdfPCellUtils.cellTxtNoBrdrNrmlMainContent(
                             new Paragraph(df.format(docValUnitTotal), fontNormal), Element.ALIGN_RIGHT));
-                    tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
+                    tblInvSection6.addCell(pdfPCellUtils.cellTxtNoBrdrNrmlMainContent(
                             new Paragraph("", fontNormal), Element.ALIGN_RIGHT));
-                    tblInvSection6.addCell(cellTxtNoBrdrNrmlMainContent(
+                    tblInvSection6.addCell(pdfPCellUtils.cellTxtNoBrdrNrmlMainContent(
                             new Paragraph(currencyVal+" "+currencyFormat(dfRound1.format(totalAmountForMaterialsDefault)), fontNormal), Element.ALIGN_RIGHT));
                 }
 
-                tblInvSection7.addCell(cellTxtNoBrdrNrmlMainContent(
+                tblInvSection7.addCell(pdfPCellUtils.cellTxtNoBrdrNrmlMainContent(
                         new Paragraph(transportServiceNameVal, fontNormal), Element.ALIGN_LEFT));
-                tblInvSection7.addCell(cellTxtNoBrdrNrmlMainContent(
+                tblInvSection7.addCell(pdfPCellUtils.cellTxtNoBrdrNrmlMainContent(
                         new Paragraph(currencyVal+" "+currencyFormat(dfRound1.format(transportServiceSellPrice)), fontNormal), Element.ALIGN_RIGHT));
-                tblInvSection7.addCell(cellTxtNoBrdrNrmlMainContent(
+                tblInvSection7.addCell(pdfPCellUtils.cellTxtNoBrdrNrmlMainContent(
                         new Paragraph(df.format(docValUnitTotal), fontNormal), Element.ALIGN_RIGHT));
-                tblInvSection7.addCell(cellTxtNoBrdrNrmlMainContent(
+                tblInvSection7.addCell(pdfPCellUtils.cellTxtNoBrdrNrmlMainContent(
                         new Paragraph("", fontNormal), Element.ALIGN_RIGHT));
-                tblInvSection7.addCell(cellTxtNoBrdrNrmlMainContent(
+                tblInvSection7.addCell(pdfPCellUtils.cellTxtNoBrdrNrmlMainContent(
                         new Paragraph(currencyVal+" "+currencyFormat(dfRound1.format(totalAmountForTransportServiceDefault)), fontNormal), Element.ALIGN_RIGHT));
 
                 if (invPoType == 2){
@@ -1407,17 +1409,17 @@ public class UpdtInvActivity extends AppCompatActivity {
             tblInvSection10.addCell(cellColHeaderNoBrdr(
                     new Paragraph("TERBILANG", fontMediumWhite),
                     Element.ALIGN_LEFT));
-            tblInvSection10.addCell(cellTxtNoBrdrNrml(
+            tblInvSection10.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph("", fontMediumWhite),
                     Element.ALIGN_LEFT));
 
-            /*tblInvSection11.addCell(cellTxtNoBrdrNrml(
+            /*tblInvSection11.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph(NumberToWords.convert(math(totalDue))+" Rupiah", fontMedium),
                     Element.ALIGN_LEFT));*/
-            tblInvSection11.addCell(cellTxtNoBrdrNrml(
+            tblInvSection11.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph(NumberToWordsUtils.convert(Long.parseLong(dfRound1.format(totalDueDefault)))+" Rupiah", fontMedium),
                     Element.ALIGN_LEFT));
-            tblInvSection11.addCell(cellTxtNoBrdrNrml(
+            tblInvSection11.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph("", fontMediumWhite),
                     Element.ALIGN_LEFT));
 
@@ -1428,13 +1430,13 @@ public class UpdtInvActivity extends AppCompatActivity {
             tblInvSection12.addCell(cellTxtNoBrdrNrmlWthPadLft(
                     new Paragraph("Transfer Melalui", fontNormalSmall),
                     Element.ALIGN_LEFT));
-            tblInvSection12.addCell(cellTxtNoBrdrNrml(
+            tblInvSection12.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph(":", fontNormalSmall),
                     Element.ALIGN_RIGHT));
-            tblInvSection12.addCell(cellTxtNoBrdrNrml(
+            tblInvSection12.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph(bankName, fontNormalSmall),
                     Element.ALIGN_LEFT));
-            tblInvSection12.addCell(cellTxtNoBrdrNrml(
+            tblInvSection12.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph("", fontNormalSmall),
                     Element.ALIGN_LEFT));
             tblInvSection12.addCell(cellTxtSpan4RowList());
@@ -1442,39 +1444,39 @@ public class UpdtInvActivity extends AppCompatActivity {
             tblInvSection12.addCell(cellTxtNoBrdrNrmlWthPadLft(
                     new Paragraph("Atas Nama", fontNormalSmall),
                     Element.ALIGN_LEFT));
-            tblInvSection12.addCell(cellTxtNoBrdrNrml(
+            tblInvSection12.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph(":", fontNormalSmall),
                     Element.ALIGN_RIGHT));
-            tblInvSection12.addCell(cellTxtNoBrdrNrml(
+            tblInvSection12.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph(bankAccountOwnerName, fontNormalSmall),
                     Element.ALIGN_LEFT));
-            tblInvSection12.addCell(cellTxtNoBrdrNrml(
+            tblInvSection12.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph("", fontNormalSmall),
                     Element.ALIGN_LEFT));
 
             tblInvSection12.addCell(cellTxtNoBrdrNrmlWthPadLft(
                     new Paragraph("No. Rekening", fontNormalSmall),
                     Element.ALIGN_LEFT));
-            tblInvSection12.addCell(cellTxtNoBrdrNrml(
+            tblInvSection12.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph(":", fontNormalSmall),
                     Element.ALIGN_RIGHT));
-            tblInvSection12.addCell(cellTxtNoBrdrNrml(
+            tblInvSection12.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph(bankAccountNumber, fontNormalSmall),
                     Element.ALIGN_LEFT));
-            tblInvSection12.addCell(cellTxtNoBrdrNrml(
+            tblInvSection12.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph("", fontNormalSmall),
                     Element.ALIGN_LEFT));
 
             tblInvSection12.addCell(cellTxtNoBrdrNrmlWthPadLft(
                     new Paragraph("Kode SWIFT", fontNormalSmall),
                     Element.ALIGN_LEFT));
-            tblInvSection12.addCell(cellTxtNoBrdrNrml(
+            tblInvSection12.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph(":", fontNormalSmall),
                     Element.ALIGN_RIGHT));
-            tblInvSection12.addCell(cellTxtNoBrdrNrml(
+            tblInvSection12.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph("CENAIDJAXXX", fontNormalSmall),
                     Element.ALIGN_LEFT));
-            tblInvSection12.addCell(cellTxtNoBrdrNrml(
+            tblInvSection12.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph("", fontNormalSmall),
                     Element.ALIGN_LEFT));
 
@@ -1488,45 +1490,45 @@ public class UpdtInvActivity extends AppCompatActivity {
             tblInvSection12.addCell(cellTxtNoBrdrNrmlWthPadLft(
                     new Paragraph("Status", fontMedium),
                     Element.ALIGN_LEFT));
-            tblInvSection12.addCell(cellTxtNoBrdrNrml(
+            tblInvSection12.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph(":", fontMedium),
                     Element.ALIGN_RIGHT));
-            tblInvSection12.addCell(cellTxtNoBrdrNrml(
+            tblInvSection12.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph(paidStatus, fontMedium),
                     Element.ALIGN_LEFT));
-            tblInvSection12.addCell(cellTxtNoBrdrNrml(
+            tblInvSection12.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph("", fontNormalSmall),
                     Element.ALIGN_LEFT));
 
             tblInvSection12.addCell(cellTxtNoBrdrNrmlWthPadLft(
                     new Paragraph("Tanggal Lunas", fontNormalSmall),
                     Element.ALIGN_LEFT));
-            tblInvSection12.addCell(cellTxtNoBrdrNrml(
+            tblInvSection12.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph(":", fontNormalSmall),
                     Element.ALIGN_RIGHT));
-            tblInvSection12.addCell(cellTxtNoBrdrNrml(
+            tblInvSection12.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph(invDatePaid, fontNormalSmall),
                     Element.ALIGN_LEFT));
-            tblInvSection12.addCell(cellTxtNoBrdrNrml(
+            tblInvSection12.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph("", fontNormalSmall),
                     Element.ALIGN_LEFT));
 
             tblInvSection13.addCell(cellColHeaderNoBrdr(
                     new Paragraph("DETAIL PEMBAYARAN", fontMediumWhite),
                     Element.ALIGN_LEFT));
-            tblInvSection13.addCell(cellTxtNoBrdrNrml(
+            tblInvSection13.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph("", fontNormalSmall),
                     Element.ALIGN_RIGHT));
-            tblInvSection13.addCell(cellTxtNoBrdrNrml(
+            tblInvSection13.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph("", fontNormalSmall),
                     Element.ALIGN_RIGHT));
             tblInvSection13.addCell(cellColHeaderNoBrdr(
                     new Paragraph("CATATAN", fontMediumWhite),
                     Element.ALIGN_LEFT));
-            tblInvSection13.addCell(cellTxtNoBrdrNrml(
+            tblInvSection13.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph("", fontNormalSmall),
                     Element.ALIGN_LEFT));
-            tblInvSection13.addCell(cellTxtNoBrdrNrml(
+            tblInvSection13.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph("", fontNormalSmall),
                     Element.ALIGN_LEFT));
 
@@ -1619,10 +1621,10 @@ public class UpdtInvActivity extends AppCompatActivity {
             table3.setWidthPercentage(100);
             table3.setWidths(new float[]{5, 4});
 
-            table0.addCell(cellTxtNoBrdrNrml(
+            table0.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph(roPoCustNumberStrVal, fontNormal),
                     Element.ALIGN_LEFT));
-            table0.addCell(cellTxtNoBrdrNrml(
+            table0.addCell(pdfPCellUtils.cellTxtNoBrdrNrml(
                     new Paragraph(roRecapDateCreatedStrVal, fontNormal),
                     Element.ALIGN_RIGHT));
 

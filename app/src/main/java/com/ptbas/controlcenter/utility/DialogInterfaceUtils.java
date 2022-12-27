@@ -674,6 +674,7 @@ public class DialogInterfaceUtils {
 
                                         for (int i = 0; i < giModelArrayList.size(); i++) {
                                             databaseReference.child("GoodIssueData").child(giModelArrayList.get(i).getGiUID()).child("giCashedOutTo").setValue("");
+                                            databaseReference.child("GoodIssueData").child(giModelArrayList.get(i).getGiUID()).child("giCashedOut").setValue(false);
                                         }
                                     }
                                 }
@@ -1106,7 +1107,7 @@ public class DialogInterfaceUtils {
         materialDialog.show();
     }
 
-    public void confirmCreateAIO(Context context,
+    public void confirmCreateAIO(Context context, String poUID,
                                  ArrayList<GiModel> giModelArrayList) {
         MaterialDialog materialDialog = new MaterialDialog.Builder((Activity) context)
                 .setTitle("Buat Laporan AIO")
@@ -1115,7 +1116,7 @@ public class DialogInterfaceUtils {
                 .setCancelable(true)
                 .setPositiveButton("YA", R.drawable.ic_outline_check, (dialogInterface, which) -> {
 
-                    generatingAIOReport(context,
+                    generatingAIOReport(context, poUID,
                             giModelArrayList);
                     dialogInterface.dismiss();
                 })
@@ -1204,7 +1205,7 @@ public class DialogInterfaceUtils {
 
 
 
-    public void generatingAIOReport(Context context, ArrayList<GiModel> giModelArrayList) {
+    public void generatingAIOReport(Context context, String poUID, ArrayList<GiModel> giModelArrayList) {
 
         MaterialDialog generatingInvoiceDialog = new MaterialDialog.Builder((Activity) context)
                 .setTitle("Memproses Permintaan")
@@ -1222,7 +1223,7 @@ public class DialogInterfaceUtils {
 
             public void onFinish() {
                 AddAioReportActivity addAIOReportActivity = (AddAioReportActivity) context;
-                addAIOReportActivity.createAIOPDF(HelperUtils.getAppPathAIOReport(context)+"AIO Report"+".pdf");
+                addAIOReportActivity.createAIOPDF(HelperUtils.getAppPathAIOReport(context)+"AIO Report - "+poUID+".pdf");
                 generatingInvoiceDialog.dismiss();
             }
         }.start();

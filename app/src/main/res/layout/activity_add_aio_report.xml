@@ -12,7 +12,7 @@
 
         <androidx.cardview.widget.CardView
             android:layout_marginTop="-8dp"
-            android:id="@+id/cdv_filter"
+            android:id="@+id/cdvFilter"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:cardCornerRadius="8dp"
@@ -118,7 +118,7 @@
                                         app:startIconDrawable="@drawable/ic_outline_receipt">
 
                                         <AutoCompleteTextView
-                                            android:id="@+id/rouid"
+                                            android:id="@+id/spinnerRoUID"
                                             android:layout_width="match_parent"
                                             android:layout_height="wrap_content"
                                             android:hint="ID Received Order" />
@@ -146,7 +146,7 @@
                                         app:startIconDrawable="@drawable/ic_outline_receipt">
 
                                         <com.google.android.material.textfield.TextInputEditText
-                                            android:id="@+id/pouid"
+                                            android:id="@+id/edtPoUID"
                                             android:layout_width="match_parent"
                                             android:layout_height="wrap_content"
                                             android:focusable="false"
@@ -248,7 +248,7 @@
                         -->
 
                         <Button
-                            android:id="@+id/caridata"
+                            android:id="@+id/btnSearchData"
                             style="@style/MaterialDialog.PositiveButton"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -407,11 +407,11 @@
 
         <LinearLayout
             android:gravity="center"
-            android:id="@+id/ll_no_data"
+            android:id="@+id/llNoData"
             android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/cdv_filter"
+            android:layout_below="@+id/cdvFilter"
             android:orientation="vertical">
             <com.airbnb.lottie.LottieAnimationView
                 app:lottie_autoPlay="true"
@@ -433,11 +433,11 @@
             android:id="@+id/nestedScrollView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/cdv_filter"
+            android:layout_below="@+id/cdvFilter"
             android:visibility="visible">
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvItemList"
+                android:id="@+id/recyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:paddingTop="10dp"
@@ -513,7 +513,7 @@
     </RelativeLayout>
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        android:id="@+id/fabCreateCOR"
+        android:id="@+id/fabCreateDocument"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:icon="@drawable/ic_outline_add_circle"

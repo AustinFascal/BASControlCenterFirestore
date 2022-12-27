@@ -118,16 +118,22 @@
         <entry key="..\:/Users/CMH/Documents/GitHub/BASReportProject/app/src/main/res/menu/gi_search_menu.xml" value="0.21822916666666667" />
         <entry key="..\:/Users/CMH/Documents/GitHub/BASReportProject/app/src/main/res/menu/recap_gi_menu.xml" value="0.21927083333333333" />
         <entry key="..\:/Users/CMH/Documents/GitHub/BASReportProject/app/src/main/res/xml/provider_paths.xml" value="0.1743659420289855" />
+        <entry key="..\:/Users/CMH/StudioProjects/BASCC/app/src/main/res/drawable/avd_anim.xml" value="0.1" />
+        <entry key="..\:/Users/CMH/StudioProjects/BASCC/app/src/main/res/drawable/fab_label_background.xml" value="0.121" />
+        <entry key="..\:/Users/CMH/StudioProjects/BASCC/app/src/main/res/layout-land/activity_updt_co.xml" value="0.18541666666666667" />
+        <entry key="..\:/Users/CMH/StudioProjects/BASCC/app/src/main/res/layout/activity_add_aio_report.xml" value="0.25" />
         <entry key="..\:/Users/CMH/StudioProjects/BASCC/app/src/main/res/layout/activity_add_supplier.xml" value="0.25" />
         <entry key="..\:/Users/CMH/StudioProjects/BASCC/app/src/main/res/layout/activity_add_vhl.xml" value="0.25" />
+        <entry key="..\:/Users/CMH/StudioProjects/BASCC/app/src/main/res/layout/activity_auth_user_profile.xml" value="0.176" />
         <entry key="..\:/Users/CMH/StudioProjects/BASCC/app/src/main/res/layout/activity_data_aio.xml" value="0.25" />
-        <entry key="..\:/Users/CMH/StudioProjects/BASCC/app/src/main/res/layout/activity_data_co.xml" value="0.25" />
+        <entry key="..\:/Users/CMH/StudioProjects/BASCC/app/src/main/res/layout/activity_data_co.xml" value="0.22620169651272384" />
         <entry key="..\:/Users/CMH/StudioProjects/BASCC/app/src/main/res/layout/activity_data_cust.xml" value="0.25" />
         <entry key="..\:/Users/CMH/StudioProjects/BASCC/app/src/main/res/layout/activity_data_gi.xml" value="0.25" />
         <entry key="..\:/Users/CMH/StudioProjects/BASCC/app/src/main/res/layout/activity_data_inv.xml" value="0.25" />
         <entry key="..\:/Users/CMH/StudioProjects/BASCC/app/src/main/res/layout/activity_manage_good_issue.xml" value="0.25" />
         <entry key="..\:/Users/CMH/StudioProjects/BASCC/app/src/main/res/layout/activity_manage_material.xml" value="0.25" />
         <entry key="..\:/Users/CMH/StudioProjects/BASCC/app/src/main/res/layout/activity_manage_product_data.xml" value="0.25" />
+        <entry key="..\:/Users/CMH/StudioProjects/BASCC/app/src/main/res/layout/item_layout_shortcuts.xml" value="0.4" />
         <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/drawable/avd_anim.xml" value="0.1935" />
         <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/drawable/divider_transparent.xml" value="0.1685" />
         <entry key="..\:/Users/CMH/StudioProjects/BASControlCenterFirestore/app/src/main/res/drawable/filled_box.xml" value="0.2445" />
